@@ -477,10 +477,10 @@
   <script>
     let playerProfile = { name: "", age: 0, currentLevelIndex: 0, guaranteedLevelIndex: -1 };
     let lifelinesUsed = { '5050': false, 'sangat': false, 'scholar': false };
-    const SAFETY_LEVELS = [4, 9]; // Level 5 (index 4) and Level 10 (index 9)
+    const SAFETY_LEVELS = [5, 10]; // Level 5 and Level 10 (1-based level numbers)
     let activeGameQuestions = [];
 
-// --- 150 Question Bank Structure (10 per tier x 15 levels) ---
+    // --- 150 Question Bank Structure (10 per tier x 15 levels) ---
     const questionBankByTier = [
       // Tier 1 (Level 1 - Gyan Novice)
       [
@@ -661,7 +661,7 @@
         { q: "Which Victoria Cross recipient became the first Sikh military officer to win Britain's highest gallantry award during World War I (at Neuve Chapelle)?", options: ["Naik Darwan Singh Negi", "Sepoy Ishar Singh", "Subedar Major Nand Singh", "Lieutenant Kanwar Amar Singh"], correct: 1, prize: "Gurbani Scholar" },
         { q: "What is the historical significance of the Komagata Maru incident in 1914?", options: ["A chartered Japanese ship carrying Sikh immigrants was denied entry into Canada, exposing imperial racial exclusion policies", "A naval battle between Sikh armies and the British navy", "The signing of a peace treaty in Vancouver", "The establishment of the first Gurdwara in North America"], correct: 0, prize: "Gurbani Scholar" },
         { q: "Which early 20th-century newspaper and political organization spearheaded the struggle for Gurdwara reform and anti-colonial agitation in Punjab?", options: ["The Hindustan Times / Akali Dal", "The Tribune", "Khalsa Advocate", "Ghadar Party"], correct: 0, prize: "Gurbani Scholar" },
-        { q: "Which revolutionary overseas organization was founded in 1913 by expatriate Punjabi Sikhs (like Sohan Singh Bhakna and Lala Har Dayal) to overthrow British rule in India?", options: ["Ghadar Party", "Indian National Army (INA)", "Abhinav Bharat", "Naujawan Bharat Sabha"], correct: 0, prize: "Gurbani Scholar" },
+        { q: "Which revolutionary overseas organization was founded in 1913 by expatriate Punjabi Sikhs (like Sohan Singh Bhakna and Lala Har Dayal) to overthrow British rule in India?", options: ["Ghadar Party", "Indian National Army (INA)", "Abhinav Bharat", "Naujawan Bharat Sabha"], correct: 0, prize: "Ghadar Party" },
         { q: "Who was the legendary Sikh general and commander of the Azad Hind Fauj (Indian National Army) alongside Subhas Chandra Bose?", options: ["General Mohan Singh", "General Shah Nawaz Khan", "General Gurbachan Singh", "General Hari Singh"], correct: 0, prize: "Gurbani Scholar" }
       ],
       // Tier 15 (Level 15 - Gursikh)
@@ -673,7 +673,7 @@
         { q: "Which sacred prayer concludes every formal Sikh congregational gathering, summarizing historical sacrifices and invoking universal welfare (Sarbat Da Bhala)?", options: ["Ardas", "Kirtan Sohila", "Japji Sahib", "Sukhmani Sahib"], correct: 0, prize: "Gursikh" },
         { q: "What does the concluding phrase 'Sarbat Da Bhala' mean in the daily Sikh Ardas?", options: ["Blessings and welfare for all humankind", "Victory for the Khalsa army", "Prosperity for Punjab", "Protection of sacred shrines"], correct: 0, prize: "Gursikh" },
         { q: "In Sikh metaphysics, how is the relationship between the Guru Granth Sahib and the Guru Panth conceptualized?", options: ["Shabad Guru (Word as Guru) and Guru Panth (Community embodying the spirit of the Guru)", "Dual sovereigns ruling separate realms", "Scriptural law enforced by political magistrates", "An administrative hierarchy of elders"], correct: 0, prize: "Gursikh" },
-        { q: "Which historic document formulated in 1945 by the SGPC officially codifies the personal and communal code of conduct for every Sikh?", options: ["Sikh Rehat Maryada", "Gurmat Rahit", "Prem Sumarg Granth", "Panthic Code"], correct: 0, prize: "Gursikh" },
+        { q: "Which historic document formulated in 1945 by the SGPC officially codifies the personal and communal code of conduct for every Sikh?", options: ["Sikh Rehat Maryada", "Gurmat Rahit", "Prem Sumarg Granth", "Panthic Code"], correct: 0, prize: "Sikh Rehat Maryada" },
         { q: "What unique architectural feature characterizes all five Takhts across India?", options: ["They are sovereign seats of temporal and spiritual decision-making associated directly with the Gurus", "They are built entirely of white marble underground", "They strictly prohibit musical instruments", "They are managed directly by foreign trusts"], correct: 0, prize: "Gursikh" },
         { q: "What is the ultimate spiritual goal of an individual life according to Gurmat philosophy?", options: ["Mukti / Jivanmukti through Naam Simran, honest living, and selfless service, merging back into the Divine light like a drop in the ocean", "Ascending to physical heavens after death", "Accumulating pious karma for reincarnation", "Attaining worldly kingship and political glory"], correct: 0, prize: "Gursikh" }
       ]
@@ -862,13 +862,11 @@
       document.getElementById('lifeline-scholar').disabled = true;
     }
 
-function handleAnswerSelect(selectedIndex) {
+    function handleAnswerSelect(selectedIndex) {
       const currentQ = activeGameQuestions[playerProfile.currentLevelIndex];
       disableOptionButtons();
 
       if (selectedIndex === currentQ.correct) {
-        // Assuming SAFETY_LEVELS holds 1-based level numbers (e.g., [5, 10, 15])
-        // If your SAFETY_LEVELS uses 0-based indices, change currentLevelIndex + 1 to currentLevelIndex
         const currentLevelNumber = playerProfile.currentLevelIndex + 1;
         
         if (SAFETY_LEVELS.includes(currentLevelNumber)) {
@@ -887,13 +885,11 @@ function handleAnswerSelect(selectedIndex) {
     }
 
     function endGame(isWin, message) {
-      let finalLevelReached = 1; // Default to Level 1 if failed before any checkpoint
+      let finalLevelReached = 1;
 
       if (isWin) {
         finalLevelReached = activeGameQuestions.length; // Level 15
       } else {
-        // If a safety checkpoint was reached, calculate the level. 
-        // Otherwise, if they failed before the first checkpoint, they reached Level 0 (or 1 depending on display).
         finalLevelReached = playerProfile.guaranteedLevelIndex >= 0 
           ? playerProfile.guaranteedLevelIndex + 1 
           : 1; 
