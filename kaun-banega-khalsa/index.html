@@ -404,40 +404,58 @@
     </div>
   </header>
   
-<!-- Player Setup Modal -->
+  <!-- Player Setup Modal -->
   <div id="player-setup-modal" class="overlay-modal">
     <div class="modal-card">
       <!-- Active Cohort Group Banner -->
       <div id="gameGroupBanner" style="display: none; background: #21262d; border: 1px solid #30363d; color: #fff; padding: 6px 10px; border-radius: 6px; margin-bottom: 12px; text-align: center; font-size: 0.9rem;">
         Cohort Group: <span id="gameGroupName" style="color: #f2cc60; font-weight: bold;"></span>
       </div>
-      <script>
-        (function() {
-            const params = new URLSearchParams(window.location.search);
-            const g = params.get('group') || params.get('Group');
-            if (g && g.trim() !== '' && g.toUpperCase() !== 'GLOBAL') {
-                const clean = g.toUpperCase();
-                document.getElementById('gameGroupName').textContent = clean;
-                document.getElementById('gameGroupBanner').style.display = 'block';
-                window.getGameGroupCode = () => clean;
-            } else {
-                window.getGameGroupCode = () => "GLOBAL";
-            }
-        })();
-      </script>
 
       <h2>Kaun Banega Khalsa</h2>
-      <div class="input-group">
-        <label for="player-name">Player Name</label>
-        <input type="text" id="player-name" placeholder="Enter your full name" required autocomplete="off">
-      </div>
-      <div class="input-group">
-        <label for="player-age">Age</label>
-        <input type="number" id="player-age" placeholder="Enter your age" required>
-      </div>
-      <button class="start-btn" onclick="submitPlayerProfile()">Start Game</button>
+      
+      <!-- Using a form so pressing enter or clicking the button works natively -->
+      <form id="player-setup-form" onsubmit="handlePlayerSubmit(event)">
+        <div class="input-group">
+          <label for="player-name">Player Name</label>
+          <input type="text" id="player-name" placeholder="Enter your full name" required autocomplete="off">
+        </div>
+        <div class="input-group">
+          <label for="player-age">Age</label>
+          <input type="number" id="player-age" placeholder="Enter your age" required>
+        </div>
+        <button type="submit" class="start-btn">Start Game</button>
+      </form>
     </div>
   </div>
+
+  <script>
+    // Initialize Banner and Group Code
+    (function() {
+        const params = new URLSearchParams(window.location.search);
+        const g = params.get('group') || params.get('Group');
+        if (g && g.trim() !== '' && g.toUpperCase() !== 'GLOBAL') {
+            const clean = g.toUpperCase();
+            document.getElementById('gameGroupName').textContent = clean;
+            document.getElementById('gameGroupBanner').style.display = 'block';
+            window.getGameGroupCode = () => clean;
+        } else {
+            window.getGameGroupCode = () => "GLOBAL";
+        }
+    })();
+
+    // Safe wrapper that bridges to your existing game start logic
+    function handlePlayerSubmit(event) {
+        event.preventDefault();
+        // If your original script uses submitPlayerProfile(), call it here:
+        if (typeof submitPlayerProfile === 'function') {
+            submitPlayerProfile();
+        } else {
+            // Fallback: hide modal manually if function name differs
+            document.getElementById('player-setup-modal').style.display = 'none';
+        }
+    }
+  </script>
   
   <!-- Protected Question Review Modal -->
   <div id="review-set-modal" class="overlay-modal" style="display: none;">
