@@ -40,7 +40,7 @@ class Default(WorkerEntrypoint):
             </body>
             </html>
             """
-            return Response(html, headers={"Content-Type": "text/html"})
+            return Response(html, headers={"Content-Type": "text/html; charset=utf-8"})
 
         # -------------------------------------------------------------
         # 2. SUBMIT SCORE: POST /api/submit_score
@@ -132,6 +132,7 @@ class Default(WorkerEntrypoint):
                 <!DOCTYPE html>
                 <html>
                 <head>
+                    <meta charset="UTF-8">
                     <title>Ranked Leaderboard</title>
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
                     <style>
@@ -173,7 +174,7 @@ class Default(WorkerEntrypoint):
                     </table>
                     
                     <div class="nav-links">
-                        <a href="/game" class="back-btn">← Play Again</a>
+                        <a href="/game" class="back-btn">&larr; Play Again</a>
                     </div>
 
                     <script>
@@ -220,7 +221,7 @@ class Default(WorkerEntrypoint):
                 </body>
                 </html>
                 """
-                return Response(html, headers={"Content-Type": "text/html"})
+                return Response(html, headers={"Content-Type": "text/html; charset=utf-8"})
             except Exception as e:
                 return Response(f"Error loading leaderboard: {str(e)}", status=500)
 
