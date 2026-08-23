@@ -3,8 +3,8 @@ main = "app.py"
 compatibility_date = "2026-01-01"
 compatibility_flags = ["python_workers"]
 
-# Configures assets to serve static files like index.html
-assets = { directory = ".", binding = "ASSETS" }
+# Force Cloudflare to send all requests to app.py first
+assets = { directory = ".", binding = "ASSETS", run_worker_first = true }
 
 [[d1_databases]]
 binding = "DB"
