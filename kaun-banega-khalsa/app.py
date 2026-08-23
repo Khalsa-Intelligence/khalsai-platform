@@ -1,5 +1,5 @@
 from workers import WorkerEntrypoint, Response
-from urllib.parse import urlparse
+from urllib.parse import urlparse, parse_qs
 import json
 import time
 
@@ -9,6 +9,7 @@ class Default(WorkerEntrypoint):
         parsed_url = urlparse(url_str)
         path = parsed_url.path
         method = request.method
+        query_params = parse_qs(parsed_url.query)
         env = self.env
 
         # -------------------------------------------------------------
@@ -57,7 +58,7 @@ class Default(WorkerEntrypoint):
         # 2. GAME ROUTE: GET /game
         # -------------------------------------------------------------
         if method == "GET" and path == "/game":
-            # Fetches index.html from static assets asset directory
+            # Fetches index.html from static assets directory
             new_req = request.clone()
             url = parsed_url._replace(path="/index.html").geturl()
             return await env.ASSETS.fetch(url)
@@ -78,9 +79,10 @@ class Default(WorkerEntrypoint):
                 age = data.get("age")
                 level = data.get("level", 1)
                 score = data.get("score", 0)
+                group_code = (data.get("group_code") or "GLOBAL").strip().upper()
 
-                query = "INSERT INTO leaderboard (id, name, age, level, score) VALUES (?, ?, ?, ?, ?)"
-                await env.DB.prepare(query).bind(record_id, name, age, level, score).run()
+                query = "INSERT INTO leaderboard (id, name, age, level, score, group_code) VALUES (?, ?, ?, ?, ?, ?)"
+                await env.DB.prepare(query).bind(record_id, name, age, level, score, group_code).run()
 
                 return Response(json.dumps({"status": "success", "message": "Score saved to D1 Database!"}), headers={"Content-Type": "application/json"})
             except Exception as e:
@@ -128,15 +130,35 @@ class Default(WorkerEntrypoint):
         # -------------------------------------------------------------
         if method == "GET" and path == "/leaderboard":
             try:
-                stmt = env.DB.prepare("SELECT * FROM leaderboard ORDER BY level DESC, score DESC")
-                res = await stmt.all()
+                # Defaults to GLOBAL if group param is omitted
+                selected_group = query_params.get('group', ['GLOBAL'])[0].strip().upper()
+
+                if selected_group and selected_group != "GLOBAL":
+                    stmt = env.DB.prepare("SELECT * FROM leaderboard WHERE UPPER(group_code) = ? ORDER BY level DESC, score DESC")
+                    res = await stmt.bind(selected_group).all()
+                else:
+                    stmt = env.DB.prepare("SELECT * FROM leaderboard ORDER BY level DESC, score DESC")
+                    res = await stmt.all()
+
                 scores = res.results.to_py()
+
+                # Fetch distinct group codes to construct filter dropdown options
+                group_stmt = env.DB.prepare("SELECT DISTINCT group_code FROM leaderboard")
+                group_res = await group_stmt.all()
+                existing_groups = [g.get('group_code') for g in group_res.results.to_py() if g.get('group_code')]
+
+                dropdown_options = f'<option value="GLOBAL" {"selected" if selected_group == "GLOBAL" else ""}>🌐 Global (All Scores)</option>'
+                for g in existing_groups:
+                    if g.upper() != "GLOBAL":
+                        selected_attr = 'selected' if g.upper() == selected_group else ''
+                        dropdown_options += f'<option value="{g}" {selected_attr}>{g}</option>'
 
                 rows_html = ""
                 for rank, entry in enumerate(scores, 1):
                     name = entry.get('name') or 'Anonymous'
                     age = entry.get('age') if entry.get('age') is not None else '-'
                     level = entry.get('level', 1)
+                    grp = entry.get('group_code') or 'GLOBAL'
                     record_id = entry.get('id', '')
                     rows_html += f"""
                         <tr>
@@ -144,6 +166,7 @@ class Default(WorkerEntrypoint):
                             <td>{name}</td>
                             <td>{age}</td>
                             <td>Level {level}</td>
+                            <td><span class="group-tag">{grp}</span></td>
                             <td><button class="delete-btn" onclick="deleteEntry('{record_id}', '{name}')">Delete</button></td>
                         </tr>
                     """
@@ -156,8 +179,10 @@ class Default(WorkerEntrypoint):
                     <title>Ranked Leaderboard</title>
                     <meta name="viewport" content="width=device-width, initial-scale=1.0">
                     <style>
-                        body {{ font-family: sans-serif; background: #0d1117; color: #fff; padding: 2rem; max-width: 650px; margin: 0 auto; }}
-                        h1 {{ text-align: center; color: #58a6ff; }}
+                        body {{ font-family: sans-serif; background: #0d1117; color: #fff; padding: 2rem; max-width: 700px; margin: 0 auto; }}
+                        h1 {{ text-align: center; color: #58a6ff; margin-bottom: 0.5rem; }}
+                        .filter-bar {{ display: flex; justify-content: space-between; align-items: center; background: #161b22; padding: 12px; border-radius: 8px; margin-bottom: 1rem; border: 1px solid #30363d; }}
+                        select {{ background: #0d1117; color: #fff; border: 1px solid #30363d; padding: 6px 12px; border-radius: 6px; font-weight: bold; }}
                         .actions-bar {{ display: flex; justify-content: flex-end; margin-bottom: 1rem; }}
                         .reset-btn {{ background: #da3633; color: white; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; }}
                         .reset-btn:hover {{ background: #b62324; }}
@@ -165,6 +190,7 @@ class Default(WorkerEntrypoint):
                         th, td {{ padding: 12px; text-align: left; border-bottom: 1px solid #30363d; }}
                         th {{ background: #21262d; color: #8b949e; }}
                         tr:first-child td {{ font-weight: bold; color: #f2cc60; }}
+                        .group-tag {{ background: #1f6feb; color: #fff; padding: 2px 6px; border-radius: 4px; font-size: 0.8rem; font-weight: bold; }}
                         .delete-btn {{ background: transparent; border: 1px solid #da3633; color: #da3633; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }}
                         .delete-btn:hover {{ background: #da3633; color: white; }}
                         .nav-links {{ display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; }}
@@ -173,6 +199,13 @@ class Default(WorkerEntrypoint):
                 </head>
                 <body>
                     <h1>🏆 Leaderboard</h1>
+
+                    <div class="filter-bar">
+                        <label for="groupSelect"><strong>Filter Group:</strong></label>
+                        <select id="groupSelect" onchange="window.location.href='/leaderboard?group=' + this.value">
+                            {dropdown_options}
+                        </select>
+                    </div>
                     
                     <div class="actions-bar">
                         <button class="reset-btn" onclick="resetLeaderboard()">Reset All Scores</button>
@@ -184,7 +217,8 @@ class Default(WorkerEntrypoint):
                                 <th>Rank</th>
                                 <th>Name</th>
                                 <th>Age</th>
-                                <th>Level Reached</th>
+                                <th>Level</th>
+                                <th>Group</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
