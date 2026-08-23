@@ -927,6 +927,32 @@
       submitScoreToLeaderboard(finalLevelReached);
     }
 
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const activeGroup = urlParams.get('group') || urlParams.get('Group');
+    
+        if (activeGroup && activeGroup.trim() !== '' && activeGroup.toUpperCase() !== 'GLOBAL') {
+            const cleanGroup = activeGroup.toUpperCase();
+    
+            // Show the banner on the screen
+            const banner = document.getElementById('gameGroupBanner');
+            const nameSpan = document.getElementById('gameGroupName');
+            if (banner && nameSpan) {
+                nameSpan.textContent = cleanGroup;
+                banner.style.display = 'block';
+            }
+    
+            // Expose a helper to grab the active group code when submitting scores
+            window.getGameGroupCode = function() {
+                return cleanGroup;
+            };
+        } else {
+            window.getGameGroupCode = function() {
+                return "GLOBAL";
+            };
+        }
+    </script>
+    
     function submitScoreToLeaderboard(finalLevelReached) {
       // Resolve active group code from URL -> localStorage -> playerProfile -> 'GLOBAL'
       const activeGroup = (
