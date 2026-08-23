@@ -907,7 +907,8 @@
           name: playerProfile.name,
           age: playerProfile.age,
           level: finalLevelReached,
-          score: finalLevelReached * 1000
+          score: finalLevelReached * 1000,
+          group_code: (playerProfile.groupCode || playerProfile.group_code || 'GLOBAL').trim().toUpperCase()
         })
       })
       .then(res => res.json())
