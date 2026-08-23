@@ -34,21 +34,30 @@ class Default(WorkerEntrypoint):
                 </style>
             </head>
             <body>
-                <div class="card">
-                    <h2>Kaun Banega Khalsa</h2>
-                    <p>A Khalsa Intelligence Initiative</p>
-                    
-                    <div class="qr-container">
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://khalsai.com/game" alt="Scan to Play at khalsai.com/game">
+                    <div class="card">
+                        <h2>Kaun Banega Khalsa</h2>
+                        <p>A Khalsa Intelligence Initiative</p>
+                        
+                        <div class="qr-container">
+                            <img id="qrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://khalsai.com/game" alt="Scan to Play">
+                        </div>
+                        
+                        <div class="btn-group">
+                            <a id="playBtn" href="/game" class="btn">Play Game</a>
+                            <a id="boardBtn" href="/leaderboard" class="btn btn-blue">Leaderboard</a>
+                        </div>
                     </div>
                     
-                    <p style="font-size: 0.9rem; color: #8b949e;">Scan QR code or click below to play/view scores</p>
-                    
-                    <div class="btn-group">
-                        <a href="/game" class="btn">Play Here</a>
-                        <a href="/leaderboard" class="btn btn-blue">View Leaderboard</a>
-                    </div>
-                </div>
+                    <script>
+                        // Automatically forwards group params if the host page itself was accessed with one
+                        const params = new URLSearchParams(window.location.search);
+                        const group = params.get('group');
+                        if (group) {
+                            document.getElementById('playBtn').href = `/game?group=${encodeURIComponent(group)}`;
+                            document.getElementById('boardBtn').href = `/leaderboard?group=${encodeURIComponent(group)}`;
+                            document.getElementById('qrImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://khalsai.com/game?group=${encodeURIComponent(group)}`;
+                        }
+                    </script>
             </body>
             </html>
             """
