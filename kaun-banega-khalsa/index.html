@@ -403,10 +403,15 @@
       <button class="admin-review-btn" onclick="openReviewSetModal()">Review Question Set</button>
     </div>
   </header>
-
+  
   <!-- Player Setup Modal -->
   <div id="player-setup-modal" class="overlay-modal">
     <div class="modal-card">
+      <!-- Active Cohort Group Banner -->
+      <div id="gameGroupBanner" style="display: none; background: #21262d; border: 1px solid #30363d; color: #fff; padding: 6px 10px; border-radius: 6px; margin-bottom: 12px; text-align: center; font-size: 0.9rem;">
+        Cohort Group: <span id="gameGroupName" style="color: #f2cc60; font-weight: bold;"></span>
+      </div>
+
       <h2>Kaun Banega Khalsa</h2>
       <div class="input-group">
         <label for="player-name">Player Name</label>
@@ -419,7 +424,7 @@
       <button class="start-btn" onclick="submitPlayerProfile()">Start Game</button>
     </div>
   </div>
-
+  
   <!-- Protected Question Review Modal -->
   <div id="review-set-modal" class="overlay-modal" style="display: none;">
     <div class="modal-card review-modal-card">
