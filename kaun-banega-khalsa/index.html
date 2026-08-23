@@ -26,7 +26,6 @@
       overflow-x: hidden;
     }
 
-    /* --- Animated Starry Layer --- */
     body::before {
       content: "";
       position: fixed;
@@ -49,7 +48,6 @@
       100% { transform: translateY(-250px); }
     }
 
-    /* --- Top Navigation Header --- */
     header {
       width: 100%;
       max-width: 1300px;
@@ -121,7 +119,6 @@
       background: rgba(247, 168, 27, 0.2);
     }
 
-    /* --- Overlay Modals (Setup & Question Review) --- */
     .overlay-modal {
       position: fixed;
       inset: 0;
@@ -230,7 +227,6 @@
       color: #d1d5db;
     }
 
-    /* --- Main Layout Grid --- */
     .game-container {
       width: 100%;
       max-width: 1250px;
@@ -247,7 +243,6 @@
       justify-content: center;
     }
 
-    /* --- Lifelines Bar --- */
     .lifelines-container {
       display: flex;
       justify-content: center;
@@ -281,7 +276,6 @@
       box-shadow: none;
     }
 
-    /* --- Main Question Box --- */
     .question-box {
       background: rgba(12, 20, 38, 0.85);
       border: 1.5px solid #F7A81B;
@@ -298,7 +292,6 @@
       justify-content: center;
     }
 
-    /* --- Option Buttons Grid --- */
     .options-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -331,7 +324,6 @@
       box-shadow: 0 0 12px rgba(247, 168, 27, 0.3);
     }
 
-    /* --- Right Side Prize Ladder Card --- */
     .ladder-section {
       display: flex;
       flex-direction: column;
@@ -373,7 +365,6 @@
       box-shadow: 0 0 10px rgba(247, 168, 27, 0.6);
     }
 
-    /* --- Mobile Responsiveness --- */
     @media (max-width: 900px) {
       header {
         flex-direction: column;
@@ -392,7 +383,6 @@
 </head>
 <body>
 
-  <!-- Top Game Header -->
   <header>
     <div class="brand-group">
       <h1 class="game-title">Kaun Banega Khalsa</h1>
@@ -404,17 +394,14 @@
     </div>
   </header>
   
-  <!-- Player Setup Modal -->
   <div id="player-setup-modal" class="overlay-modal">
     <div class="modal-card">
-      <!-- Active Cohort Group Banner -->
       <div id="gameGroupBanner" style="display: none; background: #21262d; border: 1px solid #30363d; color: #fff; padding: 6px 10px; border-radius: 6px; margin-bottom: 12px; text-align: center; font-size: 0.9rem;">
         Cohort Group: <span id="gameGroupName" style="color: #f2cc60; font-weight: bold;"></span>
       </div>
 
       <h2>Kaun Banega Khalsa</h2>
       
-      <!-- Using a form so pressing enter or clicking the button works natively -->
       <form id="player-setup-form" onsubmit="handlePlayerSubmit(event)">
         <div class="input-group">
           <label for="player-name">Player Name</label>
@@ -429,62 +416,24 @@
     </div>
   </div>
 
-  <script>
-    // Initialize Banner and Group Code
-    (function() {
-        const params = new URLSearchParams(window.location.search);
-        const g = params.get('group') || params.get('Group');
-        if (g && g.trim() !== '' && g.toUpperCase() !== 'GLOBAL') {
-            const clean = g.toUpperCase();
-            document.getElementById('gameGroupName').textContent = clean;
-            document.getElementById('gameGroupBanner').style.display = 'block';
-            window.getGameGroupCode = () => clean;
-        } else {
-            window.getGameGroupCode = () => "GLOBAL";
-        }
-    })();
-
-    // Safe wrapper that bridges to your existing game start logic
-    function handlePlayerSubmit(event) {
-        event.preventDefault();
-        // If your original script uses submitPlayerProfile(), call it here:
-        if (typeof submitPlayerProfile === 'function') {
-            submitPlayerProfile();
-        } else {
-            // Fallback: hide modal manually if function name differs
-            document.getElementById('player-setup-modal').style.display = 'none';
-        }
-    }
-  </script>
-  
-  <!-- Protected Question Review Modal -->
   <div id="review-set-modal" class="overlay-modal" style="display: none;">
     <div class="modal-card review-modal-card">
       <h2>Question Set Bank (150 Questions)</h2>
-      <div id="review-content-area" class="review-content">
-        <!-- Generated Dynamically -->
-      </div>
+      <div id="review-content-area" class="review-content"></div>
       <button class="start-btn" onclick="closeReviewSetModal()">Close Reviewer</button>
     </div>
   </div>
 
-  <!-- Game Main Screen -->
   <div class="game-container">
-    
     <div class="question-section">
-      <!-- Lifelines -->
       <div class="lifelines-container">
         <button class="lifeline-btn" id="lifeline-5050" onclick="use5050()">50:50</button>
         <button class="lifeline-btn" id="lifeline-sangat" onclick="useAskSangat()">Ask the Sangat</button>
         <button class="lifeline-btn" id="lifeline-scholar" onclick="useCallScholar()">Call a Scholar</button>
       </div>
 
-      <div class="question-box" id="question-text">
-        Loading question...
-      </div>
-      <div class="options-grid" id="options-container">
-        <!-- Dynamic options rendered here -->
-      </div>
+      <div class="question-box" id="question-text">Loading question...</div>
+      <div class="options-grid" id="options-container"></div>
     </div>
 
     <div class="ladder-section">
@@ -508,18 +457,28 @@
         </ul>
       </div>
     </div>
-
   </div>
 
   <script>
-    // =========================================================
-    // URL PARAMETER CAPTURE & STORAGE INITIALIZATION
-    // =========================================================
+    // URL Search parameters & group setup
     const urlParams = new URLSearchParams(window.location.search);
-    const groupFromUrl = urlParams.get('group');
+    const activeGroup = urlParams.get('group') || urlParams.get('Group');
 
-    if (groupFromUrl) {
-      localStorage.setItem('kbk_group_code', groupFromUrl.trim().toUpperCase());
+    if (activeGroup && activeGroup.trim() !== '' && activeGroup.toUpperCase() !== 'GLOBAL') {
+      const cleanGroup = activeGroup.toUpperCase();
+      localStorage.setItem('kbk_group_code', cleanGroup);
+      
+      window.addEventListener('DOMContentLoaded', () => {
+        const banner = document.getElementById('gameGroupBanner');
+        const nameSpan = document.getElementById('gameGroupName');
+        if (banner && nameSpan) {
+          nameSpan.textContent = cleanGroup;
+          banner.style.display = 'block';
+        }
+      });
+      window.getGameGroupCode = () => cleanGroup;
+    } else {
+      window.getGameGroupCode = () => "GLOBAL";
     }
 
     let playerProfile = { 
@@ -527,16 +486,15 @@
       age: 0, 
       currentLevelIndex: 0, 
       guaranteedLevelIndex: -1,
-      groupCode: localStorage.getItem('kbk_group_code') || 'GLOBAL'
+      groupCode: window.getGameGroupCode()
     };
     
     let lifelinesUsed = { '5050': false, 'sangat': false, 'scholar': false };
-    const SAFETY_LEVELS = [5, 10]; // Level 5 and Level 10 (1-based level numbers)
+    const SAFETY_LEVELS = [5, 10]; 
     let activeGameQuestions = [];
 
-    // --- 150 Question Bank Structure (10 per tier x 15 levels) ---
     const questionBankByTier = [
-      // Tier 1 (Level 1 - Gyan Novice)
+      // Tier 1
       [
         { q: "Who was the first Guru of Sikhi?", options: ["Guru Nanak Dev Ji", "Guru Angad Dev Ji", "Guru Gobind Singh Ji", "Guru Tegh Bahadur Ji"], correct: 0, prize: "Gyan Novice" },
         { q: "What does the term 'Nishan Sahib' specifically refer to in a Gurdwara?", options: ["The holy scripture pedestal", "The triangular consecrated flag", "The community kitchen", "The entrance gateway"], correct: 1, prize: "Gyan Novice" },
@@ -549,7 +507,7 @@
         { q: "Where was Guru Nanak Dev Ji born?", options: ["Amritsar", "Nankana Sahib", "Patna Sahib", "Anandpur Sahib"], correct: 1, prize: "Gyan Novice" },
         { q: "What is the primary spiritual composition that opens the Guru Granth Sahib?", options: ["Japji Sahib", "Mool Mantar", "Sukhmani Sahib", "Anand Sahib"], correct: 1, prize: "Gyan Novice" }
       ],
-      // Tier 2 (Level 2 - Sikh (Learner))
+      // Tier 2
       [
         { q: "In which year was the Khalsa Panth created?", options: ["1526", "1699", "1708", "1801"], correct: 1, prize: "Sikh (Learner)" },
         { q: "Who was the Mughal Emperor during the martyrdom of Guru Arjan Dev Ji?", options: ["Akbar", "Jahangir", "Shah Jahan", "Aurangzeb"], correct: 1, prize: "Sikh (Learner)" },
@@ -562,7 +520,7 @@
         { q: "Which Guru constructed the Baoli (stepwell) at Goindwal Sahib with 84 steps?", options: ["Guru Nanak Dev Ji", "Guru Amar Das Ji", "Guru Ram Das Ji", "Guru Hargobind Ji"], correct: 1, prize: "Sikh (Learner)" },
         { q: "What does the concept of 'Vand Chhako' entail in Sikh ethics?", options: ["Honest labor", "Sharing with the needy", "Remembering God's name", "Maintaining physical discipline"], correct: 1, prize: "Sikh (Learner)" }
       ],
-      // Tier 3 (Level 3 - Jatha Member)
+      // Tier 3
       [
         { q: "At which city was the Khalsa created by Guru Gobind Singh Ji?", options: ["Anandpur Sahib", "Amritsar", "Patna Sahib", "Nanded"], correct: 0, prize: "Jatha Member" },
         { q: "Which of the five Takhts is located outside of Punjab?", options: ["Akal Takht Sahib", "Takht Sri Keshgarh Sahib", "Takht Sri Patna Sahib", "Takht Sri Damdama Sahib"], correct: 2, prize: "Jatha Member" },
@@ -575,7 +533,7 @@
         { q: "Who was the sister of Guru Nanak Dev Ji?", options: ["Bebe Nanaki Ji", "Mata Bhani Ji", "Mata Khivi Ji", "Mata Sulakhni Ji"], correct: 0, prize: "Jatha Member" },
         { q: "What structural role did the Masands play during the era of the later Gurus before being abolished?", options: ["Military commanders", "Regional representatives and tithe collectors", "Royal scribes", "Temple architects"], correct: 1, prize: "Jatha Member" }
       ],
-      // Tier 4 (Level 4 - Sevadar)
+      // Tier 4
       [
         { q: "Who was the second Sikh Guru?", options: ["Guru Nanak Dev Ji", "Guru Angad Dev Ji", "Guru Amar Das Ji", "Guru Ram Das Ji"], correct: 1, prize: "Sevadar" },
         { q: "Which Sikh Gurpurb is traditionally celebrated with great fervor surrounding the martyrdom of Guru Tegh Bahadur Ji's companions?", options: ["Shaheedi Diwas of Bhai Mati Das, Sati Das, and Bhai Dayala Ji", "Baisakhi", "Maghi", "Hola Mohalla"], correct: 0, prize: "Sevadar" },
@@ -588,7 +546,7 @@
         { q: "Who authored the historical text 'Sri Gur Panth Prakash'?", options: ["Rattan Singh Bhangu", "Gian Singh", "Kesar Singh Chhibber", "Sukha Singh"], correct: 0, prize: "Sevadar" },
         { q: "Which Sikh warrior led the Akal Takht reconstruction after the 18th-century Afghan invasions?", options: ["Nawab Kapur Singh", "Jassa Singh Ahluwalia", "Sultan-ul-Qaum Jassa Singh Ahluwalia", "Baba Deep Singh"], correct: 2, prize: "Sevadar" }
       ],
-      // Tier 5 (Level 5 - Abhyasi)
+      // Tier 5
       [
         { q: "Who was the fourth Sikh Guru?", options: ["Guru Amar Das Ji", "Guru Ram Das Ji", "Guru Arjan Dev Ji", "Guru Hargobind Ji"], correct: 1, prize: "Abhyasi" },
         { q: "Which historical Sikh text contains compositions attributed directly to Guru Gobind Singh Ji?", options: ["Dasam Granth", "Adi Granth", "Janamsakhi", "Suraj Prakash"], correct: 0, prize: "Abhyasi" },
@@ -601,7 +559,7 @@
         { q: "Which Mughal ruler ordered the execution of Guru Tegh Bahadur Ji?", options: ["Aurangzeb", "Jahangir", "Shah Jahan", "Farrukhsiyar"], correct: 0, prize: "Abhyasi" },
         { q: "What title was conferred upon Banda Singh Bahadur by the Khalsa upon establishing sovereign rule in Punjab?", options: ["Badshah", "Sahib-e-Teg-o-Zaban", "Padshah", "Sardar-ul-Mulk"], correct: 1, prize: "Abhyasi" }
       ],
-      // Tier 6 (Level 6 - Gurmukh Aspirant)
+      // Tier 6
       [
         { q: "Who was the fifth Sikh Guru?", options: ["Guru Arjan Dev Ji", "Guru Hargobind Ji", "Guru Har Rai Ji", "Guru Har Krishan Ji"], correct: 0, prize: "Gurmukh Aspirant" },
         { q: "Which battle marked the first armed conflict fought by Guru Hargobind Ji against Mughal forces?", options: ["Battle of Rohilla", "Battle of Amritsar", "Battle of Kartarpur", "Battle of Kiratpur"], correct: 1, prize: "Gurmukh Aspirant" },
@@ -614,7 +572,7 @@
         { q: "Who was the mother of Guru Gobind Singh Ji?", options: ["Mata Gujri Ji", "Mata Sundri Ji", "Mata Sahib Kaur Ji", "Mata Tripta Ji"], correct: 0, prize: "Gurmukh Aspirant" },
         { q: "Which Sikh leader established the Dal Khalsa in 1748 to unify the disparate misls?", options: ["Nawab Kapur Singh", "Jassa Singh Ahluwalia", "Hari Singh Nalwa", "Charan Singh"], correct: 0, prize: "Gurmukh Aspirant" }
       ],
-      // Tier 7 (Level 7 - Sangat Leader)
+      // Tier 7
       [
         { q: "Who was the sixth Sikh Guru?", options: ["Guru Hargobind Ji", "Guru Har Rai Ji", "Guru Har Krishan Ji", "Guru Tegh Bahadur Ji"], correct: 0, prize: "Sangat Leader" },
         { q: "Which raga structure forms the organizing principle of the Guru Granth Sahib?", options: ["31 Classical Ragas", "15 Folk Melodies", "12 Seasonal Scales", "24 Vedic Chants"], correct: 0, prize: "Sangat Leader" },
@@ -627,7 +585,7 @@
         { q: "Which Sikh military commander led the legendary charge at the Battle of Jamrud where he achieved martyrdom?", options: ["Hari Singh Nalwa", "Akali Phula Singh", "Sohan Singh", "Sham Singh Attariwala"], correct: 0, prize: "Sangat Leader" },
         { q: "Who was the reigning sovereign of Lahore when the Sikh Empire was annexed by the British in 1849?", options: ["Maharaja Duleep Singh", "Maharaja Sher Singh", "Maharaja Kharak Singh", "Rani Jindan"], correct: 0, prize: "Sangat Leader" }
       ],
-      // Tier 8 (Level 8 - Gyan Parveen)
+      // Tier 8
       [
         { q: "Who was the seventh Sikh Guru?", options: ["Guru Har Rai Ji", "Guru Har Krishan Ji", "Guru Tegh Bahadur Ji", "Guru Gobind Singh Ji"], correct: 0, prize: "Gyan Parveen" },
         { q: "Which Sikh Guru established a herbal garden and a zoo at Kirpatpur Sahib for humanitarian and ecological purposes?", options: ["Guru Har Rai Ji", "Guru Hargobind Ji", "Guru Arjan Dev Ji", "Guru Amar Das Ji"], correct: 0, prize: "Gyan Parveen" },
@@ -640,7 +598,7 @@
         { q: "Which reform movement in the late 19th century revived Sikh education, literature, and identity?", options: ["Singh Sabha Movement", "Arya Samaj", "Nirankari Movement", "Namdhari Movement"], correct: 0, prize: "Gyan Parveen" },
         { q: "Who was the founder of the Namdhari (Kuka) movement?", options: ["Baba Balak Singh", "Baba Ram Singh", "Baba Dyal Singh", "Baba Natha Singh"], correct: 0, prize: "Gyan Parveen" }
       ],
-      // Tier 9 (Level 9 - Dharmic Scholar)
+      // Tier 9
       [
         { q: "Who was the eighth Sikh Guru?", options: ["Guru Har Krishan Ji", "Guru Tegh Bahadur Ji", "Guru Gobind Singh Ji", "Guru Har Rai Ji"], correct: 0, prize: "Dharmic Scholar" },
         { q: "During an outbreak of smallpox in Delhi, which Guru healed the suffering populace before passing away from the disease himself?", options: ["Guru Har Krishan Ji", "Guru Tegh Bahadur Ji", "Guru Gobind Singh Ji", "Guru Har Rai Ji"], correct: 0, prize: "Dharmic Scholar" },
@@ -653,7 +611,7 @@
         { q: "Which Sikh scholar and lexicographer compiled the 'Mahan Kosh' (Encyclopaedia of Sikh Literature)?", options: ["Bhai Kahn Singh Nabha", "Bhai Vir Singh", "Professor Gurbachan Singh Talib", "Max Arthur Macauliffe"], correct: 0, prize: "Dharmic Scholar" },
         { q: "Who authored the monumental English work 'The Sikh Religion: Its Gurus, Sacred Writings and Authors' published in 1909?", options: ["Max Arthur Macauliffe", "J.D. Cunningham", "Trilochan Singh", "Khushwant Singh"], correct: 0, prize: "Dharmic Scholar" }
       ],
-      // Tier 10 (Level 10 - Gurmukh)
+      // Tier 10
       [
         { q: "Who was the ninth Sikh Guru?", options: ["Guru Tegh Bahadur Ji", "Guru Gobind Singh Ji", "Guru Har Krishan Ji", "Guru Har Rai Ji"], correct: 0, prize: "Gurmukh" },
         { q: "In which year was Guru Tegh Bahadur Ji martyred at Chandni Chowk, Delhi?", options: ["1675", "1699", "1708", "1606"], correct: 0, prize: "Gurmukh" },
@@ -666,7 +624,7 @@
         { q: "Who was the prominent Sikh statesman and leader of the Council of Regency during Maharaja Duleep Singh's minority before being exiled?", options: ["Rani Jindan", "Sardar Tej Singh", "Sardar Chattar Singh Attariwala", "Diwan Sawan Mal"], correct: 0, prize: "Gurmukh" },
         { q: "Which legendary Sikh general defended the battle lines at Sobraon in 1846, fighting to the death amidst the freezing Sutlej river?", options: ["Sham Singh Attariwala", "Hari Singh Nalwa", "Akali Phula Singh", "Chattar Singh"], correct: 0, prize: "Gurmukh" }
       ],
-      // Tier 11 (Level 11 - Brahm Gyani Aspirant)
+      // Tier 11
       [
         { q: "Who was the tenth Sikh Guru?", options: ["Guru Gobind Singh Ji", "Guru Tegh Bahadur Ji", "Guru Har Krishan Ji", "Banda Singh Bahadur"], correct: 0, prize: "Brahm Gyani Aspirant" },
         { q: "At which location did Guru Gobind Singh Ji spend his final years, where he bestowed Guruship upon the Guru Granth Sahib?", options: ["Nanded (Hazur Sahib)", "Anandpur Sahib", "Damdama Sahib", "Patna Sahib"], correct: 0, prize: "Brahm Gyani Aspirant" },
@@ -679,7 +637,7 @@
         { q: "What was the name of the administrative unit or revenue district introduced under the Sikh Empire's governance?", options: ["Taluka / Pargana controlled by Kardars", "Suba governed by Nazims", "Faujdar districts", "Jagir domains"], correct: 0, prize: "Brahm Gyani Aspirant" },
         { q: "Who was the brilliant French general who modernized the infantry of the Khalsa Army under Maharaja Ranjit Singh?", options: ["General Jean-François Allard", "General Jean-Baptiste Ventura", "Claude August Court", "Alexander Gardner"], correct: 1, prize: "Brahm Gyani Aspirant" }
       ],
-      // Tier 12 (Level 12 - Khalsa Sentinel)
+      // Tier 12
       [
         { q: "What is the overarching theological term in Sikhism for the ultimate formless, eternal creator reality?", options: ["Ik Onkar / Waheguru / Nirguna Brahman", "Trimurti", "Avatar", "Maya"], correct: 0, prize: "Khalsa Sentinel" },
         { q: "Which Sikh concept emphasizes that God is present both transcendentally (Nirguna) and immanently within creation (Sarguna)?", options: ["Nirguna-Sarguna Ekta", "Advaita Vedanta", "Dvaita", "Panentheism through Gurbani"], correct: 0, prize: "Khalsa Sentinel" },
@@ -692,7 +650,7 @@
         { q: "Which of the following is an example of a composition written in a structural format other than primary Ragas, positioned at the end of the Guru Granth Sahib?", options: ["Mundavani and Raag Mala", "Japji Sahib", "Sukhmani Sahib", "Basant Hindol"], correct: 0, prize: "Khalsa Sentinel" },
         { q: "What spiritual status is attained by an individual who completely overcomes Haumai and merges with the divine consciousness?", options: ["Jivanmukta (Liberated while living)", "Avatara", "Siddha", "Rishi"], correct: 0, prize: "Khalsa Sentinel" }
       ],
-      // Tier 13 (Level 13 - Panth Sewak)
+      // Tier 13
       [
         { q: "What is the distinctive martial and spiritual order within the Khalsa known for wearing blue attire, tall conical turbans (Dummala), and traditional weapons?", options: ["Nihang / Akali", "Udasi", "Nirmala", "Sevadar"], correct: 0, prize: "Panth Sewak" },
         { q: "Which legendary Nihang military commander led the Akali forces during the Sikh Empire and fought fiercely at the Battle of Naushera?", options: ["Akali Phula Singh", "Baba Deep Singh", "Akali Naina Singh", "Sardar Gurbakhsh Singh"], correct: 0, prize: "Panth Sewak" },
@@ -705,7 +663,7 @@
         { q: "Which historical text written by Bhai Nand Lal outlines the code of conduct for the Khalsa directly endorsed by Guru Gobind Singh Ji?", options: ["Tanakhahnama", "Prem Sumarg", "Ganjnama", "Zafarnama"], correct: 0, prize: "Panth Sewak" },
         { q: "Which 18th-century martyr led a small band of 30 Sikhs against thousands of Afghan invaders at Amritsar, defending the precincts of Harmandir Sahib to the last breath?", options: ["Baba Gurbakhsh Singh Nihang", "Baba Deep Singh", "Bhai Mani Singh", "Bhai Taru Singh"], correct: 0, prize: "Panth Sewak" }
       ],
-      // Tier 14 (Level 14 - Gurbani Scholar)
+      // Tier 14
       [
         { q: "What dual ideal does the concept of 'Sant-Sipahi' (Saint-Soldier) embody in Sikh philosophy?", options: ["Spiritual purity combined with temporal valor and the defense of the oppressed", "Monastic isolation combined with political rule", "Academic scholarship combined with state diplomacy", "Pacifism combined with martial training"], correct: 0, prize: "Gurbani Scholar" },
         { q: "Which Guru formally institutionalized the concept of Sant-Sipahi by wearing two swords representing Miri and Piri?", options: ["Guru Hargobind Ji", "Guru Gobind Singh Ji", "Guru Arjan Dev Ji", "Guru Tegh Bahadur Ji"], correct: 0, prize: "Gurbani Scholar" },
@@ -718,7 +676,7 @@
         { q: "Which revolutionary overseas organization was founded in 1913 by expatriate Punjabi Sikhs (like Sohan Singh Bhakna and Lala Har Dayal) to overthrow British rule in India?", options: ["Ghadar Party", "Indian National Army (INA)", "Abhinav Bharat", "Naujawan Bharat Sabha"], correct: 0, prize: "Ghadar Party" },
         { q: "Who was the legendary Sikh general and commander of the Azad Hind Fauj (Indian National Army) alongside Subhas Chandra Bose?", options: ["General Mohan Singh", "General Shah Nawaz Khan", "General Gurbachan Singh", "General Hari Singh"], correct: 0, prize: "Gurbani Scholar" }
       ],
-      // Tier 15 (Level 15 - Gursikh)
+      // Tier 15
       [
         { q: "What does the ultimate authority concept of 'Guru Panth' signify in Sikh polity?", options: ["The collective body of the initiated Khalsa guided by the eternal principles of the Guru Granth Sahib", "The council of hereditary priests", "The royal court of Punjab", "A federation of state ministries"], correct: 0, prize: "Gursikh" },
         { q: "What is the highest temporal seat of authority (Takht) located in Amritsar?", options: ["Akal Takht Sahib", "Takht Sri Keshgarh Sahib", "Takht Sri Patna Sahib", "Takht Sri Hazur Sahib"], correct: 0, prize: "Gursikh" },
@@ -732,6 +690,11 @@
         { q: "What is the ultimate spiritual goal of an individual life according to Gurmat philosophy?", options: ["Mukti / Jivanmukti through Naam Simran, honest living, and selfless service, merging back into the Divine light like a drop in the ocean", "Ascending to physical heavens after death", "Accumulating pious karma for reincarnation", "Attaining worldly kingship and political glory"], correct: 0, prize: "Gursikh" }
       ]
     ];
+
+    function handlePlayerSubmit(event) {
+      if (event) event.preventDefault();
+      submitPlayerProfile();
+    }
 
     function buildFullQuestionSet() {
       while (questionBankByTier.length < 15) {
@@ -779,17 +742,13 @@
 
     function resetGame() {
       if (confirm("Are you sure you want to start a new game? Current progress will be lost.")) {
-        // Grab the active group from the URL or localStorage
-        const urlParams = new URLSearchParams(window.location.search);
-        const group = urlParams.get('group') || localStorage.getItem('kbk_group_code');
+        const group = window.getGameGroupCode();
 
-        // If they are in a group, redirect them back to /game with the group parameter attached!
-        if (group) {
+        if (group && group !== 'GLOBAL') {
           window.location.href = `/game?group=${encodeURIComponent(group)}`;
           return;
         }
 
-        // Otherwise, reset normally for global players
         playerProfile = { 
           name: "", 
           age: 0, 
@@ -832,7 +791,6 @@
       updateLadderUI();
     }
 
-    /* --- Password Protected Reviewer Modal (Password: 6789) --- */
     function openReviewSetModal() {
       const pass = prompt("Enter Admin Password to review question bank:");
       if (pass === "6789") {
@@ -863,7 +821,6 @@
       document.getElementById('review-set-modal').style.display = 'none';
     }
 
-    /* --- Lifeline Functions --- */
     function use5050() {
       if (lifelinesUsed['5050']) return;
       
@@ -889,7 +846,7 @@
       const currentQ = activeGameQuestions[playerProfile.currentLevelIndex];
       const correctIdx = currentQ.correct;
 
-      let correctPct = Math.floor(Math.random() * 25) + 55; // 55% - 80%
+      let correctPct = Math.floor(Math.random() * 25) + 55;
       let remainingPct = 100 - correctPct;
 
       let p1 = Math.floor(Math.random() * (remainingPct + 1));
@@ -953,7 +910,7 @@
       let finalLevelReached = 1;
 
       if (isWin) {
-        finalLevelReached = activeGameQuestions.length; // Level 15
+        finalLevelReached = activeGameQuestions.length;
       } else {
         finalLevelReached = playerProfile.guaranteedLevelIndex >= 0 
           ? playerProfile.guaranteedLevelIndex + 1 
@@ -964,41 +921,8 @@
       submitScoreToLeaderboard(finalLevelReached);
     }
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const activeGroup = urlParams.get('group') || urlParams.get('Group');
-    
-        if (activeGroup && activeGroup.trim() !== '' && activeGroup.toUpperCase() !== 'GLOBAL') {
-            const cleanGroup = activeGroup.toUpperCase();
-    
-            // Show the banner on the screen
-            const banner = document.getElementById('gameGroupBanner');
-            const nameSpan = document.getElementById('gameGroupName');
-            if (banner && nameSpan) {
-                nameSpan.textContent = cleanGroup;
-                banner.style.display = 'block';
-            }
-    
-            // Expose a helper to grab the active group code when submitting scores
-            window.getGameGroupCode = function() {
-                return cleanGroup;
-            };
-        } else {
-            window.getGameGroupCode = function() {
-                return "GLOBAL";
-            };
-        }
-    
     function submitScoreToLeaderboard(finalLevelReached) {
-      // Resolve active group code from URL -> localStorage -> playerProfile -> 'GLOBAL'
-      const activeGroup = (
-        urlParams.get('group') || 
-        localStorage.getItem('kbk_group_code') || 
-        playerProfile.groupCode || 
-        'GLOBAL'
-      ).toString().trim().toUpperCase();
-
-      // Ensure choice is persisted
-      localStorage.setItem('kbk_group_code', activeGroup);
+      const activeGroup = window.getGameGroupCode();
 
       fetch('/api/submit_score', {
         method: 'POST',
