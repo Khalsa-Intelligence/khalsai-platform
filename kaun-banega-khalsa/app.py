@@ -34,7 +34,7 @@ class Default(WorkerEntrypoint):
                     <p>A Khalsa Intelligence Initiative</p>
                     <p>{ GSW WoolwichSE18 }</p>
                     <br>
-                    <a href="/game" class="btn">Play Here</a> | 
+                    <a href="/" class="btn">Play Here</a> | 
                     <a href="/leaderboard" class="btn" style="background:#1f6feb;">View Leaderboard</a>
                 </div>
             </body>
@@ -174,7 +174,7 @@ class Default(WorkerEntrypoint):
                     </table>
                     
                     <div class="nav-links">
-                        <a href="/game" class="back-btn">&larr; Play Again</a>
+                        <a href="/" class="back-btn">&larr; Play Again</a>
                     </div>
 
                     <script>
