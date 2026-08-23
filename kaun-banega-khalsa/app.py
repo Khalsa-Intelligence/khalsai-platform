@@ -130,28 +130,36 @@ class Default(WorkerEntrypoint):
         # -------------------------------------------------------------
         if method == "GET" and path == "/leaderboard":
             try:
-                # Defaults to GLOBAL if group param is omitted
-                selected_group = query_params.get('group', ['GLOBAL'])[0].strip().upper()
+                # 1. Fetch group parameter passed in URL (e.g. /leaderboard?group=GROUPA)
+                requested_group = query_params.get('group', ['GLOBAL'])[0].strip().upper()
 
-                if selected_group and selected_group != "GLOBAL":
+                # 2. Filter query based on requested group
+                if requested_group != "GLOBAL":
+                    # Strictly restrict results to ONLY this group
                     stmt = env.DB.prepare("SELECT * FROM leaderboard WHERE UPPER(group_code) = ? ORDER BY level DESC, score DESC")
-                    res = await stmt.bind(selected_group).all()
+                    res = await stmt.bind(requested_group).all()
                 else:
+                    # Show all global entries
                     stmt = env.DB.prepare("SELECT * FROM leaderboard ORDER BY level DESC, score DESC")
                     res = await stmt.all()
 
                 scores = res.results.to_py()
 
-                # Fetch distinct group codes to construct filter dropdown options
+                # 3. Only populate dropdown choices that match the current scope
                 group_stmt = env.DB.prepare("SELECT DISTINCT group_code FROM leaderboard")
                 group_res = await group_stmt.all()
                 existing_groups = [g.get('group_code') for g in group_res.results.to_py() if g.get('group_code')]
 
-                dropdown_options = f'<option value="GLOBAL" {"selected" if selected_group == "GLOBAL" else ""}>🌐 Global (All Scores)</option>'
-                for g in existing_groups:
-                    if g.upper() != "GLOBAL":
-                        selected_attr = 'selected' if g.upper() == selected_group else ''
-                        dropdown_options += f'<option value="{g}" {selected_attr}>{g}</option>'
+                # If viewing a specific group, hide other groups from dropdown to preserve privacy
+                dropdown_options = ""
+                if requested_group != "GLOBAL":
+                    dropdown_options = f'<option value="{requested_group}" selected>🔒 Group: {requested_group}</option>'
+                    dropdown_options += '<option value="GLOBAL">🌐 Switch to Global</option>'
+                else:
+                    dropdown_options = '<option value="GLOBAL" selected>🌐 Global (All Scores)</option>'
+                    for g in existing_groups:
+                        if g.upper() != "GLOBAL":
+                            dropdown_options += f'<option value="{g}">{g}</option>'
 
                 rows_html = ""
                 for rank, entry in enumerate(scores, 1):
