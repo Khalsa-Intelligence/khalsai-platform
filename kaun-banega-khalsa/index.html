@@ -742,28 +742,33 @@
 
     function resetGame() {
       if (confirm("Are you sure you want to start a new game? Current progress will be lost.")) {
-        // Reset player profile state
+        // Grab the active group from the URL or localStorage
+        const urlParams = new URLSearchParams(window.location.search);
+        const group = urlParams.get('group') || localStorage.getItem('kbk_group_code');
+
+        // If they are in a group, redirect them back to /game with the group parameter attached!
+        if (group) {
+          window.location.href = `/game?group=${encodeURIComponent(group)}`;
+          return;
+        }
+
+        // Otherwise, reset normally for global players
         playerProfile = { 
           name: "", 
           age: 0, 
           currentLevelIndex: 0, 
           guaranteedLevelIndex: -1,
-          groupCode: localStorage.getItem('kbk_group_code') || 'GLOBAL'
+          groupCode: 'GLOBAL'
         };
         
-        // Reset lifelines
         lifelinesUsed = { '5050': false, 'sangat': false, 'scholar': false };
-        const ids = ['lifeline-5050', 'lifeline-sangat', 'lifeline-scholar'];
-        ids.forEach(id => {
+        ['lifeline-5050', 'lifeline-sangat', 'lifeline-scholar'].forEach(id => {
           const btn = document.getElementById(id);
           if (btn) btn.disabled = false;
         });
 
-        // Clear input fields
         document.getElementById('player-name').value = "";
         document.getElementById('player-age').value = "";
-
-        // Show player modal again
         document.getElementById('player-setup-modal').style.display = 'flex';
       }
     }
