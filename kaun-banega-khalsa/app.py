@@ -34,7 +34,6 @@ class Default(WorkerEntrypoint):
                 <div class="card">
                     <h2>Kaun Banega Khalsa</h2>
                     <p>A Khalsa Intelligence Initiative</p>
-                    <p>{ GSW WoolwichSE18 }</p>
                     
                     <div class="qr-container">
                         <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://khalsai.com" alt="Scan to Play at khalsai.com">
