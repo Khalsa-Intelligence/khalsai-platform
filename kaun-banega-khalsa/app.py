@@ -187,8 +187,6 @@ class Default(WorkerEntrypoint):
                         </tr>
                     """
 
-                # Removed the 'f' prefix. This is now a standard python string. 
-                # CSS and JS curly braces won't trigger Python syntax errors.
                 html_template = """<!DOCTYPE html>
 <html>
 <head>
@@ -300,7 +298,6 @@ class Default(WorkerEntrypoint):
 </body>
 </html>"""
                 
-                # We inject the data variables safely using Python's string replacement
                 html = html_template.replace("__DROPDOWN_OPTIONS__", dropdown_options).replace("__ROWS_HTML__", rows_html)
 
                 return Response(html, headers={"Content-Type": "text/html; charset=utf-8"})
