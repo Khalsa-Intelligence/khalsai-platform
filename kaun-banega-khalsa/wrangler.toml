@@ -1,0 +1,8 @@
+name = "khalsai-platform"
+main = "app.py"
+compatibility_date = "2026-01-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "khalsai-db"
+database_id = "fbd30fb9-70fe-4d75-8094-a2f0390a0e4d"
