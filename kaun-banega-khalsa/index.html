@@ -475,7 +475,24 @@
   </div>
 
   <script>
-    let playerProfile = { name: "", age: 0, currentLevelIndex: 0, guaranteedLevelIndex: -1 };
+    // =========================================================
+    // URL PARAMETER CAPTURE & STORAGE INITIALIZATION
+    // =========================================================
+    const urlParams = new URLSearchParams(window.location.search);
+    const groupFromUrl = urlParams.get('group');
+
+    if (groupFromUrl) {
+      localStorage.setItem('kbk_group_code', groupFromUrl.trim().toUpperCase());
+    }
+
+    let playerProfile = { 
+      name: "", 
+      age: 0, 
+      currentLevelIndex: 0, 
+      guaranteedLevelIndex: -1,
+      groupCode: localStorage.getItem('kbk_group_code') || 'GLOBAL'
+    };
+    
     let lifelinesUsed = { '5050': false, 'sangat': false, 'scholar': false };
     const SAFETY_LEVELS = [5, 10]; // Level 5 and Level 10 (1-based level numbers)
     let activeGameQuestions = [];
@@ -726,7 +743,13 @@
     function resetGame() {
       if (confirm("Are you sure you want to start a new game? Current progress will be lost.")) {
         // Reset player profile state
-        playerProfile = { name: "", age: 0, currentLevelIndex: 0, guaranteedLevelIndex: -1 };
+        playerProfile = { 
+          name: "", 
+          age: 0, 
+          currentLevelIndex: 0, 
+          guaranteedLevelIndex: -1,
+          groupCode: localStorage.getItem('kbk_group_code') || 'GLOBAL'
+        };
         
         // Reset lifelines
         lifelinesUsed = { '5050': false, 'sangat': false, 'scholar': false };
@@ -900,6 +923,17 @@
     }
 
     function submitScoreToLeaderboard(finalLevelReached) {
+      // Resolve active group code from URL -> localStorage -> playerProfile -> 'GLOBAL'
+      const activeGroup = (
+        urlParams.get('group') || 
+        localStorage.getItem('kbk_group_code') || 
+        playerProfile.groupCode || 
+        'GLOBAL'
+      ).toString().trim().toUpperCase();
+
+      // Ensure choice is persisted
+      localStorage.setItem('kbk_group_code', activeGroup);
+
       fetch('/api/submit_score', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -908,16 +942,16 @@
           age: playerProfile.age,
           level: finalLevelReached,
           score: finalLevelReached * 1000,
-          group_code: (playerProfile.groupCode || playerProfile.group_code || 'GLOBAL').trim().toUpperCase()
+          group_code: activeGroup
         })
       })
       .then(res => res.json())
       .then(data => {
-        window.location.href = "/leaderboard";
+        window.location.href = "/leaderboard?group=" + encodeURIComponent(activeGroup);
       })
       .catch(err => {
         console.error("Submission error:", err);
-        window.location.href = "/leaderboard";
+        window.location.href = "/leaderboard?group=" + encodeURIComponent(activeGroup);
       });
     }
 
