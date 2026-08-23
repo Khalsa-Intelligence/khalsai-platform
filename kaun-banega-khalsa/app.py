@@ -160,14 +160,15 @@ class Default(WorkerEntrypoint):
                 existing_groups = [g.get('group_code') for g in group_res.results.to_py() if g.get('group_code')]
 
                 dropdown_options = ""
-                if requested_group != "GLOBAL":
-                    dropdown_options = f'<option value="{requested_group}" selected>Group: {requested_group}</option>'
-                    dropdown_options += '<option value="GLOBAL">Switch to Global</option>'
-                else:
-                    dropdown_options = '<option value="GLOBAL" selected>Global (All Scores)</option>'
-                    for g in existing_groups:
-                        if g.upper() != "GLOBAL":
-                            dropdown_options += f'<option value="{g}">{g}</option>'
+                # Always provide the Global option first
+                is_global_selected = 'selected' if requested_group == "GLOBAL" else ''
+                dropdown_options += f'<option value="GLOBAL" {is_global_selected}>Global (All Scores)</option>'
+                
+                # Add all other discovered groups
+                for g in existing_groups:
+                    if g and g.upper() != "GLOBAL":
+                        is_selected = 'selected' if requested_group == g.upper() else ''
+                        dropdown_options += f'<option value="{g}" {is_selected}>{g}</option>'
 
                 rows_html = ""
                 for rank, entry in enumerate(scores, 1):
