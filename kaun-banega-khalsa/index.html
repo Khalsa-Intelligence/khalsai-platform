@@ -404,13 +404,27 @@
     </div>
   </header>
   
-  <!-- Player Setup Modal -->
+<!-- Player Setup Modal -->
   <div id="player-setup-modal" class="overlay-modal">
     <div class="modal-card">
       <!-- Active Cohort Group Banner -->
       <div id="gameGroupBanner" style="display: none; background: #21262d; border: 1px solid #30363d; color: #fff; padding: 6px 10px; border-radius: 6px; margin-bottom: 12px; text-align: center; font-size: 0.9rem;">
         Cohort Group: <span id="gameGroupName" style="color: #f2cc60; font-weight: bold;"></span>
       </div>
+      <script>
+        (function() {
+            const params = new URLSearchParams(window.location.search);
+            const g = params.get('group') || params.get('Group');
+            if (g && g.trim() !== '' && g.toUpperCase() !== 'GLOBAL') {
+                const clean = g.toUpperCase();
+                document.getElementById('gameGroupName').textContent = clean;
+                document.getElementById('gameGroupBanner').style.display = 'block';
+                window.getGameGroupCode = () => clean;
+            } else {
+                window.getGameGroupCode = () => "GLOBAL";
+            }
+        })();
+      </script>
 
       <h2>Kaun Banega Khalsa</h2>
       <div class="input-group">
