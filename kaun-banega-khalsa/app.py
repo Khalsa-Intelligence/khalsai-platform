@@ -11,8 +11,8 @@ class Default(WorkerEntrypoint):
         method = request.method
         env = self.env
 
-# -------------------------------------------------------------
-        # 1. LANDING PAGE: GET /
+        # -------------------------------------------------------------
+        # 1. LANDING PAGE WITH QR CODE: GET /
         # -------------------------------------------------------------
         if method == "GET" and path == "/":
             html = """
@@ -27,7 +27,9 @@ class Default(WorkerEntrypoint):
                     .card { background: #161b22; padding: 2rem; border-radius: 12px; text-align: center; border: 1px solid #30363d; width: 90%; max-width: 400px; }
                     .qr-container { background: #ffffff; padding: 12px; border-radius: 8px; display: inline-block; margin: 1rem 0; }
                     .qr-container img { display: block; width: 180px; height: 180px; }
-                    .btn { display: inline-block; padding: 10px 20px; color: #fff; background: #238636; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 0.5rem; }
+                    .btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 1rem; }
+                    .btn { display: inline-block; padding: 10px 20px; color: #fff; background: #238636; text-decoration: none; border-radius: 6px; font-weight: bold; }
+                    .btn-blue { background: #1f6feb; }
                 </style>
             </head>
             <body>
@@ -36,12 +38,15 @@ class Default(WorkerEntrypoint):
                     <p>A Khalsa Intelligence Initiative</p>
                     
                     <div class="qr-container">
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://khalsai.com" alt="Scan to Play at khalsai.com">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://khalsai.com/game" alt="Scan to Play at khalsai.com/game">
                     </div>
                     
-                    <p style="font-size: 0.9rem; color: #8b949e;">Scan QR code or click below to view scores</p>
-                    <br>
-                    <a href="/leaderboard" class="btn" style="background:#1f6feb;">View Leaderboard</a>
+                    <p style="font-size: 0.9rem; color: #8b949e;">Scan QR code or click below to play/view scores</p>
+                    
+                    <div class="btn-group">
+                        <a href="/game" class="btn">Play Here</a>
+                        <a href="/leaderboard" class="btn btn-blue">View Leaderboard</a>
+                    </div>
                 </div>
             </body>
             </html>
@@ -49,7 +54,16 @@ class Default(WorkerEntrypoint):
             return Response(html, headers={"Content-Type": "text/html; charset=utf-8"})
 
         # -------------------------------------------------------------
-        # 2. SUBMIT SCORE: POST /api/submit_score
+        # 2. GAME ROUTE: GET /game
+        # -------------------------------------------------------------
+        if method == "GET" and path == "/game":
+            # Fetches index.html from static assets asset directory
+            new_req = request.clone()
+            url = parsed_url._replace(path="/index.html").geturl()
+            return await env.ASSETS.fetch(url)
+
+        # -------------------------------------------------------------
+        # 3. SUBMIT SCORE: POST /api/submit_score
         # -------------------------------------------------------------
         if method == "POST" and path == "/api/submit_score":
             try:
@@ -73,7 +87,7 @@ class Default(WorkerEntrypoint):
                 return Response(json.dumps({"status": "error", "message": str(e)}), status=500, headers={"Content-Type": "application/json"})
 
         # -------------------------------------------------------------
-        # 3. DELETE SCORE: POST /api/delete_score
+        # 4. DELETE SCORE: POST /api/delete_score
         # -------------------------------------------------------------
         if method == "POST" and path == "/api/delete_score":
             try:
@@ -92,7 +106,7 @@ class Default(WorkerEntrypoint):
                 return Response(json.dumps({"status": "error", "message": str(e)}), status=500, headers={"Content-Type": "application/json"})
 
         # -------------------------------------------------------------
-        # 4. RESET LEADERBOARD: POST /api/reset_leaderboard
+        # 5. RESET LEADERBOARD: POST /api/reset_leaderboard
         # -------------------------------------------------------------
         if method == "POST" and path == "/api/reset_leaderboard":
             try:
@@ -110,7 +124,7 @@ class Default(WorkerEntrypoint):
                 return Response(json.dumps({"status": "error", "message": str(e)}), status=500, headers={"Content-Type": "application/json"})
 
         # -------------------------------------------------------------
-        # 5. DISPLAY LEADERBOARD: GET /leaderboard
+        # 6. DISPLAY LEADERBOARD: GET /leaderboard
         # -------------------------------------------------------------
         if method == "GET" and path == "/leaderboard":
             try:
@@ -180,7 +194,7 @@ class Default(WorkerEntrypoint):
                     </table>
                     
                     <div class="nav-links">
-                        <a href="/" class="back-btn">&larr; Play Again</a>
+                        <a href="/game" class="back-btn">&larr; Play Again</a>
                     </div>
 
                     <script>
@@ -231,4 +245,5 @@ class Default(WorkerEntrypoint):
             except Exception as e:
                 return Response(f"Error loading leaderboard: {str(e)}", status=500)
 
-        return Response("Not Found", status=404)
+        # Serve remaining static files (CSS, JS, images) via ASSETS
+        return await env.ASSETS.fetch(request)
