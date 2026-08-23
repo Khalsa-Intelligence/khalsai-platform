@@ -11,7 +11,7 @@ class Default(WorkerEntrypoint):
         method = request.method
         env = self.env
 
-        # -------------------------------------------------------------
+# -------------------------------------------------------------
         # 1. LANDING PAGE: GET /
         # -------------------------------------------------------------
         if method == "GET" and path == "/":
@@ -25,6 +25,8 @@ class Default(WorkerEntrypoint):
                 <style>
                     body { font-family: sans-serif; background: #0d1117; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
                     .card { background: #161b22; padding: 2rem; border-radius: 12px; text-align: center; border: 1px solid #30363d; width: 90%; max-width: 400px; }
+                    .qr-container { background: #ffffff; padding: 12px; border-radius: 8px; display: inline-block; margin: 1rem 0; }
+                    .qr-container img { display: block; width: 180px; height: 180px; }
                     .btn { display: inline-block; padding: 10px 20px; color: #fff; background: #238636; text-decoration: none; border-radius: 6px; font-weight: bold; margin-top: 0.5rem; }
                 </style>
             </head>
@@ -33,8 +35,13 @@ class Default(WorkerEntrypoint):
                     <h2>Kaun Banega Khalsa</h2>
                     <p>A Khalsa Intelligence Initiative</p>
                     <p>{ GSW WoolwichSE18 }</p>
+                    
+                    <div class="qr-container">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://khalsai.com" alt="Scan to Play at khalsai.com">
+                    </div>
+                    
+                    <p style="font-size: 0.9rem; color: #8b949e;">Scan QR code or click below to view scores</p>
                     <br>
-                    <a href="/" class="btn">Play Here</a> | 
                     <a href="/leaderboard" class="btn" style="background:#1f6feb;">View Leaderboard</a>
                 </div>
             </body>
