@@ -54,9 +54,8 @@ class Default(WorkerEntrypoint):
             </div>
             
             <script>
-                // Automatically forwards group params and displays the banner if present
+                // Automatically forwards group params, updates QR/buttons, and shows the banner if present
                 const params = new URLSearchParams(window.location.search);
-                // Checks for both lowercase 'group' and capitalized 'Group'
                 const group = params.get('group') || params.get('Group'); 
                 
                 if (group && group.trim() !== '' && group.toUpperCase() !== 'GLOBAL') {
@@ -70,17 +69,6 @@ class Default(WorkerEntrypoint):
                     // Show the group banner visibly on the card
                     document.getElementById('groupNameDisplay').textContent = cleanGroup;
                     document.getElementById('groupBanner').style.display = 'block';
-                }
-            </script>
-            
-            <script>
-                // Automatically forwards group params if the host page itself was accessed with one
-                const params = new URLSearchParams(window.location.search);
-                const group = params.get('group');
-                if (group) {
-                    document.getElementById('playBtn').href = `/game?group=${encodeURIComponent(group)}`;
-                    document.getElementById('boardBtn').href = `/leaderboard?group=${encodeURIComponent(group)}`;
-                    document.getElementById('qrImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://khalsai.com/game?group=${encodeURIComponent(group)}`;
                 }
             </script>
             </body>
