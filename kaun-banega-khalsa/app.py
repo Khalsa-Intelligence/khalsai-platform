@@ -245,8 +245,16 @@ class Default(WorkerEntrypoint):
                     </table>
                     
                     <div class="nav-links">
-                        <a href="/game" class="back-btn">&larr; Play Again</a>
+                        <a id="playAgainBtn" href="/game" class="back-btn">&larr; Play Again</a>
                     </div>
+                    
+                    <script>
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const group = urlParams.get('group');
+                        if (group && group !== 'GLOBAL') {
+                            document.getElementById('playAgainBtn').href = `/game?group=${encodeURIComponent(group)}`;
+                        }
+                    </script>
 
                     <script>
                         function deleteEntry(recordId, playerName) {{
