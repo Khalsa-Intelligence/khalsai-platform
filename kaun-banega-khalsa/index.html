@@ -964,7 +964,6 @@
       submitScoreToLeaderboard(finalLevelReached);
     }
 
-    <script>
         const urlParams = new URLSearchParams(window.location.search);
         const activeGroup = urlParams.get('group') || urlParams.get('Group');
     
@@ -988,7 +987,6 @@
                 return "GLOBAL";
             };
         }
-    </script>
     
     function submitScoreToLeaderboard(finalLevelReached) {
       // Resolve active group code from URL -> localStorage -> playerProfile -> 'GLOBAL'
