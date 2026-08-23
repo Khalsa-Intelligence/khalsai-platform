@@ -34,30 +34,55 @@ class Default(WorkerEntrypoint):
                 </style>
             </head>
             <body>
-                    <div class="card">
-                        <h2>Kaun Banega Khalsa</h2>
-                        <p>A Khalsa Intelligence Initiative</p>
-                        
-                        <div class="qr-container">
-                            <img id="qrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://khalsai.com/game" alt="Scan to Play">
-                        </div>
-                        
-                        <div class="btn-group">
-                            <a id="playBtn" href="/game" class="btn">Play Game</a>
-                            <a id="boardBtn" href="/leaderboard" class="btn btn-blue">Leaderboard</a>
-                        </div>
-                    </div>
+            <div class="card">
+                <h2>Kaun Banega Khalsa</h2>
+                <p>A Khalsa Intelligence Initiative</p>
+                
+                <!-- Visible Group Display Banner -->
+                <div id="groupBanner" style="display: none; margin: 10px 0 15px 0; background: #21262d; border: 1px solid #30363d; padding: 8px; border-radius: 6px; font-size: 0.95rem;">
+                    Cohort Group: <span id="groupNameDisplay" style="color: #f2cc60; font-weight: bold;"></span>
+                </div>
+                
+                <div class="qr-container">
+                    <img id="qrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://khalsai.com/game" alt="Scan to Play">
+                </div>
+                
+                <div class="btn-group">
+                    <a id="playBtn" href="/game" class="btn">Play Game</a>
+                    <a id="boardBtn" href="/leaderboard" class="btn btn-blue">Leaderboard</a>
+                </div>
+            </div>
+            
+            <script>
+                // Automatically forwards group params and displays the banner if present
+                const params = new URLSearchParams(window.location.search);
+                // Checks for both lowercase 'group' and capitalized 'Group'
+                const group = params.get('group') || params.get('Group'); 
+                
+                if (group && group.trim() !== '' && group.toUpperCase() !== 'GLOBAL') {
+                    const cleanGroup = group.toUpperCase();
                     
-                    <script>
-                        // Automatically forwards group params if the host page itself was accessed with one
-                        const params = new URLSearchParams(window.location.search);
-                        const group = params.get('group');
-                        if (group) {
-                            document.getElementById('playBtn').href = `/game?group=${encodeURIComponent(group)}`;
-                            document.getElementById('boardBtn').href = `/leaderboard?group=${encodeURIComponent(group)}`;
-                            document.getElementById('qrImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://khalsai.com/game?group=${encodeURIComponent(group)}`;
-                        }
-                    </script>
+                    // Update links and QR code
+                    document.getElementById('playBtn').href = `/game?group=${encodeURIComponent(cleanGroup)}`;
+                    document.getElementById('boardBtn').href = `/leaderboard?group=${encodeURIComponent(cleanGroup)}`;
+                    document.getElementById('qrImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://khalsai.com/game?group=${encodeURIComponent(cleanGroup)}`;
+                    
+                    // Show the group banner visibly on the card
+                    document.getElementById('groupNameDisplay').textContent = cleanGroup;
+                    document.getElementById('groupBanner').style.display = 'block';
+                }
+            </script>
+            
+            <script>
+                // Automatically forwards group params if the host page itself was accessed with one
+                const params = new URLSearchParams(window.location.search);
+                const group = params.get('group');
+                if (group) {
+                    document.getElementById('playBtn').href = `/game?group=${encodeURIComponent(group)}`;
+                    document.getElementById('boardBtn').href = `/leaderboard?group=${encodeURIComponent(group)}`;
+                    document.getElementById('qrImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://khalsai.com/game?group=${encodeURIComponent(group)}`;
+                }
+            </script>
             </body>
             </html>
             """
