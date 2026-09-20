@@ -6,7 +6,14 @@ compatibility_flags = ["python_workers"]
 # Force Cloudflare to send all requests to app.py first
 assets = { directory = ".", binding = "ASSETS", run_worker_first = true }
 
+# Existing main database
 [[d1_databases]]
 binding = "DB"
 database_name = "khalsai-db"
 database_id = "fbd30fb9-70fe-4d75-8094-a2f0390a0e4d"
+
+# New Feedback database
+[[d1_databases]]
+binding = "FEEDBACK_DB"
+database_name = "khalsai_feedback_db"
+database_id = "4ad5966a-5a22-4125-b10b-6f41da2e444f"
