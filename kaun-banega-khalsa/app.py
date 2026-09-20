@@ -73,12 +73,63 @@ class Default(WorkerEntrypoint):
         # 2. GAME ROUTE: GET /game
         # -------------------------------------------------------------
         if method == "GET" and path == "/game":
-            new_req = request.clone()
             url = parsed_url._replace(path="/index.html").geturl()
             return await env.ASSETS.fetch(url)
 
         # -------------------------------------------------------------
-        # 3. SUBMIT SCORE: POST /api/submit_score
+        # 3. SUBMIT SANGAAT FEEDBACK: POST /api/feedback
+        # -------------------------------------------------------------
+        if method == "POST" and (path == "/api/feedback" or path.endswith("/api/feedback")):
+            try:
+                body_text = await request.text()
+                data = json.loads(body_text) if body_text else {}
+
+                session_name = data.get("session_name")
+                rating = data.get("rating")
+                learnt_new = data.get("learnt_new")
+                touched_comment = data.get("touched_comment", "")
+                encouragement_comment = data.get("encouragement_comment", "")
+
+                if not session_name or rating is None or not learnt_new:
+                    return Response(json.dumps({"success": False, "error": "Missing required fields"}), status=400, headers={"Content-Type": "application/json"})
+
+                db = getattr(env, "FEEDBACK_DB", None) or getattr(env, "DB", None)
+                if not db:
+                    return Response(json.dumps({"success": False, "error": "Database binding missing"}), status=500, headers={"Content-Type": "application/json"})
+
+                query = "INSERT INTO sangaat_feedback (session_name, rating, learnt_new, touched_comment, encouragement_comment) VALUES (?, ?, ?, ?, ?)"
+                await db.prepare(query).bind(session_name, int(rating), learnt_new, touched_comment, encouragement_comment).run()
+
+                return Response(json.dumps({"success": True}), headers={"Content-Type": "application/json"})
+            except Exception as e:
+                return Response(json.dumps({"success": False, "error": str(e)}), status=500, headers={"Content-Type": "application/json"})
+
+        # -------------------------------------------------------------
+        # 4. ADMIN VIEW FEEDBACK: POST /api/admin-feedback
+        # -------------------------------------------------------------
+        if method == "POST" and (path == "/api/admin-feedback" or path.endswith("/api/admin-feedback")):
+            try:
+                body_text = await request.text()
+                data = json.loads(body_text) if body_text else {}
+
+                if data.get("password") != "6789":
+                    return Response(json.dumps({"success": False, "error": "Unauthorized: Invalid Password"}), status=401, headers={"Content-Type": "application/json"})
+
+                db = getattr(env, "FEEDBACK_DB", None) or getattr(env, "DB", None)
+                if not db:
+                    return Response(json.dumps({"success": False, "error": "Database binding missing"}), status=500, headers={"Content-Type": "application/json"})
+
+                stmt = db.prepare("SELECT * FROM sangaat_feedback ORDER BY created_at DESC")
+                res = await stmt.all()
+
+                rows = res.results.to_py() if hasattr(res.results, "to_py") else list(res.results)
+
+                return Response(json.dumps({"success": True, "data": rows}), headers={"Content-Type": "application/json"})
+            except Exception as e:
+                return Response(json.dumps({"success": False, "error": str(e)}), status=500, headers={"Content-Type": "application/json"})
+
+        # -------------------------------------------------------------
+        # 5. SUBMIT SCORE: POST /api/submit_score
         # -------------------------------------------------------------
         if method == "POST" and path == "/api/submit_score":
             try:
@@ -103,7 +154,7 @@ class Default(WorkerEntrypoint):
                 return Response(json.dumps({"status": "error", "message": str(e)}), status=500, headers={"Content-Type": "application/json"})
 
         # -------------------------------------------------------------
-        # 4. DELETE SCORE: POST /api/delete_score
+        # 6. DELETE SCORE: POST /api/delete_score
         # -------------------------------------------------------------
         if method == "POST" and path == "/api/delete_score":
             try:
@@ -122,7 +173,7 @@ class Default(WorkerEntrypoint):
                 return Response(json.dumps({"status": "error", "message": str(e)}), status=500, headers={"Content-Type": "application/json"})
 
         # -------------------------------------------------------------
-        # 5. RESET LEADERBOARD: POST /api/reset_leaderboard
+        # 7. RESET LEADERBOARD: POST /api/reset_leaderboard
         # -------------------------------------------------------------
         if method == "POST" and path == "/api/reset_leaderboard":
             try:
@@ -138,52 +189,6 @@ class Default(WorkerEntrypoint):
                 return Response(json.dumps({"status": "success", "message": "Leaderboard reset successfully."}), headers={"Content-Type": "application/json"})
             except Exception as e:
                 return Response(json.dumps({"status": "error", "message": str(e)}), status=500, headers={"Content-Type": "application/json"})
-
-        # -------------------------------------------------------------
-        # 6. SUBMIT SANGAAT FEEDBACK: POST /api/feedback
-        # -------------------------------------------------------------
-        if method == "POST" and path == "/api/feedback":
-            try:
-                body_text = await request.text()
-                data = json.loads(body_text) if body_text else {}
-
-                session_name = data.get("session_name")
-                rating = data.get("rating")
-                learnt_new = data.get("learnt_new")
-                touched_comment = data.get("touched_comment", "")
-                encouragement_comment = data.get("encouragement_comment", "")
-
-                if not session_name or rating is None or not learnt_new:
-                    return Response(json.dumps({"success": False, "error": "Missing required fields"}), status=400, headers={"Content-Type": "application/json"})
-
-                db = getattr(env, "FEEDBACK_DB", None) or env.DB
-                query = "INSERT INTO sangaat_feedback (session_name, rating, learnt_new, touched_comment, encouragement_comment) VALUES (?, ?, ?, ?, ?)"
-                await db.prepare(query).bind(session_name, int(rating), learnt_new, touched_comment, encouragement_comment).run()
-
-                return Response(json.dumps({"success": True}), headers={"Content-Type": "application/json"})
-            except Exception as e:
-                return Response(json.dumps({"success": False, "error": str(e)}), status=500, headers={"Content-Type": "application/json"})
-
-        # -------------------------------------------------------------
-        # 7. ADMIN VIEW FEEDBACK: POST /api/admin-feedback
-        # -------------------------------------------------------------
-        if method == "POST" and path == "/api/admin-feedback":
-            try:
-                body_text = await request.text()
-                data = json.loads(body_text) if body_text else {}
-
-                if data.get("password") != "6789":
-                    return Response(json.dumps({"success": False, "error": "Unauthorized: Invalid Password"}), status=401, headers={"Content-Type": "application/json"})
-
-                db = getattr(env, "FEEDBACK_DB", None) or env.DB
-                stmt = db.prepare("SELECT * FROM sangaat_feedback ORDER BY created_at DESC")
-                res = await stmt.all()
-
-                rows = res.results.to_py() if hasattr(res.results, "to_py") else list(res.results)
-
-                return Response(json.dumps({"success": True, "data": rows}), headers={"Content-Type": "application/json"})
-            except Exception as e:
-                return Response(json.dumps({"success": False, "error": str(e)}), status=500, headers={"Content-Type": "application/json"})
 
         # -------------------------------------------------------------
         # 8. DISPLAY LEADERBOARD: GET /leaderboard
@@ -206,11 +211,9 @@ class Default(WorkerEntrypoint):
                 existing_groups = [g.get('group_code') for g in group_res.results.to_py() if g.get('group_code')]
 
                 dropdown_options = ""
-                # Always provide the Global option first
                 is_global_selected = 'selected' if requested_group == "GLOBAL" else ''
                 dropdown_options += f'<option value="GLOBAL" {is_global_selected}>Global (All Scores)</option>'
                 
-                # Add all other discovered groups
                 for g in existing_groups:
                     if g and g.upper() != "GLOBAL":
                         is_selected = 'selected' if requested_group == g.upper() else ''
