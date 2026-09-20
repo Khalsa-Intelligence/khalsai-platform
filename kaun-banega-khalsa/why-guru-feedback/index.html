@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>Why Guru Course — Sangat Feedback</title>
+  <title>Why Guru Course — Gravesend | Anonymous Sangat Feedback</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -84,7 +84,7 @@
       border-radius: 12px; padding: 0.85rem 1rem; color: var(--text-main);
       font-size: 16px; /* Prevents iOS auto-zoom */
       outline: none; transition: all 0.2s ease;
-      min-height: 48px; /* Touch friendly */
+      min-height: 48px;
     }
     input:focus, select:focus, textarea:focus {
       border-color: var(--primary);
@@ -172,7 +172,7 @@
   <div class="container">
     <button class="admin-trigger" onclick="openAdminModal()">🔒 Admin</button>
     <div class="header">
-      <h1>Why Guru Course</h1>
+      <h1>Why Guru Course — Gravesend</h1>
       <p>Sangat Feedback & Insights</p>
     </div>
 
@@ -231,13 +231,13 @@
       </div>
 
       <div class="form-group">
-        <label for="touchedComment">4. What touched your heart or inspired you the most?</label>
-        <textarea id="touchedComment" placeholder="Share a takeaway..."></textarea>
+        <label for="touchedComment">4. What touched your heart or inspired you today?</label>
+        <textarea id="touchedComment" placeholder="Share what inspired you..."></textarea>
       </div>
 
       <div class="form-group">
-        <label for="encouragementComment">5. Any words of encouragement or feedback for the team?</label>
-        <textarea id="encouragementComment" placeholder="Your thoughts..."></textarea>
+        <label for="encouragementComment">5. Any feedback for the team?</label>
+        <textarea id="encouragementComment" placeholder="Share your thoughts..."></textarea>
       </div>
 
       <button type="submit" id="submitBtn" class="submit-btn">Submit Feedback</button>
@@ -331,10 +331,10 @@
           autoSelectCurrentSession();
           window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
-          alert(data.error || 'Failed to submit feedback');
+          alert('Error: ' + (data.error || 'Failed to submit feedback. Check server log.'));
         }
       } catch (err) {
-        alert('An error occurred submitting feedback.');
+        alert('API Connection Error: ' + err.message + '\n\nMake sure /api/feedback route is created in Cloudflare Functions.');
       } finally {
         submitBtn.disabled = false;
         submitBtn.innerText = 'Submit Feedback';
@@ -367,7 +367,7 @@
               <span>Rating: ${'★'.repeat(item.rating)}</span>
             </div>
             <p><strong>Learnt something new:</strong> ${item.learnt_new}</p>
-            ${item.touched_comment ? `<p><strong>Takeaway:</strong> ${item.touched_comment}</p>` : ''}
+            ${item.touched_comment ? `<p><strong>Inspired by:</strong> ${item.touched_comment}</p>` : ''}
             ${item.encouragement_comment ? `<p><strong>Feedback:</strong> ${item.encouragement_comment}</p>` : ''}
             <p style="font-size:0.75rem; color:#64748b; margin-top:0.4rem;">Submitted: ${item.created_at || 'Just now'}</p>
           </div>
