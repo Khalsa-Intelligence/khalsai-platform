@@ -14,18 +14,12 @@
       --card-border: rgba(255, 255, 255, 0.12);
       --input-bg: rgba(15, 23, 42, 0.6);
       --primary: #f59e0b;
-      --primary-hover: #d97706;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --accent: #38bdf8;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
 
     body {
       background: var(--bg-gradient);
@@ -35,6 +29,7 @@
       justify-content: center;
       align-items: center;
       padding: 2rem 1rem;
+      position: relative;
     }
 
     .container {
@@ -42,184 +37,104 @@
       max-width: 680px;
       background: var(--card-bg);
       backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
       border: 1px solid var(--card-border);
       border-radius: 24px;
       padding: 2.5rem;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      position: relative;
     }
 
-    .header {
-      text-align: center;
-      margin-bottom: 2rem;
+    .admin-trigger {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
     }
+    .admin-trigger:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.2); }
 
+    .header { text-align: center; margin-bottom: 2rem; }
     .header h1 {
-      font-size: 2rem;
-      font-weight: 700;
+      font-size: 2rem; font-weight: 700;
       background: linear-gradient(to right, #fbbf24, #f59e0b, #38bdf8);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
       margin-bottom: 0.5rem;
     }
+    .header p { color: var(--text-muted); font-size: 0.95rem; }
 
-    .header p {
-      color: var(--text-muted);
-      font-size: 0.95rem;
+    .form-group { margin-bottom: 1.75rem; }
+    label { display: block; font-weight: 600; font-size: 0.95rem; margin-bottom: 0.5rem; }
+    .required::after { content: " *"; color: #ef4444; }
+
+    input[type="text"], input[type="password"], select, textarea {
+      width: 100%; background: var(--input-bg); border: 1px solid var(--card-border);
+      border-radius: 12px; padding: 0.85rem 1rem; color: var(--text-main);
+      font-size: 0.95rem; outline: none; transition: all 0.2s;
     }
+    input:focus, select:focus, textarea:focus { border-color: var(--primary); }
+    select option { background: #0f172a; color: #f8fafc; }
+    textarea { resize: vertical; min-height: 100px; }
 
-    .form-group {
-      margin-bottom: 1.75rem;
-    }
-
-    label {
-      display: block;
-      font-weight: 600;
-      font-size: 0.95rem;
-      margin-bottom: 0.5rem;
-      color: var(--text-main);
-    }
-
-    .required::after {
-      content: " *";
-      color: #ef4444;
-    }
-
-    input[type="text"],
-    select,
-    textarea {
-      width: 100%;
-      background: var(--input-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 0.85rem 1rem;
-      color: var(--text-main);
-      font-size: 0.95rem;
-      outline: none;
-      transition: all 0.2s ease;
-    }
-
-    input[type="text"]:focus,
-    select:focus,
-    textarea:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
-    }
-
-    textarea {
-      resize: vertical;
-      min-height: 100px;
-    }
-
-    /* Rating Stars */
-    .rating-container {
-      display: flex;
-      gap: 0.5rem;
-      margin-top: 0.25rem;
-    }
-
+    .rating-container { display: flex; gap: 0.5rem; }
     .star-btn {
-      background: var(--input-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 0.6rem 1rem;
-      font-size: 1.2rem;
-      cursor: pointer;
-      color: var(--text-muted);
-      transition: all 0.2s ease;
-      flex: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+      background: var(--input-bg); border: 1px solid var(--card-border);
+      border-radius: 10px; padding: 0.6rem; font-size: 1.1rem;
+      cursor: pointer; color: var(--text-muted); flex: 1; text-align: center;
     }
+    .star-btn.active, .star-btn:hover { background: rgba(245, 158, 11, 0.15); border-color: var(--primary); color: var(--primary); }
 
-    .star-btn.active,
-    .star-btn:hover {
-      background: rgba(245, 158, 11, 0.15);
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-
-    /* Radio Group for Yes/No */
-    .radio-group {
-      display: flex;
-      gap: 1rem;
-    }
-
-    .radio-option {
-      flex: 1;
-    }
-
-    .radio-option input {
-      display: none;
-    }
-
+    .radio-group { display: flex; gap: 1rem; }
+    .radio-option { flex: 1; }
+    .radio-option input { display: none; }
     .radio-option label {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--input-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 0.85rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      margin-bottom: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--input-bg); border: 1px solid var(--card-border);
+      border-radius: 12px; padding: 0.85rem; cursor: pointer; text-align: center;
     }
-
-    .radio-option input:checked + label {
-      background: rgba(56, 189, 248, 0.15);
-      border-color: var(--accent);
-      color: var(--accent);
-    }
+    .radio-option input:checked + label { background: rgba(56, 189, 248, 0.15); border-color: var(--accent); color: var(--accent); }
 
     .submit-btn {
-      width: 100%;
-      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-      color: #ffffff;
-      border: none;
-      border-radius: 12px;
-      padding: 1rem;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: transform 0.2s ease, opacity 0.2s ease;
-      margin-top: 1rem;
+      width: 100%; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: #fff; border: none; border-radius: 12px; padding: 1rem;
+      font-size: 1rem; font-weight: 600; cursor: pointer;
     }
 
-    .submit-btn:hover {
-      opacity: 0.95;
-      transform: translateY(-1px);
-    }
+    .alert { padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; display: none; }
+    .alert-success { background: rgba(34, 197, 94, 0.2); border: 1px solid #22c55e; color: #4ade80; }
+    .alert-error { background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #fca5a5; }
 
-    .submit-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
+    /* Modal Overlay */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px);
+      display: none; justify-content: center; align-items: center; z-index: 100; padding: 1rem;
     }
+    .modal-content {
+      background: #0f172a; border: 1px solid var(--card-border);
+      border-radius: 20px; width: 100%; max-width: 800px; max-height: 85vh;
+      overflow-y: auto; padding: 2rem; box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .close-btn { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
 
-    .alert {
-      padding: 1rem;
-      border-radius: 12px;
-      margin-bottom: 1.5rem;
-      display: none;
+    .data-card {
+      background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border);
+      border-radius: 12px; padding: 1rem; margin-bottom: 1rem;
     }
-
-    .alert-success {
-      background: rgba(34, 197, 94, 0.2);
-      border: 1px solid #22c55e;
-      color: #4ade80;
-    }
-
-    .alert-error {
-      background: rgba(239, 68, 68, 0.2);
-      border: 1px solid #ef4444;
-      color: #fca5a5;
-    }
+    .data-card-header { display: flex; justify-content: space-between; color: var(--primary); font-weight: 600; margin-bottom: 0.5rem; }
+    .data-card p { font-size: 0.9rem; color: #cbd5e1; margin-top: 0.3rem; }
   </style>
 </head>
 <body>
 
   <div class="container">
+    <button class="admin-trigger" onclick="openAdminModal()">🔒 Admin</button>
     <div class="header">
       <h1>Why Guru Course</h1>
       <p>Sangat Feedback & Insights</p>
@@ -228,20 +143,27 @@
     <div id="alertBox" class="alert"></div>
 
     <form id="feedbackForm">
-      <!-- Question 1: Session Name -->
       <div class="form-group">
         <label for="sessionName" class="required">1. Which session did you attend?</label>
         <select id="sessionName" required>
-          <option value="" disabled selected>Select a session...</option>
-          <option value="Session 1: Introduction to Sikhi">Session 1: Introduction to Sikhi</option>
-          <option value="Session 2: The Ten Gurus">Session 2: The Ten Gurus</option>
-          <option value="Session 3: Sri Guru Granth Sahib Ji">Session 3: Sri Guru Granth Sahib Ji</option>
-          <option value="Session 4: Khalsa Panth & Rehat">Session 4: Khalsa Panth & Rehat</option>
-          <option value="Session 5: History & Heritage">Session 5: History & Heritage</option>
+          <option value="" disabled>Select a session...</option>
+          <option value="Session 1: Sat 19th Sep 2026" data-date="2026-09-19">Session 1: Sat 19th Sep 2026</option>
+          <option value="Session 2: Sat 3rd Oct 2026" data-date="2026-10-03">Session 2: Sat 3rd Oct 2026</option>
+          <option value="Session 3: Sat 17th Oct 2026" data-date="2026-10-17">Session 3: Sat 17th Oct 2026</option>
+          <option value="Session 4: Sat 31st Oct 2026" data-date="2026-10-31">Session 4: Sat 31st Oct 2026</option>
+          <option value="Session 5: Sat 14th Nov 2026" data-date="2026-11-14">Session 5: Sat 14th Nov 2026</option>
+          <option value="Session 6: Sat 28th Nov 2026" data-date="2026-11-28">Session 6: Sat 28th Nov 2026</option>
+          <option value="Session 7: Sat 12th Dec 2026" data-date="2026-12-12">Session 7: Sat 12th Dec 2026</option>
+          <option value="Session 8: Sat 9th Jan 2027" data-date="2027-01-09">Session 8: Sat 9th Jan 2027</option>
+          <option value="Session 9: Sat 23rd Jan 2027" data-date="2027-01-23">Session 9: Sat 23rd Jan 2027</option>
+          <option value="Session 10: Sat 6th Feb 2027" data-date="2027-02-06">Session 10: Sat 6th Feb 2027</option>
+          <option value="Session 11: Sat 20th Feb 2027" data-date="2027-02-20">Session 11: Sat 20th Feb 2027</option>
+          <option value="Session 12: Sat 6th Mar 2027" data-date="2027-03-06">Session 12: Sat 6th Mar 2027</option>
+          <option value="Session 13: Sat 20th Mar 2027" data-date="2027-03-20">Session 13: Sat 20th Mar 2027</option>
+          <option value="Session 14: Sat 3rd Apr 2027" data-date="2027-04-03">Session 14: Sat 3rd Apr 2027</option>
         </select>
       </div>
 
-      <!-- Question 2: Star Rating -->
       <div class="form-group">
         <label class="required">2. How would you rate this session?</label>
         <div class="rating-container" id="ratingContainer">
@@ -254,7 +176,6 @@
         <input type="hidden" id="rating" required>
       </div>
 
-      <!-- Question 3: Learnt Something New -->
       <div class="form-group">
         <label class="required">3. Did you learn something new today?</label>
         <div class="radio-group">
@@ -273,59 +194,80 @@
         </div>
       </div>
 
-      <!-- Question 4: Touched Comment -->
       <div class="form-group">
         <label for="touchedComment">4. What touched your heart or inspired you the most?</label>
-        <textarea id="touchedComment" placeholder="Share a takeaway or moment that resonated with you..."></textarea>
+        <textarea id="touchedComment" placeholder="Share a takeaway..."></textarea>
       </div>
 
-      <!-- Question 5: Encouragement Comment -->
       <div class="form-group">
         <label for="encouragementComment">5. Any words of encouragement or feedback for the team?</label>
-        <textarea id="encouragementComment" placeholder="Your thoughts help us improve future sessions..."></textarea>
+        <textarea id="encouragementComment" placeholder="Your thoughts..."></textarea>
       </div>
 
       <button type="submit" id="submitBtn" class="submit-btn">Submit Feedback</button>
     </form>
   </div>
 
-  <script>
-    const API_ENDPOINT = '/api/feedback';
+  <!-- Admin Modal -->
+  <div class="modal-overlay" id="adminModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Admin View — All Submissions</h2>
+        <button class="close-btn" onclick="closeAdminModal()">✕</button>
+      </div>
 
-    // Interactive Star Rating Logic
+      <div id="authSection">
+        <div class="form-group">
+          <label for="adminPass">Enter Admin Password:</label>
+          <input type="password" id="adminPass" placeholder="••••••••">
+        </div>
+        <button class="submit-btn" onclick="fetchFeedbackData()">View Feedback</button>
+      </div>
+
+      <div id="dataList" style="margin-top: 1.5rem;"></div>
+    </div>
+  </div>
+
+  <script>
+    // Automatically select the closest previous or today's session based on system date
+    function autoSelectCurrentSession() {
+      const selectElem = document.getElementById('sessionName');
+      const options = selectElem.querySelectorAll('option[data-date]');
+      const now = new Date();
+      now.setHours(23, 59, 59, 999); // Include full current day
+
+      let selectedVal = options[0].value; // Default to Session 1 if prior to course start
+
+      for (const option of options) {
+        const sessionDate = new Date(option.getAttribute('data-date') + 'T23:59:59');
+        if (now >= sessionDate) {
+          selectedVal = option.value;
+        } else {
+          break;
+        }
+      }
+
+      selectElem.value = selectedVal;
+    }
+
+    autoSelectCurrentSession();
+
+    // Rating star handler
     const starBtns = document.querySelectorAll('.star-btn');
     const ratingInput = document.getElementById('rating');
 
     starBtns.forEach(btn => {
       btn.addEventListener('click', () => {
-        const value = btn.getAttribute('data-value');
-        ratingInput.value = value;
-        
-        starBtns.forEach(b => {
-          if (parseInt(b.getAttribute('data-value')) <= parseInt(value)) {
-            b.classList.add('active');
-          } else {
-            b.classList.remove('active');
-          }
-        });
+        const val = btn.getAttribute('data-value');
+        ratingInput.value = val;
+        starBtns.forEach(b => b.classList.toggle('active', parseInt(b.getAttribute('data-value')) <= parseInt(val)));
       });
     });
 
-    // Form Submission Handler
-    const form = document.getElementById('feedbackForm');
-    const submitBtn = document.getElementById('submitBtn');
-    const alertBox = document.getElementById('alertBox');
-
-    form.addEventListener('submit', async (e) => {
+    // Form submission
+    document.getElementById('feedbackForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-
-      if (!ratingInput.value) {
-        showAlert('Please select a star rating.', 'error');
-        return;
-      }
-
-      submitBtn.disabled = true;
-      submitBtn.textContent = 'Submitting...';
+      if (!ratingInput.value) return alert('Please select a rating');
 
       const payload = {
         session_name: document.getElementById('sessionName').value,
@@ -336,34 +278,60 @@
       };
 
       try {
-        const response = await fetch(API_ENDPOINT, {
+        const res = await fetch('/api/feedback', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload)
         });
-
-        const data = await response.json();
-
-        if (response.ok && data.success) {
-          showAlert('Waheguru Ji Ka Khalsa, Waheguru Ji Ki Fateh! Thank you for your feedback.', 'success');
-          form.reset();
+        const data = await res.json();
+        if (res.ok && data.success) {
+          document.getElementById('alertBox').innerHTML = 'Waheguru Ji Ka Khalsa, Waheguru Ji Ki Fateh! Thank you for your feedback.';
+          document.getElementById('alertBox').className = 'alert alert-success';
+          document.getElementById('alertBox').style.display = 'block';
+          e.target.reset();
           starBtns.forEach(b => b.classList.remove('active'));
           ratingInput.value = '';
+          autoSelectCurrentSession();
         } else {
-          throw new Error(data.error || 'Failed to submit feedback');
+          alert(data.error || 'Failed to submit feedback');
         }
       } catch (err) {
-        showAlert(err.message || 'An error occurred. Please try again.', 'error');
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = 'Submit Feedback';
+        alert('An error occurred submitting feedback.');
       }
     });
 
-    function showAlert(message, type) {
-      alertBox.textContent = message;
-      alertBox.className = `alert alert-${type}`;
-      alertBox.style.display = 'block';
+    function openAdminModal() { document.getElementById('adminModal').style.display = 'flex'; }
+    function closeAdminModal() { document.getElementById('adminModal').style.display = 'none'; }
+
+    async function fetchFeedbackData() {
+      const pass = document.getElementById('adminPass').value;
+      const res = await fetch('/api/admin-feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pass })
+      });
+      const data = await res.json();
+
+      if (!res.ok) return alert(data.error || 'Failed to authenticate');
+
+      document.getElementById('authSection').style.display = 'none';
+      const container = document.getElementById('dataList');
+      container.innerHTML = `<h3>Total Submissions: ${data.data.length}</h3><br>`;
+
+      data.data.forEach(item => {
+        container.innerHTML += `
+          <div class="data-card">
+            <div class="data-card-header">
+              <span>${item.session_name}</span>
+              <span>Rating: ${'★'.repeat(item.rating)}</span>
+            </div>
+            <p><strong>Learnt something new:</strong> ${item.learnt_new}</p>
+            ${item.touched_comment ? `<p><strong>Takeaway:</strong> ${item.touched_comment}</p>` : ''}
+            ${item.encouragement_comment ? `<p><strong>Feedback:</strong> ${item.encouragement_comment}</p>` : ''}
+            <p style="font-size:0.75rem; color:#64748b; margin-top:0.5rem;">Submitted: ${item.created_at || 'Just now'}</p>
+          </div>
+        `;
+      });
     }
   </script>
 </body>
