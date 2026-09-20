@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Why Guru Course — Sangat Feedback</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+      --card-bg: rgba(255, 255, 255, 0.05);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --input-bg: rgba(15, 23, 42, 0.6);
+      --primary: #f59e0b;
+      --primary-hover: #d97706;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem 1rem;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 680px;
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 2.5rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      background: linear-gradient(to right, #fbbf24, #f59e0b, #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.5rem;
+    }
+
+    .header p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.75rem;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+      color: var(--text-main);
+    }
+
+    .required::after {
+      content: " *";
+      color: #ef4444;
+    }
+
+    input[type="text"],
+    select,
+    textarea {
+      width: 100%;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 0.85rem 1rem;
+      color: var(--text-main);
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    input[type="text"]:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+
+    /* Rating Stars */
+    .rating-container {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.25rem;
+    }
+
+    .star-btn {
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 0.6rem 1rem;
+      font-size: 1.2rem;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: all 0.2s ease;
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .star-btn.active,
+    .star-btn:hover {
+      background: rgba(245, 158, 11, 0.15);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* Radio Group for Yes/No */
+    .radio-group {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .radio-option {
+      flex: 1;
+    }
+
+    .radio-option input {
+      display: none;
+    }
+
+    .radio-option label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--input-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-bottom: 0;
+    }
+
+    .radio-option input:checked + label {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .submit-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      padding: 1rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+      margin-top: 1rem;
+    }
+
+    .submit-btn:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .alert {
+      padding: 1rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      display: none;
+    }
+
+    .alert-success {
+      background: rgba(34, 197, 94, 0.2);
+      border: 1px solid #22c55e;
+      color: #4ade80;
+    }
+
+    .alert-error {
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid #ef4444;
+      color: #fca5a5;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="header">
+      <h1>Why Guru Course</h1>
+      <p>Sangat Feedback & Insights</p>
+    </div>
+
+    <div id="alertBox" class="alert"></div>
+
+    <form id="feedbackForm">
+      <!-- Question 1: Session Name -->
+      <div class="form-group">
+        <label for="sessionName" class="required">1. Which session did you attend?</label>
+        <select id="sessionName" required>
+          <option value="" disabled selected>Select a session...</option>
+          <option value="Session 1: Introduction to Sikhi">Session 1: Introduction to Sikhi</option>
+          <option value="Session 2: The Ten Gurus">Session 2: The Ten Gurus</option>
+          <option value="Session 3: Sri Guru Granth Sahib Ji">Session 3: Sri Guru Granth Sahib Ji</option>
+          <option value="Session 4: Khalsa Panth & Rehat">Session 4: Khalsa Panth & Rehat</option>
+          <option value="Session 5: History & Heritage">Session 5: History & Heritage</option>
+        </select>
+      </div>
+
+      <!-- Question 2: Star Rating -->
+      <div class="form-group">
+        <label class="required">2. How would you rate this session?</label>
+        <div class="rating-container" id="ratingContainer">
+          <button type="button" class="star-btn" data-value="1">★ 1</button>
+          <button type="button" class="star-btn" data-value="2">★ 2</button>
+          <button type="button" class="star-btn" data-value="3">★ 3</button>
+          <button type="button" class="star-btn" data-value="4">★ 4</button>
+          <button type="button" class="star-btn" data-value="5">★ 5</button>
+        </div>
+        <input type="hidden" id="rating" required>
+      </div>
+
+      <!-- Question 3: Learnt Something New -->
+      <div class="form-group">
+        <label class="required">3. Did you learn something new today?</label>
+        <div class="radio-group">
+          <div class="radio-option">
+            <input type="radio" id="learntYes" name="learnt_new" value="Yes" required>
+            <label for="learntYes">Yes</label>
+          </div>
+          <div class="radio-option">
+            <input type="radio" id="learntNo" name="learnt_new" value="No">
+            <label for="learntNo">No</label>
+          </div>
+          <div class="radio-option">
+            <input type="radio" id="learntPartial" name="learnt_new" value="A little bit">
+            <label for="learntPartial">A little bit</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Question 4: Touched Comment -->
+      <div class="form-group">
+        <label for="touchedComment">4. What touched your heart or inspired you the most?</label>
+        <textarea id="touchedComment" placeholder="Share a takeaway or moment that resonated with you..."></textarea>
+      </div>
+
+      <!-- Question 5: Encouragement Comment -->
+      <div class="form-group">
+        <label for="encouragementComment">5. Any words of encouragement or feedback for the team?</label>
+        <textarea id="encouragementComment" placeholder="Your thoughts help us improve future sessions..."></textarea>
+      </div>
+
+      <button type="submit" id="submitBtn" class="submit-btn">Submit Feedback</button>
+    </form>
+  </div>
+
+  <script>
+    const API_ENDPOINT = '/api/feedback';
+
+    // Interactive Star Rating Logic
+    const starBtns = document.querySelectorAll('.star-btn');
+    const ratingInput = document.getElementById('rating');
+
+    starBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const value = btn.getAttribute('data-value');
+        ratingInput.value = value;
+        
+        starBtns.forEach(b => {
+          if (parseInt(b.getAttribute('data-value')) <= parseInt(value)) {
+            b.classList.add('active');
+          } else {
+            b.classList.remove('active');
+          }
+        });
+      });
+    });
+
+    // Form Submission Handler
+    const form = document.getElementById('feedbackForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const alertBox = document.getElementById('alertBox');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (!ratingInput.value) {
+        showAlert('Please select a star rating.', 'error');
+        return;
+      }
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+
+      const payload = {
+        session_name: document.getElementById('sessionName').value,
+        rating: parseInt(ratingInput.value),
+        learnt_new: document.querySelector('input[name="learnt_new"]:checked').value,
+        touched_comment: document.getElementById('touchedComment').value,
+        encouragement_comment: document.getElementById('encouragementComment').value
+      };
+
+      try {
+        const response = await fetch(API_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+          showAlert('Waheguru Ji Ka Khalsa, Waheguru Ji Ki Fateh! Thank you for your feedback.', 'success');
+          form.reset();
+          starBtns.forEach(b => b.classList.remove('active'));
+          ratingInput.value = '';
+        } else {
+          throw new Error(data.error || 'Failed to submit feedback');
+        }
+      } catch (err) {
+        showAlert(err.message || 'An error occurred. Please try again.', 'error');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Submit Feedback';
+      }
+    });
+
+    function showAlert(message, type) {
+      alertBox.textContent = message;
+      alertBox.className = `alert alert-${type}`;
+      alertBox.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
