@@ -140,7 +140,53 @@ class Default(WorkerEntrypoint):
                 return Response(json.dumps({"status": "error", "message": str(e)}), status=500, headers={"Content-Type": "application/json"})
 
         # -------------------------------------------------------------
-        # 6. DISPLAY LEADERBOARD: GET /leaderboard
+        # 6. SUBMIT SANGAAT FEEDBACK: POST /api/feedback
+        # -------------------------------------------------------------
+        if method == "POST" and path == "/api/feedback":
+            try:
+                body_text = await request.text()
+                data = json.loads(body_text) if body_text else {}
+
+                session_name = data.get("session_name")
+                rating = data.get("rating")
+                learnt_new = data.get("learnt_new")
+                touched_comment = data.get("touched_comment", "")
+                encouragement_comment = data.get("encouragement_comment", "")
+
+                if not session_name or rating is None or not learnt_new:
+                    return Response(json.dumps({"success": False, "error": "Missing required fields"}), status=400, headers={"Content-Type": "application/json"})
+
+                db = getattr(env, "FEEDBACK_DB", None) or env.DB
+                query = "INSERT INTO sangaat_feedback (session_name, rating, learnt_new, touched_comment, encouragement_comment) VALUES (?, ?, ?, ?, ?)"
+                await db.prepare(query).bind(session_name, int(rating), learnt_new, touched_comment, encouragement_comment).run()
+
+                return Response(json.dumps({"success": True}), headers={"Content-Type": "application/json"})
+            except Exception as e:
+                return Response(json.dumps({"success": False, "error": str(e)}), status=500, headers={"Content-Type": "application/json"})
+
+        # -------------------------------------------------------------
+        # 7. ADMIN VIEW FEEDBACK: POST /api/admin-feedback
+        # -------------------------------------------------------------
+        if method == "POST" and path == "/api/admin-feedback":
+            try:
+                body_text = await request.text()
+                data = json.loads(body_text) if body_text else {}
+
+                if data.get("password") != "6789":
+                    return Response(json.dumps({"success": False, "error": "Unauthorized: Invalid Password"}), status=401, headers={"Content-Type": "application/json"})
+
+                db = getattr(env, "FEEDBACK_DB", None) or env.DB
+                stmt = db.prepare("SELECT * FROM sangaat_feedback ORDER BY created_at DESC")
+                res = await stmt.all()
+
+                rows = res.results.to_py() if hasattr(res.results, "to_py") else list(res.results)
+
+                return Response(json.dumps({"success": True, "data": rows}), headers={"Content-Type": "application/json"})
+            except Exception as e:
+                return Response(json.dumps({"success": False, "error": str(e)}), status=500, headers={"Content-Type": "application/json"})
+
+        # -------------------------------------------------------------
+        # 8. DISPLAY LEADERBOARD: GET /leaderboard
         # -------------------------------------------------------------
         if method == "GET" and path == "/leaderboard":
             try:
