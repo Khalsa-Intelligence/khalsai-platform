@@ -2,24 +2,26 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Why Guru Course — Sangat Feedback</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
-      --card-bg: rgba(255, 255, 255, 0.05);
+      --bg-gradient: radial-gradient(circle at top, #1e1b4b 0%, #0f172a 60%, #080c14 100%);
+      --card-bg: rgba(30, 41, 59, 0.7);
       --card-border: rgba(255, 255, 255, 0.12);
-      --input-bg: rgba(15, 23, 42, 0.6);
+      --input-bg: rgba(15, 23, 42, 0.75);
+      --input-border: rgba(255, 255, 255, 0.15);
       --primary: #f59e0b;
+      --primary-hover: #d97706;
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --accent: #38bdf8;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
 
     body {
       background: var(--bg-gradient);
@@ -28,107 +30,141 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 2rem 1rem;
-      position: relative;
+      padding: 1.25rem 0.75rem;
     }
 
     .container {
       width: 100%;
-      max-width: 680px;
+      max-width: 620px;
       background: var(--card-bg);
-      backdrop-filter: blur(16px);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--card-border);
-      border-radius: 24px;
-      padding: 2.5rem;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+      border-radius: 20px;
+      padding: 2rem 1.5rem;
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
       position: relative;
+    }
+
+    @media (min-width: 640px) {
+      .container { padding: 2.5rem 2.25rem; }
     }
 
     .admin-trigger {
       position: absolute;
-      top: 1.5rem;
-      right: 1.5rem;
-      background: rgba(255, 255, 255, 0.1);
+      top: 1.25rem;
+      right: 1.25rem;
+      background: rgba(255, 255, 255, 0.08);
       border: 1px solid var(--card-border);
       color: var(--text-muted);
-      padding: 0.4rem 0.8rem;
-      border-radius: 8px;
-      font-size: 0.8rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all 0.2s ease;
     }
-    .admin-trigger:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.2); }
+    .admin-trigger:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.18); }
 
-    .header { text-align: center; margin-bottom: 2rem; }
+    .header { text-align: center; margin-bottom: 2rem; margin-top: 0.5rem; }
     .header h1 {
-      font-size: 2rem; font-weight: 700;
-      background: linear-gradient(to right, #fbbf24, #f59e0b, #38bdf8);
+      font-size: 1.75rem; font-weight: 700; letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #fef08a 0%, #f59e0b 50%, #38bdf8 100%);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.4rem;
     }
-    .header p { color: var(--text-muted); font-size: 0.95rem; }
+    .header p { color: var(--text-muted); font-size: 0.9rem; font-weight: 500; }
 
-    .form-group { margin-bottom: 1.75rem; }
-    label { display: block; font-weight: 600; font-size: 0.95rem; margin-bottom: 0.5rem; }
-    .required::after { content: " *"; color: #ef4444; }
+    .form-group { margin-bottom: 1.5rem; }
+    label { display: block; font-weight: 600; font-size: 0.9rem; margin-bottom: 0.6rem; color: #e2e8f0; line-height: 1.4; }
+    .required::after { content: " *"; color: #f87171; }
 
     input[type="text"], input[type="password"], select, textarea {
-      width: 100%; background: var(--input-bg); border: 1px solid var(--card-border);
+      width: 100%; background: var(--input-bg); border: 1px solid var(--input-border);
       border-radius: 12px; padding: 0.85rem 1rem; color: var(--text-main);
-      font-size: 0.95rem; outline: none; transition: all 0.2s;
+      font-size: 16px; /* Prevents iOS auto-zoom */
+      outline: none; transition: all 0.2s ease;
+      min-height: 48px; /* Touch friendly */
     }
-    input:focus, select:focus, textarea:focus { border-color: var(--primary); }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+    }
     select option { background: #0f172a; color: #f8fafc; }
-    textarea { resize: vertical; min-height: 100px; }
+    textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
 
+    /* Star Rating Grid */
     .rating-container { display: flex; gap: 0.5rem; }
     .star-btn {
-      background: var(--input-bg); border: 1px solid var(--card-border);
-      border-radius: 10px; padding: 0.6rem; font-size: 1.1rem;
+      background: var(--input-bg); border: 1px solid var(--input-border);
+      border-radius: 12px; height: 48px; font-size: 1rem; font-weight: 600;
       cursor: pointer; color: var(--text-muted); flex: 1; text-align: center;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.15s ease;
     }
-    .star-btn.active, .star-btn:hover { background: rgba(245, 158, 11, 0.15); border-color: var(--primary); color: var(--primary); }
+    .star-btn.active {
+      background: rgba(245, 158, 11, 0.2);
+      border-color: var(--primary);
+      color: #fbbf24;
+      transform: scale(1.02);
+    }
+    .star-btn:active { transform: scale(0.96); }
 
-    .radio-group { display: flex; gap: 1rem; }
+    /* Radio Pills Grid */
+    .radio-group { display: flex; gap: 0.6rem; flex-direction: row; }
+    @media (max-width: 480px) {
+      .radio-group { flex-direction: column; }
+    }
     .radio-option { flex: 1; }
     .radio-option input { display: none; }
     .radio-option label {
       display: flex; align-items: center; justify-content: center;
-      background: var(--input-bg); border: 1px solid var(--card-border);
-      border-radius: 12px; padding: 0.85rem; cursor: pointer; text-align: center;
+      background: var(--input-bg); border: 1px solid var(--input-border);
+      border-radius: 12px; min-height: 48px; padding: 0.5rem 0.75rem;
+      cursor: pointer; text-align: center; font-size: 0.9rem; font-weight: 500;
+      color: var(--text-muted); transition: all 0.15s ease;
     }
-    .radio-option input:checked + label { background: rgba(56, 189, 248, 0.15); border-color: var(--accent); color: var(--accent); }
+    .radio-option input:checked + label {
+      background: rgba(56, 189, 248, 0.18);
+      border-color: var(--accent);
+      color: #7dd3fc;
+      font-weight: 600;
+    }
 
     .submit-btn {
       width: 100%; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-      color: #fff; border: none; border-radius: 12px; padding: 1rem;
-      font-size: 1rem; font-weight: 600; cursor: pointer;
+      color: #ffffff; border: none; border-radius: 12px; min-height: 52px;
+      font-size: 1rem; font-weight: 700; cursor: pointer;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+      transition: all 0.2s ease; margin-top: 0.5rem;
     }
+    .submit-btn:hover { opacity: 0.95; transform: translateY(-1px); }
+    .submit-btn:active { transform: translateY(0); }
 
-    .alert { padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; display: none; }
-    .alert-success { background: rgba(34, 197, 94, 0.2); border: 1px solid #22c55e; color: #4ade80; }
-    .alert-error { background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #fca5a5; }
+    .alert { padding: 1rem; border-radius: 12px; margin-bottom: 1.5rem; display: none; font-size: 0.9rem; line-height: 1.4; text-align: center; }
+    .alert-success { background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.4); color: #4ade80; }
 
     /* Modal Overlay */
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px);
+      background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px);
       display: none; justify-content: center; align-items: center; z-index: 100; padding: 1rem;
     }
     .modal-content {
       background: #0f172a; border: 1px solid var(--card-border);
-      border-radius: 20px; width: 100%; max-width: 800px; max-height: 85vh;
-      overflow-y: auto; padding: 2rem; box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+      border-radius: 20px; width: 100%; max-width: 680px; max-height: 85vh;
+      overflow-y: auto; padding: 1.5rem; box-shadow: 0 25px 50px rgba(0,0,0,0.8);
     }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-    .close-btn { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; }
+    .modal-header h2 { font-size: 1.25rem; color: #f8fafc; }
+    .close-btn { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; padding: 0.25rem; }
 
     .data-card {
-      background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border);
-      border-radius: 12px; padding: 1rem; margin-bottom: 1rem;
+      background: rgba(255, 255, 255, 0.04); border: 1px solid var(--card-border);
+      border-radius: 12px; padding: 1rem; margin-bottom: 0.75rem;
     }
-    .data-card-header { display: flex; justify-content: space-between; color: var(--primary); font-weight: 600; margin-bottom: 0.5rem; }
-    .data-card p { font-size: 0.9rem; color: #cbd5e1; margin-top: 0.3rem; }
+    .data-card-header { display: flex; justify-content: space-between; color: var(--primary); font-weight: 600; font-size: 0.9rem; margin-bottom: 0.4rem; }
+    .data-card p { font-size: 0.85rem; color: #cbd5e1; margin-top: 0.3rem; line-height: 1.4; }
   </style>
 </head>
 <body>
@@ -212,7 +248,7 @@
   <div class="modal-overlay" id="adminModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h2>Admin View — All Submissions</h2>
+        <h2>Admin View — Submissions</h2>
         <button class="close-btn" onclick="closeAdminModal()">✕</button>
       </div>
 
@@ -224,19 +260,18 @@
         <button class="submit-btn" onclick="fetchFeedbackData()">View Feedback</button>
       </div>
 
-      <div id="dataList" style="margin-top: 1.5rem;"></div>
+      <div id="dataList" style="margin-top: 1rem;"></div>
     </div>
   </div>
 
   <script>
-    // Automatically select the closest previous or today's session based on system date
     function autoSelectCurrentSession() {
       const selectElem = document.getElementById('sessionName');
       const options = selectElem.querySelectorAll('option[data-date]');
       const now = new Date();
-      now.setHours(23, 59, 59, 999); // Include full current day
+      now.setHours(23, 59, 59, 999);
 
-      let selectedVal = options[0].value; // Default to Session 1 if prior to course start
+      let selectedVal = options[0].value;
 
       for (const option of options) {
         const sessionDate = new Date(option.getAttribute('data-date') + 'T23:59:59');
@@ -252,7 +287,6 @@
 
     autoSelectCurrentSession();
 
-    // Rating star handler
     const starBtns = document.querySelectorAll('.star-btn');
     const ratingInput = document.getElementById('rating');
 
@@ -264,10 +298,13 @@
       });
     });
 
-    // Form submission
     document.getElementById('feedbackForm').addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (!ratingInput.value) return alert('Please select a rating');
+      if (!ratingInput.value) return alert('Please select a rating (1-5 stars)');
+
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.disabled = true;
+      submitBtn.innerText = 'Submitting...';
 
       const payload = {
         session_name: document.getElementById('sessionName').value,
@@ -285,18 +322,22 @@
         });
         const data = await res.json();
         if (res.ok && data.success) {
-          document.getElementById('alertBox').innerHTML = 'Waheguru Ji Ka Khalsa, Waheguru Ji Ki Fateh! Thank you for your feedback.';
+          document.getElementById('alertBox').innerHTML = 'Waheguru Ji Ka Khalsa, Waheguru Ji Ki Fateh!<br>Thank you for your feedback.';
           document.getElementById('alertBox').className = 'alert alert-success';
           document.getElementById('alertBox').style.display = 'block';
           e.target.reset();
           starBtns.forEach(b => b.classList.remove('active'));
           ratingInput.value = '';
           autoSelectCurrentSession();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
           alert(data.error || 'Failed to submit feedback');
         }
       } catch (err) {
         alert('An error occurred submitting feedback.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Submit Feedback';
       }
     });
 
@@ -316,7 +357,7 @@
 
       document.getElementById('authSection').style.display = 'none';
       const container = document.getElementById('dataList');
-      container.innerHTML = `<h3>Total Submissions: ${data.data.length}</h3><br>`;
+      container.innerHTML = `<h3 style="font-size:1rem; color:var(--accent);">Total Submissions: ${data.data.length}</h3><br>`;
 
       data.data.forEach(item => {
         container.innerHTML += `
@@ -328,7 +369,7 @@
             <p><strong>Learnt something new:</strong> ${item.learnt_new}</p>
             ${item.touched_comment ? `<p><strong>Takeaway:</strong> ${item.touched_comment}</p>` : ''}
             ${item.encouragement_comment ? `<p><strong>Feedback:</strong> ${item.encouragement_comment}</p>` : ''}
-            <p style="font-size:0.75rem; color:#64748b; margin-top:0.5rem;">Submitted: ${item.created_at || 'Just now'}</p>
+            <p style="font-size:0.75rem; color:#64748b; margin-top:0.4rem;">Submitted: ${item.created_at || 'Just now'}</p>
           </div>
         `;
       });
