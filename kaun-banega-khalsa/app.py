@@ -77,36 +77,7 @@ class Default(WorkerEntrypoint):
             return await env.ASSETS.fetch(url)
 
         # -------------------------------------------------------------
-        # 3. PUBLIC TESTIMONIALS API: GET /api/testimonials
-        # -------------------------------------------------------------
-        if method == "GET" and (path == "/api/testimonials" or path.endswith("/api/testimonials")):
-            try:
-                db = getattr(env, "FEEDBACK_DB", None) or getattr(env, "DB", None)
-                if not db:
-                    return Response(json.dumps({"success": False, "error": "Database binding missing"}), status=500, headers={"Content-Type": "application/json"})
-
-                stmt = db.prepare("""
-                    SELECT session_name, rating, learnt_new, touched_comment, encouragement_comment, created_at 
-                    FROM sangaat_feedback 
-                    WHERE rating >= 4 AND (touched_comment != '' OR encouragement_comment != '')
-                    ORDER BY created_at DESC
-                """)
-                res = await stmt.all()
-                rows = res.results.to_py() if hasattr(res.results, "to_py") else list(res.results)
-
-                return Response(
-                    json.dumps({"success": True, "count": len(rows), "data": rows}),
-                    headers={
-                        "Content-Type": "application/json",
-                        "Access-Control-Allow-Origin": "*",
-                        "Access-Control-Allow-Methods": "GET, OPTIONS",
-                    }
-                )
-            except Exception as e:
-                return Response(json.dumps({"success": False, "error": str(e)}), status=500, headers={"Content-Type": "application/json"})
-
-        # -------------------------------------------------------------
-        # 4. SUBMIT SANGAAT FEEDBACK: POST /api/feedback
+        # 3. SUBMIT SANGAAT FEEDBACK: POST /api/feedback
         # -------------------------------------------------------------
         if method == "POST" and (path == "/api/feedback" or path.endswith("/api/feedback")):
             try:
@@ -134,7 +105,7 @@ class Default(WorkerEntrypoint):
                 return Response(json.dumps({"success": False, "error": str(e)}), status=500, headers={"Content-Type": "application/json"})
 
         # -------------------------------------------------------------
-        # 5. ADMIN VIEW FEEDBACK: POST /api/admin-feedback
+        # 4. ADMIN VIEW FEEDBACK: POST /api/admin-feedback
         # -------------------------------------------------------------
         if method == "POST" and (path == "/api/admin-feedback" or path.endswith("/api/admin-feedback")):
             try:
@@ -154,6 +125,32 @@ class Default(WorkerEntrypoint):
                 rows = res.results.to_py() if hasattr(res.results, "to_py") else list(res.results)
 
                 return Response(json.dumps({"success": True, "data": rows}), headers={"Content-Type": "application/json"})
+            except Exception as e:
+                return Response(json.dumps({"success": False, "error": str(e)}), status=500, headers={"Content-Type": "application/json"})
+
+        # -------------------------------------------------------------
+        # 5. ADMIN DELETE FEEDBACK: POST /api/delete-feedback
+        # -------------------------------------------------------------
+        if method == "POST" and (path == "/api/delete-feedback" or path.endswith("/api/delete-feedback")):
+            try:
+                body_text = await request.text()
+                data = json.loads(body_text) if body_text else {}
+
+                if data.get("password") != "6789":
+                    return Response(json.dumps({"success": False, "error": "Unauthorized: Invalid Password"}), status=401, headers={"Content-Type": "application/json"})
+
+                record_id = data.get("id")
+                if not record_id:
+                    return Response(json.dumps({"success": False, "error": "Missing record ID"}), status=400, headers={"Content-Type": "application/json"})
+
+                db = getattr(env, "FEEDBACK_DB", None) or getattr(env, "DB", None)
+                if not db:
+                    return Response(json.dumps({"success": False, "error": "Database binding missing"}), status=500, headers={"Content-Type": "application/json"})
+
+                query = "DELETE FROM sangaat_feedback WHERE id = ?"
+                await db.prepare(query).bind(record_id).run()
+
+                return Response(json.dumps({"success": True, "message": "Feedback deleted successfully"}), headers={"Content-Type": "application/json"})
             except Exception as e:
                 return Response(json.dumps({"success": False, "error": str(e)}), status=500, headers={"Content-Type": "application/json"})
 
