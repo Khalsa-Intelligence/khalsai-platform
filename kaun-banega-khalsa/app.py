@@ -77,7 +77,36 @@ class Default(WorkerEntrypoint):
             return await env.ASSETS.fetch(url)
 
         # -------------------------------------------------------------
-        # 3. SUBMIT SANGAAT FEEDBACK: POST /api/feedback
+        # 3. PUBLIC TESTIMONIALS API: GET /api/testimonials
+        # -------------------------------------------------------------
+        if method == "GET" and (path == "/api/testimonials" or path.endswith("/api/testimonials")):
+            try:
+                db = getattr(env, "FEEDBACK_DB", None) or getattr(env, "DB", None)
+                if not db:
+                    return Response(json.dumps({"success": False, "error": "Database binding missing"}), status=500, headers={"Content-Type": "application/json"})
+
+                stmt = db.prepare("""
+                    SELECT session_name, rating, learnt_new, touched_comment, encouragement_comment, created_at 
+                    FROM sangaat_feedback 
+                    WHERE rating >= 4 AND (touched_comment != '' OR encouragement_comment != '')
+                    ORDER BY created_at DESC
+                """)
+                res = await stmt.all()
+                rows = res.results.to_py() if hasattr(res.results, "to_py") else list(res.results)
+
+                return Response(
+                    json.dumps({"success": True, "count": len(rows), "data": rows}),
+                    headers={
+                        "Content-Type": "application/json",
+                        "Access-Control-Allow-Origin": "*",
+                        "Access-Control-Allow-Methods": "GET, OPTIONS",
+                    }
+                )
+            except Exception as e:
+                return Response(json.dumps({"success": False, "error": str(e)}), status=500, headers={"Content-Type": "application/json"})
+
+        # -------------------------------------------------------------
+        # 4. SUBMIT SANGAAT FEEDBACK: POST /api/feedback
         # -------------------------------------------------------------
         if method == "POST" and (path == "/api/feedback" or path.endswith("/api/feedback")):
             try:
@@ -105,7 +134,7 @@ class Default(WorkerEntrypoint):
                 return Response(json.dumps({"success": False, "error": str(e)}), status=500, headers={"Content-Type": "application/json"})
 
         # -------------------------------------------------------------
-        # 4. ADMIN VIEW FEEDBACK: POST /api/admin-feedback
+        # 5. ADMIN VIEW FEEDBACK: POST /api/admin-feedback
         # -------------------------------------------------------------
         if method == "POST" and (path == "/api/admin-feedback" or path.endswith("/api/admin-feedback")):
             try:
@@ -129,7 +158,7 @@ class Default(WorkerEntrypoint):
                 return Response(json.dumps({"success": False, "error": str(e)}), status=500, headers={"Content-Type": "application/json"})
 
         # -------------------------------------------------------------
-        # 5. SUBMIT SCORE: POST /api/submit_score
+        # 6. SUBMIT SCORE: POST /api/submit_score
         # -------------------------------------------------------------
         if method == "POST" and path == "/api/submit_score":
             try:
@@ -154,7 +183,7 @@ class Default(WorkerEntrypoint):
                 return Response(json.dumps({"status": "error", "message": str(e)}), status=500, headers={"Content-Type": "application/json"})
 
         # -------------------------------------------------------------
-        # 6. DELETE SCORE: POST /api/delete_score
+        # 7. DELETE SCORE: POST /api/delete_score
         # -------------------------------------------------------------
         if method == "POST" and path == "/api/delete_score":
             try:
@@ -173,7 +202,7 @@ class Default(WorkerEntrypoint):
                 return Response(json.dumps({"status": "error", "message": str(e)}), status=500, headers={"Content-Type": "application/json"})
 
         # -------------------------------------------------------------
-        # 7. RESET LEADERBOARD: POST /api/reset_leaderboard
+        # 8. RESET LEADERBOARD: POST /api/reset_leaderboard
         # -------------------------------------------------------------
         if method == "POST" and path == "/api/reset_leaderboard":
             try:
@@ -191,7 +220,7 @@ class Default(WorkerEntrypoint):
                 return Response(json.dumps({"status": "error", "message": str(e)}), status=500, headers={"Content-Type": "application/json"})
 
         # -------------------------------------------------------------
-        # 8. DISPLAY LEADERBOARD: GET /leaderboard
+        # 9. DISPLAY LEADERBOARD: GET /leaderboard
         # -------------------------------------------------------------
         if method == "GET" and path == "/leaderboard":
             try:
