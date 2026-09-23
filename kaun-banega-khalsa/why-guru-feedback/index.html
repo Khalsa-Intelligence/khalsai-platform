@@ -19,6 +19,8 @@
       --text-main: #f8fafc;
       --text-muted: #94a3b8;
       --accent: #38bdf8;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
@@ -165,6 +167,31 @@
     }
     .data-card-header { display: flex; justify-content: space-between; color: var(--primary); font-weight: 600; font-size: 0.9rem; margin-bottom: 0.4rem; }
     .data-card p { font-size: 0.85rem; color: #cbd5e1; margin-top: 0.3rem; line-height: 1.4; }
+    
+    .data-card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.75rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .delete-card-btn {
+      background: transparent;
+      border: 1px solid var(--danger);
+      color: #f87171;
+      padding: 4px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .delete-card-btn:hover {
+      background: var(--danger);
+      color: #ffffff;
+    }
   </style>
 </head>
 <body>
@@ -356,23 +383,63 @@
       if (!res.ok) return alert(data.error || 'Failed to authenticate');
 
       document.getElementById('authSection').style.display = 'none';
-      const container = document.getElementById('dataList');
-      container.innerHTML = `<h3 style="font-size:1rem; color:var(--accent);">Total Submissions: ${data.data.length}</h3><br>`;
+      renderFeedbackList(data.data);
+    }
 
-      data.data.forEach(item => {
-        container.innerHTML += `
-          <div class="data-card">
-            <div class="data-card-header">
-              <span>${item.session_name}</span>
-              <span>Rating: ${'★'.repeat(item.rating)}</span>
-            </div>
-            <p><strong>Learnt something new:</strong> ${item.learnt_new}</p>
-            ${item.touched_comment ? `<p><strong>Inspired by:</strong> ${item.touched_comment}</p>` : ''}
-            ${item.encouragement_comment ? `<p><strong>Feedback:</strong> ${item.encouragement_comment}</p>` : ''}
-            <p style="font-size:0.75rem; color:#64748b; margin-top:0.4rem;">Submitted: ${item.created_at || 'Just now'}</p>
+    function renderFeedbackList(submissions) {
+      const container = document.getElementById('dataList');
+      container.innerHTML = `<h3 style="font-size:1rem; color:var(--accent); margin-bottom: 0.75rem;">Total Submissions: ${submissions.length}</h3>`;
+
+      submissions.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'data-card';
+        card.innerHTML = `
+          <div class="data-card-header">
+            <span>${escapeHtml(item.session_name || '')}</span>
+            <span>Rating: ${'★'.repeat(item.rating || 0)}</span>
+          </div>
+          <p><strong>Learnt something new:</strong> ${escapeHtml(item.learnt_new || '')}</p>
+          ${item.touched_comment ? `<p><strong>Inspired by:</strong> ${escapeHtml(item.touched_comment)}</p>` : ''}
+          ${item.encouragement_comment ? `<p><strong>Feedback:</strong> ${escapeHtml(item.encouragement_comment)}</p>` : ''}
+          
+          <div class="data-card-footer">
+            <span style="font-size:0.75rem; color:#64748b;">Submitted: ${item.created_at || 'Just now'}</span>
+            <button class="delete-card-btn" onclick="deleteFeedbackRecord(${item.id})">🗑️ Delete</button>
           </div>
         `;
+        container.appendChild(card);
       });
+    }
+
+    async function deleteFeedbackRecord(recordId) {
+      const pass = document.getElementById('adminPass').value;
+      if (!confirm("Are you sure you want to delete this feedback entry?")) return;
+
+      try {
+        const res = await fetch('/api/delete-feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ id: Number(recordId), password: pass })
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          // Re-fetch list to refresh view
+          fetchFeedbackData();
+        } else {
+          alert(data.error || 'Failed to delete entry.');
+        }
+      } catch (err) {
+        alert('Error connecting to server: ' + err.message);
+      }
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
     }
   </script>
 </body>
