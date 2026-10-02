@@ -17,3 +17,8 @@ database_id = "fbd30fb9-70fe-4d75-8094-a2f0390a0e4d"
 binding = "FEEDBACK_DB"
 database_name = "khalsai_feedback_db"
 database_id = "4ad5966a-5a22-4125-b10b-6f41da2e444f"
+
+[[d1_databases]]
+binding = "PULSE_DB"
+database_name = "pulse-db"
+database_id = "ee64c400-20d1-4929-b31c-f2b6271f8d2d"
