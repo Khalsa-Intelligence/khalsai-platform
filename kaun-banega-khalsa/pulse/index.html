@@ -10,7 +10,7 @@
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   
-  <!-- Google Fonts for Ultra-Clear Typography -->
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@600;800&display=swap" rel="stylesheet">
@@ -60,7 +60,6 @@
     .glow-gold {
       box-shadow: 0 0 25px rgba(245, 158, 11, 0.25);
     }
-    /* Custom High-Contrast Scrollbar */
     ::-webkit-scrollbar {
       width: 10px;
     }
@@ -95,16 +94,16 @@
         </div>
       </div>
 
-      <!-- Center Event Code Badge -->
+      <!-- Center Event Code Display & Quick Copy -->
       <div class="hidden md:flex items-center space-x-3 bg-gray-900/90 px-4 py-1.5 rounded-xl border border-gray-800">
         <span class="text-xs uppercase tracking-wider font-extrabold text-gray-400">Event Code:</span>
-        <span class="text-xl font-mono font-black text-amber-400 tracking-wider" id="headerEventCode">#TWGC2026</span>
+        <span class="text-xl font-mono font-black text-amber-400 tracking-wider event-code-display">#TWGC2026</span>
         <button onclick="copyEventCode()" class="text-gray-400 hover:text-amber-400 transition" title="Copy Event Code">
           <i data-lucide="copy" class="w-4 h-4"></i>
         </button>
       </div>
 
-      <!-- Role Switcher & Screen Mode Controls -->
+      <!-- Role Switcher & Fullscreen Controls -->
       <div class="flex items-center space-x-3">
         <div class="bg-gray-900/90 p-1 rounded-xl border border-gray-800 flex items-center">
           <button id="btnAudienceView" onclick="switchView('audience')" class="px-4 py-2 rounded-lg text-sm font-extrabold transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow">
@@ -154,14 +153,13 @@
 
       <!-- TAB 1: AUDIENCE Q&A -->
       <div id="audienceQAPane" class="space-y-6">
-        <!-- Question Submission Card -->
         <div class="bg-gradient-to-b from-gray-900 to-[#0F1623] border border-gray-800 rounded-2xl p-5 md:p-6 shadow-xl">
           <h2 class="text-xl md:text-2xl font-black mb-3 text-white flex items-center space-x-2">
             <i data-lucide="help-circle" class="w-6 h-6 text-amber-400"></i>
             <span>Ask the Speaker</span>
           </h2>
           <div class="space-y-3">
-            <textarea id="questionInput" rows="3" placeholder="Type your question for #TWGC2026 here... (Keep it concise and clear)" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-4 text-base md:text-lg text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition resize-none font-medium"></textarea>
+            <textarea id="questionInput" rows="3" placeholder="Type your question for the speaker here..." class="w-full bg-gray-950 border border-gray-800 rounded-xl p-4 text-base md:text-lg text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition resize-none font-medium"></textarea>
             
             <div class="flex flex-wrap items-center justify-between gap-3">
               <div class="flex items-center space-x-3">
@@ -180,7 +178,6 @@
           </div>
         </div>
 
-        <!-- Filter & Questions List -->
         <div class="space-y-4">
           <div class="flex items-center justify-between">
             <h3 class="text-xl font-bold text-gray-200">Submitted Questions</h3>
@@ -191,7 +188,7 @@
           </div>
 
           <div id="audienceQuestionsList" class="space-y-3">
-            <!-- Questions rendered via JavaScript -->
+            <!-- Questions rendered via JS -->
           </div>
         </div>
       </div>
@@ -204,7 +201,7 @@
               <i data-lucide="clock" class="w-8 h-8"></i>
             </div>
             <h2 class="text-2xl md:text-3xl font-extrabold text-white">Waiting for Presenter...</h2>
-            <p class="text-gray-400 max-w-md mx-auto text-base">When the presenter releases a quiz question or live poll for <strong class="text-amber-400">#TWGC2026</strong>, it will appear here instantly!</p>
+            <p class="text-gray-400 max-w-md mx-auto text-base">When the presenter releases a quiz question or live poll for <strong class="text-amber-400 event-code-display">#TWGC2026</strong>, it will appear here instantly!</p>
           </div>
         </div>
       </div>
@@ -216,14 +213,23 @@
     <!-- ========================================== -->
     <div id="presenterView" class="hidden flex-1 flex-col space-y-6">
       
-      <!-- Presenter Top Bar / Navigation -->
+      <!-- Presenter Top Bar / Dynamic Event Code Controller -->
       <div class="flex flex-wrap items-center justify-between gap-4 bg-gray-900 border border-gray-800 p-4 rounded-2xl">
-        <div class="flex items-center space-x-3">
-          <span class="bg-emerald-500/10 text-emerald-400 font-extrabold px-3 py-1 rounded-lg border border-emerald-500/30 text-sm flex items-center space-x-1.5">
+        <div class="flex flex-wrap items-center gap-3">
+          <span class="bg-emerald-500/10 text-emerald-400 font-extrabold px-3 py-1.5 rounded-lg border border-emerald-500/30 text-sm flex items-center space-x-1.5">
             <i data-lucide="tv" class="w-4 h-4"></i>
             <span>PRESENTER MODE</span>
           </span>
-          <span class="text-gray-400 text-sm hidden sm:inline">| Event Code: <strong class="text-amber-400 font-mono text-base">#TWGC2026</strong></span>
+
+          <!-- Dynamic Event Code Presenter Input Control -->
+          <div class="flex items-center space-x-2 bg-gray-950 px-3 py-1 rounded-xl border border-gray-800">
+            <label for="eventCodeInput" class="text-xs font-bold text-gray-400 uppercase tracking-wider">Event Code:</label>
+            <input type="text" id="eventCodeInput" value="#TWGC2026" class="bg-transparent font-mono font-black text-amber-400 text-base focus:outline-none w-28 uppercase">
+            <button onclick="updateEventCode()" class="bg-amber-500 text-slate-950 font-bold text-xs px-2.5 py-1 rounded-lg hover:brightness-110 transition flex items-center space-x-1">
+              <i data-lucide="check" class="w-3.5 h-3.5 stroke-[3]"></i>
+              <span>Set Code</span>
+            </button>
+          </div>
         </div>
 
         <div class="flex items-center space-x-2">
@@ -244,7 +250,7 @@
         
         <div class="bg-gradient-to-r from-amber-500/10 via-gray-900 to-amber-500/10 border-2 border-amber-500/40 rounded-3xl p-6 md:p-8 text-center space-y-2 glow-gold">
           <p class="text-amber-400 text-lg md:text-xl font-extrabold tracking-widest uppercase">JOIN WITH EVENT CODE</p>
-          <h1 class="text-5xl md:text-7xl font-mono font-black text-white tracking-widest gold-gradient-text" id="projectorEventCode">#TWGC2026</h1>
+          <h1 class="text-5xl md:text-7xl font-mono font-black text-white tracking-widest gold-gradient-text event-code-display" id="projectorEventCode">#TWGC2026</h1>
         </div>
 
         <div id="spotlightContent" class="bg-gray-900 border-2 border-gray-800 rounded-3xl p-8 md:p-12 text-center min-h-[380px] flex flex-col justify-center items-center shadow-2xl relative overflow-hidden">
@@ -347,7 +353,7 @@
 
           <div class="lg:col-span-7 space-y-4">
             <div class="flex items-center justify-between">
-              <h3 class="text-xl font-extrabold text-white">Pre-Loaded Quiz Deck (#TWGC2026)</h3>
+              <h3 class="text-xl font-extrabold text-white">Pre-Loaded Quiz Deck (<span class="event-code-display text-amber-400 font-mono">#TWGC2026</span>)</h3>
               <div class="flex items-center space-x-2">
                 <button onclick="resetQuizDeck()" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-lg border border-gray-700 font-bold">
                   Reset Pre-loaded Deck
@@ -385,10 +391,6 @@
     /* ==========================================================================
        APP STATE MANAGEMENT & PULSE_DB SYNC
        ========================================================================== */
-    const DEFAULT_EVENT_CODE = "#TWGC2026";
-    let eventCode = DEFAULT_EVENT_CODE;
-
-    // Get or create persistent Session ID for PULSE_DB logs
     let sessionId = localStorage.getItem('pulse_session_id');
     if (!sessionId) {
       sessionId = 'sess_' + Math.random().toString(36).substring(2, 11);
@@ -438,6 +440,7 @@
     ];
 
     let state = {
+      eventCode: localStorage.getItem('pulse_event_code') || "#TWGC2026",
       view: 'audience',
       audienceTab: 'qa',
       presenterSubTab: 'spotlight',
@@ -466,13 +469,44 @@
       spotlightedItem: null
     };
 
+    // Helper: Update state & DOM when Event Code changes
+    function setEventCode(newCode) {
+      if (!newCode) return;
+      if (!newCode.startsWith('#')) newCode = '#' + newCode;
+      
+      state.eventCode = newCode.toUpperCase();
+      localStorage.setItem('pulse_event_code', state.eventCode);
+
+      // Update all DOM elements with event-code-display class
+      document.querySelectorAll('.event-code-display').forEach(el => {
+        el.textContent = state.eventCode;
+      });
+
+      const input = document.getElementById('eventCodeInput');
+      if (input) input.value = state.eventCode;
+
+      // Update Question Input Placeholder dynamically
+      const qInput = document.getElementById('questionInput');
+      if (qInput) {
+        qInput.placeholder = `Type your question for ${state.eventCode} here... (Keep it concise and clear)`;
+      }
+    }
+
+    function updateEventCode() {
+      const input = document.getElementById('eventCodeInput');
+      if (input && input.value.trim()) {
+        setEventCode(input.value.trim());
+        sendPulse('event_code_update', { eventCode: state.eventCode });
+      }
+    }
+
     // Helper: Send event pulse to backend Worker (PULSE_DB)
     async function sendPulse(eventType, metadata = {}, userId = null) {
       try {
         await fetch('/api/pulse', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ sessionId, userId, eventType, metadata })
+          body: JSON.stringify({ sessionId, userId, eventType, eventCode: state.eventCode, metadata })
         });
       } catch (err) {
         console.error('Pulse sync failed:', err);
@@ -485,8 +519,15 @@
         const res = await fetch('/api/pulse');
         const data = await res.json();
         if (data && data.recent_pulses) {
-          // Sync questions submitted across devices
           data.recent_pulses.forEach(p => {
+            // Live sync Event Code updates across presenter & audience screens
+            if (p.event_type === 'event_code_update' && p.metadata && p.metadata.eventCode) {
+              if (p.metadata.eventCode !== state.eventCode) {
+                setEventCode(p.metadata.eventCode);
+              }
+            }
+
+            // Sync questions submitted across devices
             if (p.event_type === 'question' && p.metadata) {
               const meta = typeof p.metadata === 'string' ? JSON.parse(p.metadata) : p.metadata;
               if (meta.id && !state.questions.some(q => q.id === meta.id)) {
@@ -502,12 +543,13 @@
     }
 
     window.onload = function() {
+      setEventCode(state.eventCode);
       lucide.createIcons();
       renderAll();
       sendPulse('page_view', { page: 'pulse_index' });
       
-      // Poll PULSE_DB every 10 seconds for live updates
-      setInterval(fetchPulseDatabase, 10000);
+      // Poll PULSE_DB every 8 seconds for live updates
+      setInterval(fetchPulseDatabase, 8000);
     };
 
     function switchView(viewMode) {
@@ -593,7 +635,6 @@
       qInput.value = "";
       renderQuestions();
 
-      // Pulse DB Sync
       await sendPulse('question', newQ, author);
     }
 
@@ -682,7 +723,6 @@
       state.quizDeck.push(newQuiz);
       renderQuizDeck();
 
-      // Reset Form
       document.getElementById('newQuizTitle').value = "";
       document.getElementById('option0').value = "";
       document.getElementById('option1').value = "";
@@ -756,7 +796,6 @@
       qInput.placeholder = "Refining question with AI...";
       
       try {
-        // Mock enhancement for prompt stability or custom endpoint call
         qInput.value = text.charAt(0).toUpperCase() + text.slice(1) + (text.endsWith('?') ? '' : '?');
       } catch (err) {
         console.error("AI enhancement error:", err);
@@ -873,7 +912,7 @@
               <i data-lucide="clock" class="w-8 h-8"></i>
             </div>
             <h2 class="text-2xl md:text-3xl font-extrabold text-white">Waiting for Presenter...</h2>
-            <p class="text-gray-400 max-w-md mx-auto text-base">When the presenter releases a quiz question or live poll for <strong class="text-amber-400">#TWGC2026</strong>, it will appear here instantly!</p>
+            <p class="text-gray-400 max-w-md mx-auto text-base">When the presenter releases a quiz question or live poll for <strong class="text-amber-400 event-code-display">${state.eventCode}</strong>, it will appear here instantly!</p>
           </div>
         `;
         return;
@@ -1012,16 +1051,16 @@
     }
 
     function copyEventCode() {
-      navigator.clipboard.writeText(eventCode).then(() => {
-        alert("Event code #TWGC2026 copied to clipboard!");
+      navigator.clipboard.writeText(state.eventCode).then(() => {
+        alert(`Event code ${state.eventCode} copied to clipboard!`);
       }).catch(() => {
         const tempInput = document.createElement("input");
-        tempInput.value = eventCode;
+        tempInput.value = state.eventCode;
         document.body.appendChild(tempInput);
         tempInput.select();
         document.execCommand("copy");
         document.body.removeChild(tempInput);
-        alert("Event code #TWGC2026 copied to clipboard!");
+        alert(`Event code ${state.eventCode} copied to clipboard!`);
       });
     }
 
