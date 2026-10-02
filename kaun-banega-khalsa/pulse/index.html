@@ -526,7 +526,7 @@
         await fetch('/api/pulse', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ sessionId, userId, eventType, eventCode: cleanCode, metadata })[cite: 1]
+          body: JSON.stringify({ sessionId, userId, eventType, eventCode: cleanCode, metadata })
         });
       } catch (err) {
         console.error('Pulse sync failed:', err);
