@@ -13,6 +13,92 @@ class Default(WorkerEntrypoint):
         env = self.env
 
         # -------------------------------------------------------------
+        # 0. PULSE DB API ROUTE: GET & POST /api/pulse
+        # -------------------------------------------------------------
+        if path == "/api/pulse" or path.endswith("/api/pulse"):
+            db = getattr(env, "PULSE_DB", None) or getattr(env, "DB", None)
+            if not db:
+                return Response(
+                    json.dumps({"success": False, "error": "Database binding PULSE_DB missing"}),
+                    status=500,
+                    headers={"Content-Type": "application/json"}
+                )
+
+            # GET: Fetch recent events & pre-loaded quiz deck for a given eventCode
+            if method == "GET":
+                try:
+                    event_code_list = query_params.get("eventCode") or query_params.get("event_code")
+                    if not event_code_list or not event_code_list[0].strip():
+                        return Response(
+                            json.dumps({"success": False, "error": "eventCode parameter is required"}),
+                            status=400,
+                            headers={"Content-Type": "application/json"}
+                        )
+
+                    event_code = event_code_list[0].strip()
+                    if not event_code.startswith("#"):
+                        event_code = "#" + event_code
+                    event_code = event_code.upper()
+
+                    stmt = db.prepare(
+                        "SELECT session_id, event_code, event_type, metadata, created_at "
+                        "FROM pulse_events "
+                        "WHERE event_code = ? "
+                        "ORDER BY created_at ASC"
+                    )
+                    res = await stmt.bind(event_code).all()
+                    rows = res.results.to_py() if hasattr(res.results, "to_py") else list(res.results)
+
+                    return Response(
+                        json.dumps({"success": True, "recent_pulses": rows}),
+                        headers={"Content-Type": "application/json"}
+                    )
+                except Exception as e:
+                    return Response(
+                        json.dumps({"success": False, "error": str(e)}),
+                        status=500,
+                        headers={"Content-Type": "application/json"}
+                    )
+
+            # POST: Save pre-loaded quiz questions, live releases, or responses
+            if method == "POST":
+                try:
+                    body_text = await request.text()
+                    data = json.loads(body_text) if body_text else {}
+
+                    session_id = data.get("sessionId") or data.get("session_id", "anon")
+                    event_code = data.get("eventCode") or data.get("event_code")
+                    event_type = data.get("eventType") or data.get("event_type")
+                    metadata = data.get("metadata", {})
+
+                    if not event_code or not event_type:
+                        return Response(
+                            json.dumps({"success": False, "error": "eventCode and eventType are required"}),
+                            status=400,
+                            headers={"Content-Type": "application/json"}
+                        )
+
+                    if not event_code.startswith("#"):
+                        event_code = "#" + event_code
+                    event_code = event_code.upper()
+
+                    metadata_str = json.dumps(metadata) if isinstance(metadata, (dict, list)) else str(metadata)
+
+                    query = "INSERT INTO pulse_events (session_id, event_code, event_type, metadata) VALUES (?, ?, ?, ?)"
+                    await db.prepare(query).bind(session_id, event_code, event_type, metadata_str).run()
+
+                    return Response(
+                        json.dumps({"success": True}),
+                        headers={"Content-Type": "application/json"}
+                    )
+                except Exception as e:
+                    return Response(
+                        json.dumps({"success": False, "error": str(e)}),
+                        status=500,
+                        headers={"Content-Type": "application/json"}
+                    )
+
+        # -------------------------------------------------------------
         # 1. LANDING PAGE WITH QR CODE: GET /
         # -------------------------------------------------------------
         if method == "GET" and path == "/":
