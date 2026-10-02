@@ -456,6 +456,7 @@
         }
       ],
       activeQuizQuestion: null,
+      activeQuizQuestionId: null,
       activeQuizTimer: null,
       quizTimeRemaining: 0,
       hasSubmittedAnswer: false,
@@ -520,9 +521,44 @@
       }
     }
 
+    function startQuizTimer(questionId, durationSeconds) {
+      if (state.activeQuizQuestionId === questionId && state.activeQuizTimer !== null) {
+        return;
+      }
+
+      if (state.activeQuizTimer) {
+        clearInterval(state.activeQuizTimer);
+        state.activeQuizTimer = null;
+      }
+
+      state.activeQuizQuestionId = questionId;
+      state.quizTimeRemaining = durationSeconds;
+
+      renderAudienceQuizPane();
+      renderSpotlight();
+
+      state.activeQuizTimer = setInterval(() => {
+        state.quizTimeRemaining--;
+
+        renderAudienceQuizPane();
+        renderSpotlight();
+
+        if (state.quizTimeRemaining <= 0) {
+          clearInterval(state.activeQuizTimer);
+          state.activeQuizTimer = null;
+        }
+      }, 1000);
+    }
+
+    async function initPresenterApp() {
+      await loadInitialQuestions();
+      await fetchPulseDatabase();
+      setInterval(fetchPulseDatabase, 3000);
+    }
+    
     async function sendPulse(eventType, metadata = {}, userId = null) {
       try {
-        const cleanCode = state.eventCode.replace(/^#/, ''); // Remove leading '#'
+        const cleanCode = state.eventCode.replace(/^#/, '');
         await fetch('/api/pulse', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -537,10 +573,10 @@
       try {
         const cleanCode = state.eventCode.replace('#', '');
         const res = await fetch(`/api/pulse?eventCode=${encodeURIComponent(cleanCode)}`);
+        if (!res.ok) return;
         const data = await res.json();
     
         if (data && data.recent_pulses) {
-          // Process events in chronological order (oldest to newest)
           const sortedPulses = [...data.recent_pulses].sort((a, b) => a.id - b.id);
     
           sortedPulses.forEach(p => {
@@ -562,27 +598,17 @@
               const meta = typeof p.metadata === 'string' ? JSON.parse(p.metadata) : p.metadata;
               const quiz = meta.quiz || meta;
               
-              if (quiz && quiz.id && (!state.activeQuizQuestion || state.activeQuizQuestion.id !== quiz.id)) {
+              if (quiz && quiz.id) {
                 state.activeQuizQuestion = quiz;
                 state.hasSubmittedAnswer = false;
                 state.responseCounts = [0, 0, 0, 0];
                 state.totalResponses = 0;
-                state.quizTimeRemaining = quiz.timeLimit || 30;
                 state.spotlightedItem = { type: 'quiz', data: quiz };
-    
+            
                 const activeInd = document.getElementById('activeQuizIndicator');
                 if (activeInd) activeInd.classList.remove('hidden');
-    
-                if (state.activeQuizTimer) clearInterval(state.activeQuizTimer);
-                state.activeQuizTimer = setInterval(() => {
-                  state.quizTimeRemaining--;
-                  renderAudienceQuizPane();
-                  renderSpotlight();
-                  if (state.quizTimeRemaining <= 0) {
-                    clearInterval(state.activeQuizTimer);
-                  }
-                }, 1000);
-    
+            
+                startQuizTimer(quiz.id, quiz.timeLimit || 30);
                 renderAll();
               }
             }
@@ -611,8 +637,8 @@
       setEventCode(state.eventCode);
       lucide.createIcons();
       renderAll();
+      initPresenterApp();
       sendPulse('page_view', { page: 'pulse_index' });
-      setInterval(fetchPulseDatabase, 4000);
     };
 
     function switchView(viewMode) {
@@ -693,6 +719,29 @@
       lucide.createIcons();
     }
 
+    async function loadInitialQuestions() {
+      try {
+        const cleanCode = state.eventCode.replace('#', '');
+        const res = await fetch(`/api/questions?eventCode=${encodeURIComponent(cleanCode)}`);
+        
+        if (!res.ok) return;
+    
+        const data = await res.json();
+    
+        if (data && Array.isArray(data.questions)) {
+          data.questions.forEach(q => {
+            if (!state.questions.some(existing => existing.id === q.id)) {
+              state.questions.push(q);
+            }
+          });
+    
+          renderQuestions();
+        }
+      } catch (err) {
+        console.error('Failed to load initial questions:', err);
+      }
+    }
+    
     async function submitQuestion() {
       const qInput = document.getElementById('questionInput');
       const nameInput = document.getElementById('userNameInput');
@@ -882,23 +931,12 @@
       state.hasSubmittedAnswer = false;
       state.responseCounts = [0, 0, 0, 0];
       state.totalResponses = 0;
-      state.quizTimeRemaining = quiz.timeLimit;
       state.spotlightedItem = { type: 'quiz', data: quiz };
 
       const activeInd = document.getElementById('activeQuizIndicator');
       if (activeInd) activeInd.classList.remove('hidden');
 
-      if (state.activeQuizTimer) clearInterval(state.activeQuizTimer);
-
-      state.activeQuizTimer = setInterval(() => {
-        state.quizTimeRemaining--;
-        renderAudienceQuizPane();
-        renderSpotlight();
-
-        if (state.quizTimeRemaining <= 0) {
-          clearInterval(state.activeQuizTimer);
-        }
-      }, 1000);
+      startQuizTimer(quiz.id, quiz.timeLimit);
 
       switchPresenterSubTab('spotlight');
       renderAll();
