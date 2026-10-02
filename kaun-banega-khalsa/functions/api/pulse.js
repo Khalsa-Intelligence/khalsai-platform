@@ -3,7 +3,7 @@ export async function onRequestPost(context) {
 
   try {
     const data = await request.json().catch(() => ({}));
-    const { sessionId, userId, eventType = 'ping', metadata = {} } = data;
+    const { sessionId, userId, eventType = 'ping', eventCode, metadata = {} } = data;
 
     if (!sessionId) {
       return new Response(JSON.stringify({ error: 'sessionId is required' }), {
@@ -15,16 +15,17 @@ export async function onRequestPost(context) {
     const ipAddress = request.headers.get('cf-connecting-ip') || 'unknown';
     const userAgent = request.headers.get('user-agent') || 'unknown';
 
-    // Insert into PULSE_DB
+    // Store event_code along with metadata
     const statement = env.PULSE_DB.prepare(
-      `INSERT INTO pulse_events (session_id, user_id, event_type, metadata, ip_address, user_agent)
-       VALUES (?, ?, ?, ?, ?, ?)`
+      `INSERT INTO pulse_events (session_id, user_id, event_type, event_code, metadata, ip_address, user_agent)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`
     );
 
     await statement.bind(
       sessionId,
       userId || null,
       eventType,
+      eventCode || null,
       JSON.stringify(metadata),
       ipAddress,
       userAgent
@@ -46,17 +47,25 @@ export async function onRequestPost(context) {
 }
 
 export async function onRequestGet(context) {
-  const { env } = context;
+  const { request, env } = context;
+  const url = new URL(request.url);
+  const eventCode = url.searchParams.get('eventCode');
 
   try {
-    // Retrieve latest 50 pulse logs
-    const { results } = await env.PULSE_DB.prepare(
-      `SELECT id, session_id, user_id, event_type, metadata, created_at 
-       FROM pulse_events 
-       ORDER BY id DESC LIMIT 50`
-    ).all();
+    let query = `SELECT id, session_id, user_id, event_type, event_code, metadata, created_at 
+                 FROM pulse_events`;
+    let params = [];
 
-    // Get total count
+    if (eventCode) {
+      query += ` WHERE event_code = ?`;
+      params.push(eventCode);
+    }
+
+    // Always sort by ID ASC so client replays events in chronological order
+    query += ` ORDER BY id ASC LIMIT 100`;
+
+    const { results } = await env.PULSE_DB.prepare(query).bind(...params).all();
+
     const countResult = await env.PULSE_DB.prepare(
       `SELECT COUNT(*) as total FROM pulse_events`
     ).first();
@@ -82,7 +91,6 @@ export async function onRequestGet(context) {
   }
 }
 
-// OPTIONS handler for CORS preflight
 export async function onRequestOptions() {
   return new Response(null, {
     status: 204,
