@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="en" class="dark h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Khalsa AI Pulse - Modern Live Q&A, Polls & Quizzes</title>
+  
+  <!-- Tailwind CSS & Lucide Icons -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
+  <!-- Google Fonts for Ultra-Clear Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@600;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          },
+          colors: {
+            amber: {
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+              900: '#78350f',
+            },
+            brand: {
+              gold: '#F59E0B',
+              goldLight: '#FBBF24',
+              dark: '#0B0F17',
+              card: '#151C2C',
+              cardBorder: '#232E47'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body {
+      background-color: #080C14;
+      color: #F3F4F6;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .gold-gradient-text {
+      background: linear-gradient(135deg, #FFF 10%, #FBBF24 50%, #F59E0B 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .gold-gradient-bg {
+      background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+    }
+    .glow-gold {
+      box-shadow: 0 0 25px rgba(245, 158, 11, 0.25);
+    }
+    /* Custom High-Contrast Scrollbar */
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0B0F17;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #232E47;
+      border-radius: 5px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #374151;
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col bg-[#080C14] text-gray-100 antialiased overflow-x-hidden selection:bg-amber-500 selection:text-black">
+
+  <!-- Top Navigation Header -->
+  <header class="sticky top-0 z-40 border-b border-gray-800 bg-[#0B0F17]/95 backdrop-blur-md px-4 lg:px-8 py-3 transition-all">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <!-- Logo Branding (Ik Onkar removed, ultra-bold typography) -->
+      <div class="flex items-center space-x-3">
+        <div class="w-11 h-11 rounded-xl gold-gradient-bg flex items-center justify-center text-slate-950 shadow-lg shadow-amber-500/20 font-black text-2xl">
+          <i data-lucide="zap" class="w-6 h-6 stroke-[3]"></i>
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="text-2xl font-black tracking-tight gold-gradient-text uppercase">Khalsa AI Pulse</span>
+            <span class="bg-amber-500/20 text-amber-400 text-xs px-2.5 py-0.5 rounded-full font-bold border border-amber-500/30">PRO</span>
+          </div>
+          <p class="text-xs font-semibold text-gray-400">Interactive Lecture & Conference Platform</p>
+        </div>
+      </div>
+
+      <!-- Center Event Code Badge -->
+      <div class="hidden md:flex items-center space-x-3 bg-gray-900/90 px-4 py-1.5 rounded-xl border border-gray-800">
+        <span class="text-xs uppercase tracking-wider font-extrabold text-gray-400">Event Code:</span>
+        <span class="text-xl font-mono font-black text-amber-400 tracking-wider" id="headerEventCode">#TWGC2026</span>
+        <button onclick="copyEventCode()" class="text-gray-400 hover:text-amber-400 transition" title="Copy Event Code">
+          <i data-lucide="copy" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <!-- Role Switcher & Screen Mode Controls -->
+      <div class="flex items-center space-x-3">
+        <div class="bg-gray-900/90 p-1 rounded-xl border border-gray-800 flex items-center">
+          <button id="btnAudienceView" onclick="switchView('audience')" class="px-4 py-2 rounded-lg text-sm font-extrabold transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow">
+            <i data-lucide="users" class="w-4 h-4"></i>
+            <span>Audience</span>
+          </button>
+          <button id="btnPresenterView" onclick="switchView('presenter')" class="px-4 py-2 rounded-lg text-sm font-extrabold text-gray-400 hover:text-white transition flex items-center space-x-2">
+            <i data-lucide="presentation" class="w-4 h-4"></i>
+            <span>Presenter</span>
+          </button>
+        </div>
+
+        <button onclick="toggleFullscreen()" class="p-2.5 rounded-xl bg-gray-900 border border-gray-800 text-gray-300 hover:text-white hover:border-gray-700 transition" title="Toggle Fullscreen">
+          <i data-lucide="maximize" class="w-5 h-5"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main View Area -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 lg:p-8 flex flex-col">
+    
+    <!-- ========================================== -->
+    <!--          AUDIENCE VIEW CONTAINER           -->
+    <!-- ========================================== -->
+    <div id="audienceView" class="flex-1 flex flex-col space-y-6">
+      <!-- Active Live Banner / Tabs -->
+      <div class="flex flex-wrap items-center justify-between gap-4 bg-gray-900/80 border border-gray-800 p-3 rounded-2xl">
+        <div class="flex space-x-2 overflow-x-auto w-full sm:w-auto">
+          <button onclick="switchAudienceTab('qa')" id="tabAudienceQA" class="px-5 py-2.5 rounded-xl font-bold text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow-md">
+            <i data-lucide="message-square" class="w-5 h-5"></i>
+            <span>Live Q&A</span>
+            <span id="qaBadge" class="ml-1 bg-black/20 px-2 py-0.5 rounded-full text-xs">0</span>
+          </button>
+          <button onclick="switchAudienceTab('quiz')" id="tabAudienceQuiz" class="px-5 py-2.5 rounded-xl font-bold text-base transition flex items-center space-x-2 text-gray-300 hover:bg-gray-800">
+            <i data-lucide="award" class="w-5 h-5"></i>
+            <span>Live Quiz & Polls</span>
+            <span id="activeQuizIndicator" class="hidden w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+          </button>
+        </div>
+
+        <div class="flex items-center space-x-2 text-sm text-gray-400 px-3 py-1 bg-gray-950 rounded-lg border border-gray-800/80">
+          <i data-lucide="circle" class="w-3 h-3 text-emerald-400 fill-emerald-400 animate-pulse"></i>
+          <span class="font-bold text-gray-200">Live Sync Connected</span>
+        </div>
+      </div>
+
+      <!-- TAB 1: AUDIENCE Q&A -->
+      <div id="audienceQAPane" class="space-y-6">
+        <!-- Question Submission Card -->
+        <div class="bg-gradient-to-b from-gray-900 to-[#0F1623] border border-gray-800 rounded-2xl p-5 md:p-6 shadow-xl">
+          <h2 class="text-xl md:text-2xl font-black mb-3 text-white flex items-center space-x-2">
+            <i data-lucide="help-circle" class="w-6 h-6 text-amber-400"></i>
+            <span>Ask the Speaker</span>
+          </h2>
+          <div class="space-y-3">
+            <textarea id="questionInput" rows="3" placeholder="Type your question for #TWGC2026 here... (Keep it concise and clear)" class="w-full bg-gray-950 border border-gray-800 rounded-xl p-4 text-base md:text-lg text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition resize-none font-medium"></textarea>
+            
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div class="flex items-center space-x-3">
+                <input type="text" id="userNameInput" placeholder="Your name (optional)" class="bg-gray-950 border border-gray-800 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 font-medium w-48">
+                <button onclick="summarizeOrEnhanceQuestion()" class="text-xs md:text-sm font-bold text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 px-3 py-2.5 rounded-xl border border-amber-500/30 transition flex items-center space-x-1">
+                  <i data-lucide="sparkles" class="w-4 h-4"></i>
+                  <span>AI Enhance</span>
+                </button>
+              </div>
+
+              <button onclick="submitQuestion()" class="px-6 py-3 rounded-xl gold-gradient-bg text-slate-950 font-extrabold text-base hover:brightness-110 transition shadow-lg flex items-center space-x-2">
+                <span>Submit Question</span>
+                <i data-lucide="send" class="w-4 h-4"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter & Questions List -->
+        <div class="space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xl font-bold text-gray-200">Submitted Questions</h3>
+            <div class="flex items-center space-x-2 text-sm">
+              <button onclick="sortQuestions('upvotes')" id="sortUpvotes" class="px-3 py-1.5 rounded-lg bg-gray-800 text-amber-400 font-bold border border-gray-700">Top Voted</button>
+              <button onclick="sortQuestions('recent')" id="sortRecent" class="px-3 py-1.5 rounded-lg bg-gray-900 text-gray-400 font-bold hover:text-white">Recent</button>
+            </div>
+          </div>
+
+          <div id="audienceQuestionsList" class="space-y-3">
+            <!-- Questions rendered via JavaScript -->
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 2: AUDIENCE QUIZ & POLL INTERFACE -->
+      <div id="audienceQuizPane" class="hidden space-y-6">
+        <div id="audienceQuizContainer" class="bg-gray-900 border border-gray-800 rounded-2xl p-6 md:p-8 text-center space-y-6 shadow-2xl">
+          <!-- Dynamically populated live quiz state or fallback waiting state -->
+          <div class="py-12 space-y-4">
+            <div class="w-16 h-16 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto border border-amber-500/20 animate-pulse">
+              <i data-lucide="clock" class="w-8 h-8"></i>
+            </div>
+            <h2 class="text-2xl md:text-3xl font-extrabold text-white">Waiting for Presenter...</h2>
+            <p class="text-gray-400 max-w-md mx-auto text-base">When the presenter releases a quiz question or live poll for <strong class="text-amber-400">#TWGC2026</strong>, it will appear here instantly!</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!--          PRESENTER VIEW CONTAINER          -->
+    <!-- ========================================== -->
+    <div id="presenterView" class="hidden flex-1 flex-col space-y-6">
+      
+      <!-- Presenter Top Bar / Navigation -->
+      <div class="flex flex-wrap items-center justify-between gap-4 bg-gray-900 border border-gray-800 p-4 rounded-2xl">
+        <div class="flex items-center space-x-3">
+          <span class="bg-emerald-500/10 text-emerald-400 font-extrabold px-3 py-1 rounded-lg border border-emerald-500/30 text-sm flex items-center space-x-1.5">
+            <i data-lucide="tv" class="w-4 h-4"></i>
+            <span>PRESENTER MODE</span>
+          </span>
+          <span class="text-gray-400 text-sm hidden sm:inline">| Event Code: <strong class="text-amber-400 font-mono text-base">#TWGC2026</strong></span>
+        </div>
+
+        <div class="flex items-center space-x-2">
+          <button onclick="switchPresenterSubTab('spotlight')" id="subTabSpotlight" class="px-4 py-2 rounded-xl font-bold text-sm bg-amber-500 text-slate-950 shadow">
+            Screen Spotlight
+          </button>
+          <button onclick="switchPresenterSubTab('manager')" id="subTabManager" class="px-4 py-2 rounded-xl font-bold text-sm bg-gray-800 text-gray-300 hover:text-white">
+            Quiz & Poll Builder
+          </button>
+          <button onclick="switchPresenterSubTab('questions')" id="subTabQuestions" class="px-4 py-2 rounded-xl font-bold text-sm bg-gray-800 text-gray-300 hover:text-white">
+            Q&A Controls
+          </button>
+        </div>
+      </div>
+
+      <!-- SUB-TAB 1: PRESENTER SPOTLIGHT (PROJECTOR SCREEN OPTIMIZED) -->
+      <div id="presenterSpotlightPane" class="space-y-6">
+        
+        <!-- Big Banner Code & Title for Lecture Theatre Screen -->
+        <div class="bg-gradient-to-r from-amber-500/10 via-gray-900 to-amber-500/10 border-2 border-amber-500/40 rounded-3xl p-6 md:p-8 text-center space-y-2 glow-gold">
+          <p class="text-amber-400 text-lg md:text-xl font-extrabold tracking-widest uppercase">JOIN AT PRESETER.LINK WITH CODE</p>
+          <h1 class="text-5xl md:text-7xl font-mono font-black text-white tracking-widest gold-gradient-text" id="projectorEventCode">#TWGC2026</h1>
+        </div>
+
+        <!-- Spotlight Item Area (Massive Typography for Projection) -->
+        <div id="spotlightContent" class="bg-gray-900 border-2 border-gray-800 rounded-3xl p-8 md:p-12 text-center min-h-[380px] flex flex-col justify-center items-center shadow-2xl relative overflow-hidden">
+          <div class="absolute top-4 left-6 flex items-center space-x-2 text-gray-500 uppercase font-black text-sm tracking-wider">
+            <i data-lucide="sparkles" class="w-5 h-5 text-amber-400"></i>
+            <span>Projector Screen Focus</span>
+          </div>
+
+          <div id="spotlightDisplayArea" class="w-full space-y-6">
+            <div class="space-y-4">
+              <i data-lucide="presentation" class="w-16 h-16 text-gray-700 mx-auto"></i>
+              <h2 class="text-3xl md:text-5xl font-black text-gray-400">No Item Currently Spotlighted</h2>
+              <p class="text-xl text-gray-500 font-medium max-w-xl mx-auto">Select a Q&A question below or release a live Quiz question from the Builder to present onto the main screen.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Leaderboard Stage Preview (When Active) -->
+        <div id="presenterLeaderboardCard" class="bg-gray-900 border border-gray-800 rounded-2xl p-6 space-y-4 hidden">
+          <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+            <h3 class="text-2xl font-black text-amber-400 flex items-center space-x-2">
+              <i data-lucide="trophy" class="w-7 h-7"></i>
+              <span>Live Quiz Leaderboard</span>
+            </h3>
+            <span class="text-sm font-bold text-gray-400">Top Participants</span>
+          </div>
+          <div id="leaderboardList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <!-- SUB-TAB 2: QUIZ & POLL BUILDER (PRESENTER MANAGEMENT) -->
+      <div id="presenterManagerPane" class="hidden space-y-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          
+          <!-- Left: Quiz Question Creator Form -->
+          <div class="lg:col-span-5 bg-gray-900 border border-gray-800 rounded-2xl p-6 space-y-5">
+            <div class="border-b border-gray-800 pb-3">
+              <h3 class="text-2xl font-black text-white flex items-center space-x-2">
+                <i data-lucide="plus-circle" class="w-6 h-6 text-amber-400"></i>
+                <span>Create Quiz Question</span>
+              </h3>
+              <p class="text-sm text-gray-400">Pre-make questions with correct answers & timers.</p>
+            </div>
+
+            <div class="space-y-4">
+              <div>
+                <label class="block text-sm font-bold text-gray-300 mb-1">Question Title</label>
+                <input type="text" id="newQuizTitle" placeholder="e.g. What is the core principle of..." class="w-full bg-gray-950 border border-gray-800 rounded-xl px-4 py-3 text-base text-white focus:outline-none focus:border-amber-500">
+              </div>
+
+              <!-- 4 Options Inputs -->
+              <div class="space-y-2">
+                <label class="block text-sm font-bold text-gray-300">Answer Options & Select Correct One</label>
+                
+                <div class="flex items-center space-x-2">
+                  <input type="radio" name="correctOption" value="0" checked class="w-5 h-5 accent-amber-500">
+                  <input type="text" id="option0" placeholder="Option A" class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white">
+                </div>
+                <div class="flex items-center space-x-2">
+                  <input type="radio" name="correctOption" value="1" class="w-5 h-5 accent-amber-500">
+                  <input type="text" id="option1" placeholder="Option B" class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white">
+                </div>
+                <div class="flex items-center space-x-2">
+                  <input type="radio" name="correctOption" value="2" class="w-5 h-5 accent-amber-500">
+                  <input type="text" id="option2" placeholder="Option C" class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white">
+                </div>
+                <div class="flex items-center space-x-2">
+                  <input type="radio" name="correctOption" value="3" class="w-5 h-5 accent-amber-500">
+                  <input type="text" id="option3" placeholder="Option D" class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white">
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-bold text-gray-300 mb-1">Time Limit</label>
+                  <select id="newQuizTimer" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none">
+                    <option value="15">15 Seconds</option>
+                    <option value="30" selected>30 Seconds</option>
+                    <option value="45">45 Seconds</option>
+                    <option value="60">60 Seconds</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="block text-sm font-bold text-gray-300 mb-1">Points</label>
+                  <input type="number" id="newQuizPoints" value="100" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-sm text-white">
+                </div>
+              </div>
+
+              <!-- AI Generation Helper -->
+              <div class="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl space-y-2">
+                <button onclick="generateAIQuizQuestion()" class="w-full text-xs font-extrabold text-amber-400 flex items-center justify-center space-x-1 hover:underline">
+                  <i data-lucide="sparkles" class="w-4 h-4"></i>
+                  <span>Auto-Generate Quiz Question using Gemini AI</span>
+                </button>
+              </div>
+
+              <button onclick="addCustomQuizQuestion()" class="w-full py-3 rounded-xl gold-gradient-bg text-slate-950 font-extrabold text-base hover:brightness-110 transition shadow-md">
+                Save Question to Quiz Deck
+              </button>
+            </div>
+          </div>
+
+          <!-- Right: Pre-made Questions List & Live Controls -->
+          <div class="lg:col-span-7 space-y-4">
+            <div class="flex items-center justify-between">
+              <h3 class="text-xl font-extrabold text-white">Pre-Loaded Quiz Deck (#TWGC2026)</h3>
+              <div class="flex items-center space-x-2">
+                <button onclick="resetQuizDeck()" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-lg border border-gray-700 font-bold">
+                  Reset Pre-loaded Deck
+                </button>
+              </div>
+            </div>
+
+            <div id="quizDeckList" class="space-y-3">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- SUB-TAB 3: Q&A MANAGEMENT CONTROLS -->
+      <div id="presenterQuestionsPane" class="hidden space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xl font-extrabold text-white">Moderation & Question List</h3>
+          <button onclick="clearAllQuestions()" class="text-xs font-bold text-red-400 hover:bg-red-500/10 border border-red-500/30 px-3 py-1.5 rounded-lg">
+            Clear All Q&A
+          </button>
+        </div>
+
+        <div id="presenterQuestionsList" class="space-y-3">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+    /* ==========================================================================
+       APP STATE MANAGEMENT
+       ========================================================================== */
+    const DEFAULT_EVENT_CODE = "#TWGC2026";
+    let eventCode = DEFAULT_EVENT_CODE;
+
+    // Default Pre-loaded Questions for #TWGC2026
+    const defaultQuizDeck = [
+      {
+        id: "q1",
+        title: "What is the primary theme of the Sikh philosophy on truthful living?",
+        options: [
+          "Truth is the highest virtue, but higher still is truthful living",
+          "Knowledge alone conquers all obstacles",
+          "Renunciation of the world is necessary",
+          "Individual isolation leads to perfection"
+        ],
+        correct: 0,
+        timeLimit: 30,
+        points: 100
+      },
+      {
+        id: "q2",
+        title: "Which concept highlights community service and selfless sharing in Gurmat?",
+        options: [
+          "Vand Chhako & Seva",
+          "Manmukh Mindset",
+          "Karmic Isolation",
+          "Asceticism"
+        ],
+        correct: 0,
+        timeLimit: 25,
+        points: 100
+      },
+      {
+        id: "q3",
+        title: "In modern AI governance, what key ethical principle aligns closest with Sarbat da Bhala?",
+        options: [
+          "Universal Benefit & Ethical Inclusion for all humanity",
+          "Maximizing corporate profits",
+          "Restricting AI access to select institutions",
+          "Automating without human oversight"
+        ],
+        correct: 0,
+        timeLimit: 30,
+        points: 100
+      }
+    ];
+
+    let state = {
+      view: 'audience', // 'audience' | 'presenter'
+      audienceTab: 'qa', // 'qa' | 'quiz'
+      presenterSubTab: 'spotlight', // 'spotlight' | 'manager' | 'questions'
+      questions: [
+        {
+          id: 1,
+          author: "Gurpreet S.",
+          text: "How can AI ethics be effectively guided by core timeless values like equality and community service?",
+          upvotes: 14,
+          voted: false,
+          timestamp: "10:15 AM",
+          answered: false
+        },
+        {
+          id: 2,
+          author: "Dr. Kaur",
+          text: "What are the key takeaways from the #TWGC2026 keynotes regarding future technology education?",
+          upvotes: 8,
+          voted: false,
+          timestamp: "10:22 AM",
+          answered: false
+        }
+      ],
+      quizDeck: [...defaultQuizDeck],
+      activeQuizQuestion: null, // Currently released quiz question
+      activeQuizTimer: null,
+      quizTimeRemaining: 0,
+      hasSubmittedAnswer: false,
+      userScores: {
+        "Preet K.": 280,
+        "Aman Singh": 200,
+        "Simran Kaur": 190,
+        "You": 0
+      },
+      spotlightedItem: null // Can be question or active quiz
+    };
+
+    window.onload = function() {
+      lucide.createIcons();
+      renderAll();
+    };
+
+    function switchView(viewMode) {
+      state.view = viewMode;
+      const audBtn = document.getElementById('btnAudienceView');
+      const presBtn = document.getElementById('btnPresenterView');
+      const audView = document.getElementById('audienceView');
+      const presView = document.getElementById('presenterView');
+
+      if (viewMode === 'audience') {
+        audView.classList.remove('hidden');
+        audView.classList.add('flex');
+        presView.classList.add('hidden');
+        presView.classList.remove('flex');
+
+        audBtn.className = "px-4 py-2 rounded-lg text-sm font-extrabold transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow";
+        presBtn.className = "px-4 py-2 rounded-lg text-sm font-extrabold text-gray-400 hover:text-white transition flex items-center space-x-2";
+      } else {
+        presView.classList.remove('hidden');
+        presView.classList.add('flex');
+        audView.classList.add('hidden');
+        audView.classList.remove('flex');
+
+        presBtn.className = "px-4 py-2 rounded-lg text-sm font-extrabold transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow";
+        audBtn.className = "px-4 py-2 rounded-lg text-sm font-extrabold text-gray-400 hover:text-white transition flex items-center space-x-2";
+      }
+      lucide.createIcons();
+    }
+
+    function switchAudienceTab(tab) {
+      state.audienceTab = tab;
+      const qaBtn = document.getElementById('tabAudienceQA');
+      const quizBtn = document.getElementById('tabAudienceQuiz');
+      const qaPane = document.getElementById('audienceQAPane');
+      const quizPane = document.getElementById('audienceQuizPane');
+
+      if (tab === 'qa') {
+        qaPane.classList.remove('hidden');
+        quizPane.classList.add('hidden');
+        qaBtn.className = "px-5 py-2.5 rounded-xl font-bold text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow-md";
+        quizBtn.className = "px-5 py-2.5 rounded-xl font-bold text-base transition flex items-center space-x-2 text-gray-300 hover:bg-gray-800";
+      } else {
+        quizPane.classList.remove('hidden');
+        qaPane.classList.add('hidden');
+        quizBtn.className = "px-5 py-2.5 rounded-xl font-bold text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow-md";
+        qaBtn.className = "px-5 py-2.5 rounded-xl font-bold text-base transition flex items-center space-x-2 text-gray-300 hover:bg-gray-800";
+      }
+      lucide.createIcons();
+    }
+
+    function switchPresenterSubTab(subTab) {
+      state.presenterSubTab = subTab;
+      document.getElementById('subTabSpotlight').className = subTab === 'spotlight' ? "px-4 py-2 rounded-xl font-bold text-sm bg-amber-500 text-slate-950 shadow" : "px-4 py-2 rounded-xl font-bold text-sm bg-gray-800 text-gray-300 hover:text-white";
+      document.getElementById('subTabManager').className = subTab === 'manager' ? "px-4 py-2 rounded-xl font-bold text-sm bg-amber-500 text-slate-950 shadow" : "px-4 py-2 rounded-xl font-bold text-sm bg-gray-800 text-gray-300 hover:text-white";
+      document.getElementById('subTabQuestions').className = subTab === 'questions' ? "px-4 py-2 rounded-xl font-bold text-sm bg-amber-500 text-slate-950 shadow" : "px-4 py-2 rounded-xl font-bold text-sm bg-gray-800 text-gray-300 hover:text-white";
+
+      document.getElementById('presenterSpotlightPane').classList.toggle('hidden', subTab !== 'spotlight');
+      document.getElementById('presenterManagerPane').classList.toggle('hidden', subTab !== 'manager');
+      document.getElementById('presenterQuestionsPane').classList.toggle('hidden', subTab !== 'questions');
+
+      lucide.createIcons();
+    }
+
+    function submitQuestion() {
+      const qInput = document.getElementById('questionInput');
+      const nameInput = document.getElementById('userNameInput');
+      const text = qInput.value.trim();
+      const author = nameInput.value.trim() || "Anonymous Participant";
+
+      if (!text) return;
+
+      const newQ = {
+        id: Date.now(),
+        author: author,
+        text: text,
+        upvotes: 1,
+        voted: true,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        answered: false
+      };
+
+      state.questions.unshift(newQ);
+      qInput.value = "";
+      renderQuestions();
+    }
+
+    function toggleUpvote(id) {
+      const q = state.questions.find(item => item.id === id);
+      if (q) {
+        if (q.voted) {
+          q.upvotes--;
+          q.voted = false;
+        } else {
+          q.upvotes++;
+          q.voted = true;
+        }
+        renderQuestions();
+      }
+    }
+
+    function sortQuestions(type) {
+      if (type === 'upvotes') {
+        state.questions.sort((a, b) => b.upvotes - a.upvotes);
+        document.getElementById('sortUpvotes').className = "px-3 py-1.5 rounded-lg bg-gray-800 text-amber-400 font-bold border border-gray-700";
+        document.getElementById('sortRecent').className = "px-3 py-1.5 rounded-lg bg-gray-900 text-gray-400 font-bold hover:text-white";
+      } else {
+        state.questions.sort((a, b) => b.id - a.id);
+        document.getElementById('sortRecent').className = "px-3 py-1.5 rounded-lg bg-gray-800 text-amber-400 font-bold border border-gray-700";
+        document.getElementById('sortUpvotes').className = "px-3 py-1.5 rounded-lg bg-gray-900 text-gray-400 font-bold hover:text-white";
+      }
+      renderQuestions();
+    }
+
+    function spotlightQuestion(id) {
+      const q = state.questions.find(item => item.id === id);
+      if (!q) return;
+
+      state.spotlightedItem = {
+        type: 'question',
+        data: q
+      };
+
+      switchView('presenter');
+      switchPresenterSubTab('spotlight');
+      renderSpotlight();
+    }
+
+    function toggleAnswered(id) {
+      const q = state.questions.find(item => item.id === id);
+      if (q) {
+        q.answered = !q.answered;
+        renderQuestions();
+      }
+    }
+
+    function clearAllQuestions() {
+      if (confirm("Are you sure you want to clear all questions?")) {
+        state.questions = [];
+        renderQuestions();
+      }
+    }
+
+    function addCustomQuizQuestion() {
+      const title = document.getElementById('newQuizTitle').value.trim();
+      const o0 = document.getElementById('option0').value.trim();
+      const o1 = document.getElementById('option1').value.trim();
+      const o2 = document.getElementById('option2').value.trim();
+      const o3 = document.getElementById('option3').value.trim();
+      const correctIndex = parseInt(document.querySelector('input[name="correctOption"]:checked').value);
+      const timeLimit = parseInt(document.getElementById('newQuizTimer').value);
+      const points = parseInt(document.getElementById('newQuizPoints').value) || 100;
+
+      if (!title || !o0 || !o1) {
+        alert("Please fill in at least the question title and options A & B.");
+        return;
+      }
+
+      const newQuiz = {
+        id: "q_" + Date.now(),
+        title: title,
+        options: [o0, o1, o2 || "Option C", o3 || "Option D"],
+        correct: correctIndex,
+        timeLimit: timeLimit,
+        points: points
+      };
+
+      state.quizDeck.push(newQuiz);
+      renderQuizDeck();
+
+      // Reset Form
+      document.getElementById('newQuizTitle').value = "";
+      document.getElementById('option0').value = "";
+      document.getElementById('option1').value = "";
+      document.getElementById('option2').value = "";
+      document.getElementById('option3').value = "";
+    }
+
+    function resetQuizDeck() {
+      state.quizDeck = [...defaultQuizDeck];
+      renderQuizDeck();
+    }
+
+    function releaseQuizQuestion(quizId) {
+      const quiz = state.quizDeck.find(q => q.id === quizId);
+      if (!quiz) return;
+
+      // Set active quiz state
+      state.activeQuizQuestion = quiz;
+      state.hasSubmittedAnswer = false;
+      state.quizTimeRemaining = quiz.timeLimit;
+      state.spotlightedItem = {
+        type: 'quiz',
+        data: quiz
+      };
+
+      // Show indicator badge on audience tab
+      document.getElementById('activeQuizIndicator').classList.remove('hidden');
+
+      // Start Countdown Timer
+      if (state.activeQuizTimer) clearInterval(state.activeQuizTimer);
+
+      state.activeQuizTimer = setInterval(() => {
+        state.quizTimeRemaining--;
+        renderAudienceQuizPane();
+        renderSpotlight();
+
+        if (state.quizTimeRemaining <= 0) {
+          clearInterval(state.activeQuizTimer);
+          // Auto reveal correct answer on expiry
+        }
+      }, 1000);
+
+      // Auto switch to spotlight tab for presenter
+      switchPresenterSubTab('spotlight');
+      renderAll();
+    }
+
+    function submitAudienceAnswer(selectedIndex) {
+      if (state.hasSubmittedAnswer || !state.activeQuizQuestion) return;
+
+      state.hasSubmittedAnswer = true;
+      const isCorrect = selectedIndex === state.activeQuizQuestion.correct;
+
+      if (isCorrect) {
+        state.userScores["You"] += state.activeQuizQuestion.points;
+        confetti({ particleCount: 80, spread: 60, origin: { y: 0.7 } });
+      }
+
+      renderAudienceQuizPane();
+      renderSpotlight();
+    }
+
+    async function summarizeOrEnhanceQuestion() {
+      const qInput = document.getElementById('questionInput');
+      const text = qInput.value.trim();
+      if (!text) return;
+
+      qInput.placeholder = "AI is refining your question...";
+      
+      const apiKey = ""; // Canvas dynamic key injection
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+      const systemPrompt = "You are a world-class conference editor. Polish and rephrase the given audience question into a super clear, crisp, high-impact question appropriate for a keynote speaker.";
+      const payload = {
+        contents: [{ parts: [{ text: text }] }],
+        systemInstruction: { parts: [{ text: systemPrompt }] }
+      };
+
+      try {
+        const res = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        const enhancedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (enhancedText) {
+          qInput.value = enhancedText.trim();
+        }
+      } catch (err) {
+        console.error("AI enhancement error:", err);
+      }
+    }
+
+    async function generateAIQuizQuestion() {
+      const titleInput = document.getElementById('newQuizTitle');
+      titleInput.placeholder = "Gemini is generating a high-quality lecture quiz question...";
+      
+      const apiKey = "";
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+      const prompt = "Generate 1 multiple choice question based on modern Sikh history, community leadership, or ethical tech for #TWGC2026. Respond in JSON with format: {\"title\": \"string\", \"options\": [\"optA\", \"optB\", \"optC\", \"optD\"], \"correct\": 0}";
+      
+      const payload = {
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { responseMimeType: "application/json" }
+      };
+
+      try {
+        const res = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        const jsonText = data.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (jsonText) {
+          const parsed = JSON.parse(jsonText);
+          titleInput.value = parsed.title;
+          document.getElementById('option0').value = parsed.options[0];
+          document.getElementById('option1').value = parsed.options[1];
+          document.getElementById('option2').value = parsed.options[2];
+          document.getElementById('option3').value = parsed.options[3];
+        }
+      } catch (err) {
+        console.error("Error generating AI question:", err);
+      }
+    }
+
+    function renderAll() {
+      renderQuestions();
+      renderQuizDeck();
+      renderAudienceQuizPane();
+      renderSpotlight();
+      lucide.createIcons();
+    }
+
+    function renderQuestions() {
+      const listContainer = document.getElementById('audienceQuestionsList');
+      const presListContainer = document.getElementById('presenterQuestionsList');
+      const qaBadge = document.getElementById('qaBadge');
+
+      qaBadge.textContent = state.questions.length;
+
+      if (state.questions.length === 0) {
+        listContainer.innerHTML = `<div class="p-8 text-center text-gray-500 bg-gray-900/50 rounded-2xl border border-gray-800">No questions submitted yet. Be the first!</div>`;
+        presListContainer.innerHTML = `<div class="p-8 text-center text-gray-500 bg-gray-900 rounded-2xl border border-gray-800">No questions in Q&A queue.</div>`;
+        return;
+      }
+
+      // Audience List HTML
+      listContainer.innerHTML = state.questions.map(q => `
+        <div class="bg-gray-900 border ${q.answered ? 'border-emerald-500/30 bg-emerald-950/10' : 'border-gray-800'} rounded-2xl p-5 flex items-start justify-between gap-4 transition hover:border-gray-700">
+          <div class="space-y-2 flex-1">
+            <div class="flex items-center space-x-3 text-xs md:text-sm text-gray-400">
+              <span class="font-bold text-amber-400">${q.author}</span>
+              <span>•</span>
+              <span>${q.timestamp}</span>
+              ${q.answered ? '<span class="bg-emerald-500/20 text-emerald-400 text-xs px-2 py-0.5 rounded-full font-bold">Answered Live</span>' : ''}
+            </div>
+            <!-- Large High Contrast Question Text -->
+            <p class="text-lg md:text-xl font-bold text-gray-100 leading-snug">${q.text}</p>
+          </div>
+
+          <button onclick="toggleUpvote(${q.id})" class="flex flex-col items-center justify-center px-4 py-2.5 rounded-xl border ${q.voted ? 'bg-amber-500 text-slate-950 border-amber-400 font-black' : 'bg-gray-950 border-gray-800 text-gray-300 hover:border-amber-500/50'} transition">
+            <i data-lucide="thumbs-up" class="w-5 h-5"></i>
+            <span class="text-base font-extrabold mt-1">${q.upvotes}</span>
+          </button>
+        </div>
+      `).join('');
+
+      // Presenter Moderation List
+      presListContainer.innerHTML = state.questions.map(q => `
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 flex items-center justify-between gap-4">
+          <div class="space-y-1 flex-1">
+            <div class="flex items-center space-x-2 text-xs text-gray-400">
+              <span class="font-bold text-amber-400">${q.author}</span>
+              <span>• ${q.upvotes} Votes</span>
+            </div>
+            <p class="text-base font-bold text-white">${q.text}</p>
+          </div>
+
+          <div class="flex items-center space-x-2">
+            <button onclick="spotlightQuestion(${q.id})" class="px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold text-xs hover:brightness-110 flex items-center space-x-1">
+              <i data-lucide="tv" class="w-3.5 h-3.5"></i>
+              <span>Spotlight</span>
+            </button>
+            <button onclick="toggleAnswered(${q.id})" class="px-3 py-1.5 rounded-lg border border-gray-700 text-gray-300 font-bold text-xs hover:bg-gray-800">
+              ${q.answered ? 'Unmark' : 'Done'}
+            </button>
+          </div>
+        </div>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    function renderQuizDeck() {
+      const container = document.getElementById('quizDeckList');
+      container.innerHTML = state.quizDeck.map((q, idx) => `
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 space-y-3 flex items-center justify-between gap-4">
+          <div class="space-y-1 flex-1">
+            <div class="flex items-center space-x-2">
+              <span class="bg-amber-500/20 text-amber-400 text-xs font-mono font-bold px-2.5 py-0.5 rounded-md">Q${idx + 1}</span>
+              <span class="text-xs text-gray-400 font-bold"><i data-lucide="clock" class="w-3 h-3 inline"></i> ${q.timeLimit}s Timer</span>
+            </div>
+            <p class="text-lg font-bold text-white">${q.title}</p>
+            <div class="grid grid-cols-2 gap-2 text-xs text-gray-400 pt-1">
+              ${q.options.map((opt, oIdx) => `<div class="${oIdx === q.correct ? 'text-amber-400 font-bold' : ''}">• ${opt}</div>`).join('')}
+            </div>
+          </div>
+
+          <button onclick="releaseQuizQuestion('${q.id}')" class="px-5 py-3 rounded-xl gold-gradient-bg text-slate-950 font-black text-sm hover:brightness-110 transition shadow-lg flex items-center space-x-1.5 shrink-0">
+            <i data-lucide="play-circle" class="w-5 h-5"></i>
+            <span>Release Live</span>
+          </button>
+        </div>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    function renderAudienceQuizPane() {
+      const container = document.getElementById('audienceQuizContainer');
+      const activeQ = state.activeQuizQuestion;
+
+      if (!activeQ) {
+        container.innerHTML = `
+          <div class="py-12 space-y-4">
+            <div class="w-16 h-16 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto border border-amber-500/20 animate-pulse">
+              <i data-lucide="clock" class="w-8 h-8"></i>
+            </div>
+            <h2 class="text-2xl md:text-3xl font-extrabold text-white">Waiting for Presenter...</h2>
+            <p class="text-gray-400 max-w-md mx-auto text-base">When the presenter releases a quiz question or live poll for <strong class="text-amber-400">#TWGC2026</strong>, it will appear here instantly!</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Active Quiz Screen for Audience with Large Buttons & Clear Countdown
+      container.innerHTML = `
+        <div class="space-y-6 text-left">
+          <div class="flex items-center justify-between border-b border-gray-800 pb-4">
+            <div>
+              <span class="text-xs uppercase font-extrabold text-amber-400 tracking-wider">LIVE AUDIENCE QUIZ</span>
+              <h3 class="text-2xl md:text-4xl font-black text-white mt-1">${activeQ.title}</h3>
+            </div>
+            
+            <div class="text-center bg-gray-950 px-5 py-3 rounded-2xl border border-amber-500/40">
+              <span class="block text-xs font-bold text-gray-400">TIME LEFT</span>
+              <span class="text-3xl font-mono font-black ${state.quizTimeRemaining < 10 ? 'text-red-500 animate-ping' : 'text-amber-400'}">${state.quizTimeRemaining}s</span>
+            </div>
+          </div>
+
+          <!-- Ultra-Readable Large Quiz Option Buttons -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+            ${activeQ.options.map((opt, idx) => {
+              const isCorrect = idx === activeQ.correct;
+              let btnStyle = "bg-gray-950 border-gray-800 text-white hover:border-amber-500 hover:bg-gray-800/80";
+              
+              if (state.hasSubmittedAnswer) {
+                if (isCorrect) {
+                  btnStyle = "bg-emerald-500/20 border-emerald-500 text-emerald-300 font-black";
+                } else {
+                  btnStyle = "bg-gray-950 border-gray-900 text-gray-600 opacity-60";
+                }
+              }
+
+              return `
+                <button onclick="submitAudienceAnswer(${idx})" ${state.hasSubmittedAnswer || state.quizTimeRemaining <= 0 ? 'disabled' : ''} class="w-full p-5 md:p-6 rounded-2xl border-2 text-left font-bold text-lg md:text-xl transition flex items-center justify-between ${btnStyle}">
+                  <span>${opt}</span>
+                  <span class="w-8 h-8 rounded-full bg-gray-800/80 flex items-center justify-center font-mono text-sm">${String.fromCharCode(65 + idx)}</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+
+          ${state.hasSubmittedAnswer ? `
+            <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-center text-amber-400 font-bold text-lg">
+              Answer Submitted! Check main presenter screen for overall results.
+            </div>
+          ` : ''}
+        </div>
+      `;
+
+      lucide.createIcons();
+    }
+
+    function renderSpotlight() {
+      const displayArea = document.getElementById('spotlightDisplayArea');
+      const leaderboardCard = document.getElementById('presenterLeaderboardCard');
+      const item = state.spotlightedItem;
+
+      if (!item) {
+        displayArea.innerHTML = `
+          <div class="space-y-4">
+            <i data-lucide="presentation" class="w-16 h-16 text-gray-700 mx-auto"></i>
+            <h2 class="text-3xl md:text-5xl font-black text-gray-400">No Item Currently Spotlighted</h2>
+            <p class="text-xl text-gray-500 font-medium max-w-xl mx-auto">Select a Q&A question or release a Quiz from the Manager tab to spotlight onto the projector screen.</p>
+          </div>
+        `;
+        leaderboardCard.classList.add('hidden');
+        return;
+      }
+
+      if (item.type === 'question') {
+        const q = item.data;
+        displayArea.innerHTML = `
+          <div class="space-y-6 text-left max-w-4xl mx-auto py-4">
+            <div class="flex items-center space-x-3 text-lg font-bold text-amber-400">
+              <span class="bg-amber-500/20 px-3 py-1 rounded-lg border border-amber-500/30">AUDIENCE SPOTLIGHT</span>
+              <span>• Asked by ${q.author} (${q.upvotes} Votes)</span>
+            </div>
+            
+            <!-- Ultra Boosted Question Spotlight Text (2.5rem+ / 40px+) -->
+            <h2 class="text-4xl md:text-6xl font-black text-white leading-tight gold-gradient-text">
+              "${q.text}"
+            </h2>
+          </div>
+        `;
+        leaderboardCard.classList.add('hidden');
+      } 
+      else if (item.type === 'quiz') {
+        const q = item.data;
+        displayArea.innerHTML = `
+          <div class="space-y-8 text-left max-w-5xl mx-auto">
+            <div class="flex items-center justify-between">
+              <span class="bg-amber-500 text-slate-950 px-4 py-1.5 rounded-xl font-black text-lg">LIVE QUIZ QUESTION</span>
+              <div class="flex items-center space-x-3">
+                <span class="text-xl text-gray-400 font-bold">TIMER:</span>
+                <span class="text-5xl font-mono font-black ${state.quizTimeRemaining < 10 ? 'text-red-500 animate-pulse' : 'text-amber-400'}">${state.quizTimeRemaining}s</span>
+              </div>
+            </div>
+
+            <!-- Quiz Title Boosted Font -->
+            <h2 class="text-3xl md:text-5xl font-black text-white leading-snug">${q.title}</h2>
+
+            <!-- Options Grid (Presenter Large Projection View) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              ${q.options.map((opt, idx) => {
+                const showAnswer = state.quizTimeRemaining <= 0;
+                const isCorrect = idx === q.correct;
+                
+                return `
+                  <div class="p-6 rounded-2xl border-2 flex items-center justify-between ${showAnswer && isCorrect ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300' : 'bg-gray-950 border-gray-800 text-gray-200'}">
+                    <span class="text-2xl font-extrabold">${opt}</span>
+                    <span class="text-xl font-mono font-black text-amber-400 bg-amber-500/10 px-4 py-2 rounded-xl">${String.fromCharCode(65 + idx)}</span>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `;
+
+        // Render Leaderboard on Spotlight Page
+        leaderboardCard.classList.remove('hidden');
+        renderLeaderboard();
+      }
+
+      lucide.createIcons();
+    }
+
+    function renderLeaderboard() {
+      const list = document.getElementById('leaderboardList');
+      const sortedUsers = Object.entries(state.userScores).sort((a, b) => b[1] - a[1]);
+
+      list.innerHTML = sortedUsers.map(([name, score], idx) => `
+        <div class="flex items-center justify-between p-4 rounded-xl bg-gray-950 border border-gray-800">
+          <div class="flex items-center space-x-3">
+            <span class="w-8 h-8 rounded-full ${idx === 0 ? 'bg-amber-500 text-slate-950' : 'bg-gray-800 text-gray-300'} flex items-center justify-center font-black text-base">${idx + 1}</span>
+            <span class="text-xl font-extrabold text-white">${name}</span>
+          </div>
+          <span class="text-2xl font-mono font-black text-amber-400">${score} pts</span>
+        </div>
+      `).join('');
+    }
+
+    function copyEventCode() {
+      const tempInput = document.createElement("input");
+      tempInput.value = eventCode;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand("copy");
+      document.body.removeChild(tempInput);
+      alert("Event code #TWGC2026 copied to clipboard!");
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen();
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+  </script>
+</body>
+</html>
