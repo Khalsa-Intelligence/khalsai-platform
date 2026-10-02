@@ -5,10 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Khalsa AI Pulse - Modern Live Q&A, Polls & Quizzes</title>
   
-  <!-- Tailwind CSS & Lucide Icons -->
+  <!-- Tailwind CSS, Lucide Icons & QR Code Generator -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -60,18 +61,11 @@
     .glow-gold {
       box-shadow: 0 0 25px rgba(245, 158, 11, 0.25);
     }
-    ::-webkit-scrollbar {
-      width: 10px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #0B0F17;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #232E47;
-      border-radius: 5px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #374151;
+    #qrcode canvas, #qrcode img {
+      margin: 0 auto;
+      border-radius: 12px;
+      padding: 8px;
+      background: white;
     }
   </style>
 </head>
@@ -79,7 +73,7 @@
 
   <!-- Top Navigation Header -->
   <header class="sticky top-0 z-40 border-b border-gray-800 bg-[#0B0F17]/95 backdrop-blur-md px-4 lg:px-8 py-3 transition-all">
-    <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
       <!-- Logo Branding -->
       <div class="flex items-center space-x-3">
         <div class="w-11 h-11 rounded-xl gold-gradient-bg flex items-center justify-center text-slate-950 shadow-lg shadow-amber-500/20 font-black text-2xl">
@@ -94,7 +88,7 @@
         </div>
       </div>
 
-      <!-- Center Event Code Display & Quick Copy -->
+      <!-- Event Code Display & Quick Actions -->
       <div class="hidden md:flex items-center space-x-3 bg-gray-900/90 px-4 py-1.5 rounded-xl border border-gray-800">
         <span class="text-xs uppercase tracking-wider font-extrabold text-gray-400">Event Code:</span>
         <span class="text-xl font-mono font-black text-amber-400 tracking-wider event-code-display">#TWGC2026</span>
@@ -103,8 +97,15 @@
         </button>
       </div>
 
-      <!-- Role Switcher & Fullscreen Controls -->
+      <!-- Header Action Buttons -->
       <div class="flex items-center space-x-3">
+        <!-- Direct Feedback Page Button -->
+        <a href="https://khalsai.com/why-guru-feedback/" target="_blank" rel="noopener noreferrer" class="hidden sm:flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-400 font-bold text-xs md:text-sm transition">
+          <i data-lucide="message-square-heart" class="w-4 h-4"></i>
+          <span>Give Feedback</span>
+        </a>
+
+        <!-- Role Switcher -->
         <div class="bg-gray-900/90 p-1 rounded-xl border border-gray-800 flex items-center">
           <button id="btnAudienceView" onclick="switchView('audience')" class="px-4 py-2 rounded-lg text-sm font-extrabold transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow">
             <i data-lucide="users" class="w-4 h-4"></i>
@@ -130,7 +131,6 @@
     <!--          AUDIENCE VIEW CONTAINER           -->
     <!-- ========================================== -->
     <div id="audienceView" class="flex-1 flex flex-col space-y-6">
-      <!-- Active Live Banner / Tabs -->
       <div class="flex flex-wrap items-center justify-between gap-4 bg-gray-900/80 border border-gray-800 p-3 rounded-2xl">
         <div class="flex space-x-2 overflow-x-auto w-full sm:w-auto">
           <button onclick="switchAudienceTab('qa')" id="tabAudienceQA" class="px-5 py-2.5 rounded-xl font-bold text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow-md">
@@ -196,13 +196,7 @@
       <!-- TAB 2: AUDIENCE QUIZ & POLL INTERFACE -->
       <div id="audienceQuizPane" class="hidden space-y-6">
         <div id="audienceQuizContainer" class="bg-gray-900 border border-gray-800 rounded-2xl p-6 md:p-8 text-center space-y-6 shadow-2xl">
-          <div class="py-12 space-y-4">
-            <div class="w-16 h-16 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto border border-amber-500/20 animate-pulse">
-              <i data-lucide="clock" class="w-8 h-8"></i>
-            </div>
-            <h2 class="text-2xl md:text-3xl font-extrabold text-white">Waiting for Presenter...</h2>
-            <p class="text-gray-400 max-w-md mx-auto text-base">When the presenter releases a quiz question or live poll for <strong class="text-amber-400 event-code-display">#TWGC2026</strong>, it will appear here instantly!</p>
-          </div>
+          <!-- Quiz details rendered dynamically -->
         </div>
       </div>
     </div>
@@ -221,13 +215,13 @@
             <span>PRESENTER MODE</span>
           </span>
 
-          <!-- Dynamic Event Code Presenter Input Control -->
-          <div class="flex items-center space-x-2 bg-gray-950 px-3 py-1 rounded-xl border border-gray-800">
-            <label for="eventCodeInput" class="text-xs font-bold text-gray-400 uppercase tracking-wider">Event Code:</label>
-            <input type="text" id="eventCodeInput" value="#TWGC2026" class="bg-transparent font-mono font-black text-amber-400 text-base focus:outline-none w-28 uppercase">
-            <button onclick="updateEventCode()" class="bg-amber-500 text-slate-950 font-bold text-xs px-2.5 py-1 rounded-lg hover:brightness-110 transition flex items-center space-x-1">
+          <!-- Editable Event Code Control for Presenter -->
+          <div class="flex items-center space-x-2 bg-gray-950 px-3 py-1.5 rounded-xl border border-amber-500/40">
+            <label for="eventCodeInput" class="text-xs font-bold text-gray-400 uppercase tracking-wider">Active Event Code:</label>
+            <input type="text" id="eventCodeInput" value="#TWGC2026" class="bg-gray-900 px-2 py-0.5 rounded border border-gray-700 font-mono font-black text-amber-400 text-base focus:outline-none focus:border-amber-500 w-32 uppercase">
+            <button onclick="updateEventCode()" class="bg-amber-500 text-slate-950 font-black text-xs px-3 py-1.5 rounded-lg hover:brightness-110 transition flex items-center space-x-1 shadow">
               <i data-lucide="check" class="w-3.5 h-3.5 stroke-[3]"></i>
-              <span>Set Code</span>
+              <span>Update Session</span>
             </button>
           </div>
         </div>
@@ -245,12 +239,22 @@
         </div>
       </div>
 
-      <!-- SUB-TAB 1: PRESENTER SPOTLIGHT -->
+      <!-- SUB-TAB 1: PRESENTER SPOTLIGHT & QR CODE DISPLAY -->
       <div id="presenterSpotlightPane" class="space-y-6">
         
-        <div class="bg-gradient-to-r from-amber-500/10 via-gray-900 to-amber-500/10 border-2 border-amber-500/40 rounded-3xl p-6 md:p-8 text-center space-y-2 glow-gold">
-          <p class="text-amber-400 text-lg md:text-xl font-extrabold tracking-widest uppercase">JOIN WITH EVENT CODE</p>
-          <h1 class="text-5xl md:text-7xl font-mono font-black text-white tracking-widest gold-gradient-text event-code-display" id="projectorEventCode">#TWGC2026</h1>
+        <!-- Large Banner with Interactive QR Code & Event Code -->
+        <div class="bg-gradient-to-r from-amber-500/10 via-gray-900 to-amber-500/10 border-2 border-amber-500/40 rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 glow-gold">
+          <div class="text-center md:text-left space-y-2">
+            <p class="text-amber-400 text-sm md:text-base font-extrabold tracking-widest uppercase">SCAN QR CODE TO JOIN LIVE SESSION</p>
+            <h1 class="text-4xl md:text-6xl font-mono font-black text-white tracking-widest gold-gradient-text event-code-display" id="projectorEventCode">#TWGC2026</h1>
+            <p class="text-gray-400 text-xs md:text-sm font-medium">Point phone camera at the QR code to open Live Pulse Q&A automatically</p>
+          </div>
+
+          <!-- Dynamic QR Code Container -->
+          <div class="flex flex-col items-center bg-gray-950 p-4 rounded-2xl border border-gray-800 shadow-2xl">
+            <div id="qrcode"></div>
+            <span class="text-[10px] font-mono font-bold text-amber-400/80 mt-2 tracking-wider uppercase">Direct Auto-Join URL</span>
+          </div>
         </div>
 
         <div id="spotlightContent" class="bg-gray-900 border-2 border-gray-800 rounded-3xl p-8 md:p-12 text-center min-h-[380px] flex flex-col justify-center items-center shadow-2xl relative overflow-hidden">
@@ -285,7 +289,6 @@
       <!-- SUB-TAB 2: QUIZ BUILDER -->
       <div id="presenterManagerPane" class="hidden space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          
           <div class="lg:col-span-5 bg-gray-900 border border-gray-800 rounded-2xl p-6 space-y-5">
             <div class="border-b border-gray-800 pb-3">
               <h3 class="text-2xl font-black text-white flex items-center space-x-2">
@@ -354,18 +357,15 @@
           <div class="lg:col-span-7 space-y-4">
             <div class="flex items-center justify-between">
               <h3 class="text-xl font-extrabold text-white">Pre-Loaded Quiz Deck (<span class="event-code-display text-amber-400 font-mono">#TWGC2026</span>)</h3>
-              <div class="flex items-center space-x-2">
-                <button onclick="resetQuizDeck()" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-lg border border-gray-700 font-bold">
-                  Reset Pre-loaded Deck
-                </button>
-              </div>
+              <button onclick="resetQuizDeck()" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-lg border border-gray-700 font-bold">
+                Reset Pre-loaded Deck
+              </button>
             </div>
 
             <div id="quizDeckList" class="space-y-3">
               <!-- Rendered dynamically -->
             </div>
           </div>
-
         </div>
       </div>
 
@@ -397,50 +397,12 @@
       localStorage.setItem('pulse_session_id', sessionId);
     }
 
-    const defaultQuizDeck = [
-      {
-        id: "q1",
-        title: "What is the primary theme of the Sikh philosophy on truthful living?",
-        options: [
-          "Truth is the highest virtue, but higher still is truthful living",
-          "Knowledge alone conquers all obstacles",
-          "Renunciation of the world is necessary",
-          "Individual isolation leads to perfection"
-        ],
-        correct: 0,
-        timeLimit: 30,
-        points: 100
-      },
-      {
-        id: "q2",
-        title: "Which concept highlights community service and selfless sharing in Gurmat?",
-        options: [
-          "Vand Chhako & Seva",
-          "Manmukh Mindset",
-          "Karmic Isolation",
-          "Asceticism"
-        ],
-        correct: 0,
-        timeLimit: 25,
-        points: 100
-      },
-      {
-        id: "q3",
-        title: "In modern AI governance, what key ethical principle aligns closest with Sarbat da Bhala?",
-        options: [
-          "Universal Benefit & Ethical Inclusion for all humanity",
-          "Maximizing corporate profits",
-          "Restricting AI access to select institutions",
-          "Automating without human oversight"
-        ],
-        correct: 0,
-        timeLimit: 30,
-        points: 100
-      }
-    ];
+    // Check for URL parameter ?code=...
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialCodeParam = urlParams.get('code');
 
     let state = {
-      eventCode: localStorage.getItem('pulse_event_code') || "#TWGC2026",
+      eventCode: initialCodeParam ? '#' + initialCodeParam.replace('#','') : (localStorage.getItem('pulse_event_code') || "#TWGC2026"),
       view: 'audience',
       audienceTab: 'qa',
       presenterSubTab: 'spotlight',
@@ -455,7 +417,21 @@
           answered: false
         }
       ],
-      quizDeck: [...defaultQuizDeck],
+      quizDeck: [
+        {
+          id: "q1",
+          title: "What is the primary theme of Sikh philosophy on truthful living?",
+          options: [
+            "Truth is the highest virtue, but higher still is truthful living",
+            "Knowledge alone conquers all obstacles",
+            "Renunciation of the world is necessary",
+            "Individual isolation leads to perfection"
+          ],
+          correct: 0,
+          timeLimit: 30,
+          points: 100
+        }
+      ],
       activeQuizQuestion: null,
       activeQuizTimer: null,
       quizTimeRemaining: 0,
@@ -469,7 +445,32 @@
       spotlightedItem: null
     };
 
-    // Helper: Update state & DOM when Event Code changes
+    let qrCodeInstance = null;
+
+    function renderQRCode() {
+      const qrContainer = document.getElementById('qrcode');
+      if (!qrContainer) return;
+      
+      qrContainer.innerHTML = '';
+      
+      // Clean event code string for URL
+      const cleanCode = state.eventCode.replace('#', '');
+      const joinUrl = `${window.location.origin}${window.location.pathname}?code=${encodeURIComponent(cleanCode)}`;
+
+      try {
+        qrCodeInstance = new QRCode(qrContainer, {
+          text: joinUrl,
+          width: 130,
+          height: 130,
+          colorDark: "#0B0F17",
+          colorLight: "#FFFFFF",
+          correctLevel: QRCode.CorrectLevel.H
+        });
+      } catch (e) {
+        console.error("QR Code error:", e);
+      }
+    }
+
     function setEventCode(newCode) {
       if (!newCode) return;
       if (!newCode.startsWith('#')) newCode = '#' + newCode;
@@ -477,7 +478,6 @@
       state.eventCode = newCode.toUpperCase();
       localStorage.setItem('pulse_event_code', state.eventCode);
 
-      // Update all DOM elements with event-code-display class
       document.querySelectorAll('.event-code-display').forEach(el => {
         el.textContent = state.eventCode;
       });
@@ -485,11 +485,12 @@
       const input = document.getElementById('eventCodeInput');
       if (input) input.value = state.eventCode;
 
-      // Update Question Input Placeholder dynamically
       const qInput = document.getElementById('questionInput');
       if (qInput) {
         qInput.placeholder = `Type your question for ${state.eventCode} here... (Keep it concise and clear)`;
       }
+
+      renderQRCode();
     }
 
     function updateEventCode() {
@@ -500,7 +501,6 @@
       }
     }
 
-    // Helper: Send event pulse to backend Worker (PULSE_DB)
     async function sendPulse(eventType, metadata = {}, userId = null) {
       try {
         await fetch('/api/pulse', {
@@ -513,21 +513,17 @@
       }
     }
 
-    // Helper: Sync backend pulse records from PULSE_DB
     async function fetchPulseDatabase() {
       try {
         const res = await fetch('/api/pulse');
         const data = await res.json();
         if (data && data.recent_pulses) {
           data.recent_pulses.forEach(p => {
-            // Live sync Event Code updates across presenter & audience screens
             if (p.event_type === 'event_code_update' && p.metadata && p.metadata.eventCode) {
               if (p.metadata.eventCode !== state.eventCode) {
                 setEventCode(p.metadata.eventCode);
               }
             }
-
-            // Sync questions submitted across devices
             if (p.event_type === 'question' && p.metadata) {
               const meta = typeof p.metadata === 'string' ? JSON.parse(p.metadata) : p.metadata;
               if (meta.id && !state.questions.some(q => q.id === meta.id)) {
@@ -547,8 +543,6 @@
       lucide.createIcons();
       renderAll();
       sendPulse('page_view', { page: 'pulse_index' });
-      
-      // Poll PULSE_DB every 8 seconds for live updates
       setInterval(fetchPulseDatabase, 8000);
     };
 
@@ -575,6 +569,7 @@
 
         presBtn.className = "px-4 py-2 rounded-lg text-sm font-extrabold transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow";
         audBtn.className = "px-4 py-2 rounded-lg text-sm font-extrabold text-gray-400 hover:text-white transition flex items-center space-x-2";
+        renderQRCode();
       }
       lucide.createIcons();
     }
@@ -610,6 +605,7 @@
       document.getElementById('presenterManagerPane').classList.toggle('hidden', subTab !== 'manager');
       document.getElementById('presenterQuestionsPane').classList.toggle('hidden', subTab !== 'questions');
 
+      if (subTab === 'spotlight') renderQRCode();
       lucide.createIcons();
     }
 
@@ -670,11 +666,7 @@
       const q = state.questions.find(item => item.id === id);
       if (!q) return;
 
-      state.spotlightedItem = {
-        type: 'question',
-        data: q
-      };
-
+      state.spotlightedItem = { type: 'question', data: q };
       switchView('presenter');
       switchPresenterSubTab('spotlight');
       renderSpotlight();
@@ -731,7 +723,7 @@
     }
 
     function resetQuizDeck() {
-      state.quizDeck = [...defaultQuizDeck];
+      state.quizDeck = [];
       renderQuizDeck();
     }
 
@@ -742,10 +734,7 @@
       state.activeQuizQuestion = quiz;
       state.hasSubmittedAnswer = false;
       state.quizTimeRemaining = quiz.timeLimit;
-      state.spotlightedItem = {
-        type: 'quiz',
-        data: quiz
-      };
+      state.spotlightedItem = { type: 'quiz', data: quiz };
 
       document.getElementById('activeQuizIndicator').classList.remove('hidden');
 
@@ -816,6 +805,7 @@
       renderQuizDeck();
       renderAudienceQuizPane();
       renderSpotlight();
+      renderQRCode();
       lucide.createIcons();
     }
 
