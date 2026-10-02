@@ -2,7 +2,7 @@
 <html lang="en" class="dark h-full">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Khalsa AI Pulse - Modern Live Q&A, Polls & Quizzes</title>
   
   <!-- Tailwind CSS, Lucide Icons & QR Code Generator -->
@@ -64,32 +64,33 @@
     #qrcode canvas, #qrcode img {
       margin: 0 auto;
       border-radius: 12px;
-      padding: 8px;
+      padding: 6px;
       background: white;
     }
   </style>
 </head>
-<body class="h-full flex flex-col bg-[#080C14] text-gray-100 antialiased overflow-x-hidden selection:bg-amber-500 selection:text-black">
+<body class="h-full flex flex-col bg-[#080C14] text-gray-100 antialiased selection:bg-amber-500 selection:text-black">
 
   <!-- Top Navigation Header -->
-  <header class="sticky top-0 z-40 border-b border-gray-800 bg-[#0B0F17]/95 backdrop-blur-md px-4 lg:px-8 py-3 transition-all">
-    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+  <header class="sticky top-0 z-40 border-b border-gray-800/80 bg-[#0B0F17]/95 backdrop-blur-md px-3 sm:px-6 py-2.5 transition-all">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-2 sm:gap-4">
+      
       <!-- Logo Branding -->
-      <div class="flex items-center space-x-3">
-        <div class="w-11 h-11 rounded-xl gold-gradient-bg flex items-center justify-center text-slate-950 shadow-lg shadow-amber-500/20 font-black text-2xl">
-          <i data-lucide="zap" class="w-6 h-6 stroke-[3]"></i>
+      <div class="flex items-center space-x-2 sm:space-x-3 shrink-0">
+        <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-xl gold-gradient-bg flex items-center justify-center text-slate-950 shadow-md shadow-amber-500/20 font-black text-xl sm:text-2xl">
+          <i data-lucide="zap" class="w-5 h-5 sm:w-6 sm:h-6 stroke-[3]"></i>
         </div>
         <div>
-          <div class="flex items-center space-x-2">
-            <span class="text-2xl font-black tracking-tight gold-gradient-text uppercase">Khalsa AI Pulse</span>
-            <span class="bg-amber-500/20 text-amber-400 text-xs px-2.5 py-0.5 rounded-full font-bold border border-amber-500/30">PRO</span>
+          <div class="flex items-center space-x-1.5 sm:space-x-2">
+            <span class="text-lg sm:text-2xl font-black tracking-tight gold-gradient-text uppercase">Khalsa AI Pulse</span>
+            <span class="hidden sm:inline-block bg-amber-500/20 text-amber-400 text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold border border-amber-500/30">PRO</span>
           </div>
-          <p class="text-xs font-semibold text-gray-400">Interactive Lecture & Conference Platform</p>
+          <p class="hidden sm:block text-xs font-semibold text-gray-400">Interactive Lecture & Conference Platform</p>
         </div>
       </div>
 
-      <!-- Event Code Display & Quick Actions -->
-      <div class="hidden md:flex items-center space-x-3 bg-gray-900/90 px-4 py-1.5 rounded-xl border border-gray-800">
+      <!-- Desktop Event Code Display -->
+      <div class="hidden lg:flex items-center space-x-3 bg-gray-900/90 px-4 py-1.5 rounded-xl border border-gray-800">
         <span class="text-xs uppercase tracking-wider font-extrabold text-gray-400">Event Code:</span>
         <span class="text-xl font-mono font-black text-amber-400 tracking-wider event-code-display">#TWGC2026</span>
         <button onclick="copyEventCode()" class="text-gray-400 hover:text-amber-400 transition" title="Copy Event Code">
@@ -97,80 +98,94 @@
         </button>
       </div>
 
-      <!-- Header Action Buttons -->
-      <div class="flex items-center space-x-3">
-        <!-- Direct Feedback Page Button -->
-        <a href="https://khalsai.com/why-guru-feedback/" target="_blank" rel="noopener noreferrer" class="hidden sm:flex items-center space-x-1.5 px-3.5 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-400 font-bold text-xs md:text-sm transition">
-          <i data-lucide="message-square-heart" class="w-4 h-4"></i>
-          <span>Give Feedback</span>
+      <!-- Header Quick Actions -->
+      <div class="flex items-center space-x-2 sm:space-x-3">
+        <!-- Direct Feedback Link -->
+        <a href="https://khalsai.com/why-guru-feedback/" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-1 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-400 font-bold text-xs sm:text-sm transition">
+          <i data-lucide="message-square-heart" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
+          <span class="hidden xs:inline">Feedback</span>
         </a>
 
-        <!-- Role Switcher -->
+        <!-- Compact Role Switcher -->
         <div class="bg-gray-900/90 p-1 rounded-xl border border-gray-800 flex items-center">
-          <button id="btnAudienceView" onclick="switchView('audience')" class="px-4 py-2 rounded-lg text-sm font-extrabold transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow">
-            <i data-lucide="users" class="w-4 h-4"></i>
+          <button id="btnAudienceView" onclick="switchView('audience')" class="px-2.5 sm:px-4 py-1 sm:py-2 rounded-lg text-xs sm:text-sm font-extrabold transition flex items-center space-x-1.5 bg-amber-500 text-slate-950 shadow">
+            <i data-lucide="users" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
             <span>Audience</span>
           </button>
-          <button id="btnPresenterView" onclick="switchView('presenter')" class="px-4 py-2 rounded-lg text-sm font-extrabold text-gray-400 hover:text-white transition flex items-center space-x-2">
-            <i data-lucide="presentation" class="w-4 h-4"></i>
-            <span>Presenter</span>
+          <button id="btnPresenterView" onclick="switchView('presenter')" class="px-2.5 sm:px-4 py-1 sm:py-2 rounded-lg text-xs sm:text-sm font-extrabold text-gray-400 hover:text-white transition flex items-center space-x-1.5">
+            <i data-lucide="presentation" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
+            <span class="hidden xs:inline">Presenter</span>
           </button>
         </div>
 
-        <button onclick="toggleFullscreen()" class="p-2.5 rounded-xl bg-gray-900 border border-gray-800 text-gray-300 hover:text-white hover:border-gray-700 transition" title="Toggle Fullscreen">
-          <i data-lucide="maximize" class="w-5 h-5"></i>
+        <button onclick="toggleFullscreen()" class="hidden sm:block p-2 rounded-xl bg-gray-900 border border-gray-800 text-gray-300 hover:text-white transition" title="Toggle Fullscreen">
+          <i data-lucide="maximize" class="w-4 h-4"></i>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Main View Area -->
-  <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 lg:p-8 flex flex-col">
+  <!-- Mobile Event Code Bar -->
+  <div class="lg:hidden bg-gray-950/80 border-b border-gray-800 px-4 py-1.5 flex items-center justify-between text-xs">
+    <div class="flex items-center space-x-1.5 font-mono">
+      <span class="text-gray-400 font-sans uppercase font-extrabold text-[10px]">CODE:</span>
+      <span class="font-black text-amber-400 tracking-wider event-code-display">#TWGC2026</span>
+    </div>
+    <button onclick="copyEventCode()" class="text-amber-400 font-bold flex items-center space-x-1 hover:underline">
+      <i data-lucide="copy" class="w-3 h-3"></i>
+      <span>Copy Code</span>
+    </button>
+  </div>
+
+  <!-- Main View Container -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 lg:p-8 flex flex-col pb-20 sm:pb-8">
     
     <!-- ========================================== -->
     <!--          AUDIENCE VIEW CONTAINER           -->
     <!-- ========================================== -->
-    <div id="audienceView" class="flex-1 flex flex-col space-y-6">
-      <div class="flex flex-wrap items-center justify-between gap-4 bg-gray-900/80 border border-gray-800 p-3 rounded-2xl">
-        <div class="flex space-x-2 overflow-x-auto w-full sm:w-auto">
-          <button onclick="switchAudienceTab('qa')" id="tabAudienceQA" class="px-5 py-2.5 rounded-xl font-bold text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow-md">
-            <i data-lucide="message-square" class="w-5 h-5"></i>
+    <div id="audienceView" class="flex-1 flex flex-col space-y-4 sm:space-y-6">
+      
+      <!-- Sync Status & Desktop Tab Bar -->
+      <div class="flex items-center justify-between bg-gray-900/80 border border-gray-800 p-2.5 sm:p-3 rounded-2xl">
+        <div class="hidden sm:flex space-x-2">
+          <button onclick="switchAudienceTab('qa')" id="tabAudienceQA" class="px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow">
+            <i data-lucide="message-square" class="w-4 h-4"></i>
             <span>Live Q&A</span>
             <span id="qaBadge" class="ml-1 bg-black/20 px-2 py-0.5 rounded-full text-xs">0</span>
           </button>
-          <button onclick="switchAudienceTab('quiz')" id="tabAudienceQuiz" class="px-5 py-2.5 rounded-xl font-bold text-base transition flex items-center space-x-2 text-gray-300 hover:bg-gray-800">
-            <i data-lucide="award" class="w-5 h-5"></i>
+          <button onclick="switchAudienceTab('quiz')" id="tabAudienceQuiz" class="px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 text-gray-300 hover:bg-gray-800">
+            <i data-lucide="award" class="w-4 h-4"></i>
             <span>Live Quiz & Polls</span>
-            <span id="activeQuizIndicator" class="hidden w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+            <span id="activeQuizIndicator" class="hidden w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
           </button>
         </div>
 
-        <div class="flex items-center space-x-2 text-sm text-gray-400 px-3 py-1 bg-gray-950 rounded-lg border border-gray-800/80">
-          <i data-lucide="circle" class="w-3 h-3 text-emerald-400 fill-emerald-400 animate-pulse"></i>
-          <span class="font-bold text-gray-200">PULSE_DB Live Sync</span>
+        <div class="flex items-center space-x-2 text-xs text-gray-400 px-3 py-1 bg-gray-950 rounded-lg border border-gray-800 w-full sm:w-auto justify-center sm:justify-start">
+          <i data-lucide="circle" class="w-2.5 h-2.5 text-emerald-400 fill-emerald-400 animate-pulse"></i>
+          <span class="font-bold text-gray-300">PULSE_DB Live Sync</span>
         </div>
       </div>
 
       <!-- TAB 1: AUDIENCE Q&A -->
-      <div id="audienceQAPane" class="space-y-6">
-        <div class="bg-gradient-to-b from-gray-900 to-[#0F1623] border border-gray-800 rounded-2xl p-5 md:p-6 shadow-xl">
-          <h2 class="text-xl md:text-2xl font-black mb-3 text-white flex items-center space-x-2">
-            <i data-lucide="help-circle" class="w-6 h-6 text-amber-400"></i>
+      <div id="audienceQAPane" class="space-y-4 sm:space-y-6">
+        <div class="bg-gradient-to-b from-gray-900 to-[#0F1623] border border-gray-800 rounded-2xl p-4 sm:p-6 shadow-xl">
+          <h2 class="text-lg sm:text-2xl font-black mb-2 sm:mb-3 text-white flex items-center space-x-2">
+            <i data-lucide="help-circle" class="w-5 h-5 text-amber-400"></i>
             <span>Ask the Speaker</span>
           </h2>
           <div class="space-y-3">
-            <textarea id="questionInput" rows="3" placeholder="Type your question for the speaker here..." class="w-full bg-gray-950 border border-gray-800 rounded-xl p-4 text-base md:text-lg text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition resize-none font-medium"></textarea>
+            <textarea id="questionInput" rows="3" placeholder="Type your question here..." class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 sm:p-4 text-sm sm:text-base text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition resize-none font-medium"></textarea>
             
-            <div class="flex flex-wrap items-center justify-between gap-3">
-              <div class="flex items-center space-x-3">
-                <input type="text" id="userNameInput" placeholder="Your name (optional)" class="bg-gray-950 border border-gray-800 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 font-medium w-48">
-                <button onclick="summarizeOrEnhanceQuestion()" class="text-xs md:text-sm font-bold text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 px-3 py-2.5 rounded-xl border border-amber-500/30 transition flex items-center space-x-1">
-                  <i data-lucide="sparkles" class="w-4 h-4"></i>
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+              <div class="flex items-center space-x-2">
+                <input type="text" id="userNameInput" placeholder="Your name (optional)" class="bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 font-medium flex-1 sm:w-48">
+                <button onclick="summarizeOrEnhanceQuestion()" class="text-xs font-bold text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 px-3 py-2 rounded-xl border border-amber-500/30 transition flex items-center space-x-1 shrink-0">
+                  <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
                   <span>AI Enhance</span>
                 </button>
               </div>
 
-              <button onclick="submitQuestion()" class="px-6 py-3 rounded-xl gold-gradient-bg text-slate-950 font-extrabold text-base hover:brightness-110 transition shadow-lg flex items-center space-x-2">
+              <button onclick="submitQuestion()" class="py-2.5 px-5 rounded-xl gold-gradient-bg text-slate-950 font-extrabold text-sm sm:text-base hover:brightness-110 transition shadow-lg flex items-center justify-center space-x-2">
                 <span>Submit Question</span>
                 <i data-lucide="send" class="w-4 h-4"></i>
               </button>
@@ -178,12 +193,12 @@
           </div>
         </div>
 
-        <div class="space-y-4">
-          <div class="flex items-center justify-between">
-            <h3 class="text-xl font-bold text-gray-200">Submitted Questions</h3>
-            <div class="flex items-center space-x-2 text-sm">
-              <button onclick="sortQuestions('upvotes')" id="sortUpvotes" class="px-3 py-1.5 rounded-lg bg-gray-800 text-amber-400 font-bold border border-gray-700">Top Voted</button>
-              <button onclick="sortQuestions('recent')" id="sortRecent" class="px-3 py-1.5 rounded-lg bg-gray-900 text-gray-400 font-bold hover:text-white">Recent</button>
+        <div class="space-y-3 sm:space-y-4">
+          <div class="flex items-center justify-between px-1">
+            <h3 class="text-base sm:text-xl font-bold text-gray-200">Submitted Questions</h3>
+            <div class="flex items-center space-x-1.5 text-xs">
+              <button onclick="sortQuestions('upvotes')" id="sortUpvotes" class="px-2.5 py-1 rounded-lg bg-gray-800 text-amber-400 font-bold border border-gray-700">Top Voted</button>
+              <button onclick="sortQuestions('recent')" id="sortRecent" class="px-2.5 py-1 rounded-lg bg-gray-900 text-gray-400 font-bold hover:text-white">Recent</button>
             </div>
           </div>
 
@@ -195,7 +210,7 @@
 
       <!-- TAB 2: AUDIENCE QUIZ & POLL INTERFACE -->
       <div id="audienceQuizPane" class="hidden space-y-6">
-        <div id="audienceQuizContainer" class="bg-gray-900 border border-gray-800 rounded-2xl p-6 md:p-8 text-center space-y-6 shadow-2xl">
+        <div id="audienceQuizContainer" class="bg-gray-900 border border-gray-800 rounded-2xl p-5 sm:p-8 text-center space-y-6 shadow-2xl">
           <!-- Quiz details rendered dynamically -->
         </div>
       </div>
@@ -205,82 +220,79 @@
     <!-- ========================================== -->
     <!--          PRESENTER VIEW CONTAINER          -->
     <!-- ========================================== -->
-    <div id="presenterView" class="hidden flex-1 flex-col space-y-6">
+    <div id="presenterView" class="hidden flex-1 flex-col space-y-4 sm:space-y-6">
       
-      <!-- Presenter Top Bar / Dynamic Event Code Controller -->
-      <div class="flex flex-wrap items-center justify-between gap-4 bg-gray-900 border border-gray-800 p-4 rounded-2xl">
-        <div class="flex flex-wrap items-center gap-3">
-          <span class="bg-emerald-500/10 text-emerald-400 font-extrabold px-3 py-1.5 rounded-lg border border-emerald-500/30 text-sm flex items-center space-x-1.5">
-            <i data-lucide="tv" class="w-4 h-4"></i>
+      <!-- Presenter Top Controller & Event Code Setter -->
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-gray-900 border border-gray-800 p-3 sm:p-4 rounded-2xl">
+        <div class="flex flex-wrap items-center justify-between sm:justify-start gap-2">
+          <span class="bg-emerald-500/10 text-emerald-400 font-extrabold px-2.5 py-1 rounded-lg border border-emerald-500/30 text-xs flex items-center space-x-1">
+            <i data-lucide="tv" class="w-3.5 h-3.5"></i>
             <span>PRESENTER MODE</span>
           </span>
 
-          <!-- Editable Event Code Control for Presenter -->
-          <div class="flex items-center space-x-2 bg-gray-950 px-3 py-1.5 rounded-xl border border-amber-500/40">
-            <label for="eventCodeInput" class="text-xs font-bold text-gray-400 uppercase tracking-wider">Active Event Code:</label>
-            <input type="text" id="eventCodeInput" value="#TWGC2026" class="bg-gray-900 px-2 py-0.5 rounded border border-gray-700 font-mono font-black text-amber-400 text-base focus:outline-none focus:border-amber-500 w-32 uppercase">
-            <button onclick="updateEventCode()" class="bg-amber-500 text-slate-950 font-black text-xs px-3 py-1.5 rounded-lg hover:brightness-110 transition flex items-center space-x-1 shadow">
-              <i data-lucide="check" class="w-3.5 h-3.5 stroke-[3]"></i>
-              <span>Update Session</span>
+          <div class="flex items-center space-x-2 bg-gray-950 px-2.5 py-1 rounded-xl border border-amber-500/40">
+            <label for="eventCodeInput" class="text-[10px] sm:text-xs font-bold text-gray-400 uppercase">Code:</label>
+            <input type="text" id="eventCodeInput" value="#TWGC2026" class="bg-gray-900 px-1.5 py-0.5 rounded border border-gray-700 font-mono font-black text-amber-400 text-xs sm:text-sm focus:outline-none focus:border-amber-500 w-24 sm:w-28 uppercase">
+            <button onclick="updateEventCode()" class="bg-amber-500 text-slate-950 font-black text-[10px] sm:text-xs px-2 py-1 rounded-lg hover:brightness-110 transition flex items-center space-x-1 shadow">
+              <i data-lucide="check" class="w-3 h-3 stroke-[3]"></i>
+              <span>Set</span>
             </button>
           </div>
         </div>
 
-        <div class="flex items-center space-x-2">
-          <button onclick="switchPresenterSubTab('spotlight')" id="subTabSpotlight" class="px-4 py-2 rounded-xl font-bold text-sm bg-amber-500 text-slate-950 shadow">
-            Screen Spotlight
+        <div class="flex items-center justify-between sm:justify-end space-x-1.5 overflow-x-auto">
+          <button onclick="switchPresenterSubTab('spotlight')" id="subTabSpotlight" class="flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-amber-500 text-slate-950 shadow whitespace-nowrap">
+            Spotlight
           </button>
-          <button onclick="switchPresenterSubTab('manager')" id="subTabManager" class="px-4 py-2 rounded-xl font-bold text-sm bg-gray-800 text-gray-300 hover:text-white">
-            Quiz & Poll Builder
+          <button onclick="switchPresenterSubTab('manager')" id="subTabManager" class="flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 text-gray-300 hover:text-white whitespace-nowrap">
+            Quiz Builder
           </button>
-          <button onclick="switchPresenterSubTab('questions')" id="subTabQuestions" class="px-4 py-2 rounded-xl font-bold text-sm bg-gray-800 text-gray-300 hover:text-white">
-            Q&A Controls
+          <button onclick="switchPresenterSubTab('questions')" id="subTabQuestions" class="flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 text-gray-300 hover:text-white whitespace-nowrap">
+            Q&A Control
           </button>
         </div>
       </div>
 
       <!-- SUB-TAB 1: PRESENTER SPOTLIGHT & QR CODE DISPLAY -->
-      <div id="presenterSpotlightPane" class="space-y-6">
+      <div id="presenterSpotlightPane" class="space-y-4 sm:space-y-6">
         
-        <!-- Large Banner with Interactive QR Code & Event Code -->
-        <div class="bg-gradient-to-r from-amber-500/10 via-gray-900 to-amber-500/10 border-2 border-amber-500/40 rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6 glow-gold">
-          <div class="text-center md:text-left space-y-2">
-            <p class="text-amber-400 text-sm md:text-base font-extrabold tracking-widest uppercase">SCAN QR CODE TO JOIN LIVE SESSION</p>
-            <h1 class="text-4xl md:text-6xl font-mono font-black text-white tracking-widest gold-gradient-text event-code-display" id="projectorEventCode">#TWGC2026</h1>
-            <p class="text-gray-400 text-xs md:text-sm font-medium">Point phone camera at the QR code to open Live Pulse Q&A automatically</p>
+        <div class="bg-gradient-to-r from-amber-500/10 via-gray-900 to-amber-500/10 border border-amber-500/40 rounded-2xl p-4 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-4 glow-gold">
+          <div class="text-center md:text-left space-y-1 sm:space-y-2">
+            <p class="text-amber-400 text-xs sm:text-sm font-extrabold tracking-widest uppercase">SCAN QR CODE TO JOIN LIVE SESSION</p>
+            <h1 class="text-3xl sm:text-6xl font-mono font-black text-white tracking-widest gold-gradient-text event-code-display" id="projectorEventCode">#TWGC2026</h1>
+            <p class="text-gray-400 text-xs font-medium">Scan with camera to auto-join live Q&A</p>
           </div>
 
-          <!-- Dynamic QR Code Container -->
-          <div class="flex flex-col items-center bg-gray-950 p-4 rounded-2xl border border-gray-800 shadow-2xl">
+          <div class="flex flex-col items-center bg-gray-950 p-3 sm:p-4 rounded-xl border border-gray-800 shadow-xl shrink-0">
             <div id="qrcode"></div>
-            <span class="text-[10px] font-mono font-bold text-amber-400/80 mt-2 tracking-wider uppercase">Direct Auto-Join URL</span>
+            <span class="text-[9px] font-mono font-bold text-amber-400/80 mt-1.5 tracking-wider uppercase">Auto-Join QR Code</span>
           </div>
         </div>
 
-        <div id="spotlightContent" class="bg-gray-900 border-2 border-gray-800 rounded-3xl p-8 md:p-12 text-center min-h-[380px] flex flex-col justify-center items-center shadow-2xl relative overflow-hidden">
-          <div class="absolute top-4 left-6 flex items-center space-x-2 text-gray-500 uppercase font-black text-sm tracking-wider">
-            <i data-lucide="sparkles" class="w-5 h-5 text-amber-400"></i>
+        <div id="spotlightContent" class="bg-gray-900 border border-gray-800 rounded-2xl p-5 sm:p-12 text-center min-h-[260px] sm:min-h-[380px] flex flex-col justify-center items-center shadow-2xl relative overflow-hidden">
+          <div class="absolute top-3 left-4 flex items-center space-x-1.5 text-gray-500 uppercase font-black text-xs tracking-wider">
+            <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
             <span>Projector Screen Focus</span>
           </div>
 
-          <div id="spotlightDisplayArea" class="w-full space-y-6">
-            <div class="space-y-4">
-              <i data-lucide="presentation" class="w-16 h-16 text-gray-700 mx-auto"></i>
-              <h2 class="text-3xl md:text-5xl font-black text-gray-400">No Item Currently Spotlighted</h2>
-              <p class="text-xl text-gray-500 font-medium max-w-xl mx-auto">Select a Q&A question below or release a live Quiz question from the Builder to present onto the main screen.</p>
+          <div id="spotlightDisplayArea" class="w-full space-y-4 sm:space-y-6 mt-4">
+            <div class="space-y-2 sm:space-y-4">
+              <i data-lucide="presentation" class="w-12 h-12 sm:w-16 sm:h-16 text-gray-700 mx-auto"></i>
+              <h2 class="text-xl sm:text-4xl font-black text-gray-400">No Item Spotlighted</h2>
+              <p class="text-xs sm:text-lg text-gray-500 font-medium max-w-xl mx-auto">Select a question or release a live quiz to present on the main screen.</p>
             </div>
           </div>
         </div>
 
-        <div id="presenterLeaderboardCard" class="bg-gray-900 border border-gray-800 rounded-2xl p-6 space-y-4 hidden">
+        <div id="presenterLeaderboardCard" class="bg-gray-900 border border-gray-800 rounded-2xl p-4 sm:p-6 space-y-4 hidden">
           <div class="flex items-center justify-between border-b border-gray-800 pb-3">
-            <h3 class="text-2xl font-black text-amber-400 flex items-center space-x-2">
-              <i data-lucide="trophy" class="w-7 h-7"></i>
-              <span>Live Quiz Leaderboard</span>
+            <h3 class="text-lg sm:text-2xl font-black text-amber-400 flex items-center space-x-2">
+              <i data-lucide="trophy" class="w-5 h-5 sm:w-7 sm:h-7"></i>
+              <span>Live Leaderboard</span>
             </h3>
-            <span class="text-sm font-bold text-gray-400">Top Participants</span>
+            <span class="text-xs text-gray-400">Top Participants</span>
           </div>
-          <div id="leaderboardList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div id="leaderboardList" class="grid grid-cols-1 md:grid-cols-2 gap-3">
             <!-- Rendered dynamically -->
           </div>
         </div>
@@ -289,46 +301,50 @@
       <!-- SUB-TAB 2: QUIZ BUILDER -->
       <div id="presenterManagerPane" class="hidden space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div class="lg:col-span-5 bg-gray-900 border border-gray-800 rounded-2xl p-6 space-y-5">
-            <div class="border-b border-gray-800 pb-3">
-              <h3 class="text-2xl font-black text-white flex items-center space-x-2">
-                <i data-lucide="plus-circle" class="w-6 h-6 text-amber-400"></i>
+          <div class="lg:col-span-5 bg-gray-900 border border-gray-800 rounded-2xl p-4 sm:p-6 space-y-4">
+            <div class="border-b border-gray-800 pb-2 flex items-center justify-between">
+              <h3 id="quizFormHeading" class="text-lg sm:text-2xl font-black text-white flex items-center space-x-2">
+                <i data-lucide="plus-circle" class="w-5 h-5 text-amber-400"></i>
                 <span>Create Quiz Question</span>
               </h3>
-              <p class="text-sm text-gray-400">Pre-make questions with correct answers & timers.</p>
+              <button id="btnCancelEdit" onclick="cancelEditQuizQuestion()" class="hidden text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-2.5 py-1 rounded-lg border border-gray-700 font-bold">
+                Cancel
+              </button>
             </div>
 
-            <div class="space-y-4">
+            <input type="hidden" id="editingQuizId" value="">
+
+            <div class="space-y-3">
               <div>
-                <label class="block text-sm font-bold text-gray-300 mb-1">Question Title</label>
-                <input type="text" id="newQuizTitle" placeholder="e.g. What is the core principle of..." class="w-full bg-gray-950 border border-gray-800 rounded-xl px-4 py-3 text-base text-white focus:outline-none focus:border-amber-500">
+                <label class="block text-xs font-bold text-gray-300 mb-1">Question Title</label>
+                <input type="text" id="newQuizTitle" placeholder="e.g. What is..." class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs sm:text-sm text-white focus:outline-none focus:border-amber-500">
               </div>
 
               <div class="space-y-2">
-                <label class="block text-sm font-bold text-gray-300">Answer Options & Select Correct One</label>
+                <label class="block text-xs font-bold text-gray-300">Options & Correct Selection</label>
                 
                 <div class="flex items-center space-x-2">
-                  <input type="radio" name="correctOption" value="0" checked class="w-5 h-5 accent-amber-500">
-                  <input type="text" id="option0" placeholder="Option A" class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white">
+                  <input type="radio" name="correctOption" value="0" checked class="w-4 h-4 accent-amber-500">
+                  <input type="text" id="option0" placeholder="Option A" class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-white">
                 </div>
                 <div class="flex items-center space-x-2">
-                  <input type="radio" name="correctOption" value="1" class="w-5 h-5 accent-amber-500">
-                  <input type="text" id="option1" placeholder="Option B" class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white">
+                  <input type="radio" name="correctOption" value="1" class="w-4 h-4 accent-amber-500">
+                  <input type="text" id="option1" placeholder="Option B" class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-white">
                 </div>
                 <div class="flex items-center space-x-2">
-                  <input type="radio" name="correctOption" value="2" class="w-5 h-5 accent-amber-500">
-                  <input type="text" id="option2" placeholder="Option C" class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white">
+                  <input type="radio" name="correctOption" value="2" class="w-4 h-4 accent-amber-500">
+                  <input type="text" id="option2" placeholder="Option C" class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-white">
                 </div>
                 <div class="flex items-center space-x-2">
-                  <input type="radio" name="correctOption" value="3" class="w-5 h-5 accent-amber-500">
-                  <input type="text" id="option3" placeholder="Option D" class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-3 py-2 text-sm text-white">
+                  <input type="radio" name="correctOption" value="3" class="w-4 h-4 accent-amber-500">
+                  <input type="text" id="option3" placeholder="Option D" class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-white">
                 </div>
               </div>
 
-              <div class="grid grid-cols-2 gap-4">
+              <div class="grid grid-cols-2 gap-3">
                 <div>
-                  <label class="block text-sm font-bold text-gray-300 mb-1">Time Limit</label>
-                  <select id="newQuizTimer" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-sm text-white focus:outline-none">
+                  <label class="block text-xs font-bold text-gray-300 mb-1">Timer</label>
+                  <select id="newQuizTimer" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-2.5 py-2 text-xs text-white focus:outline-none">
                     <option value="15">15 Seconds</option>
                     <option value="30" selected>30 Seconds</option>
                     <option value="45">45 Seconds</option>
@@ -336,29 +352,22 @@
                   </select>
                 </div>
                 <div>
-                  <label class="block text-sm font-bold text-gray-300 mb-1">Points</label>
-                  <input type="number" id="newQuizPoints" value="100" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2.5 text-sm text-white">
+                  <label class="block text-xs font-bold text-gray-300 mb-1">Points</label>
+                  <input type="number" id="newQuizPoints" value="100" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-2.5 py-2 text-xs text-white">
                 </div>
               </div>
 
-              <div class="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl space-y-2">
-                <button onclick="generateAIQuizQuestion()" class="w-full text-xs font-extrabold text-amber-400 flex items-center justify-center space-x-1 hover:underline">
-                  <i data-lucide="sparkles" class="w-4 h-4"></i>
-                  <span>Auto-Generate Quiz Question using AI</span>
-                </button>
-              </div>
-
-              <button onclick="addCustomQuizQuestion()" class="w-full py-3 rounded-xl gold-gradient-bg text-slate-950 font-extrabold text-base hover:brightness-110 transition shadow-md">
-                Save Question to Quiz Deck
+              <button id="btnSaveQuiz" onclick="saveQuizQuestion()" class="w-full py-2.5 rounded-xl gold-gradient-bg text-slate-950 font-extrabold text-sm hover:brightness-110 transition shadow">
+                Save to Quiz Deck
               </button>
             </div>
           </div>
 
           <div class="lg:col-span-7 space-y-4">
             <div class="flex items-center justify-between">
-              <h3 class="text-xl font-extrabold text-white">Pre-Loaded Quiz Deck (<span class="event-code-display text-amber-400 font-mono">#TWGC2026</span>)</h3>
-              <button onclick="resetQuizDeck()" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-3 py-1.5 rounded-lg border border-gray-700 font-bold">
-                Reset Pre-loaded Deck
+              <h3 class="text-base sm:text-xl font-extrabold text-white">Pre-Loaded Deck</h3>
+              <button onclick="resetQuizDeck()" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-2.5 py-1 rounded-lg border border-gray-700 font-bold">
+                Clear Deck
               </button>
             </div>
 
@@ -372,9 +381,9 @@
       <!-- SUB-TAB 3: Q&A CONTROLS -->
       <div id="presenterQuestionsPane" class="hidden space-y-4">
         <div class="flex items-center justify-between">
-          <h3 class="text-xl font-extrabold text-white">Moderation & Question List</h3>
-          <button onclick="clearAllQuestions()" class="text-xs font-bold text-red-400 hover:bg-red-500/10 border border-red-500/30 px-3 py-1.5 rounded-lg">
-            Clear All Q&A
+          <h3 class="text-base sm:text-xl font-extrabold text-white">Q&A Moderation Queue</h3>
+          <button onclick="clearAllQuestions()" class="text-xs font-bold text-red-400 hover:bg-red-500/10 border border-red-500/30 px-2.5 py-1 rounded-lg">
+            Clear Queue
           </button>
         </div>
 
@@ -387,17 +396,31 @@
 
   </main>
 
+  <!-- Sticky Mobile Navigation Bar -->
+  <nav class="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0B0F17]/95 backdrop-blur-md border-t border-gray-800 px-6 py-2 flex items-center justify-around">
+    <button onclick="switchAudienceTab('qa')" id="mobileNavQA" class="flex flex-col items-center space-y-1 text-amber-400 font-bold text-[10px]">
+      <i data-lucide="message-square" class="w-5 h-5"></i>
+      <span>Live Q&A</span>
+    </button>
+    <button onclick="switchAudienceTab('quiz')" id="mobileNavQuiz" class="flex flex-col items-center space-y-1 text-gray-400 hover:text-white font-bold text-[10px]">
+      <i data-lucide="award" class="w-5 h-5"></i>
+      <span>Quiz & Polls</span>
+    </button>
+  </nav>
+
   <script>
     /* ==========================================================================
        APP STATE MANAGEMENT & PULSE_DB SYNC
        ========================================================================== */
+    const PRESENTER_PASSCODE = "6789";
+    let isPresenterAuthenticated = false;
+
     let sessionId = localStorage.getItem('pulse_session_id');
     if (!sessionId) {
       sessionId = 'sess_' + Math.random().toString(36).substring(2, 11);
       localStorage.setItem('pulse_session_id', sessionId);
     }
 
-    // Check for URL parameter ?code=...
     const urlParams = new URLSearchParams(window.location.search);
     const initialCodeParam = urlParams.get('code');
 
@@ -436,6 +459,8 @@
       activeQuizTimer: null,
       quizTimeRemaining: 0,
       hasSubmittedAnswer: false,
+      responseCounts: [0, 0, 0, 0],
+      totalResponses: 0,
       userScores: {
         "Preet K.": 280,
         "Aman Singh": 200,
@@ -453,15 +478,14 @@
       
       qrContainer.innerHTML = '';
       
-      // Clean event code string for URL
       const cleanCode = state.eventCode.replace('#', '');
       const joinUrl = `${window.location.origin}${window.location.pathname}?code=${encodeURIComponent(cleanCode)}`;
 
       try {
         qrCodeInstance = new QRCode(qrContainer, {
           text: joinUrl,
-          width: 130,
-          height: 130,
+          width: 110,
+          height: 110,
           colorDark: "#0B0F17",
           colorLight: "#FFFFFF",
           correctLevel: QRCode.CorrectLevel.H
@@ -484,11 +508,6 @@
 
       const input = document.getElementById('eventCodeInput');
       if (input) input.value = state.eventCode;
-
-      const qInput = document.getElementById('questionInput');
-      if (qInput) {
-        qInput.placeholder = `Type your question for ${state.eventCode} here... (Keep it concise and clear)`;
-      }
 
       renderQRCode();
     }
@@ -530,6 +549,46 @@
                 state.questions.unshift(meta);
               }
             }
+            if (p.event_type === 'quiz_release' && p.metadata) {
+              const meta = typeof p.metadata === 'string' ? JSON.parse(p.metadata) : p.metadata;
+              if (meta.quiz && (!state.activeQuizQuestion || state.activeQuizQuestion.id !== meta.quiz.id)) {
+                state.activeQuizQuestion = meta.quiz;
+                state.hasSubmittedAnswer = false;
+                state.responseCounts = [0, 0, 0, 0];
+                state.totalResponses = 0;
+                state.quizTimeRemaining = meta.quiz.timeLimit;
+                state.spotlightedItem = { type: 'quiz', data: meta.quiz };
+
+                const activeInd = document.getElementById('activeQuizIndicator');
+                if (activeInd) activeInd.classList.remove('hidden');
+
+                if (state.activeQuizTimer) clearInterval(state.activeQuizTimer);
+                state.activeQuizTimer = setInterval(() => {
+                  state.quizTimeRemaining--;
+                  renderAudienceQuizPane();
+                  renderSpotlight();
+                  if (state.quizTimeRemaining <= 0) {
+                    clearInterval(state.activeQuizTimer);
+                  }
+                }, 1000);
+
+                if (state.view === 'audience') {
+                  switchAudienceTab('quiz');
+                }
+                renderAll();
+              }
+            }
+            if (p.event_type === 'quiz_answer' && p.metadata) {
+              const meta = typeof p.metadata === 'string' ? JSON.parse(p.metadata) : p.metadata;
+              if (meta.quizId && state.activeQuizQuestion && state.activeQuizQuestion.id === meta.quizId) {
+                if (typeof meta.selectedIndex === 'number' && meta.selectedIndex >= 0 && meta.selectedIndex < 4) {
+                  state.responseCounts[meta.selectedIndex]++;
+                  state.totalResponses++;
+                  renderSpotlight();
+                  renderAudienceQuizPane();
+                }
+              }
+            }
           });
           renderQuestions();
         }
@@ -543,10 +602,19 @@
       lucide.createIcons();
       renderAll();
       sendPulse('page_view', { page: 'pulse_index' });
-      setInterval(fetchPulseDatabase, 8000);
+      setInterval(fetchPulseDatabase, 4000);
     };
 
     function switchView(viewMode) {
+      if (viewMode === 'presenter' && !isPresenterAuthenticated) {
+        const enteredPasscode = prompt("Enter Presenter Passcode to continue:");
+        if (enteredPasscode !== PRESENTER_PASSCODE) {
+          alert("Incorrect passcode. Access denied.");
+          return;
+        }
+        isPresenterAuthenticated = true;
+      }
+
       state.view = viewMode;
       const audBtn = document.getElementById('btnAudienceView');
       const presBtn = document.getElementById('btnPresenterView');
@@ -559,16 +627,16 @@
         presView.classList.add('hidden');
         presView.classList.remove('flex');
 
-        audBtn.className = "px-4 py-2 rounded-lg text-sm font-extrabold transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow";
-        presBtn.className = "px-4 py-2 rounded-lg text-sm font-extrabold text-gray-400 hover:text-white transition flex items-center space-x-2";
+        audBtn.className = "px-2.5 sm:px-4 py-1 sm:py-2 rounded-lg text-xs sm:text-sm font-extrabold transition flex items-center space-x-1.5 bg-amber-500 text-slate-950 shadow";
+        presBtn.className = "px-2.5 sm:px-4 py-1 sm:py-2 rounded-lg text-xs sm:text-sm font-extrabold text-gray-400 hover:text-white transition flex items-center space-x-1.5";
       } else {
         presView.classList.remove('hidden');
         presView.classList.add('flex');
         audView.classList.add('hidden');
         audView.classList.remove('flex');
 
-        presBtn.className = "px-4 py-2 rounded-lg text-sm font-extrabold transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow";
-        audBtn.className = "px-4 py-2 rounded-lg text-sm font-extrabold text-gray-400 hover:text-white transition flex items-center space-x-2";
+        presBtn.className = "px-2.5 sm:px-4 py-1 sm:py-2 rounded-lg text-xs sm:text-sm font-extrabold transition flex items-center space-x-1.5 bg-amber-500 text-slate-950 shadow";
+        audBtn.className = "px-2.5 sm:px-4 py-1 sm:py-2 rounded-lg text-xs sm:text-sm font-extrabold text-gray-400 hover:text-white transition flex items-center space-x-1.5";
         renderQRCode();
       }
       lucide.createIcons();
@@ -578,28 +646,34 @@
       state.audienceTab = tab;
       const qaBtn = document.getElementById('tabAudienceQA');
       const quizBtn = document.getElementById('tabAudienceQuiz');
+      const mobileQA = document.getElementById('mobileNavQA');
+      const mobileQuiz = document.getElementById('mobileNavQuiz');
       const qaPane = document.getElementById('audienceQAPane');
       const quizPane = document.getElementById('audienceQuizPane');
 
       if (tab === 'qa') {
         qaPane.classList.remove('hidden');
         quizPane.classList.add('hidden');
-        qaBtn.className = "px-5 py-2.5 rounded-xl font-bold text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow-md";
-        quizBtn.className = "px-5 py-2.5 rounded-xl font-bold text-base transition flex items-center space-x-2 text-gray-300 hover:bg-gray-800";
+        if (qaBtn) qaBtn.className = "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow";
+        if (quizBtn) quizBtn.className = "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 text-gray-300 hover:bg-gray-800";
+        if (mobileQA) mobileQA.className = "flex flex-col items-center space-y-1 text-amber-400 font-bold text-[10px]";
+        if (mobileQuiz) mobileQuiz.className = "flex flex-col items-center space-y-1 text-gray-400 hover:text-white font-bold text-[10px]";
       } else {
         quizPane.classList.remove('hidden');
         qaPane.classList.add('hidden');
-        quizBtn.className = "px-5 py-2.5 rounded-xl font-bold text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow-md";
-        qaBtn.className = "px-5 py-2.5 rounded-xl font-bold text-base transition flex items-center space-x-2 text-gray-300 hover:bg-gray-800";
+        if (quizBtn) quizBtn.className = "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow";
+        if (qaBtn) qaBtn.className = "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 text-gray-300 hover:bg-gray-800";
+        if (mobileQuiz) mobileQuiz.className = "flex flex-col items-center space-y-1 text-amber-400 font-bold text-[10px]";
+        if (mobileQA) mobileQA.className = "flex flex-col items-center space-y-1 text-gray-400 hover:text-white font-bold text-[10px]";
       }
       lucide.createIcons();
     }
 
     function switchPresenterSubTab(subTab) {
       state.presenterSubTab = subTab;
-      document.getElementById('subTabSpotlight').className = subTab === 'spotlight' ? "px-4 py-2 rounded-xl font-bold text-sm bg-amber-500 text-slate-950 shadow" : "px-4 py-2 rounded-xl font-bold text-sm bg-gray-800 text-gray-300 hover:text-white";
-      document.getElementById('subTabManager').className = subTab === 'manager' ? "px-4 py-2 rounded-xl font-bold text-sm bg-amber-500 text-slate-950 shadow" : "px-4 py-2 rounded-xl font-bold text-sm bg-gray-800 text-gray-300 hover:text-white";
-      document.getElementById('subTabQuestions').className = subTab === 'questions' ? "px-4 py-2 rounded-xl font-bold text-sm bg-amber-500 text-slate-950 shadow" : "px-4 py-2 rounded-xl font-bold text-sm bg-gray-800 text-gray-300 hover:text-white";
+      document.getElementById('subTabSpotlight').className = subTab === 'spotlight' ? "flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-amber-500 text-slate-950 shadow whitespace-nowrap" : "flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 text-gray-300 hover:text-white whitespace-nowrap";
+      document.getElementById('subTabManager').className = subTab === 'manager' ? "flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-amber-500 text-slate-950 shadow whitespace-nowrap" : "flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 text-gray-300 hover:text-white whitespace-nowrap";
+      document.getElementById('subTabQuestions').className = subTab === 'questions' ? "flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-amber-500 text-slate-950 shadow whitespace-nowrap" : "flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 text-gray-300 hover:text-white whitespace-nowrap";
 
       document.getElementById('presenterSpotlightPane').classList.toggle('hidden', subTab !== 'spotlight');
       document.getElementById('presenterManagerPane').classList.toggle('hidden', subTab !== 'manager');
@@ -652,12 +726,12 @@
     function sortQuestions(type) {
       if (type === 'upvotes') {
         state.questions.sort((a, b) => b.upvotes - a.upvotes);
-        document.getElementById('sortUpvotes').className = "px-3 py-1.5 rounded-lg bg-gray-800 text-amber-400 font-bold border border-gray-700";
-        document.getElementById('sortRecent').className = "px-3 py-1.5 rounded-lg bg-gray-900 text-gray-400 font-bold hover:text-white";
+        document.getElementById('sortUpvotes').className = "px-2.5 py-1 rounded-lg bg-gray-800 text-amber-400 font-bold border border-gray-700";
+        document.getElementById('sortRecent').className = "px-2.5 py-1 rounded-lg bg-gray-900 text-gray-400 font-bold hover:text-white";
       } else {
         state.questions.sort((a, b) => b.id - a.id);
-        document.getElementById('sortRecent').className = "px-3 py-1.5 rounded-lg bg-gray-800 text-amber-400 font-bold border border-gray-700";
-        document.getElementById('sortUpvotes').className = "px-3 py-1.5 rounded-lg bg-gray-900 text-gray-400 font-bold hover:text-white";
+        document.getElementById('sortRecent').className = "px-2.5 py-1 rounded-lg bg-gray-800 text-amber-400 font-bold border border-gray-700";
+        document.getElementById('sortUpvotes').className = "px-2.5 py-1 rounded-lg bg-gray-900 text-gray-400 font-bold hover:text-white";
       }
       renderQuestions();
     }
@@ -688,7 +762,7 @@
       }
     }
 
-    function addCustomQuizQuestion() {
+    function saveQuizQuestion() {
       const title = document.getElementById('newQuizTitle').value.trim();
       const o0 = document.getElementById('option0').value.trim();
       const o1 = document.getElementById('option1').value.trim();
@@ -703,28 +777,91 @@
         return;
       }
 
-      const newQuiz = {
-        id: "q_" + Date.now(),
-        title: title,
-        options: [o0, o1, o2 || "Option C", o3 || "Option D"],
-        correct: correctIndex,
-        timeLimit: timeLimit,
-        points: points
-      };
+      const editingId = document.getElementById('editingQuizId').value;
 
-      state.quizDeck.push(newQuiz);
+      if (editingId) {
+        const quizIndex = state.quizDeck.findIndex(q => q.id === editingId);
+        if (quizIndex !== -1) {
+          state.quizDeck[quizIndex] = {
+            id: editingId,
+            title: title,
+            options: [o0, o1, o2 || "Option C", o3 || "Option D"],
+            correct: correctIndex,
+            timeLimit: timeLimit,
+            points: points
+          };
+        }
+      } else {
+        const newQuiz = {
+          id: "q_" + Date.now(),
+          title: title,
+          options: [o0, o1, o2 || "Option C", o3 || "Option D"],
+          correct: correctIndex,
+          timeLimit: timeLimit,
+          points: points
+        };
+        state.quizDeck.push(newQuiz);
+      }
+
+      cancelEditQuizQuestion();
       renderQuizDeck();
+    }
 
+    function editQuizQuestion(quizId) {
+      const quiz = state.quizDeck.find(q => q.id === quizId);
+      if (!quiz) return;
+
+      document.getElementById('editingQuizId').value = quiz.id;
+      document.getElementById('newQuizTitle').value = quiz.title;
+      document.getElementById('option0').value = quiz.options[0] || '';
+      document.getElementById('option1').value = quiz.options[1] || '';
+      document.getElementById('option2').value = quiz.options[2] || '';
+      document.getElementById('option3').value = quiz.options[3] || '';
+
+      const radios = document.querySelectorAll('input[name="correctOption"]');
+      if (radios[quiz.correct]) radios[quiz.correct].checked = true;
+
+      document.getElementById('newQuizTimer').value = quiz.timeLimit || 30;
+      document.getElementById('newQuizPoints').value = quiz.points || 100;
+
+      document.getElementById('quizFormHeading').innerHTML = `<i data-lucide="edit-3" class="w-5 h-5 text-amber-400"></i><span>Edit Quiz Question</span>`;
+      document.getElementById('btnSaveQuiz').textContent = "Update Quiz Question";
+      document.getElementById('btnCancelEdit').classList.remove('hidden');
+
+      lucide.createIcons();
+    }
+
+    function cancelEditQuizQuestion() {
+      document.getElementById('editingQuizId').value = "";
       document.getElementById('newQuizTitle').value = "";
       document.getElementById('option0').value = "";
       document.getElementById('option1').value = "";
       document.getElementById('option2').value = "";
       document.getElementById('option3').value = "";
+
+      const radios = document.querySelectorAll('input[name="correctOption"]');
+      if (radios[0]) radios[0].checked = true;
+
+      document.getElementById('newQuizTimer').value = "30";
+      document.getElementById('newQuizPoints').value = "100";
+
+      document.getElementById('quizFormHeading').innerHTML = `<i data-lucide="plus-circle" class="w-5 h-5 text-amber-400"></i><span>Create Quiz Question</span>`;
+      document.getElementById('btnSaveQuiz').textContent = "Save to Quiz Deck";
+      document.getElementById('btnCancelEdit').classList.add('hidden');
+
+      lucide.createIcons();
+    }
+
+    function deleteQuizQuestion(quizId) {
+      state.quizDeck = state.quizDeck.filter(q => q.id !== quizId);
+      renderQuizDeck();
     }
 
     function resetQuizDeck() {
-      state.quizDeck = [];
-      renderQuizDeck();
+      if (confirm("Are you sure you want to clear the entire quiz deck?")) {
+        state.quizDeck = [];
+        renderQuizDeck();
+      }
     }
 
     async function releaseQuizQuestion(quizId) {
@@ -733,10 +870,13 @@
 
       state.activeQuizQuestion = quiz;
       state.hasSubmittedAnswer = false;
+      state.responseCounts = [0, 0, 0, 0];
+      state.totalResponses = 0;
       state.quizTimeRemaining = quiz.timeLimit;
       state.spotlightedItem = { type: 'quiz', data: quiz };
 
-      document.getElementById('activeQuizIndicator').classList.remove('hidden');
+      const activeInd = document.getElementById('activeQuizIndicator');
+      if (activeInd) activeInd.classList.remove('hidden');
 
       if (state.activeQuizTimer) clearInterval(state.activeQuizTimer);
 
@@ -753,7 +893,7 @@
       switchPresenterSubTab('spotlight');
       renderAll();
 
-      await sendPulse('quiz_release', { quizId: quiz.id, title: quiz.title });
+      await sendPulse('quiz_release', { quiz: quiz });
     }
 
     async function submitAudienceAnswer(selectedIndex) {
@@ -762,9 +902,14 @@
       state.hasSubmittedAnswer = true;
       const isCorrect = selectedIndex === state.activeQuizQuestion.correct;
 
+      if (typeof selectedIndex === 'number' && selectedIndex >= 0 && selectedIndex < 4) {
+        state.responseCounts[selectedIndex]++;
+        state.totalResponses++;
+      }
+
       if (isCorrect) {
         state.userScores["You"] += state.activeQuizQuestion.points;
-        confetti({ particleCount: 80, spread: 60, origin: { y: 0.7 } });
+        confetti({ particleCount: 60, spread: 50, origin: { y: 0.7 } });
       }
 
       renderAudienceQuizPane();
@@ -782,22 +927,12 @@
       const text = qInput.value.trim();
       if (!text) return;
 
-      qInput.placeholder = "Refining question with AI...";
-      
+      qInput.placeholder = "Enhancing...";
       try {
         qInput.value = text.charAt(0).toUpperCase() + text.slice(1) + (text.endsWith('?') ? '' : '?');
       } catch (err) {
         console.error("AI enhancement error:", err);
       }
-    }
-
-    async function generateAIQuizQuestion() {
-      const titleInput = document.getElementById('newQuizTitle');
-      titleInput.value = "How does decentralized technology empower transparent community governance?";
-      document.getElementById('option0').value = "By establishing verifiable public records";
-      document.getElementById('option1').value = "By centralizing administrative authority";
-      document.getElementById('option2').value = "By restricting network access";
-      document.getElementById('option3').value = "By removing consensus verification";
     }
 
     function renderAll() {
@@ -814,49 +949,48 @@
       const presListContainer = document.getElementById('presenterQuestionsList');
       const qaBadge = document.getElementById('qaBadge');
 
-      qaBadge.textContent = state.questions.length;
+      if (qaBadge) qaBadge.textContent = state.questions.length;
 
       if (state.questions.length === 0) {
-        listContainer.innerHTML = `<div class="p-8 text-center text-gray-500 bg-gray-900/50 rounded-2xl border border-gray-800">No questions submitted yet. Be the first!</div>`;
-        presListContainer.innerHTML = `<div class="p-8 text-center text-gray-500 bg-gray-900 rounded-2xl border border-gray-800">No questions in Q&A queue.</div>`;
+        listContainer.innerHTML = `<div class="p-6 text-center text-xs sm:text-sm text-gray-500 bg-gray-900/50 rounded-2xl border border-gray-800">No questions submitted yet. Be the first!</div>`;
+        presListContainer.innerHTML = `<div class="p-6 text-center text-xs sm:text-sm text-gray-500 bg-gray-900 rounded-2xl border border-gray-800">No questions in Q&A queue.</div>`;
         return;
       }
 
       listContainer.innerHTML = state.questions.map(q => `
-        <div class="bg-gray-900 border ${q.answered ? 'border-emerald-500/30 bg-emerald-950/10' : 'border-gray-800'} rounded-2xl p-5 flex items-start justify-between gap-4 transition hover:border-gray-700">
-          <div class="space-y-2 flex-1">
-            <div class="flex items-center space-x-3 text-xs md:text-sm text-gray-400">
+        <div class="bg-gray-900 border ${q.answered ? 'border-emerald-500/30 bg-emerald-950/10' : 'border-gray-800'} rounded-xl p-3.5 sm:p-5 flex items-start justify-between gap-3 transition">
+          <div class="space-y-1.5 flex-1">
+            <div class="flex items-center space-x-2 text-xs text-gray-400">
               <span class="font-bold text-amber-400">${q.author}</span>
-              <span>•</span>
-              <span>${q.timestamp}</span>
-              ${q.answered ? '<span class="bg-emerald-500/20 text-emerald-400 text-xs px-2 py-0.5 rounded-full font-bold">Answered Live</span>' : ''}
+              <span>• ${q.timestamp}</span>
+              ${q.answered ? '<span class="bg-emerald-500/20 text-emerald-400 text-[10px] px-2 py-0.5 rounded-full font-bold">Answered</span>' : ''}
             </div>
-            <p class="text-lg md:text-xl font-bold text-gray-100 leading-snug">${q.text}</p>
+            <p class="text-sm sm:text-lg font-bold text-gray-100 leading-snug">${q.text}</p>
           </div>
 
-          <button onclick="toggleUpvote(${q.id})" class="flex flex-col items-center justify-center px-4 py-2.5 rounded-xl border ${q.voted ? 'bg-amber-500 text-slate-950 border-amber-400 font-black' : 'bg-gray-950 border-gray-800 text-gray-300 hover:border-amber-500/50'} transition">
-            <i data-lucide="thumbs-up" class="w-5 h-5"></i>
-            <span class="text-base font-extrabold mt-1">${q.upvotes}</span>
+          <button onclick="toggleUpvote(${q.id})" class="flex flex-col items-center justify-center px-3 py-2 rounded-xl border ${q.voted ? 'bg-amber-500 text-slate-950 border-amber-400 font-black' : 'bg-gray-950 border-gray-800 text-gray-300'} transition shrink-0">
+            <i data-lucide="thumbs-up" class="w-4 h-4"></i>
+            <span class="text-xs sm:text-sm font-black mt-0.5">${q.upvotes}</span>
           </button>
         </div>
       `).join('');
 
       presListContainer.innerHTML = state.questions.map(q => `
-        <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 flex items-center justify-between gap-4">
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div class="space-y-1 flex-1">
             <div class="flex items-center space-x-2 text-xs text-gray-400">
               <span class="font-bold text-amber-400">${q.author}</span>
               <span>• ${q.upvotes} Votes</span>
             </div>
-            <p class="text-base font-bold text-white">${q.text}</p>
+            <p class="text-sm font-bold text-white">${q.text}</p>
           </div>
 
-          <div class="flex items-center space-x-2">
-            <button onclick="spotlightQuestion(${q.id})" class="px-3 py-1.5 rounded-lg bg-amber-500 text-slate-950 font-bold text-xs hover:brightness-110 flex items-center space-x-1">
-              <i data-lucide="tv" class="w-3.5 h-3.5"></i>
+          <div class="flex items-center space-x-2 w-full sm:w-auto justify-end">
+            <button onclick="spotlightQuestion(${q.id})" class="px-2.5 py-1 rounded-lg bg-amber-500 text-slate-950 font-bold text-xs hover:brightness-110 flex items-center space-x-1">
+              <i data-lucide="tv" class="w-3 h-3"></i>
               <span>Spotlight</span>
             </button>
-            <button onclick="toggleAnswered(${q.id})" class="px-3 py-1.5 rounded-lg border border-gray-700 text-gray-300 font-bold text-xs hover:bg-gray-800">
+            <button onclick="toggleAnswered(${q.id})" class="px-2.5 py-1 rounded-lg border border-gray-700 text-gray-300 font-bold text-xs hover:bg-gray-800">
               ${q.answered ? 'Unmark' : 'Done'}
             </button>
           </div>
@@ -868,23 +1002,33 @@
 
     function renderQuizDeck() {
       const container = document.getElementById('quizDeckList');
+      if (state.quizDeck.length === 0) {
+        container.innerHTML = `<div class="p-6 text-center text-xs sm:text-sm text-gray-500 bg-gray-900 rounded-2xl border border-gray-800">No questions in quiz deck. Create one using the form on the left.</div>`;
+        return;
+      }
+
       container.innerHTML = state.quizDeck.map((q, idx) => `
-        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 space-y-3 flex items-center justify-between gap-4">
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-3.5 sm:p-5 space-y-2.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
           <div class="space-y-1 flex-1">
             <div class="flex items-center space-x-2">
-              <span class="bg-amber-500/20 text-amber-400 text-xs font-mono font-bold px-2.5 py-0.5 rounded-md">Q${idx + 1}</span>
-              <span class="text-xs text-gray-400 font-bold"><i data-lucide="clock" class="w-3 h-3 inline"></i> ${q.timeLimit}s Timer</span>
+              <span class="bg-amber-500/20 text-amber-400 text-[10px] font-mono font-bold px-2 py-0.5 rounded">Q${idx + 1}</span>
+              <span class="text-xs text-gray-400 font-bold">${q.timeLimit}s Timer</span>
             </div>
-            <p class="text-lg font-bold text-white">${q.title}</p>
-            <div class="grid grid-cols-2 gap-2 text-xs text-gray-400 pt-1">
-              ${q.options.map((opt, oIdx) => `<div class="${oIdx === q.correct ? 'text-amber-400 font-bold' : ''}">• ${opt}</div>`).join('')}
-            </div>
+            <p class="text-sm sm:text-base font-bold text-white">${q.title}</p>
           </div>
 
-          <button onclick="releaseQuizQuestion('${q.id}')" class="px-5 py-3 rounded-xl gold-gradient-bg text-slate-950 font-black text-sm hover:brightness-110 transition shadow-lg flex items-center space-x-1.5 shrink-0">
-            <i data-lucide="play-circle" class="w-5 h-5"></i>
-            <span>Release Live</span>
-          </button>
+          <div class="flex items-center space-x-2 w-full sm:w-auto justify-end shrink-0">
+            <button onclick="releaseQuizQuestion('${q.id}')" class="flex-1 sm:flex-none px-4 py-2 rounded-xl gold-gradient-bg text-slate-950 font-black text-xs sm:text-sm hover:brightness-110 transition shadow flex items-center justify-center space-x-1.5">
+              <i data-lucide="play-circle" class="w-4 h-4"></i>
+              <span>Release Live</span>
+            </button>
+            <button onclick="editQuizQuestion('${q.id}')" class="p-2 rounded-xl border border-amber-500/30 text-amber-400 hover:bg-amber-500/10 transition" title="Edit Question">
+              <i data-lucide="edit" class="w-4 h-4"></i>
+            </button>
+            <button onclick="deleteQuizQuestion('${q.id}')" class="p-2 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/10 transition" title="Delete Question">
+              <i data-lucide="trash-2" class="w-4 h-4"></i>
+            </button>
+          </div>
         </div>
       `).join('');
 
@@ -897,35 +1041,37 @@
 
       if (!activeQ) {
         container.innerHTML = `
-          <div class="py-12 space-y-4">
-            <div class="w-16 h-16 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto border border-amber-500/20 animate-pulse">
-              <i data-lucide="clock" class="w-8 h-8"></i>
+          <div class="py-8 space-y-3">
+            <div class="w-12 h-12 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto border border-amber-500/20 animate-pulse">
+              <i data-lucide="clock" class="w-6 h-6"></i>
             </div>
-            <h2 class="text-2xl md:text-3xl font-extrabold text-white">Waiting for Presenter...</h2>
-            <p class="text-gray-400 max-w-md mx-auto text-base">When the presenter releases a quiz question or live poll for <strong class="text-amber-400 event-code-display">${state.eventCode}</strong>, it will appear here instantly!</p>
+            <h2 class="text-lg sm:text-2xl font-extrabold text-white">Waiting for Presenter...</h2>
+            <p class="text-gray-400 max-w-md mx-auto text-xs sm:text-sm">When a live quiz or poll is released, it will appear here instantly!</p>
           </div>
         `;
         return;
       }
 
       container.innerHTML = `
-        <div class="space-y-6 text-left">
-          <div class="flex items-center justify-between border-b border-gray-800 pb-4">
+        <div class="space-y-4 text-left">
+          <div class="flex items-center justify-between border-b border-gray-800 pb-3">
             <div>
-              <span class="text-xs uppercase font-extrabold text-amber-400 tracking-wider">LIVE AUDIENCE QUIZ</span>
-              <h3 class="text-2xl md:text-4xl font-black text-white mt-1">${activeQ.title}</h3>
+              <span class="text-[10px] uppercase font-extrabold text-amber-400 tracking-wider">LIVE QUIZ</span>
+              <h3 class="text-base sm:text-2xl font-black text-white mt-0.5">${activeQ.title}</h3>
             </div>
             
-            <div class="text-center bg-gray-950 px-5 py-3 rounded-2xl border border-amber-500/40">
-              <span class="block text-xs font-bold text-gray-400">TIME LEFT</span>
-              <span class="text-3xl font-mono font-black ${state.quizTimeRemaining < 10 ? 'text-red-500 animate-ping' : 'text-amber-400'}">${state.quizTimeRemaining}s</span>
+            <div class="text-center bg-gray-950 px-3 py-1.5 rounded-xl border border-amber-500/40">
+              <span class="block text-[9px] font-bold text-gray-400">TIMER</span>
+              <span class="text-lg sm:text-2xl font-mono font-black ${state.quizTimeRemaining < 10 ? 'text-red-500 animate-ping' : 'text-amber-400'}">${state.quizTimeRemaining}s</span>
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             ${activeQ.options.map((opt, idx) => {
               const isCorrect = idx === activeQ.correct;
-              let btnStyle = "bg-gray-950 border-gray-800 text-white hover:border-amber-500 hover:bg-gray-800/80";
+              const count = state.responseCounts[idx] || 0;
+              const pct = state.totalResponses > 0 ? Math.round((count / state.totalResponses) * 100) : 0;
+              let btnStyle = "bg-gray-950 border-gray-800 text-white hover:border-amber-500";
               
               if (state.hasSubmittedAnswer) {
                 if (isCorrect) {
@@ -936,19 +1082,21 @@
               }
 
               return `
-                <button onclick="submitAudienceAnswer(${idx})" ${state.hasSubmittedAnswer || state.quizTimeRemaining <= 0 ? 'disabled' : ''} class="w-full p-5 md:p-6 rounded-2xl border-2 text-left font-bold text-lg md:text-xl transition flex items-center justify-between ${btnStyle}">
-                  <span>${opt}</span>
-                  <span class="w-8 h-8 rounded-full bg-gray-800/80 flex items-center justify-center font-mono text-sm">${String.fromCharCode(65 + idx)}</span>
+                <button onclick="submitAudienceAnswer(${idx})" ${state.hasSubmittedAnswer || state.quizTimeRemaining <= 0 ? 'disabled' : ''} class="w-full p-3.5 sm:p-5 rounded-xl border-2 text-left font-bold text-sm sm:text-base transition flex flex-col justify-between ${btnStyle}">
+                  <div class="flex items-center justify-between w-full">
+                    <span>${opt}</span>
+                    <span class="w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center font-mono text-xs ml-2 shrink-0">${String.fromCharCode(65 + idx)}</span>
+                  </div>
+                  ${state.hasSubmittedAnswer || state.quizTimeRemaining <= 0 ? `
+                    <div class="mt-2 text-xs font-mono font-bold flex justify-between text-amber-400">
+                      <span>${count} votes</span>
+                      <span>${pct}%</span>
+                    </div>
+                  ` : ''}
                 </button>
               `;
             }).join('')}
           </div>
-
-          ${state.hasSubmittedAnswer ? `
-            <div class="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 text-center text-amber-400 font-bold text-lg">
-              Answer Submitted! Check main presenter screen for overall results.
-            </div>
-          ` : ''}
         </div>
       `;
 
@@ -962,10 +1110,10 @@
 
       if (!item) {
         displayArea.innerHTML = `
-          <div class="space-y-4">
-            <i data-lucide="presentation" class="w-16 h-16 text-gray-700 mx-auto"></i>
-            <h2 class="text-3xl md:text-5xl font-black text-gray-400">No Item Currently Spotlighted</h2>
-            <p class="text-xl text-gray-500 font-medium max-w-xl mx-auto">Select a Q&A question or release a Quiz from the Manager tab to spotlight onto the projector screen.</p>
+          <div class="space-y-3">
+            <i data-lucide="presentation" class="w-12 h-12 text-gray-700 mx-auto"></i>
+            <h2 class="text-xl sm:text-3xl font-black text-gray-400">No Item Spotlighted</h2>
+            <p class="text-xs sm:text-base text-gray-500 font-medium max-w-xl mx-auto">Select a Q&A question or release a quiz to spotlight on screen.</p>
           </div>
         `;
         leaderboardCard.classList.add('hidden');
@@ -975,13 +1123,12 @@
       if (item.type === 'question') {
         const q = item.data;
         displayArea.innerHTML = `
-          <div class="space-y-6 text-left max-w-4xl mx-auto py-4">
-            <div class="flex items-center space-x-3 text-lg font-bold text-amber-400">
-              <span class="bg-amber-500/20 px-3 py-1 rounded-lg border border-amber-500/30">AUDIENCE SPOTLIGHT</span>
+          <div class="space-y-3 text-left max-w-3xl mx-auto py-2">
+            <div class="flex items-center space-x-2 text-xs font-bold text-amber-400">
+              <span class="bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/30">SPOTLIGHT</span>
               <span>• Asked by ${q.author} (${q.upvotes} Votes)</span>
             </div>
-            
-            <h2 class="text-4xl md:text-6xl font-black text-white leading-tight gold-gradient-text">
+            <h2 class="text-2xl sm:text-5xl font-black text-white leading-tight gold-gradient-text">
               "${q.text}"
             </h2>
           </div>
@@ -991,26 +1138,37 @@
       else if (item.type === 'quiz') {
         const q = item.data;
         displayArea.innerHTML = `
-          <div class="space-y-8 text-left max-w-5xl mx-auto">
+          <div class="space-y-4 text-left max-w-4xl mx-auto">
             <div class="flex items-center justify-between">
-              <span class="bg-amber-500 text-slate-950 px-4 py-1.5 rounded-xl font-black text-lg">LIVE QUIZ QUESTION</span>
-              <div class="flex items-center space-x-3">
-                <span class="text-xl text-gray-400 font-bold">TIMER:</span>
-                <span class="text-5xl font-mono font-black ${state.quizTimeRemaining < 10 ? 'text-red-500 animate-pulse' : 'text-amber-400'}">${state.quizTimeRemaining}s</span>
+              <div class="flex items-center space-x-2">
+                <span class="bg-amber-500 text-slate-950 px-2.5 py-1 rounded-lg font-black text-xs">LIVE QUIZ</span>
+                <span class="text-xs text-gray-400 font-bold">Total Votes: ${state.totalResponses}</span>
               </div>
+              <span class="text-2xl font-mono font-black ${state.quizTimeRemaining < 10 ? 'text-red-500 animate-pulse' : 'text-amber-400'}">${state.quizTimeRemaining}s</span>
             </div>
 
-            <h2 class="text-3xl md:text-5xl font-black text-white leading-snug">${q.title}</h2>
+            <h2 class="text-xl sm:text-3xl font-black text-white">${q.title}</h2>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               ${q.options.map((opt, idx) => {
                 const showAnswer = state.quizTimeRemaining <= 0;
                 const isCorrect = idx === q.correct;
+                const count = state.responseCounts[idx] || 0;
+                const pct = state.totalResponses > 0 ? Math.round((count / state.totalResponses) * 100) : 0;
                 
                 return `
-                  <div class="p-6 rounded-2xl border-2 flex items-center justify-between ${showAnswer && isCorrect ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300' : 'bg-gray-950 border-gray-800 text-gray-200'}">
-                    <span class="text-2xl font-extrabold">${opt}</span>
-                    <span class="text-xl font-mono font-black text-amber-400 bg-amber-500/10 px-4 py-2 rounded-xl">${String.fromCharCode(65 + idx)}</span>
+                  <div class="p-3.5 rounded-xl border flex flex-col justify-between ${showAnswer && isCorrect ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300' : 'bg-gray-950 border-gray-800 text-gray-200'}">
+                    <div class="flex items-center justify-between">
+                      <span class="text-sm font-bold">${opt}</span>
+                      <span class="text-xs font-mono font-black text-amber-400 bg-amber-500/10 px-2 py-1 rounded">${String.fromCharCode(65 + idx)}</span>
+                    </div>
+                    <div class="mt-3 flex items-center justify-between text-xs font-mono text-gray-400">
+                      <span>${count} responses</span>
+                      <span class="font-bold text-amber-400">${pct}%</span>
+                    </div>
+                    <div class="w-full bg-gray-900 rounded-full h-1.5 mt-1 overflow-hidden">
+                      <div class="bg-amber-500 h-1.5 rounded-full transition-all duration-300" style="width: ${pct}%"></div>
+                    </div>
                   </div>
                 `;
               }).join('')}
@@ -1030,12 +1188,12 @@
       const sortedUsers = Object.entries(state.userScores).sort((a, b) => b[1] - a[1]);
 
       list.innerHTML = sortedUsers.map(([name, score], idx) => `
-        <div class="flex items-center justify-between p-4 rounded-xl bg-gray-950 border border-gray-800">
-          <div class="flex items-center space-x-3">
-            <span class="w-8 h-8 rounded-full ${idx === 0 ? 'bg-amber-500 text-slate-950' : 'bg-gray-800 text-gray-300'} flex items-center justify-center font-black text-base">${idx + 1}</span>
-            <span class="text-xl font-extrabold text-white">${name}</span>
+        <div class="flex items-center justify-between p-3 rounded-xl bg-gray-950 border border-gray-800 text-xs sm:text-sm">
+          <div class="flex items-center space-x-2">
+            <span class="w-6 h-6 rounded-full ${idx === 0 ? 'bg-amber-500 text-slate-950' : 'bg-gray-800 text-gray-300'} flex items-center justify-center font-black">${idx + 1}</span>
+            <span class="font-bold text-white">${name}</span>
           </div>
-          <span class="text-2xl font-mono font-black text-amber-400">${score} pts</span>
+          <span class="font-mono font-black text-amber-400">${score} pts</span>
         </div>
       `).join('');
     }
