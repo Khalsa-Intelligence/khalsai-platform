@@ -522,10 +522,11 @@
 
     async function sendPulse(eventType, metadata = {}, userId = null) {
       try {
+        const cleanCode = state.eventCode.replace(/^#/, ''); // Remove leading '#'
         await fetch('/api/pulse', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ sessionId, userId, eventType, eventCode: state.eventCode, metadata })
+          body: JSON.stringify({ sessionId, userId, eventType, eventCode: cleanCode, metadata })[cite: 1]
         });
       } catch (err) {
         console.error('Pulse sync failed:', err);
@@ -534,13 +535,16 @@
 
     async function fetchPulseDatabase() {
       try {
-        const res = await fetch('/api/pulse');
+        const cleanCode = state.eventCode.replace(/^#/, '');[cite: 1]
+        const res = await fetch(`/api/pulse?eventCode=${encodeURIComponent(cleanCode)}`);[cite: 1]
         const data = await res.json();
         if (data && data.recent_pulses) {
           data.recent_pulses.forEach(p => {
             if (p.event_type === 'event_code_update' && p.metadata && p.metadata.eventCode) {
-              if (p.metadata.eventCode !== state.eventCode) {
-                setEventCode(p.metadata.eventCode);
+              const incomingCode = p.metadata.eventCode.replace(/^#/, '');[cite: 1]
+              const currentCode = state.eventCode.replace(/^#/, '');[cite: 1]
+              if (incomingCode !== currentCode) {
+                setEventCode(p.metadata.eventCode);[cite: 1]
               }
             }
             if (p.event_type === 'question' && p.metadata) {
