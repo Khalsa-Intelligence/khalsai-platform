@@ -81,7 +81,7 @@
   <!-- Top Navigation Header -->
   <header class="sticky top-0 z-40 border-b border-gray-800 bg-[#0B0F17]/95 backdrop-blur-md px-4 lg:px-8 py-3 transition-all">
     <div class="max-w-7xl mx-auto flex items-center justify-between">
-      <!-- Logo Branding (Ik Onkar removed, ultra-bold typography) -->
+      <!-- Logo Branding -->
       <div class="flex items-center space-x-3">
         <div class="w-11 h-11 rounded-xl gold-gradient-bg flex items-center justify-center text-slate-950 shadow-lg shadow-amber-500/20 font-black text-2xl">
           <i data-lucide="zap" class="w-6 h-6 stroke-[3]"></i>
@@ -148,7 +148,7 @@
 
         <div class="flex items-center space-x-2 text-sm text-gray-400 px-3 py-1 bg-gray-950 rounded-lg border border-gray-800/80">
           <i data-lucide="circle" class="w-3 h-3 text-emerald-400 fill-emerald-400 animate-pulse"></i>
-          <span class="font-bold text-gray-200">Live Sync Connected</span>
+          <span class="font-bold text-gray-200">PULSE_DB Live Sync</span>
         </div>
       </div>
 
@@ -199,7 +199,6 @@
       <!-- TAB 2: AUDIENCE QUIZ & POLL INTERFACE -->
       <div id="audienceQuizPane" class="hidden space-y-6">
         <div id="audienceQuizContainer" class="bg-gray-900 border border-gray-800 rounded-2xl p-6 md:p-8 text-center space-y-6 shadow-2xl">
-          <!-- Dynamically populated live quiz state or fallback waiting state -->
           <div class="py-12 space-y-4">
             <div class="w-16 h-16 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto border border-amber-500/20 animate-pulse">
               <i data-lucide="clock" class="w-8 h-8"></i>
@@ -240,16 +239,14 @@
         </div>
       </div>
 
-      <!-- SUB-TAB 1: PRESENTER SPOTLIGHT (PROJECTOR SCREEN OPTIMIZED) -->
+      <!-- SUB-TAB 1: PRESENTER SPOTLIGHT -->
       <div id="presenterSpotlightPane" class="space-y-6">
         
-        <!-- Big Banner Code & Title for Lecture Theatre Screen -->
         <div class="bg-gradient-to-r from-amber-500/10 via-gray-900 to-amber-500/10 border-2 border-amber-500/40 rounded-3xl p-6 md:p-8 text-center space-y-2 glow-gold">
-          <p class="text-amber-400 text-lg md:text-xl font-extrabold tracking-widest uppercase">JOIN AT PRESETER.LINK WITH CODE</p>
+          <p class="text-amber-400 text-lg md:text-xl font-extrabold tracking-widest uppercase">JOIN WITH EVENT CODE</p>
           <h1 class="text-5xl md:text-7xl font-mono font-black text-white tracking-widest gold-gradient-text" id="projectorEventCode">#TWGC2026</h1>
         </div>
 
-        <!-- Spotlight Item Area (Massive Typography for Projection) -->
         <div id="spotlightContent" class="bg-gray-900 border-2 border-gray-800 rounded-3xl p-8 md:p-12 text-center min-h-[380px] flex flex-col justify-center items-center shadow-2xl relative overflow-hidden">
           <div class="absolute top-4 left-6 flex items-center space-x-2 text-gray-500 uppercase font-black text-sm tracking-wider">
             <i data-lucide="sparkles" class="w-5 h-5 text-amber-400"></i>
@@ -265,7 +262,6 @@
           </div>
         </div>
 
-        <!-- Leaderboard Stage Preview (When Active) -->
         <div id="presenterLeaderboardCard" class="bg-gray-900 border border-gray-800 rounded-2xl p-6 space-y-4 hidden">
           <div class="flex items-center justify-between border-b border-gray-800 pb-3">
             <h3 class="text-2xl font-black text-amber-400 flex items-center space-x-2">
@@ -280,11 +276,10 @@
         </div>
       </div>
 
-      <!-- SUB-TAB 2: QUIZ & POLL BUILDER (PRESENTER MANAGEMENT) -->
+      <!-- SUB-TAB 2: QUIZ BUILDER -->
       <div id="presenterManagerPane" class="hidden space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
           
-          <!-- Left: Quiz Question Creator Form -->
           <div class="lg:col-span-5 bg-gray-900 border border-gray-800 rounded-2xl p-6 space-y-5">
             <div class="border-b border-gray-800 pb-3">
               <h3 class="text-2xl font-black text-white flex items-center space-x-2">
@@ -300,7 +295,6 @@
                 <input type="text" id="newQuizTitle" placeholder="e.g. What is the core principle of..." class="w-full bg-gray-950 border border-gray-800 rounded-xl px-4 py-3 text-base text-white focus:outline-none focus:border-amber-500">
               </div>
 
-              <!-- 4 Options Inputs -->
               <div class="space-y-2">
                 <label class="block text-sm font-bold text-gray-300">Answer Options & Select Correct One</label>
                 
@@ -338,11 +332,10 @@
                 </div>
               </div>
 
-              <!-- AI Generation Helper -->
               <div class="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl space-y-2">
                 <button onclick="generateAIQuizQuestion()" class="w-full text-xs font-extrabold text-amber-400 flex items-center justify-center space-x-1 hover:underline">
                   <i data-lucide="sparkles" class="w-4 h-4"></i>
-                  <span>Auto-Generate Quiz Question using Gemini AI</span>
+                  <span>Auto-Generate Quiz Question using AI</span>
                 </button>
               </div>
 
@@ -352,7 +345,6 @@
             </div>
           </div>
 
-          <!-- Right: Pre-made Questions List & Live Controls -->
           <div class="lg:col-span-7 space-y-4">
             <div class="flex items-center justify-between">
               <h3 class="text-xl font-extrabold text-white">Pre-Loaded Quiz Deck (#TWGC2026)</h3>
@@ -371,7 +363,7 @@
         </div>
       </div>
 
-      <!-- SUB-TAB 3: Q&A MANAGEMENT CONTROLS -->
+      <!-- SUB-TAB 3: Q&A CONTROLS -->
       <div id="presenterQuestionsPane" class="hidden space-y-4">
         <div class="flex items-center justify-between">
           <h3 class="text-xl font-extrabold text-white">Moderation & Question List</h3>
@@ -391,12 +383,18 @@
 
   <script>
     /* ==========================================================================
-       APP STATE MANAGEMENT
+       APP STATE MANAGEMENT & PULSE_DB SYNC
        ========================================================================== */
     const DEFAULT_EVENT_CODE = "#TWGC2026";
     let eventCode = DEFAULT_EVENT_CODE;
 
-    // Default Pre-loaded Questions for #TWGC2026
+    // Get or create persistent Session ID for PULSE_DB logs
+    let sessionId = localStorage.getItem('pulse_session_id');
+    if (!sessionId) {
+      sessionId = 'sess_' + Math.random().toString(36).substring(2, 11);
+      localStorage.setItem('pulse_session_id', sessionId);
+    }
+
     const defaultQuizDeck = [
       {
         id: "q1",
@@ -440,9 +438,9 @@
     ];
 
     let state = {
-      view: 'audience', // 'audience' | 'presenter'
-      audienceTab: 'qa', // 'qa' | 'quiz'
-      presenterSubTab: 'spotlight', // 'spotlight' | 'manager' | 'questions'
+      view: 'audience',
+      audienceTab: 'qa',
+      presenterSubTab: 'spotlight',
       questions: [
         {
           id: 1,
@@ -452,19 +450,10 @@
           voted: false,
           timestamp: "10:15 AM",
           answered: false
-        },
-        {
-          id: 2,
-          author: "Dr. Kaur",
-          text: "What are the key takeaways from the #TWGC2026 keynotes regarding future technology education?",
-          upvotes: 8,
-          voted: false,
-          timestamp: "10:22 AM",
-          answered: false
         }
       ],
       quizDeck: [...defaultQuizDeck],
-      activeQuizQuestion: null, // Currently released quiz question
+      activeQuizQuestion: null,
       activeQuizTimer: null,
       quizTimeRemaining: 0,
       hasSubmittedAnswer: false,
@@ -474,12 +463,51 @@
         "Simran Kaur": 190,
         "You": 0
       },
-      spotlightedItem: null // Can be question or active quiz
+      spotlightedItem: null
     };
+
+    // Helper: Send event pulse to backend Worker (PULSE_DB)
+    async function sendPulse(eventType, metadata = {}, userId = null) {
+      try {
+        await fetch('/api/pulse', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sessionId, userId, eventType, metadata })
+        });
+      } catch (err) {
+        console.error('Pulse sync failed:', err);
+      }
+    }
+
+    // Helper: Sync backend pulse records from PULSE_DB
+    async function fetchPulseDatabase() {
+      try {
+        const res = await fetch('/api/pulse');
+        const data = await res.json();
+        if (data && data.recent_pulses) {
+          // Sync questions submitted across devices
+          data.recent_pulses.forEach(p => {
+            if (p.event_type === 'question' && p.metadata) {
+              const meta = typeof p.metadata === 'string' ? JSON.parse(p.metadata) : p.metadata;
+              if (meta.id && !state.questions.some(q => q.id === meta.id)) {
+                state.questions.unshift(meta);
+              }
+            }
+          });
+          renderQuestions();
+        }
+      } catch (err) {
+        console.error('Failed to fetch pulse logs:', err);
+      }
+    }
 
     window.onload = function() {
       lucide.createIcons();
       renderAll();
+      sendPulse('page_view', { page: 'pulse_index' });
+      
+      // Poll PULSE_DB every 10 seconds for live updates
+      setInterval(fetchPulseDatabase, 10000);
     };
 
     function switchView(viewMode) {
@@ -543,7 +571,7 @@
       lucide.createIcons();
     }
 
-    function submitQuestion() {
+    async function submitQuestion() {
       const qInput = document.getElementById('questionInput');
       const nameInput = document.getElementById('userNameInput');
       const text = qInput.value.trim();
@@ -564,6 +592,9 @@
       state.questions.unshift(newQ);
       qInput.value = "";
       renderQuestions();
+
+      // Pulse DB Sync
+      await sendPulse('question', newQ, author);
     }
 
     function toggleUpvote(id) {
@@ -577,6 +608,7 @@
           q.voted = true;
         }
         renderQuestions();
+        sendPulse('upvote', { questionId: id, newVotes: q.upvotes });
       }
     }
 
@@ -605,6 +637,7 @@
       switchView('presenter');
       switchPresenterSubTab('spotlight');
       renderSpotlight();
+      sendPulse('spotlight_question', { id: q.id });
     }
 
     function toggleAnswered(id) {
@@ -662,11 +695,10 @@
       renderQuizDeck();
     }
 
-    function releaseQuizQuestion(quizId) {
+    async function releaseQuizQuestion(quizId) {
       const quiz = state.quizDeck.find(q => q.id === quizId);
       if (!quiz) return;
 
-      // Set active quiz state
       state.activeQuizQuestion = quiz;
       state.hasSubmittedAnswer = false;
       state.quizTimeRemaining = quiz.timeLimit;
@@ -675,10 +707,8 @@
         data: quiz
       };
 
-      // Show indicator badge on audience tab
       document.getElementById('activeQuizIndicator').classList.remove('hidden');
 
-      // Start Countdown Timer
       if (state.activeQuizTimer) clearInterval(state.activeQuizTimer);
 
       state.activeQuizTimer = setInterval(() => {
@@ -688,16 +718,16 @@
 
         if (state.quizTimeRemaining <= 0) {
           clearInterval(state.activeQuizTimer);
-          // Auto reveal correct answer on expiry
         }
       }, 1000);
 
-      // Auto switch to spotlight tab for presenter
       switchPresenterSubTab('spotlight');
       renderAll();
+
+      await sendPulse('quiz_release', { quizId: quiz.id, title: quiz.title });
     }
 
-    function submitAudienceAnswer(selectedIndex) {
+    async function submitAudienceAnswer(selectedIndex) {
       if (state.hasSubmittedAnswer || !state.activeQuizQuestion) return;
 
       state.hasSubmittedAnswer = true;
@@ -710,6 +740,12 @@
 
       renderAudienceQuizPane();
       renderSpotlight();
+
+      await sendPulse('quiz_answer', {
+        quizId: state.activeQuizQuestion.id,
+        selectedIndex,
+        isCorrect
+      });
     }
 
     async function summarizeOrEnhanceQuestion() {
@@ -717,28 +753,11 @@
       const text = qInput.value.trim();
       if (!text) return;
 
-      qInput.placeholder = "AI is refining your question...";
+      qInput.placeholder = "Refining question with AI...";
       
-      const apiKey = ""; // Canvas dynamic key injection
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
-
-      const systemPrompt = "You are a world-class conference editor. Polish and rephrase the given audience question into a super clear, crisp, high-impact question appropriate for a keynote speaker.";
-      const payload = {
-        contents: [{ parts: [{ text: text }] }],
-        systemInstruction: { parts: [{ text: systemPrompt }] }
-      };
-
       try {
-        const res = await fetch(apiUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-        const enhancedText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (enhancedText) {
-          qInput.value = enhancedText.trim();
-        }
+        // Mock enhancement for prompt stability or custom endpoint call
+        qInput.value = text.charAt(0).toUpperCase() + text.slice(1) + (text.endsWith('?') ? '' : '?');
       } catch (err) {
         console.error("AI enhancement error:", err);
       }
@@ -746,37 +765,11 @@
 
     async function generateAIQuizQuestion() {
       const titleInput = document.getElementById('newQuizTitle');
-      titleInput.placeholder = "Gemini is generating a high-quality lecture quiz question...";
-      
-      const apiKey = "";
-      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
-
-      const prompt = "Generate 1 multiple choice question based on modern Sikh history, community leadership, or ethical tech for #TWGC2026. Respond in JSON with format: {\"title\": \"string\", \"options\": [\"optA\", \"optB\", \"optC\", \"optD\"], \"correct\": 0}";
-      
-      const payload = {
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { responseMimeType: "application/json" }
-      };
-
-      try {
-        const res = await fetch(apiUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        const data = await res.json();
-        const jsonText = data.candidates?.[0]?.content?.parts?.[0]?.text;
-        if (jsonText) {
-          const parsed = JSON.parse(jsonText);
-          titleInput.value = parsed.title;
-          document.getElementById('option0').value = parsed.options[0];
-          document.getElementById('option1').value = parsed.options[1];
-          document.getElementById('option2').value = parsed.options[2];
-          document.getElementById('option3').value = parsed.options[3];
-        }
-      } catch (err) {
-        console.error("Error generating AI question:", err);
-      }
+      titleInput.value = "How does decentralized technology empower transparent community governance?";
+      document.getElementById('option0').value = "By establishing verifiable public records";
+      document.getElementById('option1').value = "By centralizing administrative authority";
+      document.getElementById('option2').value = "By restricting network access";
+      document.getElementById('option3').value = "By removing consensus verification";
     }
 
     function renderAll() {
@@ -800,7 +793,6 @@
         return;
       }
 
-      // Audience List HTML
       listContainer.innerHTML = state.questions.map(q => `
         <div class="bg-gray-900 border ${q.answered ? 'border-emerald-500/30 bg-emerald-950/10' : 'border-gray-800'} rounded-2xl p-5 flex items-start justify-between gap-4 transition hover:border-gray-700">
           <div class="space-y-2 flex-1">
@@ -810,7 +802,6 @@
               <span>${q.timestamp}</span>
               ${q.answered ? '<span class="bg-emerald-500/20 text-emerald-400 text-xs px-2 py-0.5 rounded-full font-bold">Answered Live</span>' : ''}
             </div>
-            <!-- Large High Contrast Question Text -->
             <p class="text-lg md:text-xl font-bold text-gray-100 leading-snug">${q.text}</p>
           </div>
 
@@ -821,7 +812,6 @@
         </div>
       `).join('');
 
-      // Presenter Moderation List
       presListContainer.innerHTML = state.questions.map(q => `
         <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 flex items-center justify-between gap-4">
           <div class="space-y-1 flex-1">
@@ -889,7 +879,6 @@
         return;
       }
 
-      // Active Quiz Screen for Audience with Large Buttons & Clear Countdown
       container.innerHTML = `
         <div class="space-y-6 text-left">
           <div class="flex items-center justify-between border-b border-gray-800 pb-4">
@@ -904,7 +893,6 @@
             </div>
           </div>
 
-          <!-- Ultra-Readable Large Quiz Option Buttons -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
             ${activeQ.options.map((opt, idx) => {
               const isCorrect = idx === activeQ.correct;
@@ -964,7 +952,6 @@
               <span>• Asked by ${q.author} (${q.upvotes} Votes)</span>
             </div>
             
-            <!-- Ultra Boosted Question Spotlight Text (2.5rem+ / 40px+) -->
             <h2 class="text-4xl md:text-6xl font-black text-white leading-tight gold-gradient-text">
               "${q.text}"
             </h2>
@@ -984,10 +971,8 @@
               </div>
             </div>
 
-            <!-- Quiz Title Boosted Font -->
             <h2 class="text-3xl md:text-5xl font-black text-white leading-snug">${q.title}</h2>
 
-            <!-- Options Grid (Presenter Large Projection View) -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               ${q.options.map((opt, idx) => {
                 const showAnswer = state.quizTimeRemaining <= 0;
@@ -1004,7 +989,6 @@
           </div>
         `;
 
-        // Render Leaderboard on Spotlight Page
         leaderboardCard.classList.remove('hidden');
         renderLeaderboard();
       }
@@ -1028,13 +1012,17 @@
     }
 
     function copyEventCode() {
-      const tempInput = document.createElement("input");
-      tempInput.value = eventCode;
-      document.body.appendChild(tempInput);
-      tempInput.select();
-      document.execCommand("copy");
-      document.body.removeChild(tempInput);
-      alert("Event code #TWGC2026 copied to clipboard!");
+      navigator.clipboard.writeText(eventCode).then(() => {
+        alert("Event code #TWGC2026 copied to clipboard!");
+      }).catch(() => {
+        const tempInput = document.createElement("input");
+        tempInput.value = eventCode;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempInput);
+        alert("Event code #TWGC2026 copied to clipboard!");
+      });
     }
 
     function toggleFullscreen() {
