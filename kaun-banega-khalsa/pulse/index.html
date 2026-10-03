@@ -626,6 +626,16 @@
     }
 
     window.onload = function() {
+      // Load saved quiz deck from localStorage on startup
+      const savedDeck = localStorage.getItem('pulse_quiz_deck');
+      if (savedDeck) {
+        try {
+          state.quizDeck = JSON.parse(savedDeck);
+        } catch (e) {
+          console.error("Failed to parse saved quiz deck from localStorage:", e);
+        }
+      }
+
       setEventCode(state.eventCode);
       lucide.createIcons();
       renderAll();
@@ -854,6 +864,9 @@
         state.quizDeck.push(newQuiz);
       }
 
+      // Save the updated quizDeck array to localStorage
+      localStorage.setItem('pulse_quiz_deck', JSON.stringify(state.quizDeck));
+
       cancelEditQuizQuestion();
       renderQuizDeck();
     }
@@ -905,12 +918,14 @@
 
     function deleteQuizQuestion(quizId) {
       state.quizDeck = state.quizDeck.filter(q => q.id !== quizId);
+      localStorage.setItem('pulse_quiz_deck', JSON.stringify(state.quizDeck));
       renderQuizDeck();
     }
-
+    
     function resetQuizDeck() {
       if (confirm("Are you sure you want to clear the entire quiz deck?")) {
         state.quizDeck = [];
+        localStorage.removeItem('pulse_quiz_deck');
         renderQuizDeck();
       }
     }
