@@ -298,7 +298,13 @@
               <i data-lucide="trophy" class="w-5 h-5 sm:w-7 sm:h-7"></i>
               <span>Live Leaderboard</span>
             </h3>
-            <span class="text-xs text-gray-400">Top Participants</span>
+            <div class="flex items-center space-x-3">
+              <span class="text-xs text-gray-400">Session Rankings</span>
+              <button onclick="resetCurrentEventLeaderboard()" class="px-3 py-1.5 bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/30 text-xs font-bold rounded-lg flex items-center gap-1.5 transition">
+                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                Reset Leaderboard
+              </button>
+            </div>
           </div>
           <div id="leaderboardList" class="grid grid-cols-1 md:grid-cols-2 gap-3">
             <!-- Rendered dynamically -->
@@ -434,6 +440,7 @@
     
     let state = {
       eventCode: initialCodeParam ? '#' + initialCodeParam.replace('#','') : (localStorage.getItem('pulse_event_code') || "#TWGC2026"),
+      userName: localStorage.getItem('pulse_participant_name') || '',
       view: 'audience',
       audienceTab: 'qa',
       presenterSubTab: 'spotlight',
@@ -446,9 +453,65 @@
       hasSubmittedAnswer: false,
       responseCounts: [0, 0, 0, 0],
       totalResponses: 0,
-      userScores: {},
       spotlightedItem: null
     };
+
+    function checkParticipantName() {
+      if (!state.userName || !state.userName.trim()) {
+        let name = prompt("Welcome to Khalsa AI Pulse! Please enter your name for the leaderboard:");
+        if (!name || !name.trim()) name = "Anonymous_" + Math.floor(Math.random() * 1000);
+        state.userName = name.trim();
+        localStorage.setItem('pulse_participant_name', state.userName);
+      }
+      const userNameInput = document.getElementById('userNameInput');
+      if (userNameInput && !userNameInput.value) {
+        userNameInput.value = state.userName;
+      }
+    }
+
+    function getEventLeaderboard() {
+      const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
+      const sessionData = allLeaderboards[state.eventCode] || {};
+      
+      return Object.keys(sessionData)
+        .map(name => ({ name, score: sessionData[name] }))
+        .sort((a, b) => b.score - a.score);
+    }
+
+    function recordSessionScore(userName, pointsEarned) {
+      if (!state.eventCode || !userName) return;
+
+      const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
+      if (!allLeaderboards[state.eventCode]) {
+        allLeaderboards[state.eventCode] = {};
+      }
+
+      const currentScore = allLeaderboards[state.eventCode][userName] || 0;
+      allLeaderboards[state.eventCode][userName] = currentScore + pointsEarned;
+
+      localStorage.setItem('pulse_leaderboards', JSON.stringify(allLeaderboards));
+      renderLeaderboard();
+    }
+
+    function resetCurrentEventLeaderboard() {
+      if (!state.eventCode) {
+        alert("No active event code set.");
+        return;
+      }
+
+      if (confirm(`Are you sure you want to reset the leaderboard for event code "${state.eventCode}"?`)) {
+        const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
+        delete allLeaderboards[state.eventCode];
+        localStorage.setItem('pulse_leaderboards', JSON.stringify(allLeaderboards));
+
+        const answerKey = `pulse_answers_${state.eventCode}`;
+        localStorage.removeItem(answerKey);
+
+        renderLeaderboard();
+        sendPulse('leaderboard_reset', { eventCode: state.eventCode });
+        alert(`Leaderboard for session ${state.eventCode} has been reset.`);
+      }
+    }
     
     let qrCodeInstance = null;
     
@@ -490,6 +553,7 @@
       if (input) input.value = state.eventCode;
 
       renderQRCode();
+      renderLeaderboard();
     }
 
     function updateEventCode() {
@@ -566,6 +630,10 @@
               }
             }
 
+            if (p.event_type === 'leaderboard_reset') {
+              renderLeaderboard();
+            }
+
             if (p.event_type === 'quiz_clear') {
               state.activeQuizQuestion = null;
               state.activeQuizQuestionId = null;
@@ -592,7 +660,11 @@
               
               if (quiz && quiz.id && state.activeQuizQuestionId !== quiz.id) {
                 state.activeQuizQuestion = quiz;
-                state.hasSubmittedAnswer = false;
+
+                const answerKey = `pulse_answers_${state.eventCode}`;
+                const submittedAnswers = JSON.parse(localStorage.getItem(answerKey) || '{}');
+                state.hasSubmittedAnswer = !!submittedAnswers[quiz.id];
+
                 state.responseCounts = [0, 0, 0, 0];
                 state.totalResponses = 0;
                 state.spotlightedItem = { type: 'quiz', data: quiz };
@@ -613,6 +685,10 @@
                   state.totalResponses++;
                   renderSpotlight();
                   renderAudienceQuizPane();
+                }
+
+                if (meta.userName && meta.pointsEarned) {
+                  recordSessionScore(meta.userName, meta.pointsEarned);
                 }
               }
             }
@@ -660,6 +736,7 @@
       const presView = document.getElementById('presenterView');
 
       if (viewMode === 'audience') {
+        checkParticipantName();
         audView.classList.remove('hidden');
         audView.classList.add('flex');
         presView.classList.add('hidden');
@@ -681,6 +758,9 @@
     }
 
     function switchAudienceTab(tab) {
+      if (tab === 'quiz') {
+        checkParticipantName();
+      }
       state.audienceTab = tab;
       const qaBtn = document.getElementById('tabAudienceQA');
       const quizBtn = document.getElementById('tabAudienceQuiz');
@@ -745,10 +825,11 @@
     }
     
     async function submitQuestion() {
+      checkParticipantName();
       const qInput = document.getElementById('questionInput');
       const nameInput = document.getElementById('userNameInput');
       const text = qInput.value.trim();
-      const author = nameInput.value.trim() || "Anonymous Participant";
+      const author = nameInput.value.trim() || state.userName || "Anonymous Participant";
 
       if (!text) return;
 
@@ -936,7 +1017,11 @@
 
       state.activeQuizQuestion = quiz;
       state.activeQuizQuestionId = quiz.id;
-      state.hasSubmittedAnswer = false;
+
+      const answerKey = `pulse_answers_${state.eventCode}`;
+      const submittedAnswers = JSON.parse(localStorage.getItem(answerKey) || '{}');
+      state.hasSubmittedAnswer = !!submittedAnswers[quiz.id];
+
       state.responseCounts = [0, 0, 0, 0];
       state.totalResponses = 0;
       state.spotlightedItem = { type: 'quiz', data: quiz };
@@ -968,7 +1053,17 @@
     }
 
     async function submitAudienceAnswer(selectedIndex) {
-      if (state.hasSubmittedAnswer || !state.activeQuizQuestion) return;
+      if (!state.activeQuizQuestion) return;
+      checkParticipantName();
+
+      const questionId = state.activeQuizQuestion.id;
+      const answerKey = `pulse_answers_${state.eventCode}`;
+      const submittedAnswers = JSON.parse(localStorage.getItem(answerKey) || '{}');
+
+      if (submittedAnswers[questionId] || state.hasSubmittedAnswer) {
+        alert("You have already submitted an answer for this question in this session.");
+        return;
+      }
 
       state.hasSubmittedAnswer = true;
       const isCorrect = selectedIndex === state.activeQuizQuestion.correct;
@@ -978,18 +1073,37 @@
         state.totalResponses++;
       }
 
+      let pointsEarned = 0;
       if (isCorrect) {
-        state.userScores["You"] = (state.userScores["You"] || 0) + state.activeQuizQuestion.points;
+        const basePoints = state.activeQuizQuestion.points || 100;
+        const totalTime = state.activeQuizQuestion.timeLimit || 30;
+        const speedBonus = Math.round((state.quizTimeRemaining / totalTime) * 50);
+        pointsEarned = basePoints + speedBonus;
+
         confetti({ particleCount: 60, spread: 50, origin: { y: 0.7 } });
+      }
+
+      submittedAnswers[questionId] = {
+        selectedOption: selectedIndex,
+        isCorrect: isCorrect,
+        points: pointsEarned,
+        timestamp: Date.now()
+      };
+      localStorage.setItem(answerKey, JSON.stringify(submittedAnswers));
+
+      if (pointsEarned > 0) {
+        recordSessionScore(state.userName, pointsEarned);
       }
 
       renderAudienceQuizPane();
       renderSpotlight();
 
       await sendPulse('quiz_answer', {
-        quizId: state.activeQuizQuestion.id,
+        quizId: questionId,
         selectedIndex,
-        isCorrect
+        isCorrect,
+        userName: state.userName,
+        pointsEarned
       });
     }
 
@@ -1260,15 +1374,22 @@
 
     function renderLeaderboard() {
       const list = document.getElementById('leaderboardList');
-      const sortedUsers = Object.entries(state.userScores).sort((a, b) => b[1] - a[1]);
+      if (!list) return;
 
-      list.innerHTML = sortedUsers.map(([name, score], idx) => `
+      const leaderboardData = getEventLeaderboard();
+
+      if (leaderboardData.length === 0) {
+        list.innerHTML = `<div class="col-span-2 text-center text-xs text-gray-500 py-3">No scores recorded for session ${state.eventCode} yet.</div>`;
+        return;
+      }
+
+      list.innerHTML = leaderboardData.map((item, idx) => `
         <div class="flex items-center justify-between p-3 rounded-xl bg-gray-950 border border-gray-800 text-xs sm:text-sm">
           <div class="flex items-center space-x-2">
             <span class="w-6 h-6 rounded-full ${idx === 0 ? 'bg-amber-500 text-slate-950' : 'bg-gray-800 text-gray-300'} flex items-center justify-center font-black">${idx + 1}</span>
-            <span class="font-bold text-white">${name}</span>
+            <span class="font-bold text-white">${item.name}</span>
           </div>
-          <span class="font-mono font-black text-amber-400">${score} pts</span>
+          <span class="font-mono font-black text-amber-400">${item.score} pts</span>
         </div>
       `).join('');
     }
