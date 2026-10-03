@@ -275,6 +275,14 @@
             <span>Projector Screen Focus</span>
           </div>
 
+          <!-- Controls to reset/clear spotlight state -->
+          <div id="clearSpotlightBtnContainer" class="absolute top-3 right-4 hidden">
+            <button onclick="clearActivePollAndReturnWaiting()" class="px-3 py-1 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30 font-bold text-xs flex items-center space-x-1 transition">
+              <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
+              <span>Return to Waiting</span>
+            </button>
+          </div>
+
           <div id="spotlightDisplayArea" class="w-full space-y-4 sm:space-y-6 mt-4">
             <div class="space-y-2 sm:space-y-4">
               <i data-lucide="presentation" class="w-12 h-12 sm:w-16 sm:h-16 text-gray-700 mx-auto"></i>
@@ -586,6 +594,19 @@
                 setEventCode(meta.eventCode);
               }
             }
+
+            if (p.event_type === 'quiz_clear') {
+              state.activeQuizQuestion = null;
+              state.activeQuizQuestionId = null;
+              state.spotlightedItem = null;
+              if (state.activeQuizTimer) {
+                clearInterval(state.activeQuizTimer);
+                state.activeQuizTimer = null;
+              }
+              const activeInd = document.getElementById('activeQuizIndicator');
+              if (activeInd) activeInd.classList.add('hidden');
+              renderAll();
+            }
     
             if (p.event_type === 'question' && p.metadata) {
               const meta = typeof p.metadata === 'string' ? JSON.parse(p.metadata) : p.metadata;
@@ -598,7 +619,7 @@
               const meta = typeof p.metadata === 'string' ? JSON.parse(p.metadata) : p.metadata;
               const quiz = meta.quiz || meta;
               
-              if (quiz && quiz.id) {
+              if (quiz && quiz.id && state.activeQuizQuestionId !== quiz.id) {
                 state.activeQuizQuestion = quiz;
                 state.hasSubmittedAnswer = false;
                 state.responseCounts = [0, 0, 0, 0];
@@ -928,6 +949,7 @@
       if (!quiz) return;
 
       state.activeQuizQuestion = quiz;
+      state.activeQuizQuestionId = quiz.id;
       state.hasSubmittedAnswer = false;
       state.responseCounts = [0, 0, 0, 0];
       state.totalResponses = 0;
@@ -942,6 +964,21 @@
       renderAll();
 
       await sendPulse('quiz_release', { quiz: quiz });
+    }
+
+    async function clearActivePollAndReturnWaiting() {
+      state.activeQuizQuestion = null;
+      state.activeQuizQuestionId = null;
+      state.spotlightedItem = null;
+      if (state.activeQuizTimer) {
+        clearInterval(state.activeQuizTimer);
+        state.activeQuizTimer = null;
+      }
+      const activeInd = document.getElementById('activeQuizIndicator');
+      if (activeInd) activeInd.classList.add('hidden');
+
+      renderAll();
+      await sendPulse('quiz_clear', { eventCode: state.eventCode });
     }
 
     async function submitAudienceAnswer(selectedIndex) {
@@ -1121,7 +1158,7 @@
               const pct = state.totalResponses > 0 ? Math.round((count / state.totalResponses) * 100) : 0;
               let btnStyle = "bg-gray-950 border-gray-800 text-white hover:border-amber-500";
               
-              if (state.hasSubmittedAnswer) {
+              if (state.hasSubmittedAnswer || state.quizTimeRemaining <= 0) {
                 if (isCorrect) {
                   btnStyle = "bg-emerald-500/20 border-emerald-500 text-emerald-300 font-black";
                 } else {
@@ -1154,6 +1191,7 @@
     function renderSpotlight() {
       const displayArea = document.getElementById('spotlightDisplayArea');
       const leaderboardCard = document.getElementById('presenterLeaderboardCard');
+      const clearBtnContainer = document.getElementById('clearSpotlightBtnContainer');
       const item = state.spotlightedItem;
 
       if (!item) {
@@ -1164,9 +1202,12 @@
             <p class="text-xs sm:text-base text-gray-500 font-medium max-w-xl mx-auto">Select a Q&A question or release a quiz to spotlight on screen.</p>
           </div>
         `;
+        if (clearBtnContainer) clearBtnContainer.classList.add('hidden');
         leaderboardCard.classList.add('hidden');
         return;
       }
+
+      if (clearBtnContainer) clearBtnContainer.classList.remove('hidden');
 
       if (item.type === 'question') {
         const q = item.data;
