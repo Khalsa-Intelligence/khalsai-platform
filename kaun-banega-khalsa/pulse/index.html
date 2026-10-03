@@ -834,27 +834,23 @@
       lucide.createIcons();
     }
 
-    async function loadInitialQuestions() {
+    async function loadInitialQuestions(eventCode) {
       try {
-        const cleanCode = state.eventCode.replace('#', '');
-        const res = await fetch(`/api/questions?eventCode=${encodeURIComponent(cleanCode)}`);
-        
-        if (!res.ok) return;
-    
-        const data = await res.json();
-    
-        if (data && Array.isArray(data.questions)) {
-          data.questions.forEach(q => {
-            if (!state.questions.some(existing => existing.id === q.id)) {
-              state.questions.push(q);
-            }
-          });
-    
-          renderQuestions();
+        const res = await fetch(`/api/questions?eventCode=${encodeURIComponent(eventCode)}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.length > 0) {
+            // Update UI with D1 data
+            return data;
+          }
         }
       } catch (err) {
-        console.error('Failed to load initial questions:', err);
+        console.warn('D1 fetch failed, falling back to local storage:', err);
       }
+    
+      // Fallback to local storage if D1 fails or is empty
+      const localData = localStorage.getItem(`questions_${eventCode}`);
+      return localData ? JSON.parse(localData) : [];
     }
     
     async function submitQuestion() {
