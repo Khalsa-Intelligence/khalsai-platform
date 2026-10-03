@@ -660,11 +660,30 @@
               if (activeInd) activeInd.classList.add('hidden');
               renderAll();
             }
-    
+
+            // Sync newly posted questions from other clients
             if (p.event_type === 'question' && p.metadata) {
               const meta = typeof p.metadata === 'string' ? JSON.parse(p.metadata) : p.metadata;
               if (meta.id && !state.questions.some(q => q.id === meta.id)) {
                 state.questions.unshift(meta);
+              }
+            }
+
+            // Sync upvotes from other clients
+            if (p.event_type === 'upvote' && p.metadata) {
+              const meta = typeof p.metadata === 'string' ? JSON.parse(p.metadata) : p.metadata;
+              const q = state.questions.find(item => item.id === meta.questionId);
+              if (q && typeof meta.newVotes === 'number') {
+                q.upvotes = meta.newVotes;
+              }
+            }
+
+            // Sync general question updates (e.g. marked answered/done)
+            if (p.event_type === 'question_update' && p.metadata) {
+              const meta = typeof p.metadata === 'string' ? JSON.parse(p.metadata) : p.metadata;
+              const q = state.questions.find(item => item.id === meta.id);
+              if (q) {
+                Object.assign(q, meta);
               }
             }
     
@@ -847,6 +866,7 @@
 
       if (!text) return;
 
+      const cleanCode = state.eventCode.replace('#', '');
       const newQ = {
         id: Date.now(),
         author: author,
@@ -854,17 +874,30 @@
         upvotes: 1,
         voted: true,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        answered: false
+        answered: false,
+        eventCode: cleanCode
       };
 
       state.questions.unshift(newQ);
       qInput.value = "";
       renderQuestions();
 
+      try {
+        // Option 1 Persistence: Store question in D1
+        await fetch('/api/questions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newQ)
+        });
+      } catch (err) {
+        console.error('Failed to persist question to database:', err);
+      }
+
+      // Broadcast question event for real-time live sync
       await sendPulse('question', newQ, author);
     }
 
-    function toggleUpvote(id) {
+    async function toggleUpvote(id) {
       const q = state.questions.find(item => item.id === id);
       if (q) {
         if (q.voted) {
@@ -875,7 +908,7 @@
           q.voted = true;
         }
         renderQuestions();
-        sendPulse('upvote', { questionId: id, newVotes: q.upvotes });
+        await sendPulse('upvote', { questionId: id, newVotes: q.upvotes });
       }
     }
 
@@ -903,11 +936,12 @@
       sendPulse('spotlight_question', { id: q.id });
     }
 
-    function toggleAnswered(id) {
+    async function toggleAnswered(id) {
       const q = state.questions.find(item => item.id === id);
       if (q) {
         q.answered = !q.answered;
         renderQuestions();
+        await sendPulse('question_update', { id: q.id, answered: q.answered });
       }
     }
 
