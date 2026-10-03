@@ -459,10 +459,24 @@
     function checkParticipantName() {
       if (!state.userName || !state.userName.trim()) {
         let name = prompt("Welcome to Khalsa AI Pulse! Please enter your name for the leaderboard:");
-        if (!name || !name.trim()) name = "Anonymous_" + Math.floor(Math.random() * 1000);
+    
+        // If the user clicks Cancel or leaves it empty, generate a fun random name
+        if (name === null || !name.trim()) {
+          const adjectives = ["Brave", "Swift", "Wise", "Clever", "Bright", "Curious", "Bold"];
+          const animals = ["Falcon", "Lion", "Panda", "Cheetah", "Phoenix", "Eagle", "Otter"];
+          
+          const randomAdj = adjectives[Math.floor(Math.random() * adjectives.length)];
+          const randomAnimal = animals[Math.floor(Math.random() * animals.length)];
+          const randomNumber = Math.floor(100 + Math.random() * 900); // 3-digit number
+    
+          name = `${randomAdj}${randomAnimal}_${randomNumber}`;
+        }
+    
         state.userName = name.trim();
         localStorage.setItem('pulse_participant_name', state.userName);
       }
+    
+      // Sync the generated name back into the Q&A name input field
       const userNameInput = document.getElementById('userNameInput');
       if (userNameInput && !userNameInput.value) {
         userNameInput.value = state.userName;
