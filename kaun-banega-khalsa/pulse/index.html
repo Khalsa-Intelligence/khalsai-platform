@@ -422,16 +422,16 @@
        ========================================================================== */
     const PRESENTER_PASSCODE = "6789";
     let isPresenterAuthenticated = false;
-
+    
     let sessionId = localStorage.getItem('pulse_session_id');
     if (!sessionId) {
       sessionId = 'sess_' + Math.random().toString(36).substring(2, 11);
       localStorage.setItem('pulse_session_id', sessionId);
     }
-
+    
     const urlParams = new URLSearchParams(window.location.search);
     const initialCodeParam = urlParams.get('code');
-
+    
     let state = {
       eventCode: initialCodeParam ? '#' + initialCodeParam.replace('#','') : (localStorage.getItem('pulse_event_code') || "#TWGC2026"),
       view: 'audience',
@@ -439,11 +439,6 @@
       presenterSubTab: 'spotlight',
       questions: [],
       quizDeck: [],
-          correct: 0,
-          timeLimit: 30,
-          points: 100
-        }
-      ],
       activeQuizQuestion: null,
       activeQuizQuestionId: null,
       activeQuizTimer: null,
@@ -454,9 +449,9 @@
       userScores: {},
       spotlightedItem: null
     };
-
+    
     let qrCodeInstance = null;
-
+    
     function renderQRCode() {
       const qrContainer = document.getElementById('qrcode');
       if (!qrContainer) return;
@@ -969,7 +964,7 @@
       }
 
       if (isCorrect) {
-        state.userScores["You"] += state.activeQuizQuestion.points;
+        state.userScores["You"] = (state.userScores["You"] || 0) + state.activeQuizQuestion.points;
         confetti({ particleCount: 60, spread: 50, origin: { y: 0.7 } });
       }
 
