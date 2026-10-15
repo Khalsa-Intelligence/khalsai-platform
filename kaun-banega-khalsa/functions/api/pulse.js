@@ -15,7 +15,9 @@ export async function onRequestPost(context) {
     const ipAddress = request.headers.get('cf-connecting-ip') || 'unknown';
     const userAgent = request.headers.get('user-agent') || 'unknown';
 
-    // Store event_code along with metadata
+    // Strip leading # from eventCode before saving
+    const cleanEventCode = eventCode ? eventCode.replace(/^#/, '').toUpperCase() : null;
+
     const statement = env.PULSE_DB.prepare(
       `INSERT INTO pulse_events (session_id, user_id, event_type, event_code, metadata, ip_address, user_agent)
        VALUES (?, ?, ?, ?, ?, ?, ?)`
@@ -25,7 +27,7 @@ export async function onRequestPost(context) {
       sessionId,
       userId || null,
       eventType,
-      eventCode || null,
+      cleanEventCode,
       JSON.stringify(metadata),
       ipAddress,
       userAgent
@@ -57,12 +59,14 @@ export async function onRequestGet(context) {
     let params = [];
 
     if (eventCode) {
-      query += ` WHERE event_code = ?`;
-      params.push(eventCode);
+      const cleanCode = eventCode.replace(/^#/, '').toUpperCase();
+      // Match both clean code ('TWGCSESSION2') and prefixed code ('#TWGCSESSION2')
+      query += ` WHERE UPPER(REPLACE(event_code, '#', '')) = ?`;
+      params.push(cleanCode);
     }
 
-    // Always sort by ID ASC so client replays events in chronological order
-    query += ` ORDER BY id ASC LIMIT 100`;
+    // Sort by ID ASC so client replays events in chronological order
+    query += ` ORDER BY id ASC LIMIT 300`;
 
     const { results } = await env.PULSE_DB.prepare(query).bind(...params).all();
 
@@ -73,7 +77,7 @@ export async function onRequestGet(context) {
     return new Response(
       JSON.stringify({
         total_pulses: countResult ? countResult.total : 0,
-        recent_pulses: results,
+        recent_pulses: results || [],
       }),
       {
         status: 200,
