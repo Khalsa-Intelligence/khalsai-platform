@@ -469,6 +469,9 @@
     const urlParams = new URLSearchParams(window.location.search);
     const initialCodeParam = urlParams.get('code');
     
+    // Set to deduplicate DB pulse processing
+    const processedPulseIds = new Set();
+
     let state = {
       eventCode: initialCodeParam ? '#' + initialCodeParam.replace('#','') : "#TWGC2026",
       userName: localStorage.getItem('pulse_participant_name') || '',
@@ -551,7 +554,7 @@
       renderLeaderboard();
     }
 
-    function resetCurrentEventLeaderboard() {
+    async function resetCurrentEventLeaderboard() {
       if (!state.eventCode) return;
 
       if (confirm(`Are you sure you want to reset the leaderboard for event code "${state.eventCode}"?`)) {
@@ -560,7 +563,7 @@
         localStorage.setItem('pulse_leaderboards', JSON.stringify(allLeaderboards));
 
         renderLeaderboard();
-        sendPulse('leaderboard_reset', { eventCode: state.eventCode });
+        await sendPulse('leaderboard_reset', { eventCode: state.eventCode });
       }
     }
     
@@ -594,6 +597,7 @@
       
       state.eventCode = newCode.toUpperCase();
       state.quizDeck = [];
+      processedPulseIds.clear();
 
       const cleanCode = state.eventCode.replace('#', '');
       const newUrl = `${window.location.pathname}?code=${encodeURIComponent(cleanCode)}`;
@@ -690,6 +694,10 @@
           const sortedPulses = [...data.recent_pulses].sort((a, b) => a.id - b.id);
     
           sortedPulses.forEach(p => {
+            // Check if pulse ID already processed to prevent duplicate additions
+            if (processedPulseIds.has(p.id)) return;
+            processedPulseIds.add(p.id);
+
             if (p.event_type === 'quiz_save' && p.metadata) {
               const meta = typeof p.metadata === 'string' ? JSON.parse(p.metadata) : p.metadata;
               const savedQuiz = meta.quiz || meta;
@@ -718,6 +726,9 @@
             }
 
             if (p.event_type === 'leaderboard_reset') {
+              const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
+              delete allLeaderboards[state.eventCode];
+              localStorage.setItem('pulse_leaderboards', JSON.stringify(allLeaderboards));
               renderLeaderboard();
             }
 
@@ -1141,10 +1152,6 @@
         const totalTime = state.activeQuizQuestion.timeLimit || 30;
         const speedBonus = Math.round((state.quizTimeRemaining / totalTime) * 50);
         pointsEarned = basePoints + speedBonus;
-      }
-
-      if (pointsEarned > 0) {
-        recordSessionScore(state.userName, pointsEarned);
       }
 
       renderAudienceQuizPane();
