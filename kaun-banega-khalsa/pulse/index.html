@@ -89,11 +89,14 @@
         </div>
       </div>
 
-      <!-- Desktop Event Code Display -->
-      <div class="hidden lg:flex items-center space-x-3 bg-gray-900/90 px-4 py-1.5 rounded-xl border border-gray-800">
-        <span class="text-xs uppercase tracking-wider font-extrabold text-gray-400">Event Code:</span>
-        <span class="text-xl font-mono font-black text-amber-400 tracking-wider event-code-display">#TWGC2026</span>
-        <button onclick="copyEventCode()" class="text-gray-400 hover:text-amber-400 transition" title="Copy Event Code">
+      <!-- Desktop Event Code Selector / Display -->
+      <div class="hidden lg:flex items-center space-x-2 bg-gray-900/90 px-3 py-1.5 rounded-xl border border-gray-800">
+        <span class="text-xs uppercase tracking-wider font-extrabold text-gray-400">Code:</span>
+        <input type="text" id="headerAudienceCodeInput" value="#TWGC2026" class="bg-gray-950 px-2 py-0.5 rounded border border-gray-700 font-mono font-black text-amber-400 text-sm focus:outline-none focus:border-amber-500 w-32 uppercase">
+        <button onclick="changeAudienceEventCode()" class="bg-amber-500 text-slate-950 font-black text-xs px-2.5 py-1 rounded-lg hover:brightness-110 transition flex items-center space-x-1 shadow">
+          <span>Join</span>
+        </button>
+        <button onclick="copyEventCode()" class="text-gray-400 hover:text-amber-400 transition ml-1" title="Copy Event Code">
           <i data-lucide="copy" class="w-4 h-4"></i>
         </button>
       </div>
@@ -126,14 +129,15 @@
   </header>
 
   <!-- Mobile Event Code Bar -->
-  <div class="lg:hidden bg-gray-950/80 border-b border-gray-800 px-4 py-1.5 flex items-center justify-between text-xs">
+  <div class="lg:hidden bg-gray-950/80 border-b border-gray-800 px-3 py-1.5 flex items-center justify-between text-xs gap-2">
     <div class="flex items-center space-x-1.5 font-mono">
       <span class="text-gray-400 font-sans uppercase font-extrabold text-[10px]">CODE:</span>
-      <span class="font-black text-amber-400 tracking-wider event-code-display">#TWGC2026</span>
+      <input type="text" id="mobileAudienceCodeInput" value="#TWGC2026" class="bg-gray-900 px-1.5 py-0.5 rounded border border-gray-700 font-mono font-black text-amber-400 text-xs w-28 uppercase">
+      <button onclick="changeMobileAudienceCode()" class="bg-amber-500 text-slate-950 font-bold text-[10px] px-2 py-0.5 rounded">Join</button>
     </div>
-    <button onclick="copyEventCode()" class="text-amber-400 font-bold flex items-center space-x-1 hover:underline">
+    <button onclick="copyEventCode()" class="text-amber-400 font-bold flex items-center space-x-1 hover:underline shrink-0">
       <i data-lucide="copy" class="w-3 h-3"></i>
-      <span>Copy Code</span>
+      <span>Copy</span>
     </button>
   </div>
 
@@ -216,7 +220,6 @@
       </div>
     </div>
 
-
     <!-- ========================================== -->
     <!--          PRESENTER VIEW CONTAINER          -->
     <!-- ========================================== -->
@@ -255,7 +258,6 @@
 
       <!-- SUB-TAB 1: PRESENTER SPOTLIGHT & QR CODE DISPLAY -->
       <div id="presenterSpotlightPane" class="space-y-4 sm:space-y-6">
-        
         <div class="bg-gradient-to-r from-amber-500/10 via-gray-900 to-amber-500/10 border border-amber-500/40 rounded-2xl p-4 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-4 glow-gold">
           <div class="text-center md:text-left space-y-1 sm:space-y-2">
             <p class="text-amber-400 text-xs sm:text-sm font-extrabold tracking-widest uppercase">SCAN QR CODE TO JOIN LIVE SESSION</p>
@@ -275,7 +277,6 @@
             <span>Projector Screen Focus</span>
           </div>
 
-          <!-- Controls to reset/clear spotlight state -->
           <div id="clearSpotlightBtnContainer" class="absolute top-3 right-4 hidden">
             <button onclick="clearActivePollAndReturnWaiting()" class="px-3 py-1 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30 font-bold text-xs flex items-center space-x-1 transition">
               <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
@@ -448,6 +449,7 @@
       quizDeck: [],
       activeQuizQuestion: null,
       activeQuizQuestionId: null,
+      activeQuizQuestionStartedAt: null,
       activeQuizTimer: null,
       quizTimeRemaining: 0,
       hasSubmittedAnswer: false,
@@ -460,14 +462,13 @@
       if (!state.userName || !state.userName.trim()) {
         let name = prompt("Welcome to Khalsa AI Pulse! Please enter your name for the leaderboard:");
     
-        // If the user clicks Cancel or leaves it empty, generate a fun random name
         if (name === null || !name.trim()) {
           const adjectives = ["Brave", "Swift", "Wise", "Clever", "Bright", "Curious", "Bold"];
           const animals = ["Falcon", "Lion", "Panda", "Cheetah", "Phoenix", "Eagle", "Otter"];
           
           const randomAdj = adjectives[Math.floor(Math.random() * adjectives.length)];
           const randomAnimal = animals[Math.floor(Math.random() * animals.length)];
-          const randomNumber = Math.floor(100 + Math.random() * 900); // 3-digit number
+          const randomNumber = Math.floor(100 + Math.random() * 900);
     
           name = `${randomAdj}${randomAnimal}_${randomNumber}`;
         }
@@ -476,7 +477,6 @@
         localStorage.setItem('pulse_participant_name', state.userName);
       }
     
-      // Sync the generated name back into the Q&A name input field
       const userNameInput = document.getElementById('userNameInput');
       if (userNameInput && !userNameInput.value) {
         userNameInput.value = state.userName;
@@ -559,15 +559,38 @@
       state.eventCode = newCode.toUpperCase();
       localStorage.setItem('pulse_event_code', state.eventCode);
 
+      // Synchronize URL search parameter without reloading
+      const cleanCode = state.eventCode.replace('#', '');
+      const newUrl = `${window.location.pathname}?code=${encodeURIComponent(cleanCode)}`;
+      window.history.replaceState({ path: newUrl }, '', newUrl);
+
       document.querySelectorAll('.event-code-display').forEach(el => {
         el.textContent = state.eventCode;
       });
 
-      const input = document.getElementById('eventCodeInput');
-      if (input) input.value = state.eventCode;
+      const inputs = ['eventCodeInput', 'headerAudienceCodeInput', 'mobileAudienceCodeInput'];
+      inputs.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) input.value = state.eventCode;
+      });
 
       renderQRCode();
       renderLeaderboard();
+      fetchPulseDatabase();
+    }
+
+    function changeAudienceEventCode() {
+      const input = document.getElementById('headerAudienceCodeInput');
+      if (input && input.value.trim()) {
+        setEventCode(input.value.trim());
+      }
+    }
+
+    function changeMobileAudienceCode() {
+      const input = document.getElementById('mobileAudienceCodeInput');
+      if (input && input.value.trim()) {
+        setEventCode(input.value.trim());
+      }
     }
 
     function updateEventCode() {
@@ -578,24 +601,19 @@
       }
     }
 
-    function startQuizTimer(questionId, durationSeconds) {
-      if (state.activeQuizQuestionId === questionId && state.activeQuizTimer !== null) {
-        return;
-      }
-
+    /* Fixed Timer based on fixed timestamp offset */
+    function startQuizTimer(questionId, durationSeconds, startedAtMs = Date.now()) {
       if (state.activeQuizTimer) {
         clearInterval(state.activeQuizTimer);
         state.activeQuizTimer = null;
       }
 
       state.activeQuizQuestionId = questionId;
-      state.quizTimeRemaining = durationSeconds;
+      state.activeQuizQuestionStartedAt = startedAtMs;
 
-      renderAudienceQuizPane();
-      renderSpotlight();
-
-      state.activeQuizTimer = setInterval(() => {
-        state.quizTimeRemaining--;
+      const updateTimer = () => {
+        const elapsedSeconds = Math.floor((Date.now() - startedAtMs) / 1000);
+        state.quizTimeRemaining = Math.max(0, durationSeconds - elapsedSeconds);
 
         renderAudienceQuizPane();
         renderSpotlight();
@@ -604,11 +622,13 @@
           clearInterval(state.activeQuizTimer);
           state.activeQuizTimer = null;
         }
-      }, 1000);
+      };
+
+      updateTimer();
+      state.activeQuizTimer = setInterval(updateTimer, 1000);
     }
 
     async function initPresenterApp() {
-      await loadInitialQuestions();
       await fetchPulseDatabase();
       setInterval(fetchPulseDatabase, 3000);
     }
@@ -651,6 +671,7 @@
             if (p.event_type === 'quiz_clear') {
               state.activeQuizQuestion = null;
               state.activeQuizQuestionId = null;
+              state.activeQuizQuestionStartedAt = null;
               state.spotlightedItem = null;
               if (state.activeQuizTimer) {
                 clearInterval(state.activeQuizTimer);
@@ -661,7 +682,6 @@
               renderAll();
             }
 
-            // Sync newly posted questions from other clients
             if (p.event_type === 'question' && p.metadata) {
               const meta = typeof p.metadata === 'string' ? JSON.parse(p.metadata) : p.metadata;
               if (meta.id && !state.questions.some(q => q.id === meta.id)) {
@@ -669,7 +689,6 @@
               }
             }
 
-            // Sync upvotes from other clients
             if (p.event_type === 'upvote' && p.metadata) {
               const meta = typeof p.metadata === 'string' ? JSON.parse(p.metadata) : p.metadata;
               const q = state.questions.find(item => item.id === meta.questionId);
@@ -678,7 +697,6 @@
               }
             }
 
-            // Sync general question updates (e.g. marked answered/done)
             if (p.event_type === 'question_update' && p.metadata) {
               const meta = typeof p.metadata === 'string' ? JSON.parse(p.metadata) : p.metadata;
               const q = state.questions.find(item => item.id === meta.id);
@@ -690,23 +708,28 @@
             if (p.event_type === 'quiz_release' && p.metadata) {
               const meta = typeof p.metadata === 'string' ? JSON.parse(p.metadata) : p.metadata;
               const quiz = meta.quiz || meta;
+              const startedAt = meta.startedAt || (p.created_at ? new Date(p.created_at).getTime() : Date.now());
               
-              if (quiz && quiz.id && state.activeQuizQuestionId !== quiz.id) {
-                state.activeQuizQuestion = quiz;
+              if (quiz && quiz.id) {
+                if (state.activeQuizQuestionId !== quiz.id || state.activeQuizQuestionStartedAt !== startedAt) {
+                  state.activeQuizQuestion = quiz;
+                  state.activeQuizQuestionId = quiz.id;
+                  state.activeQuizQuestionStartedAt = startedAt;
 
-                const answerKey = `pulse_answers_${state.eventCode}`;
-                const submittedAnswers = JSON.parse(localStorage.getItem(answerKey) || '{}');
-                state.hasSubmittedAnswer = !!submittedAnswers[quiz.id];
+                  const answerKey = `pulse_answers_${state.eventCode}`;
+                  const submittedAnswers = JSON.parse(localStorage.getItem(answerKey) || '{}');
+                  state.hasSubmittedAnswer = !!submittedAnswers[quiz.id];
 
-                state.responseCounts = [0, 0, 0, 0];
-                state.totalResponses = 0;
-                state.spotlightedItem = { type: 'quiz', data: quiz };
-            
-                const activeInd = document.getElementById('activeQuizIndicator');
-                if (activeInd) activeInd.classList.remove('hidden');
-            
-                startQuizTimer(quiz.id, quiz.timeLimit || 30);
-                renderAll();
+                  state.responseCounts = [0, 0, 0, 0];
+                  state.totalResponses = 0;
+                  state.spotlightedItem = { type: 'quiz', data: quiz };
+              
+                  const activeInd = document.getElementById('activeQuizIndicator');
+                  if (activeInd) activeInd.classList.remove('hidden');
+              
+                  startQuizTimer(quiz.id, quiz.timeLimit || 30, startedAt);
+                  renderAll();
+                }
               }
             }
     
@@ -735,7 +758,6 @@
     }
 
     window.onload = function() {
-      // Load saved quiz deck from localStorage on startup
       const savedDeck = localStorage.getItem('pulse_quiz_deck');
       if (savedDeck) {
         try {
@@ -834,25 +856,6 @@
       lucide.createIcons();
     }
 
-    async function loadInitialQuestions(eventCode) {
-      try {
-        const res = await fetch(`/api/questions?eventCode=${encodeURIComponent(eventCode)}`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data && data.length > 0) {
-            // Update UI with D1 data
-            return data;
-          }
-        }
-      } catch (err) {
-        console.warn('D1 fetch failed, falling back to local storage:', err);
-      }
-    
-      // Fallback to local storage if D1 fails or is empty
-      const localData = localStorage.getItem(`questions_${eventCode}`);
-      return localData ? JSON.parse(localData) : [];
-    }
-    
     async function submitQuestion() {
       checkParticipantName();
       const qInput = document.getElementById('questionInput');
@@ -879,7 +882,6 @@
       renderQuestions();
 
       try {
-        // Option 1 Persistence: Store question in D1
         await fetch('/api/questions', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -889,7 +891,6 @@
         console.error('Failed to persist question to database:', err);
       }
 
-      // Broadcast question event for real-time live sync
       await sendPulse('question', newQ, author);
     }
 
@@ -989,7 +990,6 @@
         state.quizDeck.push(newQuiz);
       }
 
-      // Save the updated quizDeck array to localStorage
       localStorage.setItem('pulse_quiz_deck', JSON.stringify(state.quizDeck));
 
       cancelEditQuizQuestion();
@@ -1059,6 +1059,7 @@
       const quiz = state.quizDeck.find(q => q.id === quizId);
       if (!quiz) return;
 
+      const startedAt = Date.now();
       state.activeQuizQuestion = quiz;
       state.activeQuizQuestionId = quiz.id;
 
@@ -1073,17 +1074,18 @@
       const activeInd = document.getElementById('activeQuizIndicator');
       if (activeInd) activeInd.classList.remove('hidden');
 
-      startQuizTimer(quiz.id, quiz.timeLimit);
+      startQuizTimer(quiz.id, quiz.timeLimit, startedAt);
 
       switchPresenterSubTab('spotlight');
       renderAll();
 
-      await sendPulse('quiz_release', { quiz: quiz });
+      await sendPulse('quiz_release', { quiz: quiz, startedAt: startedAt });
     }
 
     async function clearActivePollAndReturnWaiting() {
       state.activeQuizQuestion = null;
       state.activeQuizQuestionId = null;
+      state.activeQuizQuestionStartedAt = null;
       state.spotlightedItem = null;
       if (state.activeQuizTimer) {
         clearInterval(state.activeQuizTimer);
