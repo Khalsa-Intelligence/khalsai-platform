@@ -15,8 +15,8 @@ export async function onRequestPost(context) {
     const ipAddress = request.headers.get('cf-connecting-ip') || 'unknown';
     const userAgent = request.headers.get('user-agent') || 'unknown';
 
-    // Strip leading # from eventCode before saving
-    const cleanEventCode = eventCode ? eventCode.replace(/^#/, '').toUpperCase() : null;
+    // Strip leading # before saving to D1
+    const cleanEventCode = eventCode ? eventCode.replace(/^#/, '').trim().toUpperCase() : null;
 
     const statement = env.PULSE_DB.prepare(
       `INSERT INTO pulse_events (session_id, user_id, event_type, event_code, metadata, ip_address, user_agent)
@@ -59,13 +59,12 @@ export async function onRequestGet(context) {
     let params = [];
 
     if (eventCode) {
-      const cleanCode = eventCode.replace(/^#/, '').toUpperCase();
-      // Match both clean code ('TWGCSESSION2') and prefixed code ('#TWGCSESSION2')
-      query += ` WHERE UPPER(REPLACE(event_code, '#', '')) = ?`;
-      params.push(cleanCode);
+      const cleanCode = eventCode.replace(/^#/, '').trim().toUpperCase();
+      // Uses LIKE to capture 'TWGCSESSION2' AND '#TWGCSESSION2'
+      query += ` WHERE UPPER(event_code) LIKE ?`;
+      params.push(`%${cleanCode}%`);
     }
 
-    // Sort by ID ASC so client replays events in chronological order
     query += ` ORDER BY id ASC LIMIT 300`;
 
     const { results } = await env.PULSE_DB.prepare(query).bind(...params).all();
