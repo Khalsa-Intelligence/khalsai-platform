@@ -15,7 +15,7 @@ export async function onRequestPost(context) {
     const ipAddress = request.headers.get('cf-connecting-ip') || 'unknown';
     const userAgent = request.headers.get('user-agent') || 'unknown';
 
-    // Strip leading # before saving
+    // Normalize event code (strip leading # and convert to uppercase)
     const cleanEventCode = eventCode ? eventCode.replace(/^#/, '').trim().toUpperCase() : null;
 
     const statement = env.PULSE_DB.prepare(
@@ -60,12 +60,13 @@ export async function onRequestGet(context) {
 
     if (eventCode) {
       const cleanCode = eventCode.replace(/^#/, '').trim().toUpperCase();
-      // Match both 'TWGCSESSION2' AND '#TWGCSESSION2' in D1
-      query += ` WHERE UPPER(event_code) LIKE ?`;
-      params.push(`%${cleanCode}%`);
+      // Match both 'TWGCSESSION2' and '#TWGCSESSION2' in D1
+      query += ` WHERE UPPER(REPLACE(event_code, '#', '')) = ?`;
+      params.push(cleanCode);
     }
 
-    query += ` ORDER BY id ASC LIMIT 300`;
+    // Always sort chronologically without any row count restriction
+    query += ` ORDER BY id ASC`;
 
     const { results } = await env.PULSE_DB.prepare(query).bind(...params).all();
 
