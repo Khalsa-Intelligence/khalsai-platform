@@ -89,7 +89,7 @@
         </div>
       </div>
 
-      <!-- Desktop Event Code Selector / Display -->
+      <!-- Desktop Event Code Selector -->
       <div class="hidden lg:flex items-center space-x-2 bg-gray-900/90 px-3 py-1.5 rounded-xl border border-gray-800">
         <span class="text-xs uppercase tracking-wider font-extrabold text-gray-400">Code:</span>
         <input type="text" id="headerAudienceCodeInput" value="#TWGC2026" class="bg-gray-950 px-2 py-0.5 rounded border border-gray-700 font-mono font-black text-amber-400 text-sm focus:outline-none focus:border-amber-500 w-32 uppercase">
@@ -103,13 +103,11 @@
 
       <!-- Header Quick Actions -->
       <div class="flex items-center space-x-2 sm:space-x-3">
-        <!-- Direct Feedback Link -->
         <a href="https://khalsai.com/why-guru-feedback/" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-1 px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-400 font-bold text-xs sm:text-sm transition">
           <i data-lucide="message-square-heart" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
           <span class="hidden xs:inline">Feedback</span>
         </a>
 
-        <!-- Compact Role Switcher -->
         <div class="bg-gray-900/90 p-1 rounded-xl border border-gray-800 flex items-center">
           <button id="btnAudienceView" onclick="switchView('audience')" class="px-2.5 sm:px-4 py-1 sm:py-2 rounded-lg text-xs sm:text-sm font-extrabold transition flex items-center space-x-1.5 bg-amber-500 text-slate-950 shadow">
             <i data-lucide="users" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
@@ -147,6 +145,7 @@
     <!-- AUDIENCE VIEW CONTAINER -->
     <div id="audienceView" class="flex-1 flex flex-col space-y-4 sm:space-y-6">
       
+      <!-- Sync Status & Desktop Tab Bar -->
       <div class="flex items-center justify-between bg-gray-900/80 border border-gray-800 p-2.5 sm:p-3 rounded-2xl">
         <div class="hidden sm:flex space-x-2">
           <button onclick="switchAudienceTab('qa')" id="tabAudienceQA" class="px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow">
@@ -159,11 +158,25 @@
             <span>Live Quiz & Polls</span>
             <span id="activeQuizIndicator" class="hidden w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
           </button>
+          <button onclick="switchAudienceTab('leaderboard')" id="tabAudienceLeaderboard" class="px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 text-gray-300 hover:bg-gray-800">
+            <i data-lucide="trophy" class="w-4 h-4"></i>
+            <span>Leaderboard</span>
+          </button>
         </div>
 
-        <div class="flex items-center space-x-2 text-xs text-gray-400 px-3 py-1 bg-gray-950 rounded-lg border border-gray-800 w-full sm:w-auto justify-center sm:justify-start">
-          <i data-lucide="circle" class="w-2.5 h-2.5 text-emerald-400 fill-emerald-400 animate-pulse"></i>
-          <span class="font-bold text-gray-300">PULSE_DB Live Sync</span>
+        <div class="flex items-center space-x-3">
+          <div class="hidden xs:flex items-center space-x-1.5 text-xs bg-gray-950 px-2.5 py-1 rounded-lg border border-gray-800 text-amber-400 font-bold">
+            <i data-lucide="user" class="w-3.5 h-3.5"></i>
+            <span id="audiencePlayerDisplay" class="truncate max-w-[120px]">...</span>
+            <button onclick="changePlayerNamePrompt()" class="text-gray-400 hover:text-white ml-1" title="Change Name">
+              <i data-lucide="edit-2" class="w-3 h-3"></i>
+            </button>
+          </div>
+
+          <div class="flex items-center space-x-2 text-xs text-gray-400 px-3 py-1 bg-gray-950 rounded-lg border border-gray-800 w-full sm:w-auto justify-center sm:justify-start">
+            <i data-lucide="circle" class="w-2.5 h-2.5 text-emerald-400 fill-emerald-400 animate-pulse"></i>
+            <span class="font-bold text-gray-300">PULSE_DB Live Sync</span>
+          </div>
         </div>
       </div>
 
@@ -215,12 +228,30 @@
           <!-- Quiz details rendered dynamically -->
         </div>
       </div>
+
+      <!-- TAB 3: AUDIENCE LEADERBOARD -->
+      <div id="audienceLeaderboardPane" class="hidden space-y-6">
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 sm:p-8 space-y-4 shadow-2xl">
+          <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+            <h2 class="text-lg sm:text-2xl font-black text-amber-400 flex items-center space-x-2">
+              <i data-lucide="trophy" class="w-6 h-6"></i>
+              <span>Session Leaderboard</span>
+            </h2>
+            <span class="text-xs text-gray-400 font-mono font-bold" id="audienceLeaderboardCode">#TWGC2026</span>
+          </div>
+
+          <div id="audienceLeaderboardList" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <!-- Leaderboard items rendered dynamically -->
+          </div>
+        </div>
+      </div>
+
     </div>
 
     <!-- PRESENTER VIEW CONTAINER -->
     <div id="presenterView" class="hidden flex-1 flex-col space-y-4 sm:space-y-6">
       
-      <!-- Presenter Header -->
+      <!-- Presenter Header Controller -->
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-gray-900 border border-gray-800 p-3 sm:p-4 rounded-2xl">
         <div class="flex flex-wrap items-center justify-between sm:justify-start gap-2">
           <span class="bg-emerald-500/10 text-emerald-400 font-extrabold px-2.5 py-1 rounded-lg border border-emerald-500/30 text-xs flex items-center space-x-1">
@@ -298,7 +329,7 @@
               <span class="text-xs text-gray-400">Session Rankings</span>
               <button onclick="resetCurrentEventLeaderboard()" class="px-3 py-1.5 bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/30 text-xs font-bold rounded-lg flex items-center gap-1.5 transition">
                 <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
-                Reset Leaderboard
+                Clear Leaderboard
               </button>
             </div>
           </div>
@@ -407,7 +438,7 @@
   </main>
 
   <!-- Sticky Mobile Navigation Bar -->
-  <nav class="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0B0F17]/95 backdrop-blur-md border-t border-gray-800 px-6 py-2 flex items-center justify-around">
+  <nav class="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0B0F17]/95 backdrop-blur-md border-t border-gray-800 px-4 py-2 flex items-center justify-around">
     <button onclick="switchAudienceTab('qa')" id="mobileNavQA" class="flex flex-col items-center space-y-1 text-amber-400 font-bold text-[10px]">
       <i data-lucide="message-square" class="w-5 h-5"></i>
       <span>Live Q&A</span>
@@ -415,6 +446,10 @@
     <button onclick="switchAudienceTab('quiz')" id="mobileNavQuiz" class="flex flex-col items-center space-y-1 text-gray-400 hover:text-white font-bold text-[10px]">
       <i data-lucide="award" class="w-5 h-5"></i>
       <span>Quiz & Polls</span>
+    </button>
+    <button onclick="switchAudienceTab('leaderboard')" id="mobileNavLeaderboard" class="flex flex-col items-center space-y-1 text-gray-400 hover:text-white font-bold text-[10px]">
+      <i data-lucide="trophy" class="w-5 h-5"></i>
+      <span>Leaderboard</span>
     </button>
   </nav>
 
@@ -448,6 +483,7 @@
       activeQuizTimer: null,
       quizTimeRemaining: 0,
       hasSubmittedAnswer: false,
+      userSelectedOption: null,
       responseCounts: [0, 0, 0, 0],
       totalResponses: 0,
       spotlightedItem: null
@@ -455,7 +491,7 @@
 
     function checkParticipantName() {
       if (!state.userName || !state.userName.trim()) {
-        let name = prompt("Welcome to Khalsa AI Pulse! Please enter your name for the leaderboard:");
+        let name = prompt("Welcome to Khalsa AI Pulse! Enter your name for the session leaderboard:");
     
         if (name === null || !name.trim()) {
           const adjectives = ["Brave", "Swift", "Wise", "Clever", "Bright", "Curious", "Bold"];
@@ -475,6 +511,19 @@
       const userNameInput = document.getElementById('userNameInput');
       if (userNameInput && !userNameInput.value) {
         userNameInput.value = state.userName;
+      }
+
+      const playerDisp = document.getElementById('audiencePlayerDisplay');
+      if (playerDisp) playerDisp.textContent = state.userName;
+    }
+
+    function changePlayerNamePrompt() {
+      let newName = prompt("Enter a new name for the session leaderboard:", state.userName);
+      if (newName && newName.trim()) {
+        state.userName = newName.trim();
+        localStorage.setItem('pulse_participant_name', state.userName);
+        checkParticipantName();
+        renderLeaderboard();
       }
     }
 
@@ -544,7 +593,7 @@
       if (!newCode.startsWith('#')) newCode = '#' + newCode;
       
       state.eventCode = newCode.toUpperCase();
-      state.quizDeck = []; // Reset deck for new session code
+      state.quizDeck = [];
 
       const cleanCode = state.eventCode.replace('#', '');
       const newUrl = `${window.location.pathname}?code=${encodeURIComponent(cleanCode)}`;
@@ -553,6 +602,9 @@
       document.querySelectorAll('.event-code-display').forEach(el => {
         el.textContent = state.eventCode;
       });
+
+      const audCodeDisp = document.getElementById('audienceLeaderboardCode');
+      if (audCodeDisp) audCodeDisp.textContent = state.eventCode;
 
       ['eventCodeInput', 'headerAudienceCodeInput', 'mobileAudienceCodeInput'].forEach(id => {
         const input = document.getElementById(id);
@@ -638,7 +690,6 @@
           const sortedPulses = [...data.recent_pulses].sort((a, b) => a.id - b.id);
     
           sortedPulses.forEach(p => {
-            // Reconstruct Quiz Deck from pulse_events log
             if (p.event_type === 'quiz_save' && p.metadata) {
               const meta = typeof p.metadata === 'string' ? JSON.parse(p.metadata) : p.metadata;
               const savedQuiz = meta.quiz || meta;
@@ -674,6 +725,8 @@
               state.activeQuizQuestion = null;
               state.activeQuizQuestionId = null;
               state.activeQuizQuestionStartedAt = null;
+              state.hasSubmittedAnswer = false;
+              state.userSelectedOption = null;
               state.spotlightedItem = null;
               if (state.activeQuizTimer) {
                 clearInterval(state.activeQuizTimer);
@@ -715,6 +768,8 @@
                   state.activeQuizQuestion = quiz;
                   state.activeQuizQuestionId = quiz.id;
                   state.activeQuizQuestionStartedAt = startedAt;
+                  state.hasSubmittedAnswer = false;
+                  state.userSelectedOption = null;
 
                   state.responseCounts = [0, 0, 0, 0];
                   state.totalResponses = 0;
@@ -755,6 +810,7 @@
     }
 
     window.onload = function() {
+      checkParticipantName();
       setEventCode(state.eventCode);
       lucide.createIcons();
       renderAll();
@@ -801,30 +857,33 @@
     }
 
     function switchAudienceTab(tab) {
-      if (tab === 'quiz') checkParticipantName();
+      if (tab === 'quiz' || tab === 'leaderboard') checkParticipantName();
       state.audienceTab = tab;
       const qaBtn = document.getElementById('tabAudienceQA');
       const quizBtn = document.getElementById('tabAudienceQuiz');
+      const ldrBtn = document.getElementById('tabAudienceLeaderboard');
+
       const mobileQA = document.getElementById('mobileNavQA');
       const mobileQuiz = document.getElementById('mobileNavQuiz');
+      const mobileLdr = document.getElementById('mobileNavLeaderboard');
+
       const qaPane = document.getElementById('audienceQAPane');
       const quizPane = document.getElementById('audienceQuizPane');
+      const ldrPane = document.getElementById('audienceLeaderboardPane');
 
-      if (tab === 'qa') {
-        qaPane.classList.remove('hidden');
-        quizPane.classList.add('hidden');
-        if (qaBtn) qaBtn.className = "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow";
-        if (quizBtn) quizBtn.className = "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 text-gray-300 hover:bg-gray-800";
-        if (mobileQA) mobileQA.className = "flex flex-col items-center space-y-1 text-amber-400 font-bold text-[10px]";
-        if (mobileQuiz) mobileQuiz.className = "flex flex-col items-center space-y-1 text-gray-400 hover:text-white font-bold text-[10px]";
-      } else {
-        quizPane.classList.remove('hidden');
-        qaPane.classList.add('hidden');
-        if (quizBtn) quizBtn.className = "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow";
-        if (qaBtn) qaBtn.className = "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 text-gray-300 hover:bg-gray-800";
-        if (mobileQuiz) mobileQuiz.className = "flex flex-col items-center space-y-1 text-amber-400 font-bold text-[10px]";
-        if (mobileQA) mobileQA.className = "flex flex-col items-center space-y-1 text-gray-400 hover:text-white font-bold text-[10px]";
-      }
+      qaPane.classList.toggle('hidden', tab !== 'qa');
+      quizPane.classList.toggle('hidden', tab !== 'quiz');
+      ldrPane.classList.toggle('hidden', tab !== 'leaderboard');
+
+      if (qaBtn) qaBtn.className = tab === 'qa' ? "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow" : "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 text-gray-300 hover:bg-gray-800";
+      if (quizBtn) quizBtn.className = tab === 'quiz' ? "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow" : "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 text-gray-300 hover:bg-gray-800";
+      if (ldrBtn) ldrBtn.className = tab === 'leaderboard' ? "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow" : "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 text-gray-300 hover:bg-gray-800";
+
+      if (mobileQA) mobileQA.className = tab === 'qa' ? "flex flex-col items-center space-y-1 text-amber-400 font-bold text-[10px]" : "flex flex-col items-center space-y-1 text-gray-400 hover:text-white font-bold text-[10px]";
+      if (mobileQuiz) mobileQuiz.className = tab === 'quiz' ? "flex flex-col items-center space-y-1 text-amber-400 font-bold text-[10px]" : "flex flex-col items-center space-y-1 text-gray-400 hover:text-white font-bold text-[10px]";
+      if (mobileLdr) mobileLdr.className = tab === 'leaderboard' ? "flex flex-col items-center space-y-1 text-amber-400 font-bold text-[10px]" : "flex flex-col items-center space-y-1 text-gray-400 hover:text-white font-bold text-[10px]";
+
+      if (tab === 'leaderboard') renderLeaderboard();
       lucide.createIcons();
     }
 
@@ -957,8 +1016,6 @@
       };
 
       cancelEditQuizQuestion();
-
-      // Emit quiz_save event to persist directly in pulse_events table
       await sendPulse('quiz_save', { quiz: quizItem });
     }
 
@@ -1044,6 +1101,8 @@
       state.activeQuizQuestion = null;
       state.activeQuizQuestionId = null;
       state.activeQuizQuestionStartedAt = null;
+      state.hasSubmittedAnswer = false;
+      state.userSelectedOption = null;
       state.spotlightedItem = null;
       if (state.activeQuizTimer) {
         clearInterval(state.activeQuizTimer);
@@ -1063,11 +1122,12 @@
       const questionId = state.activeQuizQuestion.id;
 
       if (state.hasSubmittedAnswer) {
-        alert("You have already submitted an answer for this question in this session.");
+        alert("You have already submitted an answer for this question.");
         return;
       }
 
       state.hasSubmittedAnswer = true;
+      state.userSelectedOption = selectedIndex;
       const isCorrect = selectedIndex === state.activeQuizQuestion.correct;
 
       if (typeof selectedIndex === 'number' && selectedIndex >= 0 && selectedIndex < 4) {
@@ -1081,8 +1141,6 @@
         const totalTime = state.activeQuizQuestion.timeLimit || 30;
         const speedBonus = Math.round((state.quizTimeRemaining / totalTime) * 50);
         pointsEarned = basePoints + speedBonus;
-
-        confetti({ particleCount: 60, spread: 50, origin: { y: 0.7 } });
       }
 
       if (pointsEarned > 0) {
@@ -1119,6 +1177,7 @@
       renderQuizDeck();
       renderAudienceQuizPane();
       renderSpotlight();
+      renderLeaderboard();
       renderQRCode();
       lucide.createIcons();
     }
@@ -1231,6 +1290,12 @@
         return;
       }
 
+      const showAnswerAndVotes = state.quizTimeRemaining <= 0;
+
+      if (showAnswerAndVotes && state.userSelectedOption !== null && state.userSelectedOption === activeQ.correct) {
+        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+      }
+
       container.innerHTML = `
         <div class="space-y-4 text-left">
           <div class="flex items-center justify-between border-b border-gray-800 pb-3">
@@ -1245,28 +1310,40 @@
             </div>
           </div>
 
+          ${state.hasSubmittedAnswer && !showAnswerAndVotes ? `
+            <div class="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-center text-xs text-amber-400 font-bold animate-pulse">
+              ✓ Answer Submitted! Results & correct choice will reveal when the timer reaches 0s.
+            </div>
+          ` : ''}
+
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
             ${activeQ.options.map((opt, idx) => {
               const isCorrect = idx === activeQ.correct;
+              const isSelected = state.userSelectedOption === idx;
               const count = state.responseCounts[idx] || 0;
               const pct = state.totalResponses > 0 ? Math.round((count / state.totalResponses) * 100) : 0;
-              let btnStyle = "bg-gray-950 border-gray-800 text-white hover:border-amber-500";
               
-              if (state.hasSubmittedAnswer || state.quizTimeRemaining <= 0) {
+              let btnStyle = "bg-gray-950 border-gray-800 text-white hover:border-amber-500";
+
+              if (showAnswerAndVotes) {
                 if (isCorrect) {
-                  btnStyle = "bg-emerald-500/20 border-emerald-500 text-emerald-300 font-black";
+                  btnStyle = "bg-emerald-500/20 border-emerald-500 text-emerald-300 font-black shadow-lg shadow-emerald-500/10";
+                } else if (isSelected) {
+                  btnStyle = "bg-red-500/20 border-red-500 text-red-300 font-bold";
                 } else {
                   btnStyle = "bg-gray-950 border-gray-900 text-gray-600 opacity-60";
                 }
+              } else if (isSelected) {
+                btnStyle = "bg-amber-500/20 border-amber-500 text-amber-300 font-bold";
               }
 
               return `
                 <button onclick="submitAudienceAnswer(${idx})" ${state.hasSubmittedAnswer || state.quizTimeRemaining <= 0 ? 'disabled' : ''} class="w-full p-3.5 sm:p-5 rounded-xl border-2 text-left font-bold text-sm sm:text-base transition flex flex-col justify-between ${btnStyle}">
                   <div class="flex items-center justify-between w-full">
-                    <span>${opt}</span>
+                    <span>${opt}${showAnswerAndVotes && isCorrect ? '✓' : ''}</span>
                     <span class="w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center font-mono text-xs ml-2 shrink-0">${String.fromCharCode(65 + idx)}</span>
                   </div>
-                  ${state.hasSubmittedAnswer || state.quizTimeRemaining <= 0 ? `
+                  ${showAnswerAndVotes ? `
                     <div class="mt-2 text-xs font-mono font-bold flex justify-between text-amber-400">
                       <span>${count} votes</span>
                       <span>${pct}%</span>
@@ -1320,6 +1397,8 @@
       } 
       else if (item.type === 'quiz') {
         const q = item.data;
+        const showAnswer = state.quizTimeRemaining <= 0;
+
         displayArea.innerHTML = `
           <div class="space-y-4 text-left max-w-4xl mx-auto">
             <div class="flex items-center justify-between">
@@ -1334,7 +1413,6 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               ${q.options.map((opt, idx) => {
-                const showAnswer = state.quizTimeRemaining <= 0;
                 const isCorrect = idx === q.correct;
                 const count = state.responseCounts[idx] || 0;
                 const pct = state.totalResponses > 0 ? Math.round((count / state.totalResponses) * 100) : 0;
@@ -1342,16 +1420,20 @@
                 return `
                   <div class="p-3.5 rounded-xl border flex flex-col justify-between ${showAnswer && isCorrect ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300' : 'bg-gray-950 border-gray-800 text-gray-200'}">
                     <div class="flex items-center justify-between">
-                      <span class="text-sm font-bold">${opt}</span>
+                      <span class="text-sm font-bold">${opt}${showAnswer && isCorrect ? '✓' : ''}</span>
                       <span class="text-xs font-mono font-black text-amber-400 bg-amber-500/10 px-2 py-1 rounded">${String.fromCharCode(65 + idx)}</span>
                     </div>
-                    <div class="mt-3 flex items-center justify-between text-xs font-mono text-gray-400">
-                      <span>${count} responses</span>
-                      <span class="font-bold text-amber-400">${pct}%</span>
-                    </div>
-                    <div class="w-full bg-gray-900 rounded-full h-1.5 mt-1 overflow-hidden">
-                      <div class="bg-amber-500 h-1.5 rounded-full transition-all duration-300" style="width: ${pct}%"></div>
-                    </div>
+                    ${showAnswer ? `
+                      <div class="mt-3 flex items-center justify-between text-xs font-mono text-gray-400">
+                        <span>${count} responses</span>
+                        <span class="font-bold text-amber-400">${pct}%</span>
+                      </div>
+                      <div class="w-full bg-gray-900 rounded-full h-1.5 mt-1 overflow-hidden">
+                        <div class="bg-amber-500 h-1.5 rounded-full transition-all duration-300" style="width: ${pct}%"></div>
+                      </div>
+                    ` : `
+                      <div class="mt-3 text-xs font-mono text-gray-500 italic">Voting in progress...</div>
+                    `}
                   </div>
                 `;
               }).join('')}
@@ -1367,25 +1449,31 @@
     }
 
     function renderLeaderboard() {
-      const list = document.getElementById('leaderboardList');
-      if (!list) return;
+      const presList = document.getElementById('leaderboardList');
+      const audList = document.getElementById('audienceLeaderboardList');
 
       const leaderboardData = getEventLeaderboard();
 
+      const emptyHtml = `<div class="col-span-2 text-center text-xs text-gray-500 py-3">No scores recorded for session ${state.eventCode} yet.</div>`;
+
       if (leaderboardData.length === 0) {
-        list.innerHTML = `<div class="col-span-2 text-center text-xs text-gray-500 py-3">No scores recorded for session ${state.eventCode} yet.</div>`;
+        if (presList) presList.innerHTML = emptyHtml;
+        if (audList) audList.innerHTML = emptyHtml;
         return;
       }
 
-      list.innerHTML = leaderboardData.map((item, idx) => `
-        <div class="flex items-center justify-between p-3 rounded-xl bg-gray-950 border border-gray-800 text-xs sm:text-sm">
-          <div class="flex items-center space-x-2">
-            <span class="w-6 h-6 rounded-full ${idx === 0 ? 'bg-amber-500 text-slate-950' : 'bg-gray-800 text-gray-300'} flex items-center justify-center font-black">${idx + 1}</span>
-            <span class="font-bold text-white">${item.name}</span>
+      const rowsHtml = leaderboardData.map((item, idx) => `
+        <div class="flex items-center justify-between p-3 rounded-xl bg-gray-950 border ${item.name === state.userName ? 'border-amber-500/50 bg-amber-500/5' : 'border-gray-800'} text-xs sm:text-sm">
+          <div class="flex items-center space-x-2 truncate">
+            <span class="w-6 h-6 rounded-full ${idx === 0 ? 'bg-amber-500 text-slate-950' : 'bg-gray-800 text-gray-300'} flex items-center justify-center font-black shrink-0">${idx + 1}</span>
+            <span class="font-bold text-white truncate">${item.name} ${item.name === state.userName ? '<span class="text-[10px] text-amber-400">(You)</span>' : ''}</span>
           </div>
-          <span class="font-mono font-black text-amber-400">${item.score} pts</span>
+          <span class="font-mono font-black text-amber-400 shrink-0 ml-2">${item.score} pts</span>
         </div>
       `).join('');
+
+      if (presList) presList.innerHTML = rowsHtml;
+      if (audList) audList.innerHTML = rowsHtml;
     }
 
     function copyEventCode() {
