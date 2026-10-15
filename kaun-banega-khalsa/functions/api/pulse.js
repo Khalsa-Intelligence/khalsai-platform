@@ -15,7 +15,7 @@ export async function onRequestPost(context) {
     const ipAddress = request.headers.get('cf-connecting-ip') || 'unknown';
     const userAgent = request.headers.get('user-agent') || 'unknown';
 
-    // Strip leading # before saving to D1
+    // Strip leading # before saving
     const cleanEventCode = eventCode ? eventCode.replace(/^#/, '').trim().toUpperCase() : null;
 
     const statement = env.PULSE_DB.prepare(
@@ -60,7 +60,7 @@ export async function onRequestGet(context) {
 
     if (eventCode) {
       const cleanCode = eventCode.replace(/^#/, '').trim().toUpperCase();
-      // Uses LIKE to capture 'TWGCSESSION2' AND '#TWGCSESSION2'
+      // Match both 'TWGCSESSION2' AND '#TWGCSESSION2' in D1
       query += ` WHERE UPPER(event_code) LIKE ?`;
       params.push(`%${cleanCode}%`);
     }
