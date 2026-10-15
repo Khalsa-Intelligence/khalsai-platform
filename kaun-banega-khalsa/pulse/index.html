@@ -684,7 +684,7 @@
 
     async function fetchPulseDatabase() {
       try {
-        const cleanCode = state.eventCode.replace('#', '');
+        const cleanCode = state.eventCode.replace(/^#/, '').trim().toUpperCase();
         const res = await fetch(`/api/pulse?eventCode=${encodeURIComponent(cleanCode)}`);
         if (!res.ok) return;
         const data = await res.json();
@@ -693,15 +693,19 @@
           const sortedPulses = [...data.recent_pulses].sort((a, b) => a.id - b.id);
     
           sortedPulses.forEach(p => {
-            // Check if pulse ID already processed to prevent duplicate additions
+            // Prevent re-processing identical pulse events
             if (processedPulseIds.has(p.id)) return;
             processedPulseIds.add(p.id);
-
+    
             if (p.event_type === 'quiz_save' && p.metadata) {
-              const meta = typeof p.metadata === 'string' ? JSON.parse(p.metadata) : p.metadata;
+              let meta = p.metadata;
+              if (typeof meta === 'string') {
+                try { meta = JSON.parse(meta); } catch(e) {}
+              }
               const savedQuiz = meta.quiz || meta;
-              if (savedQuiz && savedQuiz.id) {
-                const existingIndex = state.quizDeck.findIndex(q => q.id === savedQuiz.id);
+              if (savedQuiz && (savedQuiz.id || savedQuiz.title)) {
+                const qId = savedQuiz.id || savedQuiz.title;
+                const existingIndex = state.quizDeck.findIndex(q => (q.id || q.title) === qId);
                 if (existingIndex !== -1) {
                   state.quizDeck[existingIndex] = savedQuiz;
                 } else {
@@ -709,11 +713,24 @@
                 }
               }
             }
-
+    
             if (p.event_type === 'quiz_delete' && p.metadata) {
-              const meta = typeof p.metadata === 'string' ? JSON.parse(p.metadata) : p.metadata;
+              let meta = p.metadata;
+              if (typeof meta === 'string') {
+                try { meta = JSON.parse(meta); } catch(e) {}
+              }
               if (meta.id) {
                 state.quizDeck = state.quizDeck.filter(q => q.id !== meta.id);
+              }
+            }
+    
+            if (p.event_type === 'question' && p.metadata) {
+              let meta = p.metadata;
+              if (typeof meta === 'string') {
+                try { meta = JSON.parse(meta); } catch(e) {}
+              }
+              if (meta.id && !state.questions.some(q => q.id === meta.id)) {
+                state.questions.unshift(meta);
               }
             }
 
@@ -745,13 +762,6 @@
               const activeInd = document.getElementById('activeQuizIndicator');
               if (activeInd) activeInd.classList.add('hidden');
               renderAll();
-            }
-
-            if (p.event_type === 'question' && p.metadata) {
-              const meta = typeof p.metadata === 'string' ? JSON.parse(p.metadata) : p.metadata;
-              if (meta.id && !state.questions.some(q => q.id === meta.id)) {
-                state.questions.unshift(meta);
-              }
             }
 
             if (p.event_type === 'upvote' && p.metadata) {
@@ -811,8 +821,9 @@
             }
           });
     
-          renderQuestions();
           renderQuizDeck();
+          renderQuestions();
+
         }
       } catch (err) {
         console.error('Failed to fetch pulse logs:', err);
