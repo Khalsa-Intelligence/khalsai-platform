@@ -144,12 +144,9 @@
   <!-- Main View Container -->
   <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 lg:p-8 flex flex-col pb-20 sm:pb-8">
     
-    <!-- ========================================== -->
-    <!--          AUDIENCE VIEW CONTAINER           -->
-    <!-- ========================================== -->
+    <!-- AUDIENCE VIEW CONTAINER -->
     <div id="audienceView" class="flex-1 flex flex-col space-y-4 sm:space-y-6">
       
-      <!-- Sync Status & Desktop Tab Bar -->
       <div class="flex items-center justify-between bg-gray-900/80 border border-gray-800 p-2.5 sm:p-3 rounded-2xl">
         <div class="hidden sm:flex space-x-2">
           <button onclick="switchAudienceTab('qa')" id="tabAudienceQA" class="px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow">
@@ -220,12 +217,10 @@
       </div>
     </div>
 
-    <!-- ========================================== -->
-    <!--          PRESENTER VIEW CONTAINER          -->
-    <!-- ========================================== -->
+    <!-- PRESENTER VIEW CONTAINER -->
     <div id="presenterView" class="hidden flex-1 flex-col space-y-4 sm:space-y-6">
       
-      <!-- Presenter Top Controller & Event Code Setter -->
+      <!-- Presenter Header -->
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-gray-900 border border-gray-800 p-3 sm:p-4 rounded-2xl">
         <div class="flex flex-wrap items-center justify-between sm:justify-start gap-2">
           <span class="bg-emerald-500/10 text-emerald-400 font-extrabold px-2.5 py-1 rounded-lg border border-emerald-500/30 text-xs flex items-center space-x-1">
@@ -256,7 +251,7 @@
         </div>
       </div>
 
-      <!-- SUB-TAB 1: PRESENTER SPOTLIGHT & QR CODE DISPLAY -->
+      <!-- SUB-TAB 1: PRESENTER SPOTLIGHT & QR CODE -->
       <div id="presenterSpotlightPane" class="space-y-4 sm:space-y-6">
         <div class="bg-gradient-to-r from-amber-500/10 via-gray-900 to-amber-500/10 border border-amber-500/40 rounded-2xl p-4 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-4 glow-gold">
           <div class="text-center md:text-left space-y-1 sm:space-y-2">
@@ -373,7 +368,7 @@
               </div>
 
               <button id="btnSaveQuiz" onclick="saveQuizQuestion()" class="w-full py-2.5 rounded-xl gold-gradient-bg text-slate-950 font-extrabold text-sm hover:brightness-110 transition shadow">
-                Save to Quiz Deck
+                Save to Pulse DB Deck
               </button>
             </div>
           </div>
@@ -430,17 +425,17 @@
     const PRESENTER_PASSCODE = "6789";
     let isPresenterAuthenticated = false;
     
-    let sessionId = localStorage.getItem('pulse_session_id');
+    let sessionId = sessionStorage.getItem('pulse_session_id');
     if (!sessionId) {
       sessionId = 'sess_' + Math.random().toString(36).substring(2, 11);
-      localStorage.setItem('pulse_session_id', sessionId);
+      sessionStorage.setItem('pulse_session_id', sessionId);
     }
     
     const urlParams = new URLSearchParams(window.location.search);
     const initialCodeParam = urlParams.get('code');
     
     let state = {
-      eventCode: initialCodeParam ? '#' + initialCodeParam.replace('#','') : (localStorage.getItem('pulse_event_code') || "#TWGC2026"),
+      eventCode: initialCodeParam ? '#' + initialCodeParam.replace('#','') : "#TWGC2026",
       userName: localStorage.getItem('pulse_participant_name') || '',
       view: 'audience',
       audienceTab: 'qa',
@@ -508,22 +503,15 @@
     }
 
     function resetCurrentEventLeaderboard() {
-      if (!state.eventCode) {
-        alert("No active event code set.");
-        return;
-      }
+      if (!state.eventCode) return;
 
       if (confirm(`Are you sure you want to reset the leaderboard for event code "${state.eventCode}"?`)) {
         const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
         delete allLeaderboards[state.eventCode];
         localStorage.setItem('pulse_leaderboards', JSON.stringify(allLeaderboards));
 
-        const answerKey = `pulse_answers_${state.eventCode}`;
-        localStorage.removeItem(answerKey);
-
         renderLeaderboard();
         sendPulse('leaderboard_reset', { eventCode: state.eventCode });
-        alert(`Leaderboard for session ${state.eventCode} has been reset.`);
       }
     }
     
@@ -534,7 +522,6 @@
       if (!qrContainer) return;
       
       qrContainer.innerHTML = '';
-      
       const cleanCode = state.eventCode.replace('#', '');
       const joinUrl = `${window.location.origin}${window.location.pathname}?code=${encodeURIComponent(cleanCode)}`;
 
@@ -557,9 +544,8 @@
       if (!newCode.startsWith('#')) newCode = '#' + newCode;
       
       state.eventCode = newCode.toUpperCase();
-      localStorage.setItem('pulse_event_code', state.eventCode);
+      state.quizDeck = []; // Reset deck for new session code
 
-      // Synchronize URL search parameter without reloading
       const cleanCode = state.eventCode.replace('#', '');
       const newUrl = `${window.location.pathname}?code=${encodeURIComponent(cleanCode)}`;
       window.history.replaceState({ path: newUrl }, '', newUrl);
@@ -568,8 +554,7 @@
         el.textContent = state.eventCode;
       });
 
-      const inputs = ['eventCodeInput', 'headerAudienceCodeInput', 'mobileAudienceCodeInput'];
-      inputs.forEach(id => {
+      ['eventCodeInput', 'headerAudienceCodeInput', 'mobileAudienceCodeInput'].forEach(id => {
         const input = document.getElementById(id);
         if (input) input.value = state.eventCode;
       });
@@ -581,16 +566,12 @@
 
     function changeAudienceEventCode() {
       const input = document.getElementById('headerAudienceCodeInput');
-      if (input && input.value.trim()) {
-        setEventCode(input.value.trim());
-      }
+      if (input && input.value.trim()) setEventCode(input.value.trim());
     }
 
     function changeMobileAudienceCode() {
       const input = document.getElementById('mobileAudienceCodeInput');
-      if (input && input.value.trim()) {
-        setEventCode(input.value.trim());
-      }
+      if (input && input.value.trim()) setEventCode(input.value.trim());
     }
 
     function updateEventCode() {
@@ -657,6 +638,27 @@
           const sortedPulses = [...data.recent_pulses].sort((a, b) => a.id - b.id);
     
           sortedPulses.forEach(p => {
+            // Reconstruct Quiz Deck from pulse_events log
+            if (p.event_type === 'quiz_save' && p.metadata) {
+              const meta = typeof p.metadata === 'string' ? JSON.parse(p.metadata) : p.metadata;
+              const savedQuiz = meta.quiz || meta;
+              if (savedQuiz && savedQuiz.id) {
+                const existingIndex = state.quizDeck.findIndex(q => q.id === savedQuiz.id);
+                if (existingIndex !== -1) {
+                  state.quizDeck[existingIndex] = savedQuiz;
+                } else {
+                  state.quizDeck.push(savedQuiz);
+                }
+              }
+            }
+
+            if (p.event_type === 'quiz_delete' && p.metadata) {
+              const meta = typeof p.metadata === 'string' ? JSON.parse(p.metadata) : p.metadata;
+              if (meta.id) {
+                state.quizDeck = state.quizDeck.filter(q => q.id !== meta.id);
+              }
+            }
+
             if (p.event_type === 'event_code_update' && p.metadata) {
               const meta = typeof p.metadata === 'string' ? JSON.parse(p.metadata) : p.metadata;
               if (meta.eventCode && meta.eventCode !== state.eventCode) {
@@ -700,9 +702,7 @@
             if (p.event_type === 'question_update' && p.metadata) {
               const meta = typeof p.metadata === 'string' ? JSON.parse(p.metadata) : p.metadata;
               const q = state.questions.find(item => item.id === meta.id);
-              if (q) {
-                Object.assign(q, meta);
-              }
+              if (q) Object.assign(q, meta);
             }
     
             if (p.event_type === 'quiz_release' && p.metadata) {
@@ -715,10 +715,6 @@
                   state.activeQuizQuestion = quiz;
                   state.activeQuizQuestionId = quiz.id;
                   state.activeQuizQuestionStartedAt = startedAt;
-
-                  const answerKey = `pulse_answers_${state.eventCode}`;
-                  const submittedAnswers = JSON.parse(localStorage.getItem(answerKey) || '{}');
-                  state.hasSubmittedAnswer = !!submittedAnswers[quiz.id];
 
                   state.responseCounts = [0, 0, 0, 0];
                   state.totalResponses = 0;
@@ -751,6 +747,7 @@
           });
     
           renderQuestions();
+          renderQuizDeck();
         }
       } catch (err) {
         console.error('Failed to fetch pulse logs:', err);
@@ -758,15 +755,6 @@
     }
 
     window.onload = function() {
-      const savedDeck = localStorage.getItem('pulse_quiz_deck');
-      if (savedDeck) {
-        try {
-          state.quizDeck = JSON.parse(savedDeck);
-        } catch (e) {
-          console.error("Failed to parse saved quiz deck from localStorage:", e);
-        }
-      }
-
       setEventCode(state.eventCode);
       lucide.createIcons();
       renderAll();
@@ -813,9 +801,7 @@
     }
 
     function switchAudienceTab(tab) {
-      if (tab === 'quiz') {
-        checkParticipantName();
-      }
+      if (tab === 'quiz') checkParticipantName();
       state.audienceTab = tab;
       const qaBtn = document.getElementById('tabAudienceQA');
       const quizBtn = document.getElementById('tabAudienceQuiz');
@@ -897,13 +883,8 @@
     async function toggleUpvote(id) {
       const q = state.questions.find(item => item.id === id);
       if (q) {
-        if (q.voted) {
-          q.upvotes--;
-          q.voted = false;
-        } else {
-          q.upvotes++;
-          q.voted = true;
-        }
+        q.voted ? q.upvotes-- : q.upvotes++;
+        q.voted = !q.voted;
         renderQuestions();
         await sendPulse('upvote', { questionId: id, newVotes: q.upvotes });
       }
@@ -949,7 +930,7 @@
       }
     }
 
-    function saveQuizQuestion() {
+    async function saveQuizQuestion() {
       const title = document.getElementById('newQuizTitle').value.trim();
       const o0 = document.getElementById('option0').value.trim();
       const o1 = document.getElementById('option1').value.trim();
@@ -966,34 +947,19 @@
 
       const editingId = document.getElementById('editingQuizId').value;
 
-      if (editingId) {
-        const quizIndex = state.quizDeck.findIndex(q => q.id === editingId);
-        if (quizIndex !== -1) {
-          state.quizDeck[quizIndex] = {
-            id: editingId,
-            title: title,
-            options: [o0, o1, o2 || "Option C", o3 || "Option D"],
-            correct: correctIndex,
-            timeLimit: timeLimit,
-            points: points
-          };
-        }
-      } else {
-        const newQuiz = {
-          id: "q_" + Date.now(),
-          title: title,
-          options: [o0, o1, o2 || "Option C", o3 || "Option D"],
-          correct: correctIndex,
-          timeLimit: timeLimit,
-          points: points
-        };
-        state.quizDeck.push(newQuiz);
-      }
-
-      localStorage.setItem('pulse_quiz_deck', JSON.stringify(state.quizDeck));
+      const quizItem = {
+        id: editingId || ("q_" + Date.now()),
+        title: title,
+        options: [o0, o1, o2 || "Option C", o3 || "Option D"],
+        correct: correctIndex,
+        timeLimit: timeLimit,
+        points: points
+      };
 
       cancelEditQuizQuestion();
-      renderQuizDeck();
+
+      // Emit quiz_save event to persist directly in pulse_events table
+      await sendPulse('quiz_save', { quiz: quizItem });
     }
 
     function editQuizQuestion(quizId) {
@@ -1014,7 +980,7 @@
       document.getElementById('newQuizPoints').value = quiz.points || 100;
 
       document.getElementById('quizFormHeading').innerHTML = `<i data-lucide="edit-3" class="w-5 h-5 text-amber-400"></i><span>Edit Quiz Question</span>`;
-      document.getElementById('btnSaveQuiz').textContent = "Update Quiz Question";
+      document.getElementById('btnSaveQuiz').textContent = "Update Quiz Deck";
       document.getElementById('btnCancelEdit').classList.remove('hidden');
 
       lucide.createIcons();
@@ -1041,17 +1007,13 @@
       lucide.createIcons();
     }
 
-    function deleteQuizQuestion(quizId) {
-      state.quizDeck = state.quizDeck.filter(q => q.id !== quizId);
-      localStorage.setItem('pulse_quiz_deck', JSON.stringify(state.quizDeck));
-      renderQuizDeck();
+    async function deleteQuizQuestion(quizId) {
+      await sendPulse('quiz_delete', { id: quizId });
     }
     
     function resetQuizDeck() {
       if (confirm("Are you sure you want to clear the entire quiz deck?")) {
-        state.quizDeck = [];
-        localStorage.removeItem('pulse_quiz_deck');
-        renderQuizDeck();
+        state.quizDeck.forEach(q => deleteQuizQuestion(q.id));
       }
     }
 
@@ -1062,10 +1024,6 @@
       const startedAt = Date.now();
       state.activeQuizQuestion = quiz;
       state.activeQuizQuestionId = quiz.id;
-
-      const answerKey = `pulse_answers_${state.eventCode}`;
-      const submittedAnswers = JSON.parse(localStorage.getItem(answerKey) || '{}');
-      state.hasSubmittedAnswer = !!submittedAnswers[quiz.id];
 
       state.responseCounts = [0, 0, 0, 0];
       state.totalResponses = 0;
@@ -1103,10 +1061,8 @@
       checkParticipantName();
 
       const questionId = state.activeQuizQuestion.id;
-      const answerKey = `pulse_answers_${state.eventCode}`;
-      const submittedAnswers = JSON.parse(localStorage.getItem(answerKey) || '{}');
 
-      if (submittedAnswers[questionId] || state.hasSubmittedAnswer) {
+      if (state.hasSubmittedAnswer) {
         alert("You have already submitted an answer for this question in this session.");
         return;
       }
@@ -1128,14 +1084,6 @@
 
         confetti({ particleCount: 60, spread: 50, origin: { y: 0.7 } });
       }
-
-      submittedAnswers[questionId] = {
-        selectedOption: selectedIndex,
-        isCorrect: isCorrect,
-        points: pointsEarned,
-        timestamp: Date.now()
-      };
-      localStorage.setItem(answerKey, JSON.stringify(submittedAnswers));
 
       if (pointsEarned > 0) {
         recordSessionScore(state.userName, pointsEarned);
