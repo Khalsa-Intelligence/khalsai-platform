@@ -693,7 +693,7 @@
           const sortedPulses = [...data.recent_pulses].sort((a, b) => a.id - b.id);
     
           sortedPulses.forEach(p => {
-            // 1. ALWAYS parse quiz_save events into state.quizDeck regardless of processedPulseIds
+            // 1. ALWAYS parse quiz_save events into state.quizDeck
             if (p.event_type === 'quiz_save' && p.metadata) {
               let meta = p.metadata;
               if (typeof meta === 'string') {
@@ -711,7 +711,7 @@
               }
             }
     
-            // 2. Deduplicate all operational events below so actions aren't repeated
+            // 2. Prevent re-processing identical operational events
             if (processedPulseIds.has(p.id)) return;
             processedPulseIds.add(p.id);
     
@@ -752,6 +752,7 @@
               renderLeaderboard();
             }
     
+            // 3. Clear ACTIVE quiz display only (never wipe state.quizDeck)
             if (p.event_type === 'quiz_clear') {
               state.activeQuizQuestion = null;
               state.activeQuizQuestionId = null;
@@ -765,7 +766,8 @@
               }
               const activeInd = document.getElementById('activeQuizIndicator');
               if (activeInd) activeInd.classList.add('hidden');
-              renderAll();
+              renderAudienceQuizPane();
+              renderSpotlight();
             }
     
             if (p.event_type === 'upvote' && p.metadata) {
@@ -844,7 +846,7 @@
         console.error('Failed to fetch pulse logs:', err);
       }
     }
-
+    
     window.onload = function() {
       checkParticipantName();
       setEventCode(state.eventCode);
