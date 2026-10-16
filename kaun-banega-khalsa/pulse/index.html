@@ -684,7 +684,9 @@
 
     async function fetchPulseDatabase() {
       try {
-        const cleanCode = state.eventCode.replace(/^#/, '').trim().toUpperCase();
+        let cleanCode = (state.eventCode || '').replace(/^#/, '').trim().toUpperCase();
+        if (!cleanCode) cleanCode = 'TWGCSESSION2';
+    
         const res = await fetch(`/api/pulse?eventCode=${encodeURIComponent(cleanCode)}`);
         if (!res.ok) return;
         const data = await res.json();
@@ -692,8 +694,11 @@
         if (data && data.recent_pulses) {
           const sortedPulses = [...data.recent_pulses].sort((a, b) => a.id - b.id);
     
+          // Re-initialize quizDeck to avoid duplicates while guaranteeing historical loads
+          state.quizDeck = [];
+    
           sortedPulses.forEach(p => {
-            // 1. ALWAYS parse quiz_save events into state.quizDeck
+            // 1. ALWAYS parse quiz_save events into state.quizDeck (OUTSIDE processedPulseIds)
             if (p.event_type === 'quiz_save' && p.metadata) {
               let meta = p.metadata;
               if (typeof meta === 'string') {
@@ -711,10 +716,7 @@
               }
             }
     
-            // 2. Prevent re-processing identical operational events
-            if (processedPulseIds.has(p.id)) return;
-            processedPulseIds.add(p.id);
-    
+            // 2. Handle quiz deletions
             if (p.event_type === 'quiz_delete' && p.metadata) {
               let meta = p.metadata;
               if (typeof meta === 'string') {
@@ -724,6 +726,10 @@
                 state.quizDeck = state.quizDeck.filter(q => q.id !== meta.id);
               }
             }
+    
+            // 3. Deduplicate one-time interactive events (upvotes, Q&A, answer submissions)
+            if (processedPulseIds.has(p.id)) return;
+            processedPulseIds.add(p.id);
     
             if (p.event_type === 'question' && p.metadata) {
               let meta = p.metadata;
@@ -735,24 +741,6 @@
               }
             }
     
-            if (p.event_type === 'event_code_update' && p.metadata) {
-              let meta = p.metadata;
-              if (typeof meta === 'string') {
-                try { meta = JSON.parse(meta); } catch(e) {}
-              }
-              if (meta.eventCode && meta.eventCode !== state.eventCode) {
-                setEventCode(meta.eventCode);
-              }
-            }
-    
-            if (p.event_type === 'leaderboard_reset') {
-              const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
-              delete allLeaderboards[state.eventCode];
-              localStorage.setItem('pulse_leaderboards', JSON.stringify(allLeaderboards));
-              renderLeaderboard();
-            }
-    
-            // 3. Clear ACTIVE quiz display only (never wipe state.quizDeck)
             if (p.event_type === 'quiz_clear') {
               state.activeQuizQuestion = null;
               state.activeQuizQuestionId = null;
@@ -764,30 +752,6 @@
                 clearInterval(state.activeQuizTimer);
                 state.activeQuizTimer = null;
               }
-              const activeInd = document.getElementById('activeQuizIndicator');
-              if (activeInd) activeInd.classList.add('hidden');
-              renderAudienceQuizPane();
-              renderSpotlight();
-            }
-    
-            if (p.event_type === 'upvote' && p.metadata) {
-              let meta = p.metadata;
-              if (typeof meta === 'string') {
-                try { meta = JSON.parse(meta); } catch(e) {}
-              }
-              const q = state.questions.find(item => item.id === meta.questionId);
-              if (q && typeof meta.newVotes === 'number') {
-                q.upvotes = meta.newVotes;
-              }
-            }
-    
-            if (p.event_type === 'question_update' && p.metadata) {
-              let meta = p.metadata;
-              if (typeof meta === 'string') {
-                try { meta = JSON.parse(meta); } catch(e) {}
-              }
-              const q = state.questions.find(item => item.id === meta.id);
-              if (q) Object.assign(q, meta);
             }
     
             if (p.event_type === 'quiz_release' && p.metadata) {
@@ -805,16 +769,11 @@
                   state.activeQuizQuestionStartedAt = startedAt;
                   state.hasSubmittedAnswer = false;
                   state.userSelectedOption = null;
-    
                   state.responseCounts = [0, 0, 0, 0];
                   state.totalResponses = 0;
                   state.spotlightedItem = { type: 'quiz', data: quiz };
-              
-                  const activeInd = document.getElementById('activeQuizIndicator');
-                  if (activeInd) activeInd.classList.remove('hidden');
-              
+                  
                   startQuizTimer(quiz.id, quiz.timeLimit || 30, startedAt);
-                  renderAll();
                 }
               }
             }
@@ -828,10 +787,7 @@
                 if (typeof meta.selectedIndex === 'number' && meta.selectedIndex >= 0 && meta.selectedIndex < 4) {
                   state.responseCounts[meta.selectedIndex]++;
                   state.totalResponses++;
-                  renderSpotlight();
-                  renderAudienceQuizPane();
                 }
-    
                 if (meta.userName && meta.pointsEarned) {
                   recordSessionScore(meta.userName, meta.pointsEarned);
                 }
@@ -839,17 +795,13 @@
             }
           });
     
-          // Force UI render of pre-loaded deck
-          if (typeof renderQuizDeck === 'function') {
-            renderQuizDeck();
-          }
+          renderQuizDeck();
           renderQuestions();
         }
       } catch (err) {
         console.error('Failed to fetch pulse logs:', err);
       }
-    }
-    
+    }    
     window.onload = function() {
       checkParticipantName();
       setEventCode(state.eventCode);
