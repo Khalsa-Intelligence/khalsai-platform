@@ -92,7 +92,7 @@
       <!-- Desktop Event Code Selector -->
       <div class="hidden lg:flex items-center space-x-2 bg-gray-900/90 px-3 py-1.5 rounded-xl border border-gray-800">
         <span class="text-xs uppercase tracking-wider font-extrabold text-gray-400">Code:</span>
-        <input type="text" id="headerAudienceCodeInput" value="#TWGC2026" class="bg-gray-950 px-2 py-0.5 rounded border border-gray-700 font-mono font-black text-amber-400 text-sm focus:outline-none focus:border-amber-500 w-32 uppercase">
+        <input type="text" id="headerAudienceCodeInput" value="" class="bg-gray-950 px-2 py-0.5 rounded border border-gray-700 font-mono font-black text-amber-400 text-sm focus:outline-none focus:border-amber-500 w-32 uppercase">
         <button onclick="changeAudienceEventCode()" class="bg-amber-500 text-slate-950 font-black text-xs px-2.5 py-1 rounded-lg hover:brightness-110 transition flex items-center space-x-1 shadow">
           <span>Join</span>
         </button>
@@ -130,7 +130,7 @@
   <div class="lg:hidden bg-gray-950/80 border-b border-gray-800 px-3 py-1.5 flex items-center justify-between text-xs gap-2">
     <div class="flex items-center space-x-1.5 font-mono">
       <span class="text-gray-400 font-sans uppercase font-extrabold text-[10px]">CODE:</span>
-      <input type="text" id="mobileAudienceCodeInput" value="#TWGC2026" class="bg-gray-900 px-1.5 py-0.5 rounded border border-gray-700 font-mono font-black text-amber-400 text-xs w-28 uppercase">
+      <input type="text" id="mobileAudienceCodeInput" value="" class="bg-gray-900 px-1.5 py-0.5 rounded border border-gray-700 font-mono font-black text-amber-400 text-xs w-28 uppercase">
       <button onclick="changeMobileAudienceCode()" class="bg-amber-500 text-slate-950 font-bold text-[10px] px-2 py-0.5 rounded">Join</button>
     </div>
     <button onclick="copyEventCode()" class="text-amber-400 font-bold flex items-center space-x-1 hover:underline shrink-0">
@@ -172,10 +172,9 @@
           </button>
         </div>
 
-          <div class="flex items-center space-x-2 text-xs text-gray-400 px-3 py-1 bg-gray-950 rounded-lg border border-gray-800 w-full sm:w-auto justify-center sm:justify-start">
-            <i data-lucide="circle" class="w-2.5 h-2.5 text-emerald-400 fill-emerald-400 animate-pulse"></i>
-            <span class="font-bold text-gray-300">PULSE_DB Live Sync</span>
-          </div>
+        <div class="flex items-center space-x-2 text-xs text-gray-400 px-3 py-1 bg-gray-950 rounded-lg border border-gray-800 w-full sm:w-auto justify-center sm:justify-start">
+          <i data-lucide="circle" class="w-2.5 h-2.5 text-emerald-400 fill-emerald-400 animate-pulse"></i>
+          <span class="font-bold text-gray-300">PULSE_DB Live Sync</span>
         </div>
       </div>
 
@@ -236,7 +235,7 @@
               <i data-lucide="trophy" class="w-6 h-6"></i>
               <span>Session Leaderboard</span>
             </h2>
-            <span class="text-xs text-gray-400 font-mono font-bold" id="audienceLeaderboardCode">#TWGC2026</span>
+            <span class="text-xs text-gray-400 font-mono font-bold event-code-display" id="audienceLeaderboardCode"></span>
           </div>
 
           <div id="audienceLeaderboardList" class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -260,7 +259,7 @@
 
           <div class="flex items-center space-x-2 bg-gray-950 px-2.5 py-1 rounded-xl border border-amber-500/40">
             <label for="eventCodeInput" class="text-[10px] sm:text-xs font-bold text-gray-400 uppercase">Code:</label>
-            <input type="text" id="eventCodeInput" value="#TWGC2026" class="bg-gray-900 px-1.5 py-0.5 rounded border border-gray-700 font-mono font-black text-amber-400 text-xs sm:text-sm focus:outline-none focus:border-amber-500 w-24 sm:w-28 uppercase">
+            <input type="text" id="eventCodeInput" value="" class="bg-gray-900 px-1.5 py-0.5 rounded border border-gray-700 font-mono font-black text-amber-400 text-xs sm:text-sm focus:outline-none focus:border-amber-500 w-28 sm:w-32 uppercase">
             <button onclick="updateEventCode()" class="bg-amber-500 text-slate-950 font-black text-[10px] sm:text-xs px-2 py-1 rounded-lg hover:brightness-110 transition flex items-center space-x-1 shadow">
               <i data-lucide="check" class="w-3 h-3 stroke-[3]"></i>
               <span>Set</span>
@@ -286,7 +285,7 @@
         <div class="bg-gradient-to-r from-amber-500/10 via-gray-900 to-amber-500/10 border border-amber-500/40 rounded-2xl p-4 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-4 glow-gold">
           <div class="text-center md:text-left space-y-1 sm:space-y-2">
             <p class="text-amber-400 text-xs sm:text-sm font-extrabold tracking-widest uppercase">SCAN QR CODE TO JOIN LIVE SESSION</p>
-            <h1 class="text-3xl sm:text-6xl font-mono font-black text-white tracking-widest gold-gradient-text event-code-display" id="projectorEventCode">#TWGC2026</h1>
+            <h1 class="text-3xl sm:text-6xl font-mono font-black text-white tracking-widest gold-gradient-text event-code-display" id="projectorEventCode"></h1>
             <p class="text-gray-400 text-xs font-medium">Scan with camera to auto-join live Q&A</p>
           </div>
 
@@ -411,6 +410,7 @@
               </button>
             </div>
 
+            <!-- Pre-Loaded Deck List Container -->
             <div id="quizDeckList" class="space-y-3">
               <!-- Rendered dynamically -->
             </div>
@@ -456,6 +456,7 @@
     /* ==========================================================================
        APP STATE MANAGEMENT & PULSE_DB SYNC
        ========================================================================== */
+    const DEFAULT_EVENT_CODE = "#SESSION1";
     const PRESENTER_PASSCODE = "6789";
     let isPresenterAuthenticated = false;
     
@@ -465,14 +466,15 @@
       sessionStorage.setItem('pulse_session_id', sessionId);
     }
     
+    // Read session code dynamically from URL query parameter
     const urlParams = new URLSearchParams(window.location.search);
     const initialCodeParam = urlParams.get('code');
     
-    // Set to deduplicate DB pulse processing
+    // Set to deduplicate operational event processing
     const processedPulseIds = new Set();
 
     let state = {
-      eventCode: initialCodeParam ? '#' + initialCodeParam.replace('#','') : "#TWGC2026",
+      eventCode: initialCodeParam ? '#' + initialCodeParam.replace(/^#/,'').trim().toUpperCase() : DEFAULT_EVENT_CODE,
       userName: localStorage.getItem('pulse_participant_name') || '',
       view: 'audience',
       audienceTab: 'qa',
@@ -573,7 +575,7 @@
       if (!qrContainer) return;
       
       qrContainer.innerHTML = '';
-      const cleanCode = state.eventCode.replace('#', '');
+      const cleanCode = state.eventCode.replace(/^#/, '');
       const joinUrl = `${window.location.origin}${window.location.pathname}?code=${encodeURIComponent(cleanCode)}`;
 
       try {
@@ -598,7 +600,7 @@
       state.quizDeck = [];
       processedPulseIds.clear();
 
-      const cleanCode = state.eventCode.replace('#', '');
+      const cleanCode = state.eventCode.replace(/^#/, '');
       const newUrl = `${window.location.pathname}?code=${encodeURIComponent(cleanCode)}`;
       window.history.replaceState({ path: newUrl }, '', newUrl);
 
@@ -685,18 +687,18 @@
     async function fetchPulseDatabase() {
       try {
         let cleanCode = (state.eventCode || '').replace(/^#/, '').trim().toUpperCase();
-        if (!cleanCode) cleanCode = 'TWGCSESSION2';
-    
+        if (!cleanCode) return;
+
         const res = await fetch(`/api/pulse?eventCode=${encodeURIComponent(cleanCode)}`);
         if (!res.ok) return;
         const data = await res.json();
-    
+
         if (data && data.recent_pulses) {
           const sortedPulses = [...data.recent_pulses].sort((a, b) => a.id - b.id);
-    
+
           // Re-initialize quizDeck to avoid duplicates while guaranteeing historical loads
           state.quizDeck = [];
-    
+
           sortedPulses.forEach(p => {
             // 1. ALWAYS parse quiz_save events into state.quizDeck (OUTSIDE processedPulseIds)
             if (p.event_type === 'quiz_save' && p.metadata) {
@@ -715,7 +717,7 @@
                 }
               }
             }
-    
+
             // 2. Handle quiz deletions
             if (p.event_type === 'quiz_delete' && p.metadata) {
               let meta = p.metadata;
@@ -726,11 +728,11 @@
                 state.quizDeck = state.quizDeck.filter(q => q.id !== meta.id);
               }
             }
-    
-            // 3. Deduplicate one-time interactive events (upvotes, Q&A, answer submissions)
+
+            // 3. Deduplicate operational interactive events
             if (processedPulseIds.has(p.id)) return;
             processedPulseIds.add(p.id);
-    
+
             if (p.event_type === 'question' && p.metadata) {
               let meta = p.metadata;
               if (typeof meta === 'string') {
@@ -740,7 +742,7 @@
                 state.questions.unshift(meta);
               }
             }
-    
+
             if (p.event_type === 'quiz_clear') {
               state.activeQuizQuestion = null;
               state.activeQuizQuestionId = null;
@@ -753,7 +755,7 @@
                 state.activeQuizTimer = null;
               }
             }
-    
+
             if (p.event_type === 'quiz_release' && p.metadata) {
               let meta = p.metadata;
               if (typeof meta === 'string') {
@@ -777,7 +779,7 @@
                 }
               }
             }
-    
+
             if (p.event_type === 'quiz_answer' && p.metadata) {
               let meta = p.metadata;
               if (typeof meta === 'string') {
@@ -794,14 +796,15 @@
               }
             }
           });
-    
+
           renderQuizDeck();
           renderQuestions();
         }
       } catch (err) {
         console.error('Failed to fetch pulse logs:', err);
       }
-    }    
+    }
+
     window.onload = function() {
       checkParticipantName();
       setEventCode(state.eventCode);
@@ -903,7 +906,7 @@
 
       if (!text) return;
 
-      const cleanCode = state.eventCode.replace('#', '');
+      const cleanCode = state.eventCode.replace(/^#/, '');
       const newQ = {
         id: Date.now(),
         author: author,
@@ -1013,7 +1016,7 @@
     }
 
     function editQuizQuestion(quizId) {
-      const quiz = state.quizDeck.find(q => q.id === quizId);
+      const quiz = state.quizDeck.find(q => (q.id || q.title) === quizId);
       if (!quiz) return;
 
       document.getElementById('editingQuizId').value = quiz.id;
@@ -1051,7 +1054,7 @@
       document.getElementById('newQuizPoints').value = "100";
 
       document.getElementById('quizFormHeading').innerHTML = `<i data-lucide="plus-circle" class="w-5 h-5 text-amber-400"></i><span>Create Quiz Question</span>`;
-      document.getElementById('btnSaveQuiz').textContent = "Save to Quiz Deck";
+      document.getElementById('btnSaveQuiz').textContent = "Save to Pulse DB Deck";
       document.getElementById('btnCancelEdit').classList.add('hidden');
 
       lucide.createIcons();
@@ -1068,7 +1071,7 @@
     }
 
     async function releaseQuizQuestion(quizId) {
-      const quiz = state.quizDeck.find(q => q.id === quizId);
+      const quiz = state.quizDeck.find(q => (q.id || q.title) === quizId);
       if (!quiz) return;
 
       const startedAt = Date.now();
@@ -1179,59 +1182,63 @@
       if (qaBadge) qaBadge.textContent = state.questions.length;
 
       if (state.questions.length === 0) {
-        listContainer.innerHTML = `<div class="p-6 text-center text-xs sm:text-sm text-gray-500 bg-gray-900/50 rounded-2xl border border-gray-800">No questions submitted yet. Be the first!</div>`;
-        presListContainer.innerHTML = `<div class="p-6 text-center text-xs sm:text-sm text-gray-500 bg-gray-900 rounded-2xl border border-gray-800">No questions in Q&A queue.</div>`;
+        if (listContainer) listContainer.innerHTML = `<div class="p-6 text-center text-xs sm:text-sm text-gray-500 bg-gray-900/50 rounded-2xl border border-gray-800">No questions submitted yet. Be the first!</div>`;
+        if (presListContainer) presListContainer.innerHTML = `<div class="p-6 text-center text-xs sm:text-sm text-gray-500 bg-gray-900 rounded-2xl border border-gray-800">No questions in Q&A queue.</div>`;
         return;
       }
 
-      listContainer.innerHTML = state.questions.map(q => `
-        <div class="bg-gray-900 border ${q.answered ? 'border-emerald-500/30 bg-emerald-950/10' : 'border-gray-800'} rounded-xl p-3.5 sm:p-5 flex items-start justify-between gap-3 transition">
-          <div class="space-y-1.5 flex-1">
-            <div class="flex items-center space-x-2 text-xs text-gray-400">
-              <span class="font-bold text-amber-400">${q.author}</span>
-              <span>• ${q.timestamp}</span>
-              ${q.answered ? '<span class="bg-emerald-500/20 text-emerald-400 text-[10px] px-2 py-0.5 rounded-full font-bold">Answered</span>' : ''}
+      if (listContainer) {
+        listContainer.innerHTML = state.questions.map(q => `
+          <div class="bg-gray-900 border ${q.answered ? 'border-emerald-500/30 bg-emerald-950/10' : 'border-gray-800'} rounded-xl p-3.5 sm:p-5 flex items-start justify-between gap-3 transition">
+            <div class="space-y-1.5 flex-1">
+              <div class="flex items-center space-x-2 text-xs text-gray-400">
+                <span class="font-bold text-amber-400">${q.author}</span>
+                <span>• ${q.timestamp}</span>
+                ${q.answered ? '<span class="bg-emerald-500/20 text-emerald-400 text-[10px] px-2 py-0.5 rounded-full font-bold">Answered</span>' : ''}
+              </div>
+              <p class="text-sm sm:text-lg font-bold text-gray-100 leading-snug">${q.text}</p>
             </div>
-            <p class="text-sm sm:text-lg font-bold text-gray-100 leading-snug">${q.text}</p>
-          </div>
 
-          <button onclick="toggleUpvote(${q.id})" class="flex flex-col items-center justify-center px-3 py-2 rounded-xl border ${q.voted ? 'bg-amber-500 text-slate-950 border-amber-400 font-black' : 'bg-gray-950 border-gray-800 text-gray-300'} transition shrink-0">
-            <i data-lucide="thumbs-up" class="w-4 h-4"></i>
-            <span class="text-xs sm:text-sm font-black mt-0.5">${q.upvotes}</span>
-          </button>
-        </div>
-      `).join('');
-
-      presListContainer.innerHTML = state.questions.map(q => `
-        <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div class="space-y-1 flex-1">
-            <div class="flex items-center space-x-2 text-xs text-gray-400">
-              <span class="font-bold text-amber-400">${q.author}</span>
-              <span>• ${q.upvotes} Votes</span>
-            </div>
-            <p class="text-sm font-bold text-white">${q.text}</p>
-          </div>
-
-          <div class="flex items-center space-x-2 w-full sm:w-auto justify-end">
-            <button onclick="spotlightQuestion(${q.id})" class="px-2.5 py-1 rounded-lg bg-amber-500 text-slate-950 font-bold text-xs hover:brightness-110 flex items-center space-x-1">
-              <i data-lucide="tv" class="w-3 h-3"></i>
-              <span>Spotlight</span>
-            </button>
-            <button onclick="toggleAnswered(${q.id})" class="px-2.5 py-1 rounded-lg border border-gray-700 text-gray-300 font-bold text-xs hover:bg-gray-800">
-              ${q.answered ? 'Unmark' : 'Done'}
+            <button onclick="toggleUpvote(${q.id})" class="flex flex-col items-center justify-center px-3 py-2 rounded-xl border ${q.voted ? 'bg-amber-500 text-slate-950 border-amber-400 font-black' : 'bg-gray-950 border-gray-800 text-gray-300'} transition shrink-0">
+              <i data-lucide="thumbs-up" class="w-4 h-4"></i>
+              <span class="text-xs sm:text-sm font-black mt-0.5">${q.upvotes}</span>
             </button>
           </div>
-        </div>
-      `).join('');
+        `).join('');
+      }
+
+      if (presListContainer) {
+        presListContainer.innerHTML = state.questions.map(q => `
+          <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div class="space-y-1 flex-1">
+              <div class="flex items-center space-x-2 text-xs text-gray-400">
+                <span class="font-bold text-amber-400">${q.author}</span>
+                <span>• ${q.upvotes} Votes</span>
+              </div>
+              <p class="text-sm font-bold text-white">${q.text}</p>
+            </div>
+
+            <div class="flex items-center space-x-2 w-full sm:w-auto justify-end">
+              <button onclick="spotlightQuestion(${q.id})" class="px-2.5 py-1 rounded-lg bg-amber-500 text-slate-950 font-bold text-xs hover:brightness-110 flex items-center space-x-1">
+                <i data-lucide="tv" class="w-3 h-3"></i>
+                <span>Spotlight</span>
+              </button>
+              <button onclick="toggleAnswered(${q.id})" class="px-2.5 py-1 rounded-lg border border-gray-700 text-gray-300 font-bold text-xs hover:bg-gray-800">
+                ${q.answered ? 'Unmark' : 'Done'}
+              </button>
+            </div>
+          </div>
+        `).join('');
+      }
 
       lucide.createIcons();
     }
 
     function renderQuizDeck() {
       try {
-        const container = document.getElementById('quizDeckContainer') || 
-                          document.getElementById('preloadedDeckList') ||
-                          document.querySelector('.preloaded-deck-container');
+        const container = document.getElementById('quizDeckList') ||
+                          document.getElementById('quizDeckContainer') || 
+                          document.getElementById('preloadedDeckList');
     
         if (!container) return;
     
@@ -1245,7 +1252,6 @@
         }
     
         container.innerHTML = state.quizDeck.map((rawItem, index) => {
-          // 1. Safe extraction of question metadata regardless of nesting
           const q = (rawItem && rawItem.quiz) ? rawItem.quiz : (rawItem || {});
           const title = q.title || q.question || 'Untitled Question';
           const points = q.points || 100;
@@ -1280,6 +1286,8 @@
     
     function renderAudienceQuizPane() {
       const container = document.getElementById('audienceQuizContainer');
+      if (!container) return;
+
       const activeQ = state.activeQuizQuestion;
 
       if (!activeQ) {
@@ -1375,6 +1383,8 @@
       const clearBtnContainer = document.getElementById('clearSpotlightBtnContainer');
       const item = state.spotlightedItem;
 
+      if (!displayArea) return;
+
       if (!item) {
         displayArea.innerHTML = `
           <div class="space-y-3">
@@ -1384,7 +1394,7 @@
           </div>
         `;
         if (clearBtnContainer) clearBtnContainer.classList.add('hidden');
-        leaderboardCard.classList.add('hidden');
+        if (leaderboardCard) leaderboardCard.classList.add('hidden');
         return;
       }
 
@@ -1403,7 +1413,7 @@
             </h2>
           </div>
         `;
-        leaderboardCard.classList.add('hidden');
+        if (leaderboardCard) leaderboardCard.classList.add('hidden');
       } 
       else if (item.type === 'quiz') {
         const q = item.data;
@@ -1451,7 +1461,7 @@
           </div>
         `;
 
-        leaderboardCard.classList.remove('hidden');
+        if (leaderboardCard) leaderboardCard.classList.remove('hidden');
         renderLeaderboard();
       }
 
