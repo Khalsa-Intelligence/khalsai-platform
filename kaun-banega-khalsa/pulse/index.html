@@ -693,10 +693,7 @@
           const sortedPulses = [...data.recent_pulses].sort((a, b) => a.id - b.id);
     
           sortedPulses.forEach(p => {
-            // Prevent re-processing identical pulse events
-            if (processedPulseIds.has(p.id)) return;
-            processedPulseIds.add(p.id);
-    
+            // 1. ALWAYS parse quiz_save events into state.quizDeck regardless of processedPulseIds
             if (p.event_type === 'quiz_save' && p.metadata) {
               let meta = p.metadata;
               if (typeof meta === 'string') {
@@ -713,6 +710,10 @@
                 }
               }
             }
+    
+            // 2. Deduplicate all operational events below so actions aren't repeated
+            if (processedPulseIds.has(p.id)) return;
+            processedPulseIds.add(p.id);
     
             if (p.event_type === 'quiz_delete' && p.metadata) {
               let meta = p.metadata;
@@ -733,21 +734,24 @@
                 state.questions.unshift(meta);
               }
             }
-
+    
             if (p.event_type === 'event_code_update' && p.metadata) {
-              const meta = typeof p.metadata === 'string' ? JSON.parse(p.metadata) : p.metadata;
+              let meta = p.metadata;
+              if (typeof meta === 'string') {
+                try { meta = JSON.parse(meta); } catch(e) {}
+              }
               if (meta.eventCode && meta.eventCode !== state.eventCode) {
                 setEventCode(meta.eventCode);
               }
             }
-
+    
             if (p.event_type === 'leaderboard_reset') {
               const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
               delete allLeaderboards[state.eventCode];
               localStorage.setItem('pulse_leaderboards', JSON.stringify(allLeaderboards));
               renderLeaderboard();
             }
-
+    
             if (p.event_type === 'quiz_clear') {
               state.activeQuizQuestion = null;
               state.activeQuizQuestionId = null;
@@ -763,23 +767,32 @@
               if (activeInd) activeInd.classList.add('hidden');
               renderAll();
             }
-
+    
             if (p.event_type === 'upvote' && p.metadata) {
-              const meta = typeof p.metadata === 'string' ? JSON.parse(p.metadata) : p.metadata;
+              let meta = p.metadata;
+              if (typeof meta === 'string') {
+                try { meta = JSON.parse(meta); } catch(e) {}
+              }
               const q = state.questions.find(item => item.id === meta.questionId);
               if (q && typeof meta.newVotes === 'number') {
                 q.upvotes = meta.newVotes;
               }
             }
-
+    
             if (p.event_type === 'question_update' && p.metadata) {
-              const meta = typeof p.metadata === 'string' ? JSON.parse(p.metadata) : p.metadata;
+              let meta = p.metadata;
+              if (typeof meta === 'string') {
+                try { meta = JSON.parse(meta); } catch(e) {}
+              }
               const q = state.questions.find(item => item.id === meta.id);
               if (q) Object.assign(q, meta);
             }
     
             if (p.event_type === 'quiz_release' && p.metadata) {
-              const meta = typeof p.metadata === 'string' ? JSON.parse(p.metadata) : p.metadata;
+              let meta = p.metadata;
+              if (typeof meta === 'string') {
+                try { meta = JSON.parse(meta); } catch(e) {}
+              }
               const quiz = meta.quiz || meta;
               const startedAt = meta.startedAt || (p.created_at ? new Date(p.created_at).getTime() : Date.now());
               
@@ -790,7 +803,7 @@
                   state.activeQuizQuestionStartedAt = startedAt;
                   state.hasSubmittedAnswer = false;
                   state.userSelectedOption = null;
-
+    
                   state.responseCounts = [0, 0, 0, 0];
                   state.totalResponses = 0;
                   state.spotlightedItem = { type: 'quiz', data: quiz };
@@ -805,7 +818,10 @@
             }
     
             if (p.event_type === 'quiz_answer' && p.metadata) {
-              const meta = typeof p.metadata === 'string' ? JSON.parse(p.metadata) : p.metadata;
+              let meta = p.metadata;
+              if (typeof meta === 'string') {
+                try { meta = JSON.parse(meta); } catch(e) {}
+              }
               if (meta.quizId && state.activeQuizQuestion && state.activeQuizQuestion.id === meta.quizId) {
                 if (typeof meta.selectedIndex === 'number' && meta.selectedIndex >= 0 && meta.selectedIndex < 4) {
                   state.responseCounts[meta.selectedIndex]++;
@@ -813,7 +829,7 @@
                   renderSpotlight();
                   renderAudienceQuizPane();
                 }
-
+    
                 if (meta.userName && meta.pointsEarned) {
                   recordSessionScore(meta.userName, meta.pointsEarned);
                 }
@@ -823,7 +839,6 @@
     
           renderQuizDeck();
           renderQuestions();
-
         }
       } catch (err) {
         console.error('Failed to fetch pulse logs:', err);
