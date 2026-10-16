@@ -1228,7 +1228,10 @@
     }
 
     function renderQuizDeck() {
-      const container = document.getElementById('quizDeckContainer') || document.getElementById('preloadedDeckList');
+      const container = document.getElementById('quizDeckContainer') || 
+                        document.getElementById('preloadedDeckList') ||
+                        document.querySelector('.preloaded-deck-container');
+    
       if (!container) return;
     
       if (!state.quizDeck || state.quizDeck.length === 0) {
@@ -1240,13 +1243,17 @@
         return;
       }
     
-      container.innerHTML = state.quizDeck.map((q, index) => {
+      container.innerHTML = state.quizDeck.map((rawItem, index) => {
+        // 1. Automatically unwrap nested 'quiz' object if present
+        const q = rawItem.quiz || rawItem;
+    
         const title = q.title || q.question || 'Untitled Question';
         const points = q.points || 100;
-        const timer = q.timeLimit || 30;
+        const timer = q.timeLimit || q.timer || 30;
+        const qId = q.id || `q_${index}`;
     
         return `
-          <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 flex items-center justify-between shadow-sm hover:border-amber-500/50 transition">
+          <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 flex items-center justify-between mb-3 shadow-sm hover:border-amber-500/50 transition">
             <div class="space-y-1 pr-4">
               <div class="flex items-center space-x-2">
                 <span class="bg-amber-500/10 text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded">Q${index + 1}</span>
@@ -1255,11 +1262,11 @@
               <h4 class="text-sm font-semibold text-white leading-tight">${title}</h4>
             </div>
             <div class="flex items-center space-x-2 shrink-0">
-              <button onclick="releaseQuizQuestion('${q.id}')" class="bg-amber-500 hover:bg-amber-400 text-gray-950 font-bold text-xs px-3 py-1.5 rounded-lg transition flex items-center space-x-1">
+              <button onclick="releaseQuizQuestion('${qId}')" class="bg-amber-500 hover:bg-amber-400 text-gray-950 font-bold text-xs px-3 py-1.5 rounded-lg transition flex items-center space-x-1">
                 <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i>
                 <span>Release</span>
               </button>
-              <button onclick="deleteQuizQuestion('${q.id}')" class="text-gray-500 hover:text-red-400 p-1.5 transition">
+              <button onclick="deleteQuizQuestion('${qId}')" class="text-gray-500 hover:text-red-400 p-1.5 transition">
                 <i data-lucide="trash-2" class="w-4 h-4"></i>
               </button>
             </div>
