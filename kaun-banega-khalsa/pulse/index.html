@@ -839,7 +839,10 @@
             }
           });
     
-          renderQuizDeck();
+          // Force UI render of pre-loaded deck
+          if (typeof renderQuizDeck === 'function') {
+            renderQuizDeck();
+          }
           renderQuestions();
         }
       } catch (err) {
@@ -1273,40 +1276,50 @@
     }
 
     function renderQuizDeck() {
-      const container = document.getElementById('quizDeckList');
-      if (state.quizDeck.length === 0) {
-        container.innerHTML = `<div class="p-6 text-center text-xs sm:text-sm text-gray-500 bg-gray-900 rounded-2xl border border-gray-800">No questions in quiz deck. Create one using the form on the left.</div>`;
+      const container = document.getElementById('quizDeckContainer') || document.getElementById('preloadedDeckList');
+      if (!container) return;
+    
+      if (!state.quizDeck || state.quizDeck.length === 0) {
+        container.innerHTML = `
+          <div class="text-center py-8 text-gray-500 text-xs sm:text-sm">
+            No questions in quiz deck. Create one using the form on the left.
+          </div>
+        `;
         return;
       }
-
-      container.innerHTML = state.quizDeck.map((q, idx) => `
-        <div class="bg-gray-900 border border-gray-800 rounded-xl p-3.5 sm:p-5 space-y-2.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-          <div class="space-y-1 flex-1">
-            <div class="flex items-center space-x-2">
-              <span class="bg-amber-500/20 text-amber-400 text-[10px] font-mono font-bold px-2 py-0.5 rounded">Q${idx + 1}</span>
-              <span class="text-xs text-gray-400 font-bold">${q.timeLimit}s Timer</span>
+    
+      container.innerHTML = state.quizDeck.map((q, index) => {
+        const title = q.title || q.question || 'Untitled Question';
+        const points = q.points || 100;
+        const timer = q.timeLimit || 30;
+    
+        return `
+          <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 flex items-center justify-between shadow-sm hover:border-amber-500/50 transition">
+            <div class="space-y-1 pr-4">
+              <div class="flex items-center space-x-2">
+                <span class="bg-amber-500/10 text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded">Q${index + 1}</span>
+                <span class="text-gray-400 text-[10px] font-medium">${timer}s • ${points} pts</span>
+              </div>
+              <h4 class="text-sm font-semibold text-white leading-tight">${title}</h4>
             </div>
-            <p class="text-sm sm:text-base font-bold text-white">${q.title}</p>
+            <div class="flex items-center space-x-2 shrink-0">
+              <button onclick="releaseQuizQuestion('${q.id}')" class="bg-amber-500 hover:bg-amber-400 text-gray-950 font-bold text-xs px-3 py-1.5 rounded-lg transition flex items-center space-x-1">
+                <i data-lucide="play" class="w-3.5 h-3.5 fill-current"></i>
+                <span>Release</span>
+              </button>
+              <button onclick="deleteQuizQuestion('${q.id}')" class="text-gray-500 hover:text-red-400 p-1.5 transition">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
           </div>
-
-          <div class="flex items-center space-x-2 w-full sm:w-auto justify-end shrink-0">
-            <button onclick="releaseQuizQuestion('${q.id}')" class="flex-1 sm:flex-none px-4 py-2 rounded-xl gold-gradient-bg text-slate-950 font-black text-xs sm:text-sm hover:brightness-110 transition shadow flex items-center justify-center space-x-1.5">
-              <i data-lucide="play-circle" class="w-4 h-4"></i>
-              <span>Release Live</span>
-            </button>
-            <button onclick="editQuizQuestion('${q.id}')" class="p-2 rounded-xl border border-amber-500/30 text-amber-400 hover:bg-amber-500/10 transition" title="Edit Question">
-              <i data-lucide="edit" class="w-4 h-4"></i>
-            </button>
-            <button onclick="deleteQuizQuestion('${q.id}')" class="p-2 rounded-xl border border-red-500/30 text-red-400 hover:bg-red-500/10 transition" title="Delete Question">
-              <i data-lucide="trash-2" class="w-4 h-4"></i>
-            </button>
-          </div>
-        </div>
-      `).join('');
-
-      lucide.createIcons();
+        `;
+      }).join('');
+    
+      if (window.lucide) {
+        lucide.createIcons();
+      }
     }
-
+    
     function renderAudienceQuizPane() {
       const container = document.getElementById('audienceQuizContainer');
       const activeQ = state.activeQuizQuestion;
