@@ -772,9 +772,9 @@
               
               if (quiz && (quiz.id || quiz.title || quiz.question)) {
                 const qId = quiz.id || quiz.title || quiz.question;
-                if (state.activeQuizQuestionId !== qId || state.activeQuizQuestionStartedAt !== startedAt) {
+                if (state.activeQuizQuestionId !== quiz.id || state.activeQuizQuestionStartedAt !== startedAt) {
                   state.activeQuizQuestion = quiz;
-                  state.activeQuizQuestionId = qId;
+                  state.activeQuizQuestionId = quiz.id;
                   state.activeQuizQuestionStartedAt = startedAt;
                   state.hasSubmittedAnswer = false;
                   state.userSelectedOption = null;
@@ -782,7 +782,7 @@
                   state.totalResponses = 0;
                   state.spotlightedItem = { type: 'quiz', data: quiz };
                   
-                  startQuizTimer(qId, quiz.timeLimit || quiz.timer || 30, startedAt);
+                  startQuizTimer(quiz.id, quiz.timeLimit || 30, startedAt);
                 }
               }
             }
@@ -806,6 +806,8 @@
 
           renderQuizDeck();
           renderQuestions();
+          renderAudienceQuizPane();
+          renderSpotlight();
         }
       } catch (err) {
         console.error('Failed to fetch pulse logs:', err);
