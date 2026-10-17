@@ -758,25 +758,24 @@
 
             if (p.event_type === 'quiz_release' && p.metadata) {
               let meta = p.metadata;
-              if (typeof meta === 'string') {
-                try { meta = JSON.parse(meta); } catch(e) {}
+              while (typeof meta === 'string') {
+                try { meta = JSON.parse(meta); } catch(e) { break; }
               }
-              const quiz = meta.quiz || meta;
-              const startedAt = meta.startedAt || (p.created_at ? new Date(p.created_at).getTime() : Date.now());
+              let quiz = meta ? (meta.quiz || meta) : null;
+              if (quiz && typeof quiz === 'string') {
+                try { quiz = JSON.parse(quiz); } catch(e) {}
+              }
+              const startedAt = meta?.startedAt || (p.created_at ? new Date(p.created_at).getTime() : Date.now());
               
-              if (quiz && quiz.id) {
-                if (state.activeQuizQuestionId !== quiz.id || state.activeQuizQuestionStartedAt !== startedAt) {
-                  state.activeQuizQuestion = quiz;
-                  state.activeQuizQuestionId = quiz.id;
-                  state.activeQuizQuestionStartedAt = startedAt;
-                  state.hasSubmittedAnswer = false;
-                  state.userSelectedOption = null;
-                  state.responseCounts = [0, 0, 0, 0];
-                  state.totalResponses = 0;
-                  state.spotlightedItem = { type: 'quiz', data: quiz };
-                  
-                  startQuizTimer(quiz.id, quiz.timeLimit || 30, startedAt);
-                }
+              if (quiz && (quiz.id || quiz.title || quiz.question)) {
+                const qId = quiz.id || quiz.title || quiz.question;
+                state.activeQuizQuestion = quiz;
+                state.activeQuizQuestionId = qId;
+                state.activeQuizQuestionStartedAt = startedAt;
+                state.spotlightedItem = { type: 'quiz', data: quiz };
+                
+                startQuizTimer(qId, quiz.timeLimit || quiz.timer || 30, startedAt);
+                renderAll();
               }
             }
 
@@ -1071,25 +1070,25 @@
     }
 
     async function releaseQuizQuestion(quizId) {
-      const quiz = state.quizDeck.find(q => (q.id || q.title) === quizId);
+      const quiz = state.quizDeck.find(q => String(q.id || q.title || q.question) === String(quizId));
       if (!quiz) return;
-
+    
       const startedAt = Date.now();
       state.activeQuizQuestion = quiz;
-      state.activeQuizQuestionId = quiz.id;
-
+      state.activeQuizQuestionId = quiz.id || quiz.title;
+    
       state.responseCounts = [0, 0, 0, 0];
       state.totalResponses = 0;
       state.spotlightedItem = { type: 'quiz', data: quiz };
-
+    
       const activeInd = document.getElementById('activeQuizIndicator');
       if (activeInd) activeInd.classList.remove('hidden');
-
-      startQuizTimer(quiz.id, quiz.timeLimit, startedAt);
-
+    
+      startQuizTimer(quiz.id || quiz.title, quiz.timeLimit || quiz.timer || 30, startedAt);
+    
       switchPresenterSubTab('spotlight');
       renderAll();
-
+    
       await sendPulse('quiz_release', { quiz: quiz, startedAt: startedAt });
     }
 
