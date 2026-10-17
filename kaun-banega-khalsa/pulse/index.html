@@ -493,6 +493,21 @@
       spotlightedItem: null
     };
 
+    function normalizeQuizPayload(quizData) {
+      if (!quizData) return null;
+      let q = typeof quizData === 'string' ? JSON.parse(quizData) : quizData;
+      if (q.quiz) q = typeof q.quiz === 'string' ? JSON.parse(q.quiz) : q.quiz;
+      
+      return {
+        id: q.id || q.quizId || Date.now(),
+        title: q.title || q.question || q.text || 'Live Question',
+        options: q.options || q.choices || [],
+        correct: typeof q.correct !== 'undefined' ? q.correct : (q.correctOption || 0),
+        timeLimit: q.timeLimit || q.timer || 30,
+        points: q.points || 100
+      };
+    }
+
     function checkParticipantName() {
       if (!state.userName || !state.userName.trim()) {
         let name = prompt("Welcome to Khalsa AI Pulse! Enter your name for the session leaderboard:");
@@ -673,7 +688,7 @@
     
     async function sendPulse(eventType, metadata = {}, userId = null) {
       try {
-        const cleanCode = state.eventCode.replace(/^#/, '');
+        const cleanCode = state.eventCode.replace(/^#/, '').trim().toUpperCase();
         await fetch('/api/pulse', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -702,17 +717,9 @@
           sortedPulses.forEach(p => {
             // 1. Robust multi-level parsing for quiz_save events
             if (p.event_type === 'quiz_save' && p.metadata) {
-              let meta = p.metadata;
-              while (typeof meta === 'string') {
-                try { meta = JSON.parse(meta); } catch(e) { break; }
-              }
-              let savedQuiz = meta ? (meta.quiz || meta) : null;
-              if (savedQuiz && typeof savedQuiz === 'string') {
-                try { savedQuiz = JSON.parse(savedQuiz); } catch(e) {}
-              }
-              if (savedQuiz && (savedQuiz.id || savedQuiz.title || savedQuiz.question)) {
-                const qId = savedQuiz.id || savedQuiz.title || savedQuiz.question;
-                const existingIndex = state.quizDeck.findIndex(q => (q.id || q.title || q.question) === qId);
+              const savedQuiz = normalizeQuizPayload(p.metadata);
+              if (savedQuiz) {
+                const existingIndex = state.quizDeck.findIndex(q => q.id === savedQuiz.id);
                 if (existingIndex !== -1) {
                   state.quizDeck[existingIndex] = savedQuiz;
                 } else {
@@ -727,26 +734,29 @@
               if (typeof meta === 'string') {
                 try { meta = JSON.parse(meta); } catch(e) {}
               }
-              if (meta.id) {
+              if (meta && meta.id) {
                 state.quizDeck = state.quizDeck.filter(q => q.id !== meta.id);
               }
             }
 
-            // 3. Deduplicate operational interactive events
-            if (processedPulseIds.has(p.id)) return;
-            processedPulseIds.add(p.id);
-
+            // 3. Process operational events
             if (p.event_type === 'question' && p.metadata) {
+              if (processedPulseIds.has(p.id)) return;
+              processedPulseIds.add(p.id);
+
               let meta = p.metadata;
               if (typeof meta === 'string') {
                 try { meta = JSON.parse(meta); } catch(e) {}
               }
-              if (meta.id && !state.questions.some(q => q.id === meta.id)) {
+              if (meta && meta.id && !state.questions.some(q => q.id === meta.id)) {
                 state.questions.unshift(meta);
               }
             }
 
             if (p.event_type === 'quiz_clear') {
+              if (processedPulseIds.has(p.id)) return;
+              processedPulseIds.add(p.id);
+
               state.activeQuizQuestion = null;
               state.activeQuizQuestionId = null;
               state.activeQuizQuestionStartedAt = null;
@@ -760,18 +770,14 @@
             }
 
             if (p.event_type === 'quiz_release' && p.metadata) {
+              const quiz = normalizeQuizPayload(p.metadata);
               let meta = p.metadata;
-              while (typeof meta === 'string') {
-                try { meta = JSON.parse(meta); } catch(e) { break; }
-              }
-              let quiz = meta ? (meta.quiz || meta) : null;
-              if (quiz && typeof quiz === 'string') {
-                try { quiz = JSON.parse(quiz); } catch(e) {}
+              if (typeof meta === 'string') {
+                try { meta = JSON.parse(meta); } catch(e) {}
               }
               const startedAt = (meta && meta.startedAt) || (p.created_at ? new Date(p.created_at).getTime() : Date.now());
               
-              if (quiz && (quiz.id || quiz.title || quiz.question)) {
-                const qId = quiz.id || quiz.title || quiz.question;
+              if (quiz) {
                 if (state.activeQuizQuestionId !== quiz.id || state.activeQuizQuestionStartedAt !== startedAt) {
                   state.activeQuizQuestion = quiz;
                   state.activeQuizQuestionId = quiz.id;
@@ -784,7 +790,7 @@
                   
                   startQuizTimer(quiz.id, quiz.timeLimit || 30, startedAt);
                   
-                  // Auto-switch audience to the Quiz tab when a new poll/quiz is released
+                  // Force tab switch on pulse trigger
                   if (state.view === 'audience') {
                     switchAudienceTab('quiz');
                   }
@@ -793,11 +799,14 @@
             }
 
             if (p.event_type === 'quiz_answer' && p.metadata) {
+              if (processedPulseIds.has(p.id)) return;
+              processedPulseIds.add(p.id);
+
               let meta = p.metadata;
               if (typeof meta === 'string') {
                 try { meta = JSON.parse(meta); } catch(e) {}
               }
-              if (meta.quizId && state.activeQuizQuestion && state.activeQuizQuestion.id === meta.quizId) {
+              if (meta && meta.quizId && state.activeQuizQuestion && state.activeQuizQuestion.id === meta.quizId) {
                 if (typeof meta.selectedIndex === 'number' && meta.selectedIndex >= 0 && meta.selectedIndex < 4) {
                   state.responseCounts[meta.selectedIndex]++;
                   state.totalResponses++;
@@ -1266,10 +1275,10 @@
         }
     
         container.innerHTML = state.quizDeck.map((rawItem, index) => {
-          const q = (rawItem && rawItem.quiz) ? rawItem.quiz : (rawItem || {});
-          const title = q.title || q.question || 'Untitled Question';
+          const q = rawItem || {};
+          const title = q.title || 'Untitled Question';
           const points = q.points || 100;
-          const timer = q.timeLimit || q.timer || 30;
+          const timer = q.timeLimit || 30;
           const qId = q.id || `q_${index}`;
     
           return `
@@ -1333,7 +1342,7 @@
           <div class="flex items-center justify-between border-b border-gray-800 pb-3">
             <div>
               <span class="text-[10px] uppercase font-extrabold text-amber-400 tracking-wider">LIVE QUIZ</span>
-              <h3 class="text-base sm:text-2xl font-black text-white mt-0.5">${activeQ.title || activeQ.question || 'Live Question'}</h3>
+              <h3 class="text-base sm:text-2xl font-black text-white mt-0.5">${activeQ.title}</h3>
             </div>
             
             <div class="text-center bg-gray-950 px-3 py-1.5 rounded-xl border border-amber-500/40">
@@ -1443,7 +1452,7 @@
               <span class="text-2xl font-mono font-black ${state.quizTimeRemaining < 10 ? 'text-red-500 animate-pulse' : 'text-amber-400'}">${state.quizTimeRemaining}s</span>
             </div>
 
-            <h2 class="text-xl sm:text-3xl font-black text-white">${q.title || q.question || 'Live Question'}</h2>
+            <h2 class="text-xl sm:text-3xl font-black text-white">${q.title}</h2>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               ${(q.options || []).map((opt, idx) => {
