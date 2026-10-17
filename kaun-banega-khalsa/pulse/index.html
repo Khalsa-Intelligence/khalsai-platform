@@ -1295,6 +1295,9 @@
                 <h4 class="text-sm font-semibold text-white leading-tight">${title}</h4>
               </div>
               <div class="flex items-center space-x-2 shrink-0">
+                <button onclick="editQuizQuestion('${qId}')" class="bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold text-xs px-2.5 py-1.5 rounded-lg transition">
+                  Edit
+                </button>
                 <button onclick="releaseQuizQuestion('${qId}')" class="bg-amber-500 hover:bg-amber-400 text-gray-950 font-bold text-xs px-3 py-1.5 rounded-lg transition flex items-center space-x-1">
                   <span>Release</span>
                 </button>
