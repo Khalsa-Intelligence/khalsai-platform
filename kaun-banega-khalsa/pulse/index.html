@@ -700,16 +700,19 @@
           state.quizDeck = [];
 
           sortedPulses.forEach(p => {
-            // 1. ALWAYS parse quiz_save events into state.quizDeck (OUTSIDE processedPulseIds)
+            // 1. Robust multi-level parsing for quiz_save events
             if (p.event_type === 'quiz_save' && p.metadata) {
               let meta = p.metadata;
-              if (typeof meta === 'string') {
-                try { meta = JSON.parse(meta); } catch(e) {}
+              while (typeof meta === 'string') {
+                try { meta = JSON.parse(meta); } catch(e) { break; }
               }
-              const savedQuiz = meta.quiz || meta;
-              if (savedQuiz && (savedQuiz.id || savedQuiz.title)) {
-                const qId = savedQuiz.id || savedQuiz.title;
-                const existingIndex = state.quizDeck.findIndex(q => (q.id || q.title) === qId);
+              let savedQuiz = meta ? (meta.quiz || meta) : null;
+              if (savedQuiz && typeof savedQuiz === 'string') {
+                try { savedQuiz = JSON.parse(savedQuiz); } catch(e) {}
+              }
+              if (savedQuiz && (savedQuiz.id || savedQuiz.title || savedQuiz.question)) {
+                const qId = savedQuiz.id || savedQuiz.title || savedQuiz.question;
+                const existingIndex = state.quizDeck.findIndex(q => (q.id || q.title || q.question) === qId);
                 if (existingIndex !== -1) {
                   state.quizDeck[existingIndex] = savedQuiz;
                 } else {
@@ -765,17 +768,22 @@
               if (quiz && typeof quiz === 'string') {
                 try { quiz = JSON.parse(quiz); } catch(e) {}
               }
-              const startedAt = meta?.startedAt || (p.created_at ? new Date(p.created_at).getTime() : Date.now());
+              const startedAt = (meta && meta.startedAt) || (p.created_at ? new Date(p.created_at).getTime() : Date.now());
               
               if (quiz && (quiz.id || quiz.title || quiz.question)) {
                 const qId = quiz.id || quiz.title || quiz.question;
-                state.activeQuizQuestion = quiz;
-                state.activeQuizQuestionId = qId;
-                state.activeQuizQuestionStartedAt = startedAt;
-                state.spotlightedItem = { type: 'quiz', data: quiz };
-                
-                startQuizTimer(qId, quiz.timeLimit || quiz.timer || 30, startedAt);
-                renderAll();
+                if (state.activeQuizQuestionId !== qId || state.activeQuizQuestionStartedAt !== startedAt) {
+                  state.activeQuizQuestion = quiz;
+                  state.activeQuizQuestionId = qId;
+                  state.activeQuizQuestionStartedAt = startedAt;
+                  state.hasSubmittedAnswer = false;
+                  state.userSelectedOption = null;
+                  state.responseCounts = [0, 0, 0, 0];
+                  state.totalResponses = 0;
+                  state.spotlightedItem = { type: 'quiz', data: quiz };
+                  
+                  startQuizTimer(qId, quiz.timeLimit || quiz.timer || 30, startedAt);
+                }
               }
             }
 
@@ -1072,23 +1080,23 @@
     async function releaseQuizQuestion(quizId) {
       const quiz = state.quizDeck.find(q => String(q.id || q.title || q.question) === String(quizId));
       if (!quiz) return;
-    
+
       const startedAt = Date.now();
       state.activeQuizQuestion = quiz;
-      state.activeQuizQuestionId = quiz.id || quiz.title;
-    
+      state.activeQuizQuestionId = quiz.id;
+
       state.responseCounts = [0, 0, 0, 0];
       state.totalResponses = 0;
       state.spotlightedItem = { type: 'quiz', data: quiz };
-    
+
       const activeInd = document.getElementById('activeQuizIndicator');
       if (activeInd) activeInd.classList.remove('hidden');
-    
-      startQuizTimer(quiz.id || quiz.title, quiz.timeLimit || quiz.timer || 30, startedAt);
-    
+
+      startQuizTimer(quiz.id, quiz.timeLimit, startedAt);
+
       switchPresenterSubTab('spotlight');
       renderAll();
-    
+
       await sendPulse('quiz_release', { quiz: quiz, startedAt: startedAt });
     }
 
@@ -1318,7 +1326,7 @@
           <div class="flex items-center justify-between border-b border-gray-800 pb-3">
             <div>
               <span class="text-[10px] uppercase font-extrabold text-amber-400 tracking-wider">LIVE QUIZ</span>
-              <h3 class="text-base sm:text-2xl font-black text-white mt-0.5">${activeQ.title}</h3>
+              <h3 class="text-base sm:text-2xl font-black text-white mt-0.5">${activeQ.title || activeQ.question}</h3>
             </div>
             
             <div class="text-center bg-gray-950 px-3 py-1.5 rounded-xl border border-amber-500/40">
@@ -1334,7 +1342,7 @@
           ` : ''}
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-            ${activeQ.options.map((opt, idx) => {
+            ${(activeQ.options || []).map((opt, idx) => {
               const isCorrect = idx === activeQ.correct;
               const isSelected = state.userSelectedOption === idx;
               const count = state.responseCounts[idx] || 0;
@@ -1428,10 +1436,10 @@
               <span class="text-2xl font-mono font-black ${state.quizTimeRemaining < 10 ? 'text-red-500 animate-pulse' : 'text-amber-400'}">${state.quizTimeRemaining}s</span>
             </div>
 
-            <h2 class="text-xl sm:text-3xl font-black text-white">${q.title}</h2>
+            <h2 class="text-xl sm:text-3xl font-black text-white">${q.title || q.question}</h2>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              ${q.options.map((opt, idx) => {
+              ${(q.options || []).map((opt, idx) => {
                 const isCorrect = idx === q.correct;
                 const count = state.responseCounts[idx] || 0;
                 const pct = state.totalResponses > 0 ? Math.round((count / state.totalResponses) * 100) : 0;
