@@ -779,21 +779,22 @@
                 return;
               }
 
-              if (quiz) {
+            if (quiz) {
                 const qId = String(quiz.id || quiz.title || quiz.question || 'active_quiz');
+                const answeredMap = JSON.parse(sessionStorage.getItem('pulse_answered_quizzes') || '{}');
+                const alreadyAnsweredOption = answeredMap[quiz.id] !== undefined ? answeredMap[quiz.id] : null;
+
                 if (String(state.activeQuizQuestionId) !== qId || state.activeQuizQuestionStartedAt !== startedAt) {
                   state.activeQuizQuestion = quiz;
                   state.activeQuizQuestionId = qId;
                   state.activeQuizQuestionStartedAt = startedAt;
-                  state.hasSubmittedAnswer = false;
-                  state.userSelectedOption = null;
+                  state.hasSubmittedAnswer = answeredMap[quiz.id] !== undefined;
+                  state.userSelectedOption = alreadyAnsweredOption;
                   state.responseCounts = [0, 0, 0, 0];
                   state.totalResponses = 0;
                   state.spotlightedItem = { type: 'quiz', data: quiz };
                   
                   startQuizTimer(qId, quiz.timeLimit || 30, startedAt);
-                  
-                  // Auto-switch audience to Quiz tab immediately
                   switchAudienceTab('quiz');
                 }
               }
@@ -1142,15 +1143,20 @@
       if (!state.activeQuizQuestion) return;
       checkParticipantName();
 
-      const questionId = state.activeQuizQuestion.id;
+      const questionId = state.activeQuizQuestion.id || state.activeQuizQuestion.title;
+      const answeredMap = JSON.parse(sessionStorage.getItem('pulse_answered_quizzes') || '{}');
 
-      if (state.hasSubmittedAnswer) {
+      if (state.hasSubmittedAnswer || answeredMap[questionId]) {
         alert("You have already submitted an answer for this question.");
         return;
       }
 
+      // Lock immediately
       state.hasSubmittedAnswer = true;
       state.userSelectedOption = selectedIndex;
+      answeredMap[questionId] = selectedIndex;
+      sessionStorage.setItem('pulse_answered_quizzes', JSON.stringify(answeredMap));
+
       const isCorrect = selectedIndex === state.activeQuizQuestion.correct;
 
       if (typeof selectedIndex === 'number' && selectedIndex >= 0 && selectedIndex < 4) {
@@ -1170,7 +1176,7 @@
       renderSpotlight();
 
       await sendPulse('quiz_answer', {
-        quizId: questionId,
+        quizId: state.activeQuizQuestion.id,
         selectedIndex,
         isCorrect,
         userName: state.userName,
