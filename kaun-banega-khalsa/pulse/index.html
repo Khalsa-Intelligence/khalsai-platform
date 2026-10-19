@@ -786,7 +786,7 @@
                 const answeredMap = JSON.parse(sessionStorage.getItem('pulse_answered_quizzes') || '{}');
                 const alreadyAnsweredOption = answeredMap[quiz.id] !== undefined ? answeredMap[quiz.id] : null;
 
-                if (String(state.activeQuizQuestionId) !== qId || state.activeQuizQuestionStartedAt !== startedAt) {
+                if (String(state.activeQuizQuestionId) !== qId) {
                   state.activeQuizQuestion = quiz;
                   state.activeQuizQuestionId = qId;
                   state.activeQuizQuestionStartedAt = startedAt;
