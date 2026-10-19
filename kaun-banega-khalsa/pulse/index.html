@@ -576,6 +576,7 @@
     }
 
     function getEventLeaderboard() {
+      const cleanKey = (state.eventCode || '').replace(/^#/, '').trim().toUpperCase();
       return Object.keys(state.sessionLeaderboard)
         .map(name => ({ name, score: state.sessionLeaderboard[name] }))
         .sort((a, b) => b.score - a.score);
@@ -586,8 +587,9 @@
 
       state.sessionLeaderboard[userName] = (state.sessionLeaderboard[userName] || 0) + pointsEarned;
 
+      const cleanKey = (state.eventCode || '').replace(/^#/, '').trim().toUpperCase();
       const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
-      allLeaderboards[state.eventCode] = state.sessionLeaderboard;
+      allLeaderboards[cleanKey] = state.sessionLeaderboard;
       localStorage.setItem('pulse_leaderboards', JSON.stringify(allLeaderboards));
 
       renderLeaderboard();
@@ -600,12 +602,13 @@
         const resetTime = Date.now();
         state.sessionLeaderboard = {};
         
+        const cleanKey = (state.eventCode || '').replace(/^#/, '').trim().toUpperCase();
         const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
-        delete allLeaderboards[state.eventCode];
+        delete allLeaderboards[cleanKey];
         localStorage.setItem('pulse_leaderboards', JSON.stringify(allLeaderboards));
 
         renderLeaderboard();
-        await sendPulse('leaderboard_reset', { eventCode: state.eventCode, resetAt: resetTime });
+        await sendPulse('leaderboard_reset', { eventCode: cleanKey, resetAt: resetTime });
       }
     }
     
@@ -639,7 +642,11 @@
       
       state.eventCode = newCode.toUpperCase();
       state.quizDeck = [];
-      state.sessionLeaderboard = {};
+      
+      const cleanKey = state.eventCode.replace(/^#/, '').trim().toUpperCase();
+      const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
+      state.sessionLeaderboard = allLeaderboards[cleanKey] || {};
+
       processedPulseIds.clear();
       handledQuizReleases.clear();
 
@@ -741,7 +748,6 @@
           state.quizDeck = [];
 
           sortedPulses.forEach(p => {
-            // First find resetting events to accurately compute leaderboard reset boundary
             if (p.event_type === 'leaderboard_reset') {
               const resetTime = p.created_at ? new Date(p.created_at).getTime() : Date.now();
               if (resetTime > state.lastLeaderboardResetAt) {
@@ -867,7 +873,6 @@
                 }
               }
 
-              // Compute points only if answer pulse happened after the last reset
               if (pulseTime >= state.lastLeaderboardResetAt && meta.userName && meta.pointsEarned) {
                 recordSessionScore(meta.userName, meta.pointsEarned);
               }
