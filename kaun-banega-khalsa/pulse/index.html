@@ -317,7 +317,7 @@
           </div>
         </div>
 
-        <div id="presenterLeaderboardCard" class="bg-gray-900 border border-gray-800 rounded-2xl p-4 sm:p-6 space-y-4 hidden">
+        <div id="presenterLeaderboardCard" class="bg-gray-900 border border-gray-800 rounded-2xl p-4 sm:p-6 space-y-4">
           <div class="flex items-center justify-between border-b border-gray-800 pb-3">
             <h3 class="text-lg sm:text-2xl font-black text-amber-400 flex items-center space-x-2">
               <i data-lucide="trophy" class="w-5 h-5 sm:w-7 sm:h-7"></i>
@@ -492,8 +492,47 @@
       responseCounts: [0, 0, 0, 0],
       totalResponses: 0,
       spotlightedItem: null,
-      confettiFired: false
+      confettiFired: false,
+      leaderboardMode: 'session'
     };
+
+    function getLectureSeries(eventCode) {
+      if (!eventCode) return '';
+      const clean = eventCode.replace(/^#/, '').toUpperCase();
+      const sessionIdx = clean.indexOf('SESSION');
+      if (sessionIdx > 0) {
+        return clean.substring(0, sessionIdx);
+      }
+      const match = clean.match(/^([A-Z]+)/);
+      return match ? match[1] : clean;
+    }
+
+    function getSeriesLeaderboard() {
+      const seriesName = getLectureSeries(state.eventCode);
+      if (!seriesName) return getEventLeaderboard();
+
+      const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
+      const aggregated = {};
+
+      Object.keys(allLeaderboards).forEach(code => {
+        const series = getLectureSeries(code);
+        if (series === seriesName) {
+          const sessionData = allLeaderboards[code] || {};
+          Object.keys(sessionData).forEach(name => {
+            aggregated[name] = (aggregated[name] || 0) + sessionData[name];
+          });
+        }
+      });
+
+      return Object.keys(aggregated)
+        .map(name => ({ name, score: aggregated[name] }))
+        .sort((a, b) => b.score - a.score);
+    }
+
+    function setLeaderboardMode(mode) {
+      state.leaderboardMode = mode;
+      renderLeaderboard();
+    }
 
     function checkParticipantName() {
       if (!state.userName || !state.userName.trim()) {
@@ -786,7 +825,6 @@
                 const answeredMap = JSON.parse(sessionStorage.getItem('pulse_answered_quizzes') || '{}');
                 const alreadyAnsweredOption = answeredMap[quiz.id] !== undefined ? answeredMap[quiz.id] : null;
 
-                // Only trigger if this is a genuinely new quiz ID we haven't locked onto yet
                 if (String(state.activeQuizQuestionId) !== qId) {
                   state.activeQuizQuestion = quiz;
                   state.activeQuizQuestionId = qId;
@@ -799,8 +837,6 @@
                   state.confettiFired = false;
                   
                   startQuizTimer(qId, quiz.timeLimit || 30, startedAt);
-                  
-                  // NOTE: Auto-switching tab removed so users can stay on Q&A freely!
                 }
               }
             }
@@ -1442,7 +1478,6 @@
           </div>
         `;
         if (clearBtnContainer) clearBtnContainer.classList.add('hidden');
-        if (leaderboardCard) leaderboardCard.classList.add('hidden');
         return;
       }
 
@@ -1461,7 +1496,6 @@
             </h2>
           </div>
         `;
-        if (leaderboardCard) leaderboardCard.classList.add('hidden');
       } 
       else if (item.type === 'quiz') {
         const q = item.data;
@@ -1508,11 +1542,9 @@
             </div>
           </div>
         `;
-
-        if (leaderboardCard) leaderboardCard.classList.remove('hidden');
-        renderLeaderboard();
       }
 
+      renderLeaderboard();
       lucide.createIcons();
     }
 
@@ -1520,9 +1552,25 @@
       const presList = document.getElementById('leaderboardList');
       const audList = document.getElementById('audienceLeaderboardList');
 
-      const leaderboardData = getEventLeaderboard();
+      const isSeries = state.leaderboardMode === 'series';
+      const leaderboardData = isSeries ? getSeriesLeaderboard() : getEventLeaderboard();
+      const seriesName = getLectureSeries(state.eventCode);
 
-      const emptyHtml = `<div class="col-span-2 text-center text-xs text-gray-500 py-3">No scores recorded for session ${state.eventCode} yet.</div>`;
+      const toggleHtml = `
+        <div class="flex items-center justify-between col-span-full mb-2 bg-gray-950 p-1.5 rounded-xl border border-gray-800">
+          <div class="flex items-center space-x-1 text-xs">
+            <button onclick="setLeaderboardMode('session')" class="px-3 py-1 rounded-lg font-bold transition ${!isSeries ? 'bg-amber-500 text-slate-950 shadow' : 'text-gray-400 hover:text-white'}">
+              This Session (${state.eventCode})
+            </button>
+            <button onclick="setLeaderboardMode('series')" class="px-3 py-1 rounded-lg font-bold transition ${isSeries ? 'bg-amber-500 text-slate-950 shadow' : 'text-gray-400 hover:text-white'}">
+              Series Global (${seriesName})
+            </button>
+          </div>
+          <span class="text-[10px] text-gray-400 font-mono hidden sm:inline px-2">Mode: ${isSeries ? 'Lecture Series Aggregated' : 'Single Session'}</span>
+        </div>
+      `;
+
+      const emptyHtml = toggleHtml + `<div class="col-span-full text-center text-xs text-gray-500 py-6">No scores recorded for ${isSeries ? 'series ' + seriesName : 'session ' + state.eventCode} yet.</div>`;
 
       if (leaderboardData.length === 0) {
         if (presList) presList.innerHTML = emptyHtml;
@@ -1530,7 +1578,7 @@
         return;
       }
 
-      const rowsHtml = leaderboardData.map((item, idx) => `
+      const rowsHtml = toggleHtml + leaderboardData.map((item, idx) => `
         <div class="flex items-center justify-between p-3 rounded-xl bg-gray-950 border ${item.name === state.userName ? 'border-amber-500/50 bg-amber-500/5' : 'border-gray-800'} text-xs sm:text-sm">
           <div class="flex items-center space-x-2 truncate">
             <span class="w-6 h-6 rounded-full ${idx === 0 ? 'bg-amber-500 text-slate-950' : 'bg-gray-800 text-gray-300'} flex items-center justify-center font-black shrink-0">${idx + 1}</span>
