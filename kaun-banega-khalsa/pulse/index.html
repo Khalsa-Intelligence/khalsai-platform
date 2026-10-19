@@ -576,9 +576,15 @@
     }
 
     function getEventLeaderboard() {
-      const cleanKey = (state.eventCode || '').replace(/^#/, '').trim().toUpperCase();
-      return Object.keys(state.sessionLeaderboard)
-        .map(name => ({ name, score: state.sessionLeaderboard[name] }))
+      const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
+      
+      const codeWithHash = state.eventCode.startsWith('#') ? state.eventCode : '#' + state.eventCode;
+      const codeWithoutHash = state.eventCode.replace(/^#/, '');
+      
+      const sessionData = allLeaderboards[codeWithHash] || allLeaderboards[codeWithoutHash] || {};
+      
+      return Object.keys(sessionData)
+        .map(name => ({ name, score: sessionData[name] }))
         .sort((a, b) => b.score - a.score);
     }
 
