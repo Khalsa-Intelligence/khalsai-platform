@@ -454,9 +454,9 @@
 
   <script>
     /* ==========================================================================
-       APP STATE MANAGEMENT & PULSE_DB SYNC
+       APP STATE MANAGEMENT & PULSE_DB SYNC (HASH-FREE CODES)
        ========================================================================== */
-    const DEFAULT_EVENT_CODE = "#SESSION1";
+    const DEFAULT_EVENT_CODE = "SESSION1";
     const PRESENTER_PASSCODE = "6789";
     let isPresenterAuthenticated = false;
     
@@ -466,7 +466,7 @@
       sessionStorage.setItem('pulse_session_id', sessionId);
     }
     
-    // Read session code dynamically from URL query parameter
+    // Read session code dynamically from URL query parameter (cleaned of any hashes)
     const urlParams = new URLSearchParams(window.location.search);
     const initialCodeParam = urlParams.get('code');
     
@@ -475,7 +475,7 @@
     const handledQuizReleases = new Set();
 
     let state = {
-      eventCode: initialCodeParam ? '#' + initialCodeParam.replace(/^#/,'').trim().toUpperCase() : DEFAULT_EVENT_CODE,
+      eventCode: initialCodeParam ? initialCodeParam.replace(/^#/, '').trim().toUpperCase() : DEFAULT_EVENT_CODE,
       userName: localStorage.getItem('pulse_participant_name') || '',
       view: 'audience',
       audienceTab: 'qa',
@@ -577,11 +577,8 @@
 
     function getEventLeaderboard() {
       const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
-      
-      const codeWithHash = state.eventCode.startsWith('#') ? state.eventCode : '#' + state.eventCode;
-      const codeWithoutHash = state.eventCode.replace(/^#/, '');
-      
-      const sessionData = allLeaderboards[codeWithHash] || allLeaderboards[codeWithoutHash] || {};
+      const cleanKey = (state.eventCode || '').replace(/^#/, '').trim().toUpperCase();
+      const sessionData = allLeaderboards[cleanKey] || {};
       
       return Object.keys(sessionData)
         .map(name => ({ name, score: sessionData[name] }))
@@ -625,7 +622,7 @@
       if (!qrContainer) return;
       
       qrContainer.innerHTML = '';
-      const cleanCode = state.eventCode.replace(/^#/, '');
+      const cleanCode = state.eventCode.replace(/^#/, '').trim().toUpperCase();
       const joinUrl = `${window.location.origin}${window.location.pathname}?code=${encodeURIComponent(cleanCode)}`;
 
       try {
@@ -644,32 +641,30 @@
 
     function setEventCode(newCode) {
       if (!newCode) return;
-      if (!newCode.startsWith('#')) newCode = '#' + newCode;
+      const clean = newCode.replace(/^#/, '').trim().toUpperCase();
       
-      state.eventCode = newCode.toUpperCase();
+      state.eventCode = clean;
       state.quizDeck = [];
       
-      const cleanKey = state.eventCode.replace(/^#/, '').trim().toUpperCase();
       const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
-      state.sessionLeaderboard = allLeaderboards[cleanKey] || {};
+      state.sessionLeaderboard = allLeaderboards[clean] || {};
 
       processedPulseIds.clear();
       handledQuizReleases.clear();
 
-      const cleanCode = state.eventCode.replace(/^#/, '');
-      const newUrl = `${window.location.pathname}?code=${encodeURIComponent(cleanCode)}`;
+      const newUrl = `${window.location.pathname}?code=${encodeURIComponent(clean)}`;
       window.history.replaceState({ path: newUrl }, '', newUrl);
 
       document.querySelectorAll('.event-code-display').forEach(el => {
-        el.textContent = state.eventCode;
+        el.textContent = clean;
       });
 
       const audCodeDisp = document.getElementById('audienceLeaderboardCode');
-      if (audCodeDisp) audCodeDisp.textContent = state.eventCode;
+      if (audCodeDisp) audCodeDisp.textContent = clean;
 
       ['eventCodeInput', 'headerAudienceCodeInput', 'mobileAudienceCodeInput'].forEach(id => {
         const input = document.getElementById(id);
-        if (input) input.value = state.eventCode;
+        if (input) input.value = clean;
       });
 
       renderQRCode();
@@ -728,7 +723,7 @@
     
     async function sendPulse(eventType, metadata = {}, userId = null) {
       try {
-        const cleanCode = state.eventCode.replace(/^#/, '');
+        const cleanCode = state.eventCode.replace(/^#/, '').trim().toUpperCase();
         await fetch('/api/pulse', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -751,9 +746,7 @@
         if (data && data.recent_pulses) {
           const sortedPulses = [...data.recent_pulses].sort((a, b) => a.id - b.id);
 
-          // Use a Map to accumulate unique quizzes safely and prevent background wipes
           const deckMap = new Map();
-          // Prefill map with any existing items in state.quizDeck
           (state.quizDeck || []).forEach(q => {
             if (q && (q.id || q.title || q.question)) {
               deckMap.set(q.id || q.title || q.question, q);
@@ -774,13 +767,11 @@
             if (processedPulseIds.has(p.id)) return;
             processedPulseIds.add(p.id);
 
-            // 1. Robust multi-level parsing for quiz_save events
             if (p.event_type === 'quiz_save' && p.metadata) {
               let savedQuiz = null;
               try {
                 let meta = p.metadata;
                 if (typeof meta === 'string') {
-                  // Clean potential truncation characters if logged
                   meta = meta.replace(/[\u2026]/g, '...'); 
                   meta = JSON.parse(meta);
                 }
@@ -808,7 +799,6 @@
               }
             }
 
-            // 2. Interactive Questions
             if (p.event_type === 'question' && p.metadata) {
               let meta = p.metadata;
               if (typeof meta === 'string') {
@@ -823,7 +813,6 @@
               const clearTime = p.created_at ? new Date(p.created_at).getTime() : Date.now();
               state.lastQuizClearedAt = Math.max(state.lastQuizClearedAt, clearTime);
             
-              // Clear active question on screen ONLY (leave deckMap intact)
               state.activeQuizQuestion = null;
               state.activeQuizQuestionId = null;
               state.activeQuizQuestionStartedAt = null;
@@ -875,7 +864,6 @@
               }
             }
 
-            // 3. Process quiz answers without race guard constraints
             if (p.event_type === 'quiz_answer' && p.metadata) {
               let meta = p.metadata;
               if (typeof meta === 'string') {
@@ -897,7 +885,6 @@
             }
           });
 
-          // Sync accumulated deck map back to state.quizDeck
           state.quizDeck = Array.from(deckMap.values());
 
           renderQuizDeck();
@@ -1011,7 +998,7 @@
 
       if (!text) return;
 
-      const cleanCode = state.eventCode.replace(/^#/, '');
+      const cleanCode = state.eventCode.replace(/^#/, '').trim().toUpperCase();
       const newQ = {
         id: Date.now(),
         author: author,
