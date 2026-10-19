@@ -751,7 +751,14 @@
         if (data && data.recent_pulses) {
           const sortedPulses = [...data.recent_pulses].sort((a, b) => a.id - b.id);
 
-          state.quizDeck = [];
+          // Use a Map to accumulate unique quizzes safely and prevent background wipes
+          const deckMap = new Map();
+          // Prefill map with any existing items in state.quizDeck
+          (state.quizDeck || []).forEach(q => {
+            if (q && (q.id || q.title || q.question)) {
+              deckMap.set(q.id || q.title || q.question, q);
+            }
+          });
 
           sortedPulses.forEach(p => {
             if (p.event_type === 'leaderboard_reset') {
@@ -787,12 +794,7 @@
 
               if (savedQuiz && (savedQuiz.id || savedQuiz.title || savedQuiz.question)) {
                 const qId = savedQuiz.id || savedQuiz.title || savedQuiz.question;
-                const existingIndex = state.quizDeck.findIndex(q => (q.id || q.title || q.question) === qId);
-                if (existingIndex !== -1) {
-                  state.quizDeck[existingIndex] = savedQuiz;
-                } else {
-                  state.quizDeck.push(savedQuiz);
-                }
+                deckMap.set(qId, savedQuiz);
               }
             }
 
@@ -801,8 +803,8 @@
               if (typeof meta === 'string') {
                 try { meta = JSON.parse(meta); } catch(e) {}
               }
-              if (meta.id) {
-                state.quizDeck = state.quizDeck.filter(q => q.id !== meta.id);
+              if (meta && meta.id) {
+                deckMap.delete(meta.id);
               }
             }
 
@@ -821,7 +823,7 @@
               const clearTime = p.created_at ? new Date(p.created_at).getTime() : Date.now();
               state.lastQuizClearedAt = Math.max(state.lastQuizClearedAt, clearTime);
             
-              // Clear active question on screen ONLY (leave state.quizDeck intact)
+              // Clear active question on screen ONLY (leave deckMap intact)
               state.activeQuizQuestion = null;
               state.activeQuizQuestionId = null;
               state.activeQuizQuestionStartedAt = null;
@@ -894,6 +896,9 @@
               }
             }
           });
+
+          // Sync accumulated deck map back to state.quizDeck
+          state.quizDeck = Array.from(deckMap.values());
 
           renderQuizDeck();
           renderQuestions();
