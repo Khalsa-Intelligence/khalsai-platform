@@ -767,16 +767,24 @@
             if (processedPulseIds.has(p.id)) return;
             processedPulseIds.add(p.id);
 
-            // 1. Quiz Deck
+            // 1. Robust multi-level parsing for quiz_save events
             if (p.event_type === 'quiz_save' && p.metadata) {
-              let meta = p.metadata;
-              while (typeof meta === 'string') {
-                try { meta = JSON.parse(meta); } catch(e) { break; }
+              let savedQuiz = null;
+              try {
+                let meta = p.metadata;
+                if (typeof meta === 'string') {
+                  // Clean potential truncation characters if logged
+                  meta = meta.replace(/[\u2026]/g, '...'); 
+                  meta = JSON.parse(meta);
+                }
+                savedQuiz = meta ? (meta.quiz || meta) : null;
+                if (typeof savedQuiz === 'string') {
+                  savedQuiz = JSON.parse(savedQuiz);
+                }
+              } catch(e) {
+                console.warn("Skipping malformed quiz_save pulse:", p.id, e);
               }
-              let savedQuiz = meta ? (meta.quiz || meta) : null;
-              if (savedQuiz && typeof savedQuiz === 'string') {
-                try { savedQuiz = JSON.parse(savedQuiz); } catch(e) {}
-              }
+
               if (savedQuiz && (savedQuiz.id || savedQuiz.title || savedQuiz.question)) {
                 const qId = savedQuiz.id || savedQuiz.title || savedQuiz.question;
                 const existingIndex = state.quizDeck.findIndex(q => (q.id || q.title || q.question) === qId);
