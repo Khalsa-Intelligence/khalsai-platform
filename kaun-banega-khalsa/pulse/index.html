@@ -781,11 +781,12 @@
                 return;
               }
 
-            if (quiz) {
+              if (quiz) {
                 const qId = String(quiz.id || quiz.title || quiz.question || 'active_quiz');
                 const answeredMap = JSON.parse(sessionStorage.getItem('pulse_answered_quizzes') || '{}');
                 const alreadyAnsweredOption = answeredMap[quiz.id] !== undefined ? answeredMap[quiz.id] : null;
 
+                // Only trigger if this is a genuinely new quiz ID we haven't locked onto yet
                 if (String(state.activeQuizQuestionId) !== qId) {
                   state.activeQuizQuestion = quiz;
                   state.activeQuizQuestionId = qId;
@@ -798,9 +799,8 @@
                   state.confettiFired = false;
                   
                   startQuizTimer(qId, quiz.timeLimit || 30, startedAt);
-                  if (state.view === 'audience' && state.audienceTab !== 'quiz') {
-                    switchAudienceTab('quiz');
-                  }
+                  
+                  // NOTE: Auto-switching tab removed so users can stay on Q&A freely!
                 }
               }
             }
