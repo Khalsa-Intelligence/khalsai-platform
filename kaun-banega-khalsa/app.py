@@ -41,12 +41,12 @@ class Default(WorkerEntrypoint):
                     event_code = event_code.upper()
 
                     stmt = db.prepare(
-                        "SELECT session_id, event_code, event_type, metadata, created_at "
+                        "SELECT id, session_id, event_code, event_type, metadata, created_at "
                         "FROM pulse_events "
-                        "WHERE event_code = ? "
-                        "ORDER BY created_at ASC"
+                        "WHERE UPPER(REPLACE(event_code, '#', '')) = UPPER(?) "
+                        "ORDER BY id ASC"
                     )
-                    res = await stmt.bind(event_code).all()
+                    res = await stmt.bind(event_code.replace('#', '')).all()
                     rows = res.results.to_py() if hasattr(res.results, "to_py") else list(res.results)
 
                     return Response(
