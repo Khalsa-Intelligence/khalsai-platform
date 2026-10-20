@@ -609,12 +609,31 @@
         .sort((a, b) => b.score - a.score);
     }
 
-    function recordSessionScore(userName, pointsEarned) {
+    function recordSessionScore(userName, pointsEarned, quizId) {
       if (!state.eventCode || !userName) return;
+
+      // Strict Deduplication Check: ensure user earns points at most once per quiz ID in this session
+      const cleanKey = (state.eventCode || '').replace(/^#/, '').trim().toUpperCase();
+      const scoredQuizzesKey = `pulse_scored_${cleanKey}_${userName}`;
+      let scoredQuizzes = [];
+      try {
+        scoredQuizzes = JSON.parse(localStorage.getItem(scoredQuizzesKey) || '[]');
+      } catch (e) {}
+
+      if (quizId && scoredQuizzes.includes(quizId)) {
+        // Already awarded points for this quiz to this user; skip duplicate addition
+        return;
+      }
+
+      if (quizId) {
+        scoredQuizzes.push(quizId);
+        try {
+          localStorage.setItem(scoredQuizzesKey, JSON.stringify(scoredQuizzes));
+        } catch (e) {}
+      }
 
       state.sessionLeaderboard[userName] = (state.sessionLeaderboard[userName] || 0) + pointsEarned;
 
-      const cleanKey = (state.eventCode || '').replace(/^#/, '').trim().toUpperCase();
       const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
       allLeaderboards[cleanKey] = state.sessionLeaderboard;
       localStorage.setItem('pulse_leaderboards', JSON.stringify(allLeaderboards));
@@ -633,6 +652,13 @@
         const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
         delete allLeaderboards[cleanKey];
         localStorage.setItem('pulse_leaderboards', JSON.stringify(allLeaderboards));
+
+        // Clear scored quizzes tracking for this session
+        Object.keys(localStorage).forEach(k => {
+          if (k.startsWith(`pulse_scored_${cleanKey}_`)) {
+            localStorage.removeItem(k);
+          }
+        });
 
         renderLeaderboard();
         await sendPulse('leaderboard_reset', { eventCode: cleanKey, resetAt: resetTime });
@@ -925,7 +951,7 @@
               }
 
               if (pulseTime >= state.lastLeaderboardResetAt && meta && meta.userName && meta.pointsEarned) {
-                recordSessionScore(meta.userName, meta.pointsEarned);
+                recordSessionScore(meta.userName, meta.pointsEarned, meta.quizId);
               }
             }
           });
