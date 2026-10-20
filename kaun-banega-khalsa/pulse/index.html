@@ -222,9 +222,11 @@
     <!-- PRESENTER VIEW CONTAINER -->
     <div id="presenterView" class="hidden flex-1 flex-col space-y-4 sm:space-y-6">
       
-      <!-- Presenter Header Controller -->
-      <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-gray-900 border border-gray-800 p-3 sm:p-4 rounded-2xl">
-        <div class="flex flex-wrap items-center justify-between sm:justify-start gap-2">
+      <!-- Mobile-Optimized Presenter Header Controller -->
+      <div class="flex flex-col space-y-3 bg-gray-900 border border-gray-800 p-3 sm:p-4 rounded-2xl">
+        
+        <!-- Status & Code Input Row -->
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gray-800/80 pb-2.5">
           <span class="bg-emerald-500/10 text-emerald-400 font-extrabold px-2.5 py-1 rounded-lg border border-emerald-500/30 text-xs flex items-center space-x-1">
             <i data-lucide="tv" class="w-3.5 h-3.5"></i>
             <span>PRESENTER MODE</span>
@@ -232,28 +234,34 @@
 
           <div class="flex items-center space-x-2 bg-gray-950 px-2.5 py-1 rounded-xl border border-amber-500/40">
             <label for="eventCodeInput" class="text-[10px] sm:text-xs font-bold text-gray-400 uppercase">Code:</label>
-            <input type="text" id="eventCodeInput" value="" class="bg-gray-900 px-1.5 py-0.5 rounded border border-gray-700 font-mono font-black text-amber-400 text-xs sm:text-sm focus:outline-none focus:border-amber-500 w-28 sm:w-32 uppercase">
-            <button onclick="updateEventCode()" class="bg-amber-500 text-slate-950 font-black text-[10px] sm:text-xs px-2 py-1 rounded-lg hover:brightness-110 transition flex items-center space-x-1 shadow">
+            <input type="text" id="eventCodeInput" value="" class="bg-gray-900 px-1.5 py-0.5 rounded border border-gray-700 font-mono font-black text-amber-400 text-xs sm:text-sm focus:outline-none focus:border-amber-500 w-24 sm:w-32 uppercase">
+            <button onclick="updateEventCode()" class="bg-amber-500 text-slate-950 font-black text-[10px] sm:text-xs px-2.5 py-1 rounded-lg hover:brightness-110 transition flex items-center space-x-1 shadow">
               <i data-lucide="check" class="w-3 h-3 stroke-[3]"></i>
               <span>Set</span>
             </button>
           </div>
         </div>
 
-        <div class="flex items-center justify-between sm:justify-end space-x-1.5 overflow-x-auto">
-          <button onclick="switchPresenterSubTab('spotlight')" id="subTabSpotlight" class="flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-amber-500 text-slate-950 shadow whitespace-nowrap">
-            Spotlight
+        <!-- Touch-Friendly 2x2 Grid on Mobile / Flex Row on Desktop -->
+        <div class="grid grid-cols-2 sm:flex sm:items-center sm:justify-end gap-2">
+          <button onclick="switchPresenterSubTab('spotlight')" id="subTabSpotlight" class="w-full sm:w-auto px-4 py-2.5 sm:py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-amber-500 text-slate-950 shadow flex items-center justify-center space-x-1.5 active:scale-95 transition">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 sm:hidden"></i>
+            <span>Spotlight</span>
           </button>
-          <button onclick="switchPresenterSubTab('manager')" id="subTabManager" class="flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 text-gray-300 hover:text-white whitespace-nowrap">
-            Quiz Builder
+          <button onclick="switchPresenterSubTab('manager')" id="subTabManager" class="w-full sm:w-auto px-4 py-2.5 sm:py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 text-gray-300 hover:text-white flex items-center justify-center space-x-1.5 active:scale-95 transition">
+            <i data-lucide="plus-circle" class="w-3.5 h-3.5 sm:hidden"></i>
+            <span>Quiz Builder</span>
           </button>
-          <button onclick="switchPresenterSubTab('questions')" id="subTabQuestions" class="flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 text-gray-300 hover:text-white whitespace-nowrap">
-            Q&A Control
+          <button onclick="switchPresenterSubTab('questions')" id="subTabQuestions" class="w-full sm:w-auto px-4 py-2.5 sm:py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 text-gray-300 hover:text-white flex items-center justify-center space-x-1.5 active:scale-95 transition">
+            <i data-lucide="message-square" class="w-3.5 h-3.5 sm:hidden"></i>
+            <span>Q&A Control</span>
           </button>
-          <button onclick="switchPresenterSubTab('leaderboard')" id="subTabPresenterLeaderboard" class="flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 text-gray-300 hover:text-white whitespace-nowrap">
-            Leaderboard
+          <button onclick="switchPresenterSubTab('leaderboard')" id="subTabPresenterLeaderboard" class="w-full sm:w-auto px-4 py-2.5 sm:py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 text-gray-300 hover:text-white flex items-center justify-center space-x-1.5 active:scale-95 transition">
+            <i data-lucide="trophy" class="w-3.5 h-3.5 sm:hidden"></i>
+            <span>Leaderboard</span>
           </button>
         </div>
+
       </div>
 
       <!-- SUB-TAB 1: PRESENTER SPOTLIGHT & QR CODE -->
@@ -823,10 +831,8 @@
         state.quizElapsedTime = elapsedSeconds;
 
         if (durationSeconds <= 0) {
-          // Unlimited Timer mode: Count up indefinitely
           state.quizTimeRemaining = 0;
         } else {
-          // Standard countdown timer
           state.quizTimeRemaining = Math.max(0, durationSeconds - elapsedSeconds);
 
           if (state.quizTimeRemaining <= 10 && state.quizTimeRemaining > 0) {
@@ -1123,10 +1129,14 @@
 
     function switchPresenterSubTab(subTab) {
       state.presenterSubTab = subTab;
-      document.getElementById('subTabSpotlight').className = subTab === 'spotlight' ? "flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-amber-500 text-slate-950 shadow whitespace-nowrap" : "flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 text-gray-300 hover:text-white whitespace-nowrap";
-      document.getElementById('subTabManager').className = subTab === 'manager' ? "flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-amber-500 text-slate-950 shadow whitespace-nowrap" : "flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 text-gray-300 hover:text-white whitespace-nowrap";
-      document.getElementById('subTabQuestions').className = subTab === 'questions' ? "flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-amber-500 text-slate-950 shadow whitespace-nowrap" : "flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 text-gray-300 hover:text-white whitespace-nowrap";
-      document.getElementById('subTabPresenterLeaderboard').className = subTab === 'leaderboard' ? "flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-amber-500 text-slate-950 shadow whitespace-nowrap" : "flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 text-gray-300 hover:text-white whitespace-nowrap";
+
+      const activeClass = "w-full sm:w-auto px-4 py-2.5 sm:py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-amber-500 text-slate-950 shadow flex items-center justify-center space-x-1.5 active:scale-95 transition";
+      const inactiveClass = "w-full sm:w-auto px-4 py-2.5 sm:py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 text-gray-300 hover:text-white flex items-center justify-center space-x-1.5 active:scale-95 transition";
+
+      document.getElementById('subTabSpotlight').className = subTab === 'spotlight' ? activeClass : inactiveClass;
+      document.getElementById('subTabManager').className = subTab === 'manager' ? activeClass : inactiveClass;
+      document.getElementById('subTabQuestions').className = subTab === 'questions' ? activeClass : inactiveClass;
+      document.getElementById('subTabPresenterLeaderboard').className = subTab === 'leaderboard' ? activeClass : inactiveClass;
 
       document.getElementById('presenterSpotlightPane').classList.toggle('hidden', subTab !== 'spotlight');
       document.getElementById('presenterManagerPane').classList.toggle('hidden', subTab !== 'manager');
@@ -1338,7 +1348,6 @@
     }
 
     function manualStopQuiz() {
-      // Force time remaining to 0 so results reveal immediately across presenter and audience
       state.quizTimeRemaining = 0;
       if (state.activeQuizTimer) {
         clearInterval(state.activeQuizTimer);
@@ -1652,7 +1661,8 @@
               return `
                 <button onclick="submitAudienceAnswer(${idx})" ${state.hasSubmittedAnswer || showAnswerAndVotes ? 'disabled' : ''} class="w-full p-4 sm:p-6 rounded-2xl text-left font-bold text-sm sm:text-base transition flex flex-col justify-between ${btnStyle}">
                   <div class="flex items-center justify-between w-full">
-                    <span class="text-lg font-black">${style.symbol} ${opt}</span>${showAnswerAndVotes && isCorrect ? '<span class="bg-white text-emerald-700 px-2 py-0.5 rounded-full text-xs font-black">CORRECT</span>' : ''}
+                    <span class="text-lg font-black">${style.symbol} ${opt}</span>
+                    ${showAnswerAndVotes && isCorrect ? '<span class="bg-white text-emerald-700 px-2 py-0.5 rounded-full text-xs font-black">CORRECT</span>' : ''}
                   </div>
                   ${showAnswerAndVotes ? `
                     <div class="mt-3 pt-3 border-t border-white/20 text-xs font-mono font-bold flex justify-between text-white/90">
