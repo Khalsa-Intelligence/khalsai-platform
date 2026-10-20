@@ -277,6 +277,9 @@
           <button onclick="switchPresenterSubTab('questions')" id="subTabQuestions" class="flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 text-gray-300 hover:text-white whitespace-nowrap">
             Q&A Control
           </button>
+          <button onclick="switchPresenterSubTab('leaderboard')" id="subTabPresenterLeaderboard" class="flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 text-gray-300 hover:text-white whitespace-nowrap">
+            Leaderboard
+          </button>
         </div>
       </div>
 
@@ -432,6 +435,26 @@
         </div>
       </div>
 
+      <!-- SUB-TAB 4: PRESENTER LEADERBOARD -->
+      <div id="presenterLeaderboardPane" class="hidden space-y-6">
+        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 sm:p-8 space-y-4 shadow-2xl">
+          <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+            <h2 class="text-lg sm:text-2xl font-black text-amber-400 flex items-center space-x-2">
+              <i data-lucide="trophy" class="w-6 h-6"></i>
+              <span>Session Leaderboard Management</span>
+            </h2>
+            <button onclick="resetCurrentEventLeaderboard()" class="px-3 py-1.5 bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/30 text-xs font-bold rounded-lg flex items-center gap-1.5 transition">
+              <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+              Clear Leaderboard
+            </button>
+          </div>
+
+          <div id="presenterDedicatedLeaderboardList" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </div>
+
     </div>
 
   </main>
@@ -473,6 +496,7 @@
     // Set to deduplicate operational event processing
     const processedPulseIds = new Set();
     const handledQuizReleases = new Set();
+    let audienceLeaderboardTimeout = null;
 
     let state = {
       eventCode: initialCodeParam ? initialCodeParam.replace(/^#/, '').trim().toUpperCase() : DEFAULT_EVENT_CODE,
@@ -695,6 +719,10 @@
         clearInterval(state.activeQuizTimer);
         state.activeQuizTimer = null;
       }
+      if (audienceLeaderboardTimeout) {
+        clearTimeout(audienceLeaderboardTimeout);
+        audienceLeaderboardTimeout = null;
+      }
 
       state.activeQuizQuestionId = questionId;
       state.activeQuizQuestionStartedAt = startedAtMs;
@@ -709,6 +737,16 @@
         if (state.quizTimeRemaining <= 0) {
           clearInterval(state.activeQuizTimer);
           state.activeQuizTimer = null;
+
+          // Automatically switch audience member to the leaderboard tab 15 seconds after timer ends
+          if (state.view === 'audience' && !audienceLeaderboardTimeout) {
+            audienceLeaderboardTimeout = setTimeout(() => {
+              if (state.activeQuizQuestion && state.quizTimeRemaining <= 0) {
+                switchAudienceTab('leaderboard');
+              }
+              audienceLeaderboardTimeout = null;
+            }, 15000); // 15 seconds delay
+          }
         }
       };
 
@@ -991,12 +1029,17 @@
       document.getElementById('subTabSpotlight').className = subTab === 'spotlight' ? "flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-amber-500 text-slate-950 shadow whitespace-nowrap" : "flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 text-gray-300 hover:text-white whitespace-nowrap";
       document.getElementById('subTabManager').className = subTab === 'manager' ? "flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-amber-500 text-slate-950 shadow whitespace-nowrap" : "flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 text-gray-300 hover:text-white whitespace-nowrap";
       document.getElementById('subTabQuestions').className = subTab === 'questions' ? "flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-amber-500 text-slate-950 shadow whitespace-nowrap" : "flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 text-gray-300 hover:text-white whitespace-nowrap";
+      document.getElementById('subTabPresenterLeaderboard').className = subTab === 'leaderboard' ? "flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-amber-500 text-slate-950 shadow whitespace-nowrap" : "flex-1 sm:flex-none px-3 py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 text-gray-300 hover:text-white whitespace-nowrap";
 
       document.getElementById('presenterSpotlightPane').classList.toggle('hidden', subTab !== 'spotlight');
       document.getElementById('presenterManagerPane').classList.toggle('hidden', subTab !== 'manager');
       document.getElementById('presenterQuestionsPane').classList.toggle('hidden', subTab !== 'questions');
+      document.getElementById('presenterLeaderboardPane').classList.toggle('hidden', subTab !== 'leaderboard');
 
-      if (subTab === 'spotlight') renderQRCode();
+      if (subTab === 'spotlight' || subTab === 'leaderboard') {
+        if (subTab === 'spotlight') renderQRCode();
+        renderLeaderboard();
+      }
       lucide.createIcons();
     }
 
@@ -1211,6 +1254,10 @@
       if (state.activeQuizTimer) {
         clearInterval(state.activeQuizTimer);
         state.activeQuizTimer = null;
+      }
+      if (audienceLeaderboardTimeout) {
+        clearTimeout(audienceLeaderboardTimeout);
+        audienceLeaderboardTimeout = null;
       }
       const activeInd = document.getElementById('activeQuizIndicator');
       if (activeInd) activeInd.classList.add('hidden');
@@ -1587,6 +1634,7 @@
     function renderLeaderboard() {
       const presList = document.getElementById('leaderboardList');
       const audList = document.getElementById('audienceLeaderboardList');
+      const presDedicatedList = document.getElementById('presenterDedicatedLeaderboardList');
 
       const isSeries = state.leaderboardMode === 'series';
       const leaderboardData = isSeries ? getSeriesLeaderboard() : getEventLeaderboard();
@@ -1611,6 +1659,7 @@
       if (leaderboardData.length === 0) {
         if (presList) presList.innerHTML = emptyHtml;
         if (audList) audList.innerHTML = emptyHtml;
+        if (presDedicatedList) presDedicatedList.innerHTML = emptyHtml;
         return;
       }
 
@@ -1626,6 +1675,7 @@
 
       if (presList) presList.innerHTML = rowsHtml;
       if (audList) audList.innerHTML = rowsHtml;
+      if (presDedicatedList) presDedicatedList.innerHTML = rowsHtml;
     }
 
     function copyEventCode() {
