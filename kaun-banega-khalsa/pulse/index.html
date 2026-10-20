@@ -644,25 +644,53 @@
     async function resetCurrentEventLeaderboard() {
       if (!state.eventCode) return;
 
-      if (confirm(`Are you sure you want to reset the leaderboard for event code "${state.eventCode}"?`)) {
+      const isSeriesMode = state.leaderboardMode === 'series';
+      const cleanKey = (state.eventCode || '').replace(/^#/, '').trim().toUpperCase();
+      const seriesName = getLectureSeries(cleanKey);
+
+      const confirmMsg = isSeriesMode 
+        ? `Are you sure you want to wipe ALL points across the entire lecture series "${seriesName}"?`
+        : `Are you sure you want to reset the leaderboard for session "${cleanKey}"?`;
+
+      if (confirm(confirmMsg)) {
         const resetTime = Date.now();
-        state.lastLeaderboardResetAt = resetTime; // Immediately update threshold so old pulses are ignored
-        state.sessionLeaderboard = {};
+        state.lastLeaderboardResetAt = resetTime;
         
-        const cleanKey = (state.eventCode || '').replace(/^#/, '').trim().toUpperCase();
         const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
-        delete allLeaderboards[cleanKey];
+
+        if (isSeriesMode) {
+          // Wipe all sessions belonging to this lecture series
+          Object.keys(allLeaderboards).forEach(code => {
+            if (getLectureSeries(code) === seriesName) {
+              delete allLeaderboards[code];
+            }
+          });
+          state.sessionLeaderboard = {};
+        } else {
+          // Wipe only the current session
+          delete allLeaderboards[cleanKey];
+          state.sessionLeaderboard = {};
+        }
+
         localStorage.setItem('pulse_leaderboards', JSON.stringify(allLeaderboards));
 
-        // Clear scored quizzes tracking for this session
+        // Clear scored quizzes tracking caches accordingly
         Object.keys(localStorage).forEach(k => {
-          if (k.startsWith(`pulse_scored_${cleanKey}_`)) {
-            localStorage.removeItem(k);
+          if (isSeriesMode) {
+            // Clear all scored caches for codes in this series
+            if (k.startsWith('pulse_scored_')) {
+              localStorage.removeItem(k);
+            }
+          } else {
+            // Clear only for current session
+            if (k.startsWith(`pulse_scored_${cleanKey}_`)) {
+              localStorage.removeItem(k);
+            }
           }
         });
 
         renderLeaderboard();
-        await sendPulse('leaderboard_reset', { eventCode: cleanKey, resetAt: resetTime });
+        await sendPulse('leaderboard_reset', { eventCode: isSeriesMode ? seriesName : cleanKey, resetAt: resetTime });
       }
     }
     
