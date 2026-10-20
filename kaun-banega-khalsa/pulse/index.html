@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Khalsa AI Pulse - Modern Live Q&A, Polls & Quizzes</title>
+  <title>Khalsa AI Pulse Pro - Interactive Game Show & Q&A Platform</title>
   
   <!-- Tailwind CSS, Lucide Icons & QR Code Generator -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -26,47 +26,19 @@
             mono: ['"JetBrains Mono"', 'monospace']
           },
           colors: {
-            amber: {
-              400: '#fbbf24',
-              500: '#f59e0b',
-              600: '#d97706',
-              900: '#78350f',
-            },
-            brand: {
-              gold: '#F59E0B',
-              goldLight: '#FBBF24',
-              dark: '#0B0F17',
-              card: '#151C2C',
-              cardBorder: '#232E47'
-            }
+            amber: { 400: '#fbbf24', 500: '#f59e0b', 600: '#d97706', 900: '#78350f' },
+            kahoot: { red: '#E21B3C', blue: '#1368CE', gold: '#D89E00', green: '#26890C' }
           }
         }
       }
     }
   </script>
   <style>
-    body {
-      background-color: #080C14;
-      color: #F3F4F6;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-    }
-    .gold-gradient-text {
-      background: linear-gradient(135deg, #FFF 10%, #FBBF24 50%, #F59E0B 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .gold-gradient-bg {
-      background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
-    }
-    .glow-gold {
-      box-shadow: 0 0 25px rgba(245, 158, 11, 0.25);
-    }
-    #qrcode canvas, #qrcode img {
-      margin: 0 auto;
-      border-radius: 12px;
-      padding: 6px;
-      background: white;
-    }
+    body { background-color: #080C14; color: #F3F4F6; font-family: 'Plus Jakarta Sans', sans-serif; }
+    .gold-gradient-text { background: linear-gradient(135deg, #FFF 10%, #FBBF24 50%, #F59E0B 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .gold-gradient-bg { background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); }
+    .glow-gold { box-shadow: 0 0 25px rgba(245, 158, 11, 0.25); }
+    #qrcode canvas, #qrcode img { margin: 0 auto; border-radius: 12px; padding: 6px; background: white; }
   </style>
 </head>
 <body class="h-full flex flex-col bg-[#080C14] text-gray-100 antialiased selection:bg-amber-500 selection:text-black">
@@ -85,7 +57,7 @@
             <span class="text-lg sm:text-2xl font-black tracking-tight gold-gradient-text uppercase">Khalsa AI Pulse</span>
             <span class="hidden sm:inline-block bg-amber-500/20 text-amber-400 text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold border border-amber-500/30">PRO</span>
           </div>
-          <p class="hidden sm:block text-xs font-semibold text-gray-400">Interactive Lecture & Conference Platform</p>
+          <p class="hidden sm:block text-xs font-semibold text-gray-400">Interactive Game Show & Conference Platform</p>
         </div>
       </div>
 
@@ -155,7 +127,7 @@
           </button>
           <button onclick="switchAudienceTab('quiz')" id="tabAudienceQuiz" class="px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 text-gray-300 hover:bg-gray-800">
             <i data-lucide="award" class="w-4 h-4"></i>
-            <span>Live Quiz & Polls</span>
+            <span>Live Game Show</span>
             <span id="activeQuizIndicator" class="hidden w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
           </button>
           <button onclick="switchAudienceTab('leaderboard')" id="tabAudienceLeaderboard" class="px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 text-gray-300 hover:bg-gray-800">
@@ -167,6 +139,7 @@
         <div class="flex items-center space-x-1.5 text-xs bg-gray-950 px-2.5 py-1 rounded-lg border border-gray-800 text-amber-400 font-bold">
           <i data-lucide="user" class="w-3.5 h-3.5"></i>
           <span id="audiencePlayerDisplay" class="truncate max-w-[100px] sm:max-w-[140px]">...</span>
+          <span id="playerStreakBadge" class="hidden bg-red-500/20 text-red-400 text-[10px] px-1.5 py-0.5 rounded font-black">🔥 0</span>
           <button onclick="changePlayerNamePrompt()" class="text-gray-400 hover:text-white ml-1" title="Change Name">
             <i data-lucide="edit-2" class="w-3 h-3"></i>
           </button>
@@ -287,9 +260,9 @@
       <div id="presenterSpotlightPane" class="space-y-4 sm:space-y-6">
         <div class="bg-gradient-to-r from-amber-500/10 via-gray-900 to-amber-500/10 border border-amber-500/40 rounded-2xl p-4 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-4 glow-gold">
           <div class="text-center md:text-left space-y-1 sm:space-y-2">
-            <p class="text-amber-400 text-xs sm:text-sm font-extrabold tracking-widest uppercase">SCAN QR CODE TO JOIN LIVE SESSION</p>
+            <p class="text-amber-400 text-xs sm:text-sm font-extrabold tracking-widest uppercase">SCAN QR CODE TO JOIN GAME SHOW</p>
             <h1 class="text-3xl sm:text-6xl font-mono font-black text-white tracking-widest gold-gradient-text event-code-display" id="projectorEventCode"></h1>
-            <p class="text-gray-400 text-xs font-medium">Scan with camera to auto-join live Q&A</p>
+            <p class="text-gray-400 text-xs font-medium">Scan with camera to auto-join live quiz & Q&A</p>
           </div>
 
           <div class="flex flex-col items-center bg-gray-950 p-3 sm:p-4 rounded-xl border border-gray-800 shadow-xl shrink-0">
@@ -347,7 +320,7 @@
             <div class="border-b border-gray-800 pb-2 flex items-center justify-between">
               <h3 id="quizFormHeading" class="text-lg sm:text-2xl font-black text-white flex items-center space-x-2">
                 <i data-lucide="plus-circle" class="w-5 h-5 text-amber-400"></i>
-                <span>Create Quiz Question</span>
+                <span>Create Game Question</span>
               </h3>
               <button id="btnCancelEdit" onclick="cancelEditQuizQuestion()" class="hidden text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-2.5 py-1 rounded-lg border border-gray-700 font-bold">
                 Cancel
@@ -363,23 +336,27 @@
               </div>
 
               <div class="space-y-2">
-                <label class="block text-xs font-bold text-gray-300">Options & Correct Selection</label>
+                <label class="block text-xs font-bold text-gray-300">Options & Correct Selection (Kahoot Colors)</label>
                 
-                <div class="flex items-center space-x-2">
-                  <input type="radio" name="correctOption" value="0" checked class="w-4 h-4 accent-amber-500">
-                  <input type="text" id="option0" placeholder="Option A" class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-white">
+                <div class="flex items-center space-x-2 bg-[#E21B3C]/10 p-1.5 rounded-lg border border-[#E21B3C]/30">
+                  <input type="radio" name="correctOption" value="0" checked class="w-4 h-4 accent-[#E21B3C]">
+                  <span class="text-red-400 font-bold text-xs">▲</span>
+                  <input type="text" id="option0" placeholder="Red Option A" class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-white">
                 </div>
-                <div class="flex items-center space-x-2">
-                  <input type="radio" name="correctOption" value="1" class="w-4 h-4 accent-amber-500">
-                  <input type="text" id="option1" placeholder="Option B" class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-white">
+                <div class="flex items-center space-x-2 bg-[#1368CE]/10 p-1.5 rounded-lg border border-[#1368CE]/30">
+                  <input type="radio" name="correctOption" value="1" class="w-4 h-4 accent-[#1368CE]">
+                  <span class="text-blue-400 font-bold text-xs">◆</span>
+                  <input type="text" id="option1" placeholder="Blue Option B" class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-white">
                 </div>
-                <div class="flex items-center space-x-2">
-                  <input type="radio" name="correctOption" value="2" class="w-4 h-4 accent-amber-500">
-                  <input type="text" id="option2" placeholder="Option C" class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-white">
+                <div class="flex items-center space-x-2 bg-[#D89E00]/10 p-1.5 rounded-lg border border-[#D89E00]/30">
+                  <input type="radio" name="correctOption" value="2" class="w-4 h-4 accent-[#D89E00]">
+                  <span class="text-amber-400 font-bold text-xs">●</span>
+                  <input type="text" id="option2" placeholder="Yellow Option C" class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-white">
                 </div>
-                <div class="flex items-center space-x-2">
-                  <input type="radio" name="correctOption" value="3" class="w-4 h-4 accent-amber-500">
-                  <input type="text" id="option3" placeholder="Option D" class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-white">
+                <div class="flex items-center space-x-2 bg-[#26890C]/10 p-1.5 rounded-lg border border-[#26890C]/30">
+                  <input type="radio" name="correctOption" value="3" class="w-4 h-4 accent-[#26890C]">
+                  <span class="text-emerald-400 font-bold text-xs">■</span>
+                  <input type="text" id="option3" placeholder="Green Option D" class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-white">
                 </div>
               </div>
 
@@ -467,7 +444,7 @@
     </button>
     <button onclick="switchAudienceTab('quiz')" id="mobileNavQuiz" class="flex flex-col items-center space-y-1 text-gray-400 hover:text-white font-bold text-[10px]">
       <i data-lucide="award" class="w-5 h-5"></i>
-      <span>Quiz & Polls</span>
+      <span>Game Show</span>
     </button>
     <button onclick="switchAudienceTab('leaderboard')" id="mobileNavLeaderboard" class="flex flex-col items-center space-y-1 text-gray-400 hover:text-white font-bold text-[10px]">
       <i data-lucide="trophy" class="w-5 h-5"></i>
@@ -476,6 +453,41 @@
   </nav>
 
   <script>
+    /* ==========================================================================
+       WEB AUDIO API SOUND EFFECTS GENERATOR
+       ========================================================================== */
+    const audioCtx = (typeof window !== 'undefined' && (window.AudioContext || window.webkitAudioContext)) ? new (window.AudioContext || window.webkitAudioContext)() : null;
+
+    function playSound(type) {
+      if (!audioCtx) return;
+      if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      const now = audioCtx.currentTime;
+
+      if (type === 'tick') {
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, now);
+        gain.gain.setValueAtTime(0.08, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+        osc.start(now);
+        osc.stop(now + 0.08);
+      } else if (type === 'success') {
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(523.25, now); // C5
+        osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+        osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+        osc.start(now);
+        osc.stop(now + 0.5);
+      }
+    }
+
     /* ==========================================================================
        APP STATE MANAGEMENT & PULSE_DB SYNC (HASH-FREE CODES)
        ========================================================================== */
@@ -489,11 +501,9 @@
       sessionStorage.setItem('pulse_session_id', sessionId);
     }
     
-    // Read session code dynamically from URL query parameter (cleaned of any hashes)
     const urlParams = new URLSearchParams(window.location.search);
     const initialCodeParam = urlParams.get('code') || urlParams.get('eventCode');
     
-    // Set to deduplicate operational event processing
     const processedPulseIds = new Set();
     const handledQuizReleases = new Set();
     let audienceLeaderboardTimeout = null;
@@ -561,9 +571,37 @@
       renderLeaderboard();
     }
 
+    function getUserStreak(userName) {
+      if (!userName) return 0;
+      const streaks = JSON.parse(localStorage.getItem('pulse_user_streaks') || '{}');
+      return streaks[userName] || 0;
+    }
+
+    function updateUserStreak(userName, isCorrect) {
+      if (!userName) return;
+      const streaks = JSON.parse(localStorage.getItem('pulse_user_streaks') || '{}');
+      if (isCorrect) {
+        streaks[userName] = (streaks[userName] || 0) + 1;
+      } else {
+        streaks[userName] = 0;
+      }
+      localStorage.setItem('pulse_user_streaks', JSON.stringify(streaks));
+      
+      const badge = document.getElementById('playerStreakBadge');
+      if (badge && userName === state.userName) {
+        const currentStreak = streaks[userName];
+        if (currentStreak > 1) {
+          badge.textContent = `🔥 ${currentStreak} Streak`;
+          badge.classList.remove('hidden');
+        } else {
+          badge.classList.add('hidden');
+        }
+      }
+    }
+
     function checkParticipantName() {
       if (!state.userName || !state.userName.trim()) {
-        let name = prompt("Welcome to Khalsa AI Pulse! Enter your name for the session leaderboard:");
+        let name = prompt("Welcome to Khalsa AI Pulse Game Show! Enter your player nickname:");
     
         if (name === null || !name.trim()) {
           const adjectives = ["Brave", "Swift", "Wise", "Clever", "Bright", "Curious", "Bold"];
@@ -587,10 +625,17 @@
 
       const playerDisp = document.getElementById('audiencePlayerDisplay');
       if (playerDisp) playerDisp.textContent = state.userName;
+
+      const streak = getUserStreak(state.userName);
+      const badge = document.getElementById('playerStreakBadge');
+      if (badge && streak > 1) {
+        badge.textContent = `🔥 ${streak} Streak`;
+        badge.classList.remove('hidden');
+      }
     }
 
     function changePlayerNamePrompt() {
-      let newName = prompt("Enter a new name for the session leaderboard:", state.userName);
+      let newName = prompt("Enter a new nickname for the leaderboard:", state.userName);
       if (newName && newName.trim()) {
         state.userName = newName.trim();
         localStorage.setItem('pulse_participant_name', state.userName);
@@ -612,7 +657,6 @@
     function recordSessionScore(userName, pointsEarned, quizId) {
       if (!state.eventCode || !userName) return;
 
-      // Strict Deduplication Check: ensure user earns points at most once per quiz ID in this session
       const cleanKey = (state.eventCode || '').replace(/^#/, '').trim().toUpperCase();
       const scoredQuizzesKey = `pulse_scored_${cleanKey}_${userName}`;
       let scoredQuizzes = [];
@@ -621,7 +665,6 @@
       } catch (e) {}
 
       if (quizId && scoredQuizzes.includes(quizId)) {
-        // Already awarded points for this quiz to this user; skip duplicate addition
         return;
       }
 
@@ -659,7 +702,6 @@
         const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
 
         if (isSeriesMode) {
-          // Wipe all sessions belonging to this lecture series
           Object.keys(allLeaderboards).forEach(code => {
             if (getLectureSeries(code) === seriesName) {
               delete allLeaderboards[code];
@@ -667,25 +709,17 @@
           });
           state.sessionLeaderboard = {};
         } else {
-          // Wipe only the current session
           delete allLeaderboards[cleanKey];
           state.sessionLeaderboard = {};
         }
 
         localStorage.setItem('pulse_leaderboards', JSON.stringify(allLeaderboards));
 
-        // Clear scored quizzes tracking caches accordingly
         Object.keys(localStorage).forEach(k => {
           if (isSeriesMode) {
-            // Clear all scored caches for codes in this series
-            if (k.startsWith('pulse_scored_')) {
-              localStorage.removeItem(k);
-            }
+            if (k.startsWith('pulse_scored_')) localStorage.removeItem(k);
           } else {
-            // Clear only for current session
-            if (k.startsWith(`pulse_scored_${cleanKey}_`)) {
-              localStorage.removeItem(k);
-            }
+            if (k.startsWith(`pulse_scored_${cleanKey}_`)) localStorage.removeItem(k);
           }
         });
 
@@ -786,6 +820,10 @@
         const elapsedSeconds = Math.floor((Date.now() - startedAtMs) / 1000);
         state.quizTimeRemaining = Math.max(0, durationSeconds - elapsedSeconds);
 
+        if (state.quizTimeRemaining <= 10 && state.quizTimeRemaining > 0) {
+          playSound('tick');
+        }
+
         renderAudienceQuizPane();
         renderSpotlight();
 
@@ -793,7 +831,6 @@
           clearInterval(state.activeQuizTimer);
           state.activeQuizTimer = null;
 
-          // Automatically switch audience member to the leaderboard tab 15 seconds after timer ends
           if (state.view === 'audience' && !audienceLeaderboardTimeout) {
             audienceLeaderboardTimeout = setTimeout(() => {
               if (state.activeQuizQuestion && state.quizTimeRemaining <= 0) {
@@ -841,7 +878,6 @@
 
           const deckMap = new Map();
 
-          // Seed with localStorage cache for immediate availability
           try {
             const localSaved = JSON.parse(localStorage.getItem(`pulse_deck_${cleanCode}`) || '[]');
             localSaved.forEach(q => {
@@ -851,7 +887,6 @@
             });
           } catch(e) {}
 
-          // Pass 1: Rebuild the entire Quiz Deck map chronologically (unaffected by processedPulseIds)
           sortedPulses.forEach(p => {
             if (p.event_type === 'quiz_save' && p.metadata) {
               let savedQuiz = null;
@@ -865,9 +900,7 @@
                 if (typeof savedQuiz === 'string') {
                   savedQuiz = JSON.parse(savedQuiz);
                 }
-              } catch(e) {
-                console.warn("Skipping malformed quiz_save pulse:", p.id, e);
-              }
+              } catch(e) {}
 
               if (savedQuiz && (savedQuiz.id || savedQuiz.title || savedQuiz.question)) {
                 const qId = savedQuiz.id || savedQuiz.title || savedQuiz.question;
@@ -894,7 +927,6 @@
             }
           });
 
-          // Pass 2: Process once-only live triggers using processedPulseIds
           sortedPulses.forEach(p => {
             if (processedPulseIds.has(p.id)) return;
             processedPulseIds.add(p.id);
@@ -1233,7 +1265,7 @@
       document.getElementById('newQuizTimer').value = quiz.timeLimit || 30;
       document.getElementById('newQuizPoints').value = quiz.points || 100;
 
-      document.getElementById('quizFormHeading').innerHTML = `<i data-lucide="edit-3" class="w-5 h-5 text-amber-400"></i><span>Edit Quiz Question</span>`;
+      document.getElementById('quizFormHeading').innerHTML = `<i data-lucide="edit-3" class="w-5 h-5 text-amber-400"></i><span>Edit Game Question</span>`;
       document.getElementById('btnSaveQuiz').textContent = "Update Quiz Deck";
       document.getElementById('btnCancelEdit').classList.remove('hidden');
 
@@ -1254,7 +1286,7 @@
       document.getElementById('newQuizTimer').value = "30";
       document.getElementById('newQuizPoints').value = "100";
 
-      document.getElementById('quizFormHeading').innerHTML = `<i data-lucide="plus-circle" class="w-5 h-5 text-amber-400"></i><span>Create Quiz Question</span>`;
+      document.getElementById('quizFormHeading').innerHTML = `<i data-lucide="plus-circle" class="w-5 h-5 text-amber-400"></i><span>Create Game Question</span>`;
       document.getElementById('btnSaveQuiz').textContent = "Save to Pulse DB Deck";
       document.getElementById('btnCancelEdit').classList.add('hidden');
 
@@ -1339,6 +1371,11 @@
       sessionStorage.setItem('pulse_answered_quizzes', JSON.stringify(answeredMap));
 
       const isCorrect = selectedIndex === state.activeQuizQuestion.correct;
+      updateUserStreak(state.userName, isCorrect);
+
+      if (isCorrect) {
+        playSound('success');
+      }
 
       if (typeof selectedIndex === 'number' && selectedIndex >= 0 && selectedIndex < 4) {
         state.responseCounts[selectedIndex]++;
@@ -1350,7 +1387,10 @@
         const basePoints = state.activeQuizQuestion.points || 100;
         const totalTime = state.activeQuizQuestion.timeLimit || 30;
         const speedBonus = Math.round((state.quizTimeRemaining / totalTime) * 50);
-        pointsEarned = basePoints + speedBonus;
+        
+        const streak = getUserStreak(state.userName);
+        const streakMultiplier = streak > 2 ? 1.5 : 1.0;
+        pointsEarned = Math.round((basePoints + speedBonus) * streakMultiplier);
       }
 
       renderAudienceQuizPane();
@@ -1523,7 +1563,7 @@
               </svg>
             </div>
             <h2 class="text-lg sm:text-2xl font-extrabold text-white">Waiting for Presenter...</h2>
-            <p class="text-gray-400 max-w-md mx-auto text-xs sm:text-sm">When a live quiz or poll is released, it will appear here instantly!</p>
+            <p class="text-gray-400 max-w-md mx-auto text-xs sm:text-sm">When a live game show question is released, it will appear here instantly!</p>
           </div>
         `;
         return;
@@ -1533,14 +1573,21 @@
 
       if (showAnswerAndVotes && state.userSelectedOption !== null && state.userSelectedOption === activeQ.correct && !state.confettiFired) {
         state.confettiFired = true;
-        confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+        confetti({ particleCount: 60, spread: 70, origin: { y: 0.7 } });
       }
+
+      const kahootStyles = [
+        { bg: 'bg-[#E21B3C] hover:bg-[#c91432]', symbol: '▲', label: 'Red' },
+        { bg: 'bg-[#1368CE] hover:bg-[#1059b5]', symbol: '◆', label: 'Blue' },
+        { bg: 'bg-[#D89E00] hover:bg-[#c08d00]', symbol: '●', label: 'Yellow' },
+        { bg: 'bg-[#26890C] hover:bg-[#1f7009]', symbol: '■', label: 'Green' }
+      ];
 
       container.innerHTML = `
         <div class="space-y-4 text-left">
           <div class="flex items-center justify-between border-b border-gray-800 pb-3">
             <div>
-              <span class="text-[10px] uppercase font-extrabold text-amber-400 tracking-wider">LIVE QUIZ</span>
+              <span class="text-[10px] uppercase font-extrabold text-amber-400 tracking-wider">GAME SHOW ROUND</span>
               <h3 class="text-base sm:text-2xl font-black text-white mt-0.5">${activeQ.title || activeQ.question || 'Live Question'}</h3>
             </div>
             
@@ -1552,39 +1599,37 @@
 
           ${state.hasSubmittedAnswer && !showAnswerAndVotes ? `
             <div class="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-center text-xs text-amber-400 font-bold animate-pulse">
-              ✓ Answer Submitted! Results & correct choice will reveal when the timer reaches 0s.
+              ✓ Locked In! Results & correct choice reveal when the timer reaches 0s.
             </div>
           ` : ''}
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             ${(activeQ.options || []).map((opt, idx) => {
               const isCorrect = idx === activeQ.correct;
               const isSelected = state.userSelectedOption === idx;
               const count = state.responseCounts[idx] || 0;
               const pct = state.totalResponses > 0 ? Math.round((count / state.totalResponses) * 100) : 0;
+              const style = kahootStyles[idx % 4];
               
-              let btnStyle = "bg-gray-950 border-gray-800 text-white hover:border-amber-500";
+              let btnStyle = `${style.bg} text-white shadow-lg`;
 
               if (showAnswerAndVotes) {
                 if (isCorrect) {
-                  btnStyle = "bg-emerald-500/20 border-emerald-500 text-emerald-300 font-black shadow-lg shadow-emerald-500/10";
-                } else if (isSelected) {
-                  btnStyle = "bg-red-500/20 border-red-500 text-red-300 font-bold";
+                  btnStyle = "bg-emerald-600 border-2 border-white text-white font-black shadow-xl ring-4 ring-emerald-400/40";
                 } else {
-                  btnStyle = "bg-gray-950 border-gray-900 text-gray-600 opacity-60";
+                  btnStyle = "bg-gray-900 border border-gray-800 text-gray-500 opacity-50";
                 }
               } else if (isSelected) {
-                btnStyle = "bg-amber-500/20 border-amber-500 text-amber-300 font-bold";
+                btnStyle = `${style.bg} ring-4 ring-white text-white font-black`;
               }
 
               return `
-                <button onclick="submitAudienceAnswer(${idx})" ${state.hasSubmittedAnswer || state.quizTimeRemaining <= 0 ? 'disabled' : ''} class="w-full p-3.5 sm:p-5 rounded-xl border-2 text-left font-bold text-sm sm:text-base transition flex flex-col justify-between ${btnStyle}">
+                <button onclick="submitAudienceAnswer(${idx})" ${state.hasSubmittedAnswer || state.quizTimeRemaining <= 0 ? 'disabled' : ''} class="w-full p-4 sm:p-6 rounded-2xl text-left font-bold text-sm sm:text-base transition flex flex-col justify-between ${btnStyle}">
                   <div class="flex items-center justify-between w-full">
-                    <span>${opt}${showAnswerAndVotes && isCorrect ? '✓' : ''}</span>
-                    <span class="w-6 h-6 rounded-full bg-gray-800 flex items-center justify-center font-mono text-xs ml-2 shrink-0">${String.fromCharCode(65 + idx)}</span>
+                    <span class="text-lg font-black">${style.symbol} ${opt}</span>${showAnswerAndVotes && isCorrect ? '<span class="bg-white text-emerald-700 px-2 py-0.5 rounded-full text-xs font-black">CORRECT</span>' : ''}
                   </div>
                   ${showAnswerAndVotes ? `
-                    <div class="mt-2 text-xs font-mono font-bold flex justify-between text-amber-400">
+                    <div class="mt-3 pt-3 border-t border-white/20 text-xs font-mono font-bold flex justify-between text-white/90">
                       <span>${count} votes</span>
                       <span>${pct}%</span>
                     </div>
@@ -1612,7 +1657,7 @@
           <div class="space-y-3">
             <i data-lucide="presentation" class="w-12 h-12 text-gray-700 mx-auto"></i>
             <h2 class="text-xl sm:text-3xl font-black text-gray-400">No Item Spotlighted</h2>
-            <p class="text-xs sm:text-base text-gray-500 font-medium max-w-xl mx-auto">Select a Q&A question or release a quiz to spotlight on screen.</p>
+            <p class="text-xs sm:text-base text-gray-500 font-medium max-w-xl mx-auto">Select a Q&A question or release a game question to spotlight on screen.</p>
           </div>
         `;
         if (clearBtnContainer) clearBtnContainer.classList.add('hidden');
@@ -1638,15 +1683,21 @@
       else if (item.type === 'quiz') {
         const q = item.data;
         const showAnswer = state.quizTimeRemaining <= 0;
+        const kahootStyles = [
+          { bg: 'bg-[#E21B3C]', symbol: '▲' },
+          { bg: 'bg-[#1368CE]', symbol: '◆' },
+          { bg: 'bg-[#D89E00]', symbol: '●' },
+          { bg: 'bg-[#26890C]', symbol: '■' }
+        ];
 
         displayArea.innerHTML = `
           <div class="space-y-4 text-left max-w-4xl mx-auto">
             <div class="flex items-center justify-between">
               <div class="flex items-center space-x-2">
-                <span class="bg-amber-500 text-slate-950 px-2.5 py-1 rounded-lg font-black text-xs">LIVE QUIZ</span>
-                <span class="text-xs text-gray-400 font-bold">Total Votes: ${state.totalResponses}</span>
+                <span class="bg-amber-500 text-slate-950 px-2.5 py-1 rounded-lg font-black text-xs">LIVE GAME QUESTION</span>
+                <span class="text-xs text-gray-400 font-bold">Total Responses: ${state.totalResponses}</span>
               </div>
-              <span class="text-2xl font-mono font-black ${state.quizTimeRemaining < 10 ? 'text-red-500 animate-pulse' : 'text-amber-400'}">${state.quizTimeRemaining}s</span>
+              <span class="text-3xl font-mono font-black ${state.quizTimeRemaining < 10 ? 'text-red-500 animate-pulse' : 'text-amber-400'}">${state.quizTimeRemaining}s</span>
             </div>
 
             <h2 class="text-xl sm:text-3xl font-black text-white">${q.title || q.question || 'Live Question'}</h2>
@@ -1656,23 +1707,23 @@
                 const isCorrect = idx === q.correct;
                 const count = state.responseCounts[idx] || 0;
                 const pct = state.totalResponses > 0 ? Math.round((count / state.totalResponses) * 100) : 0;
+                const style = kahootStyles[idx % 4];
                 
                 return `
-                  <div class="p-3.5 rounded-xl border flex flex-col justify-between ${showAnswer && isCorrect ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300' : 'bg-gray-950 border-gray-800 text-gray-200'}">
+                  <div class="p-4 rounded-xl border flex flex-col justify-between ${showAnswer && isCorrect ? 'bg-emerald-600 border-white ring-4 ring-emerald-400/40 text-white font-black' : `${style.bg} text-white`}">
                     <div class="flex items-center justify-between">
-                      <span class="text-sm font-bold">${opt}${showAnswer && isCorrect ? '✓' : ''}</span>
-                      <span class="text-xs font-mono font-black text-amber-400 bg-amber-500/10 px-2 py-1 rounded">${String.fromCharCode(65 + idx)}</span>
+                      <span class="text-base font-black">${style.symbol} ${opt}${showAnswer && isCorrect ? ' ✓' : ''}</span>
                     </div>
                     ${showAnswer ? `
-                      <div class="mt-3 flex items-center justify-between text-xs font-mono text-gray-400">
+                      <div class="mt-4 pt-3 border-t border-white/20 flex items-center justify-between text-xs font-mono font-bold text-white/90">
                         <span>${count} responses</span>
-                        <span class="font-bold text-amber-400">${pct}%</span>
+                        <span>${pct}%</span>
                       </div>
-                      <div class="w-full bg-gray-900 rounded-full h-1.5 mt-1 overflow-hidden">
-                        <div class="bg-amber-500 h-1.5 rounded-full transition-all duration-300" style="width: ${pct}%"></div>
+                      <div class="w-full bg-black/30 rounded-full h-2 mt-1 overflow-hidden">
+                        <div class="bg-white h-2 rounded-full transition-all duration-300" style="width: ${pct}%"></div>
                       </div>
                     ` : `
-                      <div class="mt-3 text-xs font-mono text-gray-500 italic">Voting in progress...</div>
+                      <div class="mt-3 text-xs font-mono text-white/70 italic">Answers locking in...</div>
                     `}
                   </div>
                 `;
@@ -1719,12 +1770,12 @@
       }
 
       const rowsHtml = toggleHtml + leaderboardData.map((item, idx) => `
-        <div class="flex items-center justify-between p-3 rounded-xl bg-gray-950 border ${item.name === state.userName ? 'border-amber-500/50 bg-amber-500/5' : 'border-gray-800'} text-xs sm:text-sm">
-          <div class="flex items-center space-x-2 truncate">
-            <span class="w-6 h-6 rounded-full ${idx === 0 ? 'bg-amber-500 text-slate-950' : 'bg-gray-800 text-gray-300'} flex items-center justify-center font-black shrink-0">${idx + 1}</span>
-            <span class="font-bold text-white truncate">${item.name} ${item.name === state.userName ? '<span class="text-[10px] text-amber-400">(You)</span>' : ''}</span>
+        <div class="flex items-center justify-between p-3.5 rounded-xl bg-gray-950 border ${item.name === state.userName ? 'border-amber-500/50 bg-amber-500/5' : 'border-gray-800'} text-xs sm:text-sm shadow">
+          <div class="flex items-center space-x-3 truncate">
+            <span class="w-7 h-7 rounded-full ${idx === 0 ? 'bg-amber-500 text-slate-950 font-black text-base' : idx === 1 ? 'bg-gray-300 text-slate-950 font-bold' : idx === 2 ? 'bg-amber-700 text-white font-bold' : 'bg-gray-800 text-gray-300'} flex items-center justify-center shrink-0">${idx + 1}</span>
+            <span class="font-black text-white truncate text-sm sm:text-base">${item.name} ${item.name === state.userName ? '<span class="text-[10px] text-amber-400 font-bold">(You)</span>' : ''}</span>
           </div>
-          <span class="font-mono font-black text-amber-400 shrink-0 ml-2">${item.score} pts</span>
+          <span class="font-mono font-black text-amber-400 text-base shrink-0 ml-2">${item.score} pts</span>
         </div>
       `).join('');
 
