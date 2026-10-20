@@ -738,21 +738,33 @@
       try {
         let cleanCode = (state.eventCode || '').replace(/^#/, '').trim().toUpperCase();
         if (!cleanCode) return;
-
+    
         const res = await fetch(`/api/pulse?eventCode=${encodeURIComponent(cleanCode)}`);
         if (!res.ok) return;
         const data = await res.json();
-
+    
         if (data && data.recent_pulses) {
           const sortedPulses = [...data.recent_pulses].sort((a, b) => a.id - b.id);
-
+    
+          // Seed deckMap from memory AND localStorage to preserve local additions
           const deckMap = new Map();
+          
+          try {
+            const localSaved = JSON.parse(localStorage.getItem(`pulse_deck_${cleanCode}`) || '[]');
+            localSaved.forEach(q => {
+              if (q && (q.id || q.title || q.question)) {
+                deckMap.set(q.id || q.title || q.question, q);
+              }
+            });
+          } catch(e) {}
+    
           (state.quizDeck || []).forEach(q => {
             if (q && (q.id || q.title || q.question)) {
               deckMap.set(q.id || q.title || q.question, q);
             }
           });
-
+    
+          // Pass 1: Handle Leaderboard Resets
           sortedPulses.forEach(p => {
             if (p.event_type === 'leaderboard_reset') {
               const resetTime = p.created_at ? new Date(p.created_at).getTime() : Date.now();
@@ -762,16 +774,18 @@
               }
             }
           });
-
+    
+          // Pass 2: Main Event Processing Loop
           sortedPulses.forEach(p => {
             if (processedPulseIds.has(p.id)) return;
             processedPulseIds.add(p.id);
-
+    
+            // 1. Process Saved Quiz Deck Items
             if (p.event_type === 'quiz_save' && p.metadata) {
               let savedQuiz = null;
               try {
                 let meta = p.metadata;
-                if (typeof meta === 'string') {
+                while (typeof meta === 'string') {
                   meta = meta.replace(/[\u2026]/g, '...'); 
                   meta = JSON.parse(meta);
                 }
@@ -782,37 +796,40 @@
               } catch(e) {
                 console.warn("Skipping malformed quiz_save pulse:", p.id, e);
               }
-
+    
               if (savedQuiz && (savedQuiz.id || savedQuiz.title || savedQuiz.question)) {
                 const qId = savedQuiz.id || savedQuiz.title || savedQuiz.question;
                 deckMap.set(qId, savedQuiz);
               }
             }
-
+    
+            // 2. Process Quiz Deletions
             if (p.event_type === 'quiz_delete' && p.metadata) {
               let meta = p.metadata;
               if (typeof meta === 'string') {
                 try { meta = JSON.parse(meta); } catch(e) {}
               }
-              if (meta && meta.id) {
-                deckMap.delete(meta.id);
+              if (meta && (meta.id || meta.title)) {
+                deckMap.delete(meta.id || meta.title);
               }
             }
-
+    
+            // 3. Process Audience Questions
             if (p.event_type === 'question' && p.metadata) {
               let meta = p.metadata;
               if (typeof meta === 'string') {
                 try { meta = JSON.parse(meta); } catch(e) {}
               }
-              if (meta.id && !state.questions.some(q => q.id === meta.id)) {
+              if (meta && meta.id && !state.questions.some(q => q.id === meta.id)) {
                 state.questions.unshift(meta);
               }
             }
-
+    
+            // 4. Process Quiz Clears (Resets active live state ONLY, leaves deck intact)
             if (p.event_type === 'quiz_clear') {
               const clearTime = p.created_at ? new Date(p.created_at).getTime() : Date.now();
               state.lastQuizClearedAt = Math.max(state.lastQuizClearedAt, clearTime);
-            
+    
               state.activeQuizQuestion = null;
               state.activeQuizQuestionId = null;
               state.activeQuizQuestionStartedAt = null;
@@ -820,13 +837,14 @@
               state.userSelectedOption = null;
               state.spotlightedItem = null;
               state.confettiFired = false;
-              
+    
               if (state.activeQuizTimer) {
                 clearInterval(state.activeQuizTimer);
                 state.activeQuizTimer = null;
               }
             }
-
+    
+            // 5. Process Question Releases
             if (p.event_type === 'quiz_release' && p.metadata) {
               let meta = p.metadata;
               while (typeof meta === 'string') {
@@ -837,17 +855,17 @@
                 try { quiz = JSON.parse(quiz); } catch(e) {}
               }
               const startedAt = (meta && meta.startedAt) || (p.created_at ? new Date(p.created_at).getTime() : Date.now());
-              
+    
               if (startedAt <= state.lastQuizClearedAt || handledQuizReleases.has(p.id)) {
                 return;
               }
-
+    
               if (quiz) {
                 handledQuizReleases.add(p.id);
                 const qId = String(quiz.id || quiz.title || quiz.question || 'active_quiz');
                 const answeredMap = JSON.parse(sessionStorage.getItem('pulse_answered_quizzes') || '{}');
                 const alreadyAnsweredOption = answeredMap[quiz.id] !== undefined ? answeredMap[quiz.id] : null;
-
+    
                 if (String(state.activeQuizQuestionId) !== qId) {
                   state.activeQuizQuestion = quiz;
                   state.activeQuizQuestionId = qId;
@@ -858,35 +876,42 @@
                   state.totalResponses = 0;
                   state.spotlightedItem = { type: 'quiz', data: quiz };
                   state.confettiFired = false;
-                  
+    
                   startQuizTimer(qId, quiz.timeLimit || 30, startedAt);
                 }
               }
             }
-
+    
+            // 6. Process Quiz Answers
             if (p.event_type === 'quiz_answer' && p.metadata) {
               let meta = p.metadata;
               if (typeof meta === 'string') {
                 try { meta = JSON.parse(meta); } catch(e) {}
               }
-
+    
               const pulseTime = p.created_at ? new Date(p.created_at).getTime() : Date.now();
-
-              if (state.activeQuizQuestion && meta.quizId === state.activeQuizQuestion.id) {
+    
+              if (state.activeQuizQuestion && meta && meta.quizId === state.activeQuizQuestion.id) {
                 if (typeof meta.selectedIndex === 'number' && meta.selectedIndex >= 0 && meta.selectedIndex < 4) {
                   state.responseCounts[meta.selectedIndex]++;
                   state.totalResponses++;
                 }
               }
-
-              if (pulseTime >= state.lastLeaderboardResetAt && meta.userName && meta.pointsEarned) {
+    
+              if (pulseTime >= state.lastLeaderboardResetAt && meta && meta.userName && meta.pointsEarned) {
                 recordSessionScore(meta.userName, meta.pointsEarned);
               }
             }
           });
-
-          state.quizDeck = Array.from(deckMap.values());
-
+    
+          // Update state and cache saved questions locally for immediate availability
+          const updatedDeck = Array.from(deckMap.values());
+          state.quizDeck = updatedDeck;
+          try {
+            localStorage.setItem(`pulse_deck_${cleanCode}`, JSON.stringify(updatedDeck));
+          } catch(e) {}
+    
+          // Render updated UI panes
           renderQuizDeck();
           renderQuestions();
           renderAudienceQuizPane();
@@ -896,15 +921,6 @@
         console.error('Failed to fetch pulse logs:', err);
       }
     }
-
-    window.onload = function() {
-      checkParticipantName();
-      setEventCode(state.eventCode);
-      lucide.createIcons();
-      renderAll();
-      initPresenterApp();
-      sendPulse('page_view', { page: 'pulse_index' });
-    };
 
     function switchView(viewMode) {
       if (viewMode === 'presenter' && !isPresenterAuthenticated) {
