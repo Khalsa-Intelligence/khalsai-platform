@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Khalsa AI Pulse Pro - Interactive Game Show & Q&A Platform</title>
+  <title>Khalsa Intelligence Pulse Pro - Interactive Game Show & Q&A Platform</title>
   
   <!-- Tailwind CSS, Lucide Icons & QR Code Generator -->
   <script src="https://cdn.tailwindcss.com"></script>
@@ -34,17 +34,18 @@
     }
   </script>
   <style>
-    body { background-color: #080C14; color: #F3F4F6; font-family: 'Plus Jakarta Sans', sans-serif; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.3s, color 0.3s; }
     .gold-gradient-text { background: linear-gradient(135deg, #FFF 10%, #FBBF24 50%, #F59E0B 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    html:not(.dark) .gold-gradient-text { background: linear-gradient(135deg, #1E293B 10%, #D97706 50%, #B45309 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .gold-gradient-bg { background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); }
     .glow-gold { box-shadow: 0 0 25px rgba(245, 158, 11, 0.25); }
     #qrcode canvas, #qrcode img { margin: 0 auto; border-radius: 12px; padding: 6px; background: white; }
   </style>
 </head>
-<body class="h-full flex flex-col bg-[#080C14] text-gray-100 antialiased selection:bg-amber-500 selection:text-black">
+<body class="h-full flex flex-col bg-[#080C14] text-gray-100 dark:bg-[#080C14] dark:text-gray-100 light:bg-slate-50 light:text-slate-900 antialiased selection:bg-amber-500 selection:text-black">
 
   <!-- Top Navigation Header -->
-  <header class="sticky top-0 z-40 border-b border-gray-800/80 bg-[#0B0F17]/95 backdrop-blur-md px-3 sm:px-6 py-2.5 transition-all">
+  <header class="sticky top-0 z-40 border-b border-gray-800/80 dark:border-gray-800/80 light:border-slate-200 bg-[#0B0F17]/95 dark:bg-[#0B0F17]/95 light:bg-white/95 backdrop-blur-md px-3 sm:px-6 py-2.5 transition-all">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-4">
       
       <!-- Top Row on Mobile: Brand & Fullscreen / Code -->
@@ -55,50 +56,60 @@
           </div>
           <div>
             <div class="flex items-center space-x-1.5 sm:space-x-2">
-              <span class="text-lg sm:text-2xl font-black tracking-tight gold-gradient-text uppercase">Khalsa AI Pulse</span>
-              <span class="hidden sm:inline-block bg-amber-500/20 text-amber-400 text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold border border-amber-500/30">PRO</span>
+              <span class="text-lg sm:text-2xl font-black tracking-tight gold-gradient-text uppercase">Khalsa Intelligence Pulse</span>
+              <span class="hidden sm:inline-block bg-amber-500/20 text-amber-500 dark:text-amber-400 text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold border border-amber-500/30">PRO</span>
             </div>
-            <p class="hidden sm:block text-xs font-semibold text-gray-400">Interactive Game Show & Conference Platform</p>
+            <p class="hidden sm:block text-xs font-semibold text-gray-400 dark:text-gray-400 light:text-slate-500">Interactive Game Show & Conference Platform</p>
           </div>
         </div>
 
-        <!-- Mobile Fullscreen Toggle button -->
-        <button onclick="toggleFullscreen()" class="sm:hidden p-2 rounded-xl bg-gray-900 border border-gray-800 text-gray-300 hover:text-white transition" title="Toggle Fullscreen">
-          <i data-lucide="maximize" class="w-4 h-4"></i>
-        </button>
+        <div class="flex items-center space-x-2 sm:hidden">
+          <button onclick="toggleTheme()" class="p-2 rounded-xl bg-gray-900 dark:bg-gray-900 light:bg-slate-100 border border-gray-800 dark:border-gray-800 light:border-slate-300 text-gray-300 dark:text-gray-300 light:text-slate-700 transition">
+            <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+            <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
+          </button>
+          <button onclick="toggleFullscreen()" class="p-2 rounded-xl bg-gray-900 dark:bg-gray-900 light:bg-slate-100 border border-gray-800 dark:border-gray-800 light:border-slate-300 text-gray-300 dark:text-gray-300 light:text-slate-700 transition">
+            <i data-lucide="maximize" class="w-4 h-4"></i>
+          </button>
+        </div>
       </div>
 
       <!-- Desktop Event Code Selector -->
-      <div class="hidden lg:flex items-center space-x-2 bg-gray-900/90 px-3 py-1.5 rounded-xl border border-gray-800">
-        <span class="text-xs uppercase tracking-wider font-extrabold text-gray-400">Code:</span>
-        <input type="text" id="headerAudienceCodeInput" value="" class="bg-gray-950 px-2 py-0.5 rounded border border-gray-700 font-mono font-black text-amber-400 text-sm focus:outline-none focus:border-amber-500 w-32 uppercase">
+      <div class="hidden lg:flex items-center space-x-2 bg-gray-900/90 dark:bg-gray-900/90 light:bg-slate-100 px-3 py-1.5 rounded-xl border border-gray-800 dark:border-gray-800 light:border-slate-300">
+        <span class="text-xs uppercase tracking-wider font-extrabold text-gray-400 dark:text-gray-400 light:text-slate-500">Code:</span>
+        <input type="text" id="headerAudienceCodeInput" value="" class="bg-gray-950 dark:bg-gray-950 light:bg-white px-2 py-0.5 rounded border border-gray-700 dark:border-gray-700 light:border-slate-300 font-mono font-black text-amber-500 dark:text-amber-400 text-sm focus:outline-none focus:border-amber-500 w-32 uppercase">
         <button onclick="changeAudienceEventCode()" class="bg-amber-500 text-slate-950 font-black text-xs px-2.5 py-1 rounded-lg hover:brightness-110 transition flex items-center space-x-1 shadow">
           <span>Join</span>
         </button>
-        <button onclick="copyEventCode()" class="text-gray-400 hover:text-amber-400 transition ml-1" title="Copy Event Code">
+        <button onclick="copyEventCode()" class="text-gray-400 hover:text-amber-500 transition ml-1" title="Copy Event Code">
           <i data-lucide="copy" class="w-4 h-4"></i>
         </button>
       </div>
 
-      <!-- Header Button Controls (Feedback, Audience View, Presenter View) -->
-      <div class="flex items-center justify-between sm:justify-end space-x-2 border-t border-gray-800/80 pt-2 sm:border-t-0 sm:pt-0">
-        <a href="https://khalsai.com/why-guru-feedback/" target="_blank" rel="noopener noreferrer" class="flex-1 sm:flex-none flex items-center justify-center space-x-1 px-3 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-400 font-bold text-xs sm:text-sm transition shadow-sm">
+      <!-- Header Button Controls (Feedback, Audience, Presenter, Theme Toggle) -->
+      <div class="flex items-center justify-between sm:justify-end space-x-2 border-t border-gray-800/80 dark:border-gray-800/80 light:border-slate-200 pt-2 sm:border-t-0 sm:pt-0">
+        <a href="https://khalsai.com/why-guru-feedback/" target="_blank" rel="noopener noreferrer" class="flex-1 sm:flex-none flex items-center justify-center space-x-1 px-3 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-500 dark:text-amber-400 font-bold text-xs sm:text-sm transition shadow-sm">
           <i data-lucide="message-square-heart" class="w-4 h-4"></i>
           <span>Feedback</span>
         </a>
 
-        <div class="flex-1 sm:flex-none bg-gray-900/90 p-1 rounded-xl border border-gray-800 flex items-center gap-1">
+        <div class="flex-1 sm:flex-none bg-gray-900/90 dark:bg-gray-900/90 light:bg-slate-100 p-1 rounded-xl border border-gray-800 dark:border-gray-800 light:border-slate-300 flex items-center gap-1">
           <button id="btnAudienceView" onclick="switchView('audience')" class="flex-1 sm:flex-none px-3 py-2 rounded-lg text-xs sm:text-sm font-extrabold transition flex items-center justify-center space-x-1.5 bg-amber-500 text-slate-950 shadow">
             <i data-lucide="users" class="w-4 h-4"></i>
             <span>Audience</span>
           </button>
-          <button id="btnPresenterView" onclick="switchView('presenter')" class="flex-1 sm:flex-none px-3 py-2 rounded-lg text-xs sm:text-sm font-extrabold text-gray-400 hover:text-white transition flex items-center justify-center space-x-1.5">
+          <button id="btnPresenterView" onclick="switchView('presenter')" class="flex-1 sm:flex-none px-3 py-2 rounded-lg text-xs sm:text-sm font-extrabold text-gray-400 dark:text-gray-400 light:text-slate-600 hover:text-white transition flex items-center justify-center space-x-1.5">
             <i data-lucide="presentation" class="w-4 h-4"></i>
             <span>Presenter</span>
           </button>
         </div>
 
-        <button onclick="toggleFullscreen()" class="hidden sm:block p-2.5 rounded-xl bg-gray-900 border border-gray-800 text-gray-300 hover:text-white transition" title="Toggle Fullscreen">
+        <button onclick="toggleTheme()" class="hidden sm:block p-2.5 rounded-xl bg-gray-900 dark:bg-gray-900 light:bg-slate-100 border border-gray-800 dark:border-gray-800 light:border-slate-300 text-gray-300 dark:text-gray-300 light:text-slate-700 transition" title="Toggle Light/Dark Theme">
+          <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+          <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
+        </button>
+
+        <button onclick="toggleFullscreen()" class="hidden sm:block p-2.5 rounded-xl bg-gray-900 dark:bg-gray-900 light:bg-slate-100 border border-gray-800 dark:border-gray-800 light:border-slate-300 text-gray-300 dark:text-gray-300 light:text-slate-700 transition" title="Toggle Fullscreen">
           <i data-lucide="maximize" class="w-4 h-4"></i>
         </button>
       </div>
@@ -106,13 +117,13 @@
   </header>
 
   <!-- Mobile Event Code Bar -->
-  <div class="lg:hidden bg-gray-950/80 border-b border-gray-800 px-3 py-1.5 flex items-center justify-between text-xs gap-2">
+  <div class="lg:hidden bg-gray-950/80 dark:bg-gray-950/80 light:bg-slate-200 border-b border-gray-800 dark:border-gray-800 light:border-slate-300 px-3 py-1.5 flex items-center justify-between text-xs gap-2">
     <div class="flex items-center space-x-1.5 font-mono">
-      <span class="text-gray-400 font-sans uppercase font-extrabold text-[10px]">CODE:</span>
-      <input type="text" id="mobileAudienceCodeInput" value="" class="bg-gray-900 px-1.5 py-0.5 rounded border border-gray-700 font-mono font-black text-amber-400 text-xs w-28 uppercase">
+      <span class="text-gray-400 dark:text-gray-400 light:text-slate-600 font-sans uppercase font-extrabold text-[10px]">CODE:</span>
+      <input type="text" id="mobileAudienceCodeInput" value="" class="bg-gray-900 dark:bg-gray-900 light:bg-white px-1.5 py-0.5 rounded border border-gray-700 dark:border-gray-700 light:border-slate-300 font-mono font-black text-amber-500 dark:text-amber-400 text-xs w-28 uppercase">
       <button onclick="changeMobileAudienceCode()" class="bg-amber-500 text-slate-950 font-bold text-[10px] px-2 py-0.5 rounded">Join</button>
     </div>
-    <button onclick="copyEventCode()" class="text-amber-400 font-bold flex items-center space-x-1 hover:underline shrink-0">
+    <button onclick="copyEventCode()" class="text-amber-500 dark:text-amber-400 font-bold flex items-center space-x-1 hover:underline shrink-0">
       <i data-lucide="copy" class="w-3 h-3"></i>
       <span>Copy</span>
     </button>
@@ -125,53 +136,53 @@
     <div id="audienceView" class="flex-1 flex flex-col space-y-4 sm:space-y-6">
       
       <!-- Sync Status & Desktop Tab Bar -->
-      <div class="flex items-center justify-between bg-gray-900/80 border border-gray-800 p-2.5 sm:p-3 rounded-2xl">
+      <div class="flex items-center justify-between bg-gray-900/80 dark:bg-gray-900/80 light:bg-white border border-gray-800 dark:border-gray-800 light:border-slate-200 p-2.5 sm:p-3 rounded-2xl shadow-sm">
         <div class="hidden sm:flex space-x-2">
           <button onclick="switchAudienceTab('qa')" id="tabAudienceQA" class="px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow">
             <i data-lucide="message-square" class="w-4 h-4"></i>
             <span>Live Q&A</span>
             <span id="qaBadge" class="ml-1 bg-black/20 px-2 py-0.5 rounded-full text-xs">0</span>
           </button>
-          <button onclick="switchAudienceTab('quiz')" id="tabAudienceQuiz" class="px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 text-gray-300 hover:bg-gray-800">
+          <button onclick="switchAudienceTab('quiz')" id="tabAudienceQuiz" class="px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 text-gray-300 dark:text-gray-300 light:text-slate-600 hover:bg-gray-800 dark:hover:bg-gray-800 light:hover:bg-slate-100">
             <i data-lucide="award" class="w-4 h-4"></i>
             <span>Live Game Show</span>
             <span id="activeQuizIndicator" class="hidden w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
           </button>
-          <button onclick="switchAudienceTab('leaderboard')" id="tabAudienceLeaderboard" class="px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 text-gray-300 hover:bg-gray-800">
+          <button onclick="switchAudienceTab('leaderboard')" id="tabAudienceLeaderboard" class="px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 text-gray-300 dark:text-gray-300 light:text-slate-600 hover:bg-gray-800 dark:hover:bg-gray-800 light:hover:bg-slate-100">
             <i data-lucide="trophy" class="w-4 h-4"></i>
             <span>Leaderboard</span>
           </button>
         </div>
 
-        <div class="flex items-center space-x-1.5 text-xs bg-gray-950 px-2.5 py-1 rounded-lg border border-gray-800 text-amber-400 font-bold">
+        <div class="flex items-center space-x-1.5 text-xs bg-gray-950 dark:bg-gray-950 light:bg-slate-100 px-2.5 py-1 rounded-lg border border-gray-800 dark:border-gray-800 light:border-slate-200 text-amber-500 dark:text-amber-400 font-bold">
           <i data-lucide="user" class="w-3.5 h-3.5"></i>
           <span id="audiencePlayerDisplay" class="truncate max-w-[100px] sm:max-w-[140px]">...</span>
-          <span id="playerStreakBadge" class="hidden bg-red-500/20 text-red-400 text-[10px] px-1.5 py-0.5 rounded font-black">🔥 0</span>
-          <button onclick="changePlayerNamePrompt()" class="text-gray-400 hover:text-white ml-1" title="Change Name">
+          <span id="playerStreakBadge" class="hidden bg-red-500/20 text-red-500 dark:text-red-400 text-[10px] px-1.5 py-0.5 rounded font-black">🔥 0</span>
+          <button onclick="changePlayerNamePrompt()" class="text-gray-400 dark:text-gray-400 light:text-slate-500 hover:text-amber-500 ml-1" title="Change Name">
             <i data-lucide="edit-2" class="w-3 h-3"></i>
           </button>
         </div>
 
-        <div class="flex items-center space-x-2 text-xs text-gray-400 px-3 py-1 bg-gray-950 rounded-lg border border-gray-800 w-full sm:w-auto justify-center sm:justify-start">
+        <div class="flex items-center space-x-2 text-xs text-gray-400 dark:text-gray-400 light:text-slate-500 px-3 py-1 bg-gray-950 dark:bg-gray-950 light:bg-slate-100 rounded-lg border border-gray-800 dark:border-gray-800 light:border-slate-200 w-full sm:w-auto justify-center sm:justify-start">
           <i data-lucide="circle" class="w-2.5 h-2.5 text-emerald-400 fill-emerald-400 animate-pulse"></i>
-          <span class="font-bold text-gray-300">PULSE_DB Live Sync</span>
+          <span class="font-bold text-gray-300 dark:text-gray-300 light:text-slate-700">PULSE_DB Live Sync</span>
         </div>
       </div>
 
       <!-- TAB 1: AUDIENCE Q&A -->
       <div id="audienceQAPane" class="space-y-4 sm:space-y-6">
-        <div class="bg-gradient-to-b from-gray-900 to-[#0F1623] border border-gray-800 rounded-2xl p-4 sm:p-6 shadow-xl">
-          <h2 class="text-lg sm:text-2xl font-black mb-2 sm:mb-3 text-white flex items-center space-x-2">
-            <i data-lucide="help-circle" class="w-5 h-5 text-amber-400"></i>
+        <div class="bg-gradient-to-b from-gray-900 to-[#0F1623] dark:from-gray-900 dark:to-[#0F1623] light:from-white light:to-slate-100 border border-gray-800 dark:border-gray-800 light:border-slate-200 rounded-2xl p-4 sm:p-6 shadow-xl">
+          <h2 class="text-lg sm:text-2xl font-black mb-2 sm:mb-3 text-white dark:text-white light:text-slate-900 flex items-center space-x-2">
+            <i data-lucide="help-circle" class="w-5 h-5 text-amber-500 dark:text-amber-400"></i>
             <span>Ask the Speaker</span>
           </h2>
           <div class="space-y-3">
-            <textarea id="questionInput" rows="3" placeholder="Type your question here..." class="w-full bg-gray-950 border border-gray-800 rounded-xl p-3 sm:p-4 text-sm sm:text-base text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition resize-none font-medium"></textarea>
+            <textarea id="questionInput" rows="3" placeholder="Type your question here..." class="w-full bg-gray-950 dark:bg-gray-950 light:bg-white border border-gray-800 dark:border-gray-800 light:border-slate-300 rounded-xl p-3 sm:p-4 text-sm sm:text-base text-white dark:text-white light:text-slate-900 placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition resize-none font-medium"></textarea>
             
             <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
               <div class="flex items-center space-x-2">
-                <input type="text" id="userNameInput" placeholder="Your name (optional)" class="bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs sm:text-sm text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 font-medium flex-1 sm:w-48">
-                <button onclick="summarizeOrEnhanceQuestion()" class="text-xs font-bold text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 px-3 py-2 rounded-xl border border-amber-500/30 transition flex items-center space-x-1 shrink-0">
+                <input type="text" id="userNameInput" placeholder="Your name (optional)" class="bg-gray-950 dark:bg-gray-950 light:bg-white border border-gray-800 dark:border-gray-800 light:border-slate-300 rounded-xl px-3 py-2 text-xs sm:text-sm text-white dark:text-white light:text-slate-900 placeholder-gray-500 focus:outline-none focus:border-amber-500 font-medium flex-1 sm:w-48">
+                <button onclick="summarizeOrEnhanceQuestion()" class="text-xs font-bold text-amber-500 dark:text-amber-400 bg-amber-500/10 hover:bg-amber-500/20 px-3 py-2 rounded-xl border border-amber-500/30 transition flex items-center space-x-1 shrink-0">
                   <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
                   <span>AI Enhance</span>
                 </button>
@@ -187,10 +198,10 @@
 
         <div class="space-y-3 sm:space-y-4">
           <div class="flex items-center justify-between px-1">
-            <h3 class="text-base sm:text-xl font-bold text-gray-200">Submitted Questions</h3>
+            <h3 class="text-base sm:text-xl font-bold text-gray-200 dark:text-gray-200 light:text-slate-800">Submitted Questions</h3>
             <div class="flex items-center space-x-1.5 text-xs">
-              <button onclick="sortQuestions('upvotes')" id="sortUpvotes" class="px-2.5 py-1 rounded-lg bg-gray-800 text-amber-400 font-bold border border-gray-700">Top Voted</button>
-              <button onclick="sortQuestions('recent')" id="sortRecent" class="px-2.5 py-1 rounded-lg bg-gray-900 text-gray-400 font-bold hover:text-white">Recent</button>
+              <button onclick="sortQuestions('upvotes')" id="sortUpvotes" class="px-2.5 py-1 rounded-lg bg-gray-800 dark:bg-gray-800 light:bg-slate-200 text-amber-500 dark:text-amber-400 font-bold border border-gray-700 dark:border-gray-700 light:border-slate-300">Top Voted</button>
+              <button onclick="sortQuestions('recent')" id="sortRecent" class="px-2.5 py-1 rounded-lg bg-gray-900 dark:bg-gray-900 light:bg-slate-100 text-gray-400 dark:text-gray-400 light:text-slate-600 font-bold hover:text-white">Recent</button>
             </div>
           </div>
 
@@ -202,20 +213,20 @@
 
       <!-- TAB 2: AUDIENCE QUIZ & POLL INTERFACE -->
       <div id="audienceQuizPane" class="hidden space-y-6">
-        <div id="audienceQuizContainer" class="bg-gray-900 border border-gray-800 rounded-2xl p-5 sm:p-8 text-center space-y-6 shadow-2xl">
+        <div id="audienceQuizContainer" class="bg-gray-900 dark:bg-gray-900 light:bg-white border border-gray-800 dark:border-gray-800 light:border-slate-200 rounded-2xl p-5 sm:p-8 text-center space-y-6 shadow-2xl">
           <!-- Quiz details rendered dynamically -->
         </div>
       </div>
 
       <!-- TAB 3: AUDIENCE LEADERBOARD -->
       <div id="audienceLeaderboardPane" class="hidden space-y-6">
-        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 sm:p-8 space-y-4 shadow-2xl">
-          <div class="flex items-center justify-between border-b border-gray-800 pb-3">
-            <h2 class="text-lg sm:text-2xl font-black text-amber-400 flex items-center space-x-2">
+        <div class="bg-gray-900 dark:bg-gray-900 light:bg-white border border-gray-800 dark:border-gray-800 light:border-slate-200 rounded-2xl p-5 sm:p-8 space-y-4 shadow-2xl">
+          <div class="flex items-center justify-between border-b border-gray-800 dark:border-gray-800 light:border-slate-200 pb-3">
+            <h2 class="text-lg sm:text-2xl font-black text-amber-500 dark:text-amber-400 flex items-center space-x-2">
               <i data-lucide="trophy" class="w-6 h-6"></i>
               <span>Session Leaderboard</span>
             </h2>
-            <span class="text-xs text-gray-400 font-mono font-bold event-code-display" id="audienceLeaderboardCode"></span>
+            <span class="text-xs text-gray-400 dark:text-gray-400 light:text-slate-500 font-mono font-bold event-code-display" id="audienceLeaderboardCode"></span>
           </div>
 
           <div id="audienceLeaderboardList" class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -230,18 +241,18 @@
     <div id="presenterView" class="hidden flex-1 flex-col space-y-4 sm:space-y-6">
       
       <!-- Mobile-Optimized Presenter Header Controller -->
-      <div class="flex flex-col space-y-3 bg-gray-900 border border-gray-800 p-3 sm:p-4 rounded-2xl">
+      <div class="flex flex-col space-y-3 bg-gray-900 dark:bg-gray-900 light:bg-white border border-gray-800 dark:border-gray-800 light:border-slate-200 p-3 sm:p-4 rounded-2xl shadow-sm">
         
         <!-- Status & Code Input Row -->
-        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gray-800/80 pb-2.5">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gray-800/80 dark:border-gray-800/80 light:border-slate-200 pb-2.5">
           <span class="bg-emerald-500/10 text-emerald-400 font-extrabold px-2.5 py-1 rounded-lg border border-emerald-500/30 text-xs flex items-center space-x-1">
             <i data-lucide="tv" class="w-3.5 h-3.5"></i>
             <span>PRESENTER MODE</span>
           </span>
 
-          <div class="flex items-center space-x-2 bg-gray-950 px-2.5 py-1 rounded-xl border border-amber-500/40">
-            <label for="eventCodeInput" class="text-[10px] sm:text-xs font-bold text-gray-400 uppercase">Code:</label>
-            <input type="text" id="eventCodeInput" value="" class="bg-gray-900 px-1.5 py-0.5 rounded border border-gray-700 font-mono font-black text-amber-400 text-xs sm:text-sm focus:outline-none focus:border-amber-500 w-24 sm:w-32 uppercase">
+          <div class="flex items-center space-x-2 bg-gray-950 dark:bg-gray-950 light:bg-slate-100 px-2.5 py-1 rounded-xl border border-amber-500/40">
+            <label for="eventCodeInput" class="text-[10px] sm:text-xs font-bold text-gray-400 dark:text-gray-400 light:text-slate-500 uppercase">Code:</label>
+            <input type="text" id="eventCodeInput" value="" class="bg-gray-900 dark:bg-gray-900 light:bg-white px-1.5 py-0.5 rounded border border-gray-700 dark:border-gray-700 light:border-slate-300 font-mono font-black text-amber-500 dark:text-amber-400 text-xs sm:text-sm focus:outline-none focus:border-amber-500 w-24 sm:w-32 uppercase">
             <button onclick="updateEventCode()" class="bg-amber-500 text-slate-950 font-black text-[10px] sm:text-xs px-2.5 py-1 rounded-lg hover:brightness-110 transition flex items-center space-x-1 shadow">
               <i data-lucide="check" class="w-3 h-3 stroke-[3]"></i>
               <span>Set</span>
@@ -255,15 +266,15 @@
             <i data-lucide="sparkles" class="w-3.5 h-3.5 sm:hidden"></i>
             <span>Spotlight</span>
           </button>
-          <button onclick="switchPresenterSubTab('manager')" id="subTabManager" class="w-full sm:w-auto px-4 py-2.5 sm:py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 text-gray-300 hover:text-white flex items-center justify-center space-x-1.5 active:scale-95 transition">
+          <button onclick="switchPresenterSubTab('manager')" id="subTabManager" class="w-full sm:w-auto px-4 py-2.5 sm:py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 dark:bg-gray-800 light:bg-slate-200 text-gray-300 dark:text-gray-300 light:text-slate-700 hover:text-white flex items-center justify-center space-x-1.5 active:scale-95 transition">
             <i data-lucide="plus-circle" class="w-3.5 h-3.5 sm:hidden"></i>
             <span>Quiz Builder</span>
           </button>
-          <button onclick="switchPresenterSubTab('questions')" id="subTabQuestions" class="w-full sm:w-auto px-4 py-2.5 sm:py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 text-gray-300 hover:text-white flex items-center justify-center space-x-1.5 active:scale-95 transition">
+          <button onclick="switchPresenterSubTab('questions')" id="subTabQuestions" class="w-full sm:w-auto px-4 py-2.5 sm:py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 dark:bg-gray-800 light:bg-slate-200 text-gray-300 dark:text-gray-300 light:text-slate-700 hover:text-white flex items-center justify-center space-x-1.5 active:scale-95 transition">
             <i data-lucide="message-square" class="w-3.5 h-3.5 sm:hidden"></i>
             <span>Q&A Control</span>
           </button>
-          <button onclick="switchPresenterSubTab('leaderboard')" id="subTabPresenterLeaderboard" class="w-full sm:w-auto px-4 py-2.5 sm:py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 text-gray-300 hover:text-white flex items-center justify-center space-x-1.5 active:scale-95 transition">
+          <button onclick="switchPresenterSubTab('leaderboard')" id="subTabPresenterLeaderboard" class="w-full sm:w-auto px-4 py-2.5 sm:py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 dark:bg-gray-800 light:bg-slate-200 text-gray-300 dark:text-gray-300 light:text-slate-700 hover:text-white flex items-center justify-center space-x-1.5 active:scale-95 transition">
             <i data-lucide="trophy" class="w-3.5 h-3.5 sm:hidden"></i>
             <span>Leaderboard</span>
           </button>
@@ -273,27 +284,27 @@
 
       <!-- SUB-TAB 1: PRESENTER SPOTLIGHT & QR CODE -->
       <div id="presenterSpotlightPane" class="space-y-4 sm:space-y-6">
-        <div class="bg-gradient-to-r from-amber-500/10 via-gray-900 to-amber-500/10 border border-amber-500/40 rounded-2xl p-4 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-4 glow-gold">
+        <div class="bg-gradient-to-r from-amber-500/10 via-gray-900 to-amber-500/10 dark:from-amber-500/10 dark:via-gray-900 dark:to-amber-500/10 light:from-amber-500/10 light:via-slate-100 light:to-amber-500/10 border border-amber-500/40 rounded-2xl p-4 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-4 glow-gold">
           <div class="text-center md:text-left space-y-1 sm:space-y-2">
-            <p class="text-amber-400 text-xs sm:text-sm font-extrabold tracking-widest uppercase">SCAN QR CODE TO JOIN GAME SHOW</p>
-            <h1 class="text-3xl sm:text-6xl font-mono font-black text-white tracking-widest gold-gradient-text event-code-display" id="projectorEventCode"></h1>
-            <p class="text-gray-400 text-xs font-medium">Scan with camera to auto-join live quiz & Q&A</p>
+            <p class="text-amber-500 dark:text-amber-400 text-xs sm:text-sm font-extrabold tracking-widest uppercase">SCAN QR CODE TO JOIN GAME SHOW</p>
+            <h1 class="text-3xl sm:text-6xl font-mono font-black text-white dark:text-white light:text-slate-900 tracking-widest gold-gradient-text event-code-display" id="projectorEventCode"></h1>
+            <p class="text-gray-400 dark:text-gray-400 light:text-slate-600 text-xs font-medium">Scan with camera to auto-join live quiz & Q&A</p>
           </div>
 
-          <div class="flex flex-col items-center bg-gray-950 p-3 sm:p-4 rounded-xl border border-gray-800 shadow-xl shrink-0">
+          <div class="flex flex-col items-center bg-gray-950 dark:bg-gray-950 light:bg-white p-3 sm:p-4 rounded-xl border border-gray-800 dark:border-gray-800 light:border-slate-300 shadow-xl shrink-0">
             <div id="qrcode"></div>
-            <span class="text-[9px] font-mono font-bold text-amber-400/80 mt-1.5 tracking-wider uppercase">Auto-Join QR Code</span>
+            <span class="text-[9px] font-mono font-bold text-amber-500 dark:text-amber-400/80 mt-1.5 tracking-wider uppercase">Auto-Join QR Code</span>
           </div>
         </div>
 
-        <div id="spotlightContent" class="bg-gray-900 border border-gray-800 rounded-2xl p-5 sm:p-12 text-center min-h-[260px] sm:min-h-[380px] flex flex-col justify-center items-center shadow-2xl relative overflow-hidden">
+        <div id="spotlightContent" class="bg-gray-900 dark:bg-gray-900 light:bg-white border border-gray-800 dark:border-gray-800 light:border-slate-200 rounded-2xl p-5 sm:p-12 text-center min-h-[260px] sm:min-h-[380px] flex flex-col justify-center items-center shadow-2xl relative overflow-hidden">
           <div class="absolute top-3 left-4 flex items-center space-x-1.5 text-gray-500 uppercase font-black text-xs tracking-wider">
-            <i data-lucide="sparkles" class="w-4 h-4 text-amber-400"></i>
+            <i data-lucide="sparkles" class="w-4 h-4 text-amber-500 dark:text-amber-400"></i>
             <span>Projector Screen Focus</span>
           </div>
 
           <div id="clearSpotlightBtnContainer" class="absolute top-3 right-4 hidden">
-            <button onclick="clearActivePollAndReturnWaiting()" class="px-3 py-1 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 border border-red-500/30 font-bold text-xs flex items-center space-x-1 transition">
+            <button onclick="clearActivePollAndReturnWaiting()" class="px-3 py-1 rounded-lg bg-red-500/20 text-red-500 dark:text-red-400 hover:bg-red-500/30 border border-red-500/30 font-bold text-xs flex items-center space-x-1 transition">
               <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
               <span>Return to Waiting</span>
             </button>
@@ -301,22 +312,22 @@
 
           <div id="spotlightDisplayArea" class="w-full space-y-4 sm:space-y-6 mt-4">
             <div class="space-y-2 sm:space-y-4">
-              <i data-lucide="presentation" class="w-12 h-12 sm:w-16 sm:h-16 text-gray-700 mx-auto"></i>
-              <h2 class="text-xl sm:text-4xl font-black text-gray-400">No Item Spotlighted</h2>
-              <p class="text-xs sm:text-lg text-gray-500 font-medium max-w-xl mx-auto">Select a question or release a live quiz to present on the main screen.</p>
+              <i data-lucide="presentation" class="w-12 h-12 sm:w-16 sm:h-16 text-gray-700 dark:text-gray-700 light:text-slate-300 mx-auto"></i>
+              <h2 class="text-xl sm:text-4xl font-black text-gray-400 dark:text-gray-400 light:text-slate-500">No Item Spotlighted</h2>
+              <p class="text-xs sm:text-lg text-gray-500 dark:text-gray-500 light:text-slate-400 font-medium max-w-xl mx-auto">Select a question or release a live quiz to present on the main screen.</p>
             </div>
           </div>
         </div>
 
-        <div id="presenterLeaderboardCard" class="bg-gray-900 border border-gray-800 rounded-2xl p-4 sm:p-6 space-y-4">
-          <div class="flex items-center justify-between border-b border-gray-800 pb-3">
-            <h3 class="text-lg sm:text-2xl font-black text-amber-400 flex items-center space-x-2">
+        <div id="presenterLeaderboardCard" class="bg-gray-900 dark:bg-gray-900 light:bg-white border border-gray-800 dark:border-gray-800 light:border-slate-200 rounded-2xl p-4 sm:p-6 space-y-4">
+          <div class="flex items-center justify-between border-b border-gray-800 dark:border-gray-800 light:border-slate-200 pb-3">
+            <h3 class="text-lg sm:text-2xl font-black text-amber-500 dark:text-amber-400 flex items-center space-x-2">
               <i data-lucide="trophy" class="w-5 h-5 sm:w-7 sm:h-7"></i>
               <span>Live Leaderboard</span>
             </h3>
             <div class="flex items-center space-x-3">
-              <span class="text-xs text-gray-400">Session Rankings</span>
-              <button onclick="resetCurrentEventLeaderboard()" class="px-3 py-1.5 bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/30 text-xs font-bold rounded-lg flex items-center gap-1.5 transition">
+              <span class="text-xs text-gray-400 dark:text-gray-400 light:text-slate-500">Session Rankings</span>
+              <button onclick="resetCurrentEventLeaderboard()" class="px-3 py-1.5 bg-red-600/20 hover:bg-red-600/30 text-red-500 dark:text-red-400 border border-red-500/30 text-xs font-bold rounded-lg flex items-center gap-1.5 transition">
                 <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
                 Clear Leaderboard
               </button>
@@ -331,13 +342,13 @@
       <!-- SUB-TAB 2: QUIZ BUILDER -->
       <div id="presenterManagerPane" class="hidden space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div class="lg:col-span-5 bg-gray-900 border border-gray-800 rounded-2xl p-4 sm:p-6 space-y-4">
-            <div class="border-b border-gray-800 pb-2 flex items-center justify-between">
-              <h3 id="quizFormHeading" class="text-lg sm:text-2xl font-black text-white flex items-center space-x-2">
-                <i data-lucide="plus-circle" class="w-5 h-5 text-amber-400"></i>
+          <div class="lg:col-span-5 bg-gray-900 dark:bg-gray-900 light:bg-white border border-gray-800 dark:border-gray-800 light:border-slate-200 rounded-2xl p-4 sm:p-6 space-y-4">
+            <div class="border-b border-gray-800 dark:border-gray-800 light:border-slate-200 pb-2 flex items-center justify-between">
+              <h3 id="quizFormHeading" class="text-lg sm:text-2xl font-black text-white dark:text-white light:text-slate-900 flex items-center space-x-2">
+                <i data-lucide="plus-circle" class="w-5 h-5 text-amber-500 dark:text-amber-400"></i>
                 <span>Create Game Question</span>
               </h3>
-              <button id="btnCancelEdit" onclick="cancelEditQuizQuestion()" class="hidden text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-2.5 py-1 rounded-lg border border-gray-700 font-bold">
+              <button id="btnCancelEdit" onclick="cancelEditQuizQuestion()" class="hidden text-xs bg-gray-800 dark:bg-gray-800 light:bg-slate-200 hover:bg-gray-700 text-gray-300 dark:text-gray-300 light:text-slate-700 px-2.5 py-1 rounded-lg border border-gray-700 dark:border-gray-700 light:border-slate-300 font-bold">
                 Cancel
               </button>
             </div>
@@ -346,39 +357,39 @@
 
             <div class="space-y-3">
               <div>
-                <label class="block text-xs font-bold text-gray-300 mb-1">Question Title</label>
-                <input type="text" id="newQuizTitle" placeholder="e.g. What is..." class="w-full bg-gray-950 border border-gray-800 rounded-xl px-3 py-2 text-xs sm:text-sm text-white focus:outline-none focus:border-amber-500">
+                <label class="block text-xs font-bold text-gray-300 dark:text-gray-300 light:text-slate-700 mb-1">Question Title</label>
+                <input type="text" id="newQuizTitle" placeholder="e.g. What is..." class="w-full bg-gray-950 dark:bg-gray-950 light:bg-slate-50 border border-gray-800 dark:border-gray-800 light:border-slate-300 rounded-xl px-3 py-2 text-xs sm:text-sm text-white dark:text-white light:text-slate-900 focus:outline-none focus:border-amber-500">
               </div>
 
               <div class="space-y-2">
-                <label class="block text-xs font-bold text-gray-300">Options & Correct Selection (Kahoot Colors)</label>
+                <label class="block text-xs font-bold text-gray-300 dark:text-gray-300 light:text-slate-700">Options & Correct Selection (Kahoot Colors)</label>
                 
                 <div class="flex items-center space-x-2 bg-[#E21B3C]/10 p-1.5 rounded-lg border border-[#E21B3C]/30">
                   <input type="radio" name="correctOption" value="0" checked class="w-4 h-4 accent-[#E21B3C]">
                   <span class="text-red-400 font-bold text-xs">▲</span>
-                  <input type="text" id="option0" placeholder="Red Option A" class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-white">
+                  <input type="text" id="option0" placeholder="Red Option A" class="flex-1 bg-gray-950 dark:bg-gray-950 light:bg-white border border-gray-800 dark:border-gray-800 light:border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-white dark:text-white light:text-slate-900">
                 </div>
                 <div class="flex items-center space-x-2 bg-[#1368CE]/10 p-1.5 rounded-lg border border-[#1368CE]/30">
                   <input type="radio" name="correctOption" value="1" class="w-4 h-4 accent-[#1368CE]">
                   <span class="text-blue-400 font-bold text-xs">◆</span>
-                  <input type="text" id="option1" placeholder="Blue Option B" class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-white">
+                  <input type="text" id="option1" placeholder="Blue Option B" class="flex-1 bg-gray-950 dark:bg-gray-950 light:bg-white border border-gray-800 dark:border-gray-800 light:border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-white dark:text-white light:text-slate-900">
                 </div>
                 <div class="flex items-center space-x-2 bg-[#D89E00]/10 p-1.5 rounded-lg border border-[#D89E00]/30">
                   <input type="radio" name="correctOption" value="2" class="w-4 h-4 accent-[#D89E00]">
                   <span class="text-amber-400 font-bold text-xs">●</span>
-                  <input type="text" id="option2" placeholder="Yellow Option C" class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-white">
+                  <input type="text" id="option2" placeholder="Yellow Option C" class="flex-1 bg-gray-950 dark:bg-gray-950 light:bg-white border border-gray-800 dark:border-gray-800 light:border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-white dark:text-white light:text-slate-900">
                 </div>
                 <div class="flex items-center space-x-2 bg-[#26890C]/10 p-1.5 rounded-lg border border-[#26890C]/30">
                   <input type="radio" name="correctOption" value="3" class="w-4 h-4 accent-[#26890C]">
                   <span class="text-emerald-400 font-bold text-xs">■</span>
-                  <input type="text" id="option3" placeholder="Green Option D" class="flex-1 bg-gray-950 border border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-white">
+                  <input type="text" id="option3" placeholder="Green Option D" class="flex-1 bg-gray-950 dark:bg-gray-950 light:bg-white border border-gray-800 dark:border-gray-800 light:border-slate-300 rounded-lg px-2.5 py-1.5 text-xs text-white dark:text-white light:text-slate-900">
                 </div>
               </div>
 
               <div class="grid grid-cols-2 gap-3">
                 <div>
-                  <label class="block text-xs font-bold text-gray-300 mb-1">Timer</label>
-                  <select id="newQuizTimer" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-2.5 py-2 text-xs text-white focus:outline-none">
+                  <label class="block text-xs font-bold text-gray-300 dark:text-gray-300 light:text-slate-700 mb-1">Timer</label>
+                  <select id="newQuizTimer" class="w-full bg-gray-950 dark:bg-gray-950 light:bg-slate-50 border border-gray-800 dark:border-gray-800 light:border-slate-300 rounded-xl px-2.5 py-2 text-xs text-white dark:text-white light:text-slate-900 focus:outline-none">
                     <option value="0">⏳ Unlimited / Manual Close</option>
                     <option value="15">15 Seconds</option>
                     <option value="30" selected>30 Seconds</option>
@@ -387,8 +398,8 @@
                   </select>
                 </div>
                 <div>
-                  <label class="block text-xs font-bold text-gray-300 mb-1">Points</label>
-                  <input type="number" id="newQuizPoints" value="100" class="w-full bg-gray-950 border border-gray-800 rounded-xl px-2.5 py-2 text-xs text-white">
+                  <label class="block text-xs font-bold text-gray-300 dark:text-gray-300 light:text-slate-700 mb-1">Points</label>
+                  <input type="number" id="newQuizPoints" value="100" class="w-full bg-gray-950 dark:bg-gray-950 light:bg-slate-50 border border-gray-800 dark:border-gray-800 light:border-slate-300 rounded-xl px-2.5 py-2 text-xs text-white dark:text-white light:text-slate-900">
                 </div>
               </div>
 
@@ -400,8 +411,8 @@
 
           <div class="lg:col-span-7 space-y-4">
             <div class="flex items-center justify-between">
-              <h3 class="text-base sm:text-xl font-extrabold text-white">Pre-Loaded Deck</h3>
-              <button onclick="resetQuizDeck()" class="text-xs bg-gray-800 hover:bg-gray-700 text-gray-300 px-2.5 py-1 rounded-lg border border-gray-700 font-bold">
+              <h3 class="text-base sm:text-xl font-extrabold text-white dark:text-white light:text-slate-900">Pre-Loaded Deck</h3>
+              <button onclick="resetQuizDeck()" class="text-xs bg-gray-800 dark:bg-gray-800 light:bg-slate-200 hover:bg-gray-700 text-gray-300 dark:text-gray-300 light:text-slate-700 px-2.5 py-1 rounded-lg border border-gray-700 dark:border-gray-700 light:border-slate-300 font-bold">
                 Clear Deck
               </button>
             </div>
@@ -417,8 +428,8 @@
       <!-- SUB-TAB 3: Q&A CONTROLS -->
       <div id="presenterQuestionsPane" class="hidden space-y-4">
         <div class="flex items-center justify-between">
-          <h3 class="text-base sm:text-xl font-extrabold text-white">Q&A Moderation Queue</h3>
-          <button onclick="clearAllQuestions()" class="text-xs font-bold text-red-400 hover:bg-red-500/10 border border-red-500/30 px-2.5 py-1 rounded-lg">
+          <h3 class="text-base sm:text-xl font-extrabold text-white dark:text-white light:text-slate-900">Q&A Moderation Queue</h3>
+          <button onclick="clearAllQuestions()" class="text-xs font-bold text-red-500 dark:text-red-400 hover:bg-red-500/10 border border-red-500/30 px-2.5 py-1 rounded-lg">
             Clear Queue
           </button>
         </div>
@@ -430,13 +441,13 @@
 
       <!-- SUB-TAB 4: PRESENTER LEADERBOARD -->
       <div id="presenterLeaderboardPane" class="hidden space-y-6">
-        <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 sm:p-8 space-y-4 shadow-2xl">
-          <div class="flex items-center justify-between border-b border-gray-800 pb-3">
-            <h2 class="text-lg sm:text-2xl font-black text-amber-400 flex items-center space-x-2">
+        <div class="bg-gray-900 dark:bg-gray-900 light:bg-white border border-gray-800 dark:border-gray-800 light:border-slate-200 rounded-2xl p-5 sm:p-8 space-y-4 shadow-2xl">
+          <div class="flex items-center justify-between border-b border-gray-800 dark:border-gray-800 light:border-slate-200 pb-3">
+            <h2 class="text-lg sm:text-2xl font-black text-amber-500 dark:text-amber-400 flex items-center space-x-2">
               <i data-lucide="trophy" class="w-6 h-6"></i>
               <span>Session Leaderboard Management</span>
             </h2>
-            <button onclick="resetCurrentEventLeaderboard()" class="px-3 py-1.5 bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-500/30 text-xs font-bold rounded-lg flex items-center gap-1.5 transition">
+            <button onclick="resetCurrentEventLeaderboard()" class="px-3 py-1.5 bg-red-600/20 hover:bg-red-600/30 text-red-500 dark:text-red-400 border border-red-500/30 text-xs font-bold rounded-lg flex items-center gap-1.5 transition">
               <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
               Clear Leaderboard
             </button>
@@ -453,22 +464,52 @@
   </main>
 
   <!-- Sticky Mobile Navigation Bar -->
-  <nav class="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0B0F17]/95 backdrop-blur-md border-t border-gray-800 px-4 py-2 flex items-center justify-around">
-    <button onclick="switchAudienceTab('qa')" id="mobileNavQA" class="flex flex-col items-center space-y-1 text-amber-400 font-bold text-[10px]">
+  <nav class="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0B0F17]/95 dark:bg-[#0B0F17]/95 light:bg-white/95 backdrop-blur-md border-t border-gray-800 dark:border-gray-800 light:border-slate-200 px-4 py-2 flex items-center justify-around">
+    <button onclick="switchAudienceTab('qa')" id="mobileNavQA" class="flex flex-col items-center space-y-1 text-amber-500 dark:text-amber-400 font-bold text-[10px]">
       <i data-lucide="message-square" class="w-5 h-5"></i>
       <span>Live Q&A</span>
     </button>
-    <button onclick="switchAudienceTab('quiz')" id="mobileNavQuiz" class="flex flex-col items-center space-y-1 text-gray-400 hover:text-white font-bold text-[10px]">
+    <button onclick="switchAudienceTab('quiz')" id="mobileNavQuiz" class="flex flex-col items-center space-y-1 text-gray-400 dark:text-gray-400 light:text-slate-500 hover:text-white font-bold text-[10px]">
       <i data-lucide="award" class="w-5 h-5"></i>
       <span>Game Show</span>
     </button>
-    <button onclick="switchAudienceTab('leaderboard')" id="mobileNavLeaderboard" class="flex flex-col items-center space-y-1 text-gray-400 hover:text-white font-bold text-[10px]">
+    <button onclick="switchAudienceTab('leaderboard')" id="mobileNavLeaderboard" class="flex flex-col items-center space-y-1 text-gray-400 dark:text-gray-400 light:text-slate-500 hover:text-white font-bold text-[10px]">
       <i data-lucide="trophy" class="w-5 h-5"></i>
       <span>Leaderboard</span>
     </button>
   </nav>
 
   <script>
+    /* ==========================================================================
+       THEME MANAGEMENT (DARK / LIGHT MODE)
+       ========================================================================== */
+    function initTheme() {
+      const savedTheme = localStorage.getItem('pulse_theme') || 'dark';
+      if (savedTheme === 'light') {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.classList.add('light');
+      } else {
+        document.documentElement.classList.add('dark');
+        document.documentElement.classList.remove('light');
+      }
+    }
+
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.contains('dark');
+      if (isDark) {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.classList.add('light');
+        localStorage.setItem('pulse_theme', 'light');
+      } else {
+        document.documentElement.classList.add('dark');
+        document.documentElement.classList.remove('light');
+        localStorage.setItem('pulse_theme', 'dark');
+      }
+      lucide.createIcons();
+    }
+
+    initTheme();
+
     /* ==========================================================================
        WEB AUDIO API SOUND EFFECTS GENERATOR
        ========================================================================== */
@@ -494,9 +535,9 @@
         osc.stop(now + 0.08);
       } else if (type === 'success') {
         osc.type = 'triangle';
-        osc.frequency.setValueAtTime(523.25, now); // C5
-        osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
-        osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+        osc.frequency.setValueAtTime(523.25, now);
+        osc.frequency.setValueAtTime(659.25, now + 0.1);
+        osc.frequency.setValueAtTime(783.99, now + 0.2);
         gain.gain.setValueAtTime(0.12, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
         osc.start(now);
@@ -510,7 +551,6 @@
     const DEFAULT_EVENT_CODE = "SESSION1";
     const PRESENTER_PASSCODE = "6789";
     
-    // Check session storage for persisted presenter authentication
     let isPresenterAuthenticated = sessionStorage.getItem('pulse_presenter_auth') === 'true';
     
     let sessionId = sessionStorage.getItem('pulse_session_id');
@@ -621,7 +661,7 @@
 
     function checkParticipantName() {
       if (!state.userName || !state.userName.trim()) {
-        let name = prompt("Welcome to Khalsa AI Pulse Game Show! Enter your player nickname:");
+        let name = prompt("Welcome to Khalsa Intelligence Pulse! Enter your player nickname:");
     
         if (name === null || !name.trim()) {
           const adjectives = ["Brave", "Swift", "Wise", "Clever", "Bright", "Curious", "Bold"];
@@ -1063,7 +1103,6 @@
       checkParticipantName();
       setEventCode(state.eventCode);
       
-      // Apply initial view based on persistence
       if (state.view === 'presenter' && isPresenterAuthenticated) {
         switchView('presenter', true);
       } else {
@@ -1108,7 +1147,7 @@
         presView.classList.remove('flex');
 
         audBtn.className = "flex-1 sm:flex-none px-3 py-2 rounded-lg text-xs sm:text-sm font-extrabold transition flex items-center justify-center space-x-1.5 bg-amber-500 text-slate-950 shadow";
-        presBtn.className = "flex-1 sm:flex-none px-3 py-2 rounded-lg text-xs sm:text-sm font-extrabold text-gray-400 hover:text-white transition flex items-center justify-center space-x-1.5";
+        presBtn.className = "flex-1 sm:flex-none px-3 py-2 rounded-lg text-xs sm:text-sm font-extrabold text-gray-400 dark:text-gray-400 light:text-slate-600 hover:text-white transition flex items-center justify-center space-x-1.5";
       } else {
         presView.classList.remove('hidden');
         presView.classList.add('flex');
@@ -1116,7 +1155,7 @@
         audView.classList.remove('flex');
 
         presBtn.className = "flex-1 sm:flex-none px-3 py-2 rounded-lg text-xs sm:text-sm font-extrabold transition flex items-center justify-center space-x-1.5 bg-amber-500 text-slate-950 shadow";
-        audBtn.className = "flex-1 sm:flex-none px-3 py-2 rounded-lg text-xs sm:text-sm font-extrabold text-gray-400 hover:text-white transition flex items-center justify-center space-x-1.5";
+        audBtn.className = "flex-1 sm:flex-none px-3 py-2 rounded-lg text-xs sm:text-sm font-extrabold text-gray-400 dark:text-gray-400 light:text-slate-600 hover:text-white transition flex items-center justify-center space-x-1.5";
         renderQRCode();
       }
       lucide.createIcons();
@@ -1141,13 +1180,13 @@
       quizPane.classList.toggle('hidden', tab !== 'quiz');
       ldrPane.classList.toggle('hidden', tab !== 'leaderboard');
 
-      if (qaBtn) qaBtn.className = tab === 'qa' ? "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow" : "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 text-gray-300 hover:bg-gray-800";
-      if (quizBtn) quizBtn.className = tab === 'quiz' ? "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow" : "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 text-gray-300 hover:bg-gray-800";
-      if (ldrBtn) ldrBtn.className = tab === 'leaderboard' ? "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow" : "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 text-gray-300 hover:bg-gray-800";
+      if (qaBtn) qaBtn.className = tab === 'qa' ? "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow" : "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 text-gray-300 dark:text-gray-300 light:text-slate-600 hover:bg-gray-800 dark:hover:bg-gray-800 light:hover:bg-slate-100";
+      if (quizBtn) quizBtn.className = tab === 'quiz' ? "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow" : "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 text-gray-300 dark:text-gray-300 light:text-slate-600 hover:bg-gray-800 dark:hover:bg-gray-800 light:hover:bg-slate-100";
+      if (ldrBtn) ldrBtn.className = tab === 'leaderboard' ? "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow" : "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 text-gray-300 dark:text-gray-300 light:text-slate-600 hover:bg-gray-800 dark:hover:bg-gray-800 light:hover:bg-slate-100";
 
-      if (mobileQA) mobileQA.className = tab === 'qa' ? "flex flex-col items-center space-y-1 text-amber-400 font-bold text-[10px]" : "flex flex-col items-center space-y-1 text-gray-400 hover:text-white font-bold text-[10px]";
-      if (mobileQuiz) mobileQuiz.className = tab === 'quiz' ? "flex flex-col items-center space-y-1 text-amber-400 font-bold text-[10px]" : "flex flex-col items-center space-y-1 text-gray-400 hover:text-white font-bold text-[10px]";
-      if (mobileLdr) mobileLdr.className = tab === 'leaderboard' ? "flex flex-col items-center space-y-1 text-amber-400 font-bold text-[10px]" : "flex flex-col items-center space-y-1 text-gray-400 hover:text-white font-bold text-[10px]";
+      if (mobileQA) mobileQA.className = tab === 'qa' ? "flex flex-col items-center space-y-1 text-amber-500 dark:text-amber-400 font-bold text-[10px]" : "flex flex-col items-center space-y-1 text-gray-400 dark:text-gray-400 light:text-slate-500 hover:text-white font-bold text-[10px]";
+      if (mobileQuiz) mobileQuiz.className = tab === 'quiz' ? "flex flex-col items-center space-y-1 text-amber-500 dark:text-amber-400 font-bold text-[10px]" : "flex flex-col items-center space-y-1 text-gray-400 dark:text-gray-400 light:text-slate-500 hover:text-white font-bold text-[10px]";
+      if (mobileLdr) mobileLdr.className = tab === 'leaderboard' ? "flex flex-col items-center space-y-1 text-amber-500 dark:text-amber-400 font-bold text-[10px]" : "flex flex-col items-center space-y-1 text-gray-400 dark:text-gray-400 light:text-slate-500 hover:text-white font-bold text-[10px]";
 
       if (tab === 'leaderboard') renderLeaderboard();
       lucide.createIcons();
@@ -1157,7 +1196,7 @@
       state.presenterSubTab = subTab;
 
       const activeClass = "w-full sm:w-auto px-4 py-2.5 sm:py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-amber-500 text-slate-950 shadow flex items-center justify-center space-x-1.5 active:scale-95 transition";
-      const inactiveClass = "w-full sm:w-auto px-4 py-2.5 sm:py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 text-gray-300 hover:text-white flex items-center justify-center space-x-1.5 active:scale-95 transition";
+      const inactiveClass = "w-full sm:w-auto px-4 py-2.5 sm:py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-gray-800 dark:bg-gray-800 light:bg-slate-200 text-gray-300 dark:text-gray-300 light:text-slate-700 hover:text-white flex items-center justify-center space-x-1.5 active:scale-95 transition";
 
       document.getElementById('subTabSpotlight').className = subTab === 'spotlight' ? activeClass : inactiveClass;
       document.getElementById('subTabManager').className = subTab === 'manager' ? activeClass : inactiveClass;
@@ -1227,12 +1266,12 @@
     function sortQuestions(type) {
       if (type === 'upvotes') {
         state.questions.sort((a, b) => b.upvotes - a.upvotes);
-        document.getElementById('sortUpvotes').className = "px-2.5 py-1 rounded-lg bg-gray-800 text-amber-400 font-bold border border-gray-700";
-        document.getElementById('sortRecent').className = "px-2.5 py-1 rounded-lg bg-gray-900 text-gray-400 font-bold hover:text-white";
+        document.getElementById('sortUpvotes').className = "px-2.5 py-1 rounded-lg bg-gray-800 dark:bg-gray-800 light:bg-slate-200 text-amber-500 dark:text-amber-400 font-bold border border-gray-700 dark:border-gray-700 light:border-slate-300";
+        document.getElementById('sortRecent').className = "px-2.5 py-1 rounded-lg bg-gray-900 dark:bg-gray-900 light:bg-slate-100 text-gray-400 dark:text-gray-400 light:text-slate-600 font-bold hover:text-white";
       } else {
         state.questions.sort((a, b) => b.id - a.id);
-        document.getElementById('sortRecent').className = "px-2.5 py-1 rounded-lg bg-gray-800 text-amber-400 font-bold border border-gray-700";
-        document.getElementById('sortUpvotes').className = "px-2.5 py-1 rounded-lg bg-gray-900 text-gray-400 font-bold hover:text-white";
+        document.getElementById('sortRecent').className = "px-2.5 py-1 rounded-lg bg-gray-800 dark:bg-gray-800 light:bg-slate-200 text-amber-500 dark:text-amber-400 font-bold border border-gray-700 dark:border-gray-700 light:border-slate-300";
+        document.getElementById('sortUpvotes').className = "px-2.5 py-1 rounded-lg bg-gray-900 dark:bg-gray-900 light:bg-slate-100 text-gray-400 dark:text-gray-400 light:text-slate-600 font-bold hover:text-white";
       }
       renderQuestions();
     }
@@ -1311,7 +1350,7 @@
       document.getElementById('newQuizTimer').value = quiz.timeLimit !== undefined ? quiz.timeLimit : 30;
       document.getElementById('newQuizPoints').value = quiz.points || 100;
 
-      document.getElementById('quizFormHeading').innerHTML = `<i data-lucide="edit-3" class="w-5 h-5 text-amber-400"></i><span>Edit Game Question</span>`;
+      document.getElementById('quizFormHeading').innerHTML = `<i data-lucide="edit-3" class="w-5 h-5 text-amber-500 dark:text-amber-400"></i><span>Edit Game Question</span>`;
       document.getElementById('btnSaveQuiz').textContent = "Update Quiz Deck";
       document.getElementById('btnCancelEdit').classList.remove('hidden');
 
@@ -1332,7 +1371,7 @@
       document.getElementById('newQuizTimer').value = "30";
       document.getElementById('newQuizPoints').value = "100";
 
-      document.getElementById('quizFormHeading').innerHTML = `<i data-lucide="plus-circle" class="w-5 h-5 text-amber-400"></i><span>Create Game Question</span>`;
+      document.getElementById('quizFormHeading').innerHTML = `<i data-lucide="plus-circle" class="w-5 h-5 text-amber-500 dark:text-amber-400"></i><span>Create Game Question</span>`;
       document.getElementById('btnSaveQuiz').textContent = "Save to Pulse DB Deck";
       document.getElementById('btnCancelEdit').classList.add('hidden');
 
@@ -1491,24 +1530,24 @@
       if (qaBadge) qaBadge.textContent = state.questions.length;
 
       if (state.questions.length === 0) {
-        if (listContainer) listContainer.innerHTML = `<div class="p-6 text-center text-xs sm:text-sm text-gray-500 bg-gray-900/50 rounded-2xl border border-gray-800">No questions submitted yet. Be the first!</div>`;
-        if (presListContainer) presListContainer.innerHTML = `<div class="p-6 text-center text-xs sm:text-sm text-gray-500 bg-gray-900 rounded-2xl border border-gray-800">No questions in Q&A queue.</div>`;
+        if (listContainer) listContainer.innerHTML = `<div class="p-6 text-center text-xs sm:text-sm text-gray-500 dark:text-gray-500 light:text-slate-400 bg-gray-900/50 dark:bg-gray-900/50 light:bg-slate-100 rounded-2xl border border-gray-800 dark:border-gray-800 light:border-slate-200">No questions submitted yet. Be the first!</div>`;
+        if (presListContainer) presListContainer.innerHTML = `<div class="p-6 text-center text-xs sm:text-sm text-gray-500 dark:text-gray-500 light:text-slate-400 bg-gray-900 dark:bg-gray-900 light:bg-slate-100 rounded-2xl border border-gray-800 dark:border-gray-800 light:border-slate-200">No questions in Q&A queue.</div>`;
         return;
       }
 
       if (listContainer) {
         listContainer.innerHTML = state.questions.map(q => `
-          <div class="bg-gray-900 border ${q.answered ? 'border-emerald-500/30 bg-emerald-950/10' : 'border-gray-800'} rounded-xl p-3.5 sm:p-5 flex items-start justify-between gap-3 transition">
+          <div class="bg-gray-900 dark:bg-gray-900 light:bg-white border ${q.answered ? 'border-emerald-500/30 bg-emerald-950/10' : 'border-gray-800 dark:border-gray-800 light:border-slate-200'} rounded-xl p-3.5 sm:p-5 flex items-start justify-between gap-3 transition">
             <div class="space-y-1.5 flex-1">
-              <div class="flex items-center space-x-2 text-xs text-gray-400">
-                <span class="font-bold text-amber-400">${q.author}</span>
+              <div class="flex items-center space-x-2 text-xs text-gray-400 dark:text-gray-400 light:text-slate-500">
+                <span class="font-bold text-amber-500 dark:text-amber-400">${q.author}</span>
                 <span>• ${q.timestamp}</span>
                 ${q.answered ? '<span class="bg-emerald-500/20 text-emerald-400 text-[10px] px-2 py-0.5 rounded-full font-bold">Answered</span>' : ''}
               </div>
-              <p class="text-sm sm:text-lg font-bold text-gray-100 leading-snug">${q.text}</p>
+              <p class="text-sm sm:text-lg font-bold text-gray-100 dark:text-gray-100 light:text-slate-900 leading-snug">${q.text}</p>
             </div>
 
-            <button onclick="toggleUpvote(${q.id})" class="flex flex-col items-center justify-center px-3 py-2 rounded-xl border ${q.voted ? 'bg-amber-500 text-slate-950 border-amber-400 font-black' : 'bg-gray-950 border-gray-800 text-gray-300'} transition shrink-0">
+            <button onclick="toggleUpvote(${q.id})" class="flex flex-col items-center justify-center px-3 py-2 rounded-xl border ${q.voted ? 'bg-amber-500 text-slate-950 border-amber-400 font-black' : 'bg-gray-950 dark:bg-gray-950 light:bg-slate-100 border-gray-800 dark:border-gray-800 light:border-slate-300 text-gray-300 dark:text-gray-300 light:text-slate-700'} transition shrink-0">
               <i data-lucide="thumbs-up" class="w-4 h-4"></i>
               <span class="text-xs sm:text-sm font-black mt-0.5">${q.upvotes}</span>
             </button>
@@ -1518,13 +1557,13 @@
 
       if (presListContainer) {
         presListContainer.innerHTML = state.questions.map(q => `
-          <div class="bg-gray-900 border border-gray-800 rounded-xl p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div class="bg-gray-900 dark:bg-gray-900 light:bg-white border border-gray-800 dark:border-gray-800 light:border-slate-200 rounded-xl p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div class="space-y-1 flex-1">
-              <div class="flex items-center space-x-2 text-xs text-gray-400">
-                <span class="font-bold text-amber-400">${q.author}</span>
+              <div class="flex items-center space-x-2 text-xs text-gray-400 dark:text-gray-400 light:text-slate-500">
+                <span class="font-bold text-amber-500 dark:text-amber-400">${q.author}</span>
                 <span>• ${q.upvotes} Votes</span>
               </div>
-              <p class="text-sm font-bold text-white">${q.text}</p>
+              <p class="text-sm font-bold text-white dark:text-white light:text-slate-900">${q.text}</p>
             </div>
 
             <div class="flex items-center space-x-2 w-full sm:w-auto justify-end">
@@ -1532,7 +1571,7 @@
                 <i data-lucide="tv" class="w-3 h-3"></i>
                 <span>Spotlight</span>
               </button>
-              <button onclick="toggleAnswered(${q.id})" class="px-2.5 py-1 rounded-lg border border-gray-700 text-gray-300 font-bold text-xs hover:bg-gray-800">
+              <button onclick="toggleAnswered(${q.id})" class="px-2.5 py-1 rounded-lg border border-gray-700 dark:border-gray-700 light:border-slate-300 text-gray-300 dark:text-gray-300 light:text-slate-700 font-bold text-xs hover:bg-gray-800">
                 ${q.answered ? 'Unmark' : 'Done'}
               </button>
             </div>
@@ -1545,15 +1584,12 @@
 
     function renderQuizDeck() {
       try {
-        const container = document.getElementById('quizDeckList') ||
-                          document.getElementById('quizDeckContainer') || 
-                          document.getElementById('preloadedDeckList');
-    
+        const container = document.getElementById('quizDeckList');
         if (!container) return;
     
         if (!state.quizDeck || state.quizDeck.length === 0) {
           container.innerHTML = `
-            <div class="text-center py-8 text-gray-500 text-xs sm:text-sm">
+            <div class="text-center py-8 text-gray-500 dark:text-gray-500 light:text-slate-400 text-xs sm:text-sm">
               No questions in quiz deck. Create one using the form on the left.
             </div>
           `;
@@ -1569,19 +1605,19 @@
           const qId = q.id || `q_${index}`;
     
           return `
-            <div class="bg-gray-900 border border-gray-800 rounded-xl p-4 flex items-center justify-between mb-3 shadow-sm hover:border-amber-500/50 transition">
+            <div class="bg-gray-900 dark:bg-gray-900 light:bg-white border border-gray-800 dark:border-gray-800 light:border-slate-200 rounded-xl p-4 flex items-center justify-between mb-3 shadow-sm hover:border-amber-500/50 transition">
               <div class="space-y-1 pr-4">
                 <div class="flex items-center space-x-2">
-                  <span class="bg-amber-500/10 text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded">Q${index + 1}</span>
-                  <span class="text-gray-400 text-[10px] font-medium">${timerStr} • ${points} pts</span>
+                  <span class="bg-amber-500/10 text-amber-500 dark:text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded">Q${index + 1}</span>
+                  <span class="text-gray-400 dark:text-gray-400 light:text-slate-500 text-[10px] font-medium">${timerStr} • ${points} pts</span>
                 </div>
-                <h4 class="text-sm font-semibold text-white leading-tight">${title}</h4>
+                <h4 class="text-sm font-semibold text-white dark:text-white light:text-slate-900 leading-tight">${title}</h4>
               </div>
               <div class="flex items-center space-x-2 shrink-0">
-                <button onclick="editQuizQuestion('${qId}')" class="bg-gray-800 hover:bg-gray-700 text-gray-300 font-bold text-xs px-2.5 py-1.5 rounded-lg transition">
+                <button onclick="editQuizQuestion('${qId}')" class="bg-gray-800 dark:bg-gray-800 light:bg-slate-200 hover:bg-gray-700 text-gray-300 dark:text-gray-300 light:text-slate-700 font-bold text-xs px-2.5 py-1.5 rounded-lg transition">
                   Edit
                 </button>
-                <button onclick="releaseQuizQuestion('${qId}')" class="bg-amber-500 hover:bg-amber-400 text-gray-950 font-bold text-xs px-3 py-1.5 rounded-lg transition flex items-center space-x-1">
+                <button onclick="releaseQuizQuestion('${qId}')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs px-3 py-1.5 rounded-lg transition flex items-center space-x-1">
                   <span>Release</span>
                 </button>
                 <button onclick="deleteQuizQuestion('${qId}')" class="text-gray-500 hover:text-red-400 p-1.5 transition">
@@ -1606,20 +1642,20 @@
       if (!activeQ) {
         container.innerHTML = `
           <div class="py-8 space-y-3">
-            <div class="inline-flex items-center space-x-2 bg-amber-500/10 border border-amber-500/30 text-amber-400 px-3 py-1 rounded-full text-xs font-bold">
+            <div class="inline-flex items-center space-x-2 bg-amber-500/10 border border-amber-500/30 text-amber-500 dark:text-amber-400 px-3 py-1 rounded-full text-xs font-bold">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
               </svg>
               <span>Playing as: <strong>${state.userName || 'Anonymous'}</strong></span>
               <button onclick="changePlayerNamePrompt()" class="underline ml-1 hover:text-white">Edit</button>
             </div>
-            <div class="w-12 h-12 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center mx-auto border border-amber-500/20 animate-pulse">
-              <svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <div class="w-12 h-12 rounded-full bg-amber-500/10 text-amber-500 dark:text-amber-400 flex items-center justify-center mx-auto border border-amber-500/20 animate-pulse">
+              <svg class="w-6 h-6 text-amber-500 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
               </svg>
             </div>
-            <h2 class="text-lg sm:text-2xl font-extrabold text-white">Waiting for Presenter...</h2>
-            <p class="text-gray-400 max-w-md mx-auto text-xs sm:text-sm">When a live game show question is released, it will appear here instantly!</p>
+            <h2 class="text-lg sm:text-2xl font-extrabold text-white dark:text-white light:text-slate-900">Waiting for Presenter...</h2>
+            <p class="text-gray-400 dark:text-gray-400 light:text-slate-500 max-w-md mx-auto text-xs sm:text-sm">When a live game show question is released, it will appear here instantly!</p>
           </div>
         `;
         return;
@@ -1646,20 +1682,20 @@
 
       container.innerHTML = `
         <div class="space-y-4 text-left">
-          <div class="flex items-center justify-between border-b border-gray-800 pb-3">
+          <div class="flex items-center justify-between border-b border-gray-800 dark:border-gray-800 light:border-slate-200 pb-3">
             <div>
-              <span class="text-[10px] uppercase font-extrabold text-amber-400 tracking-wider">${isUnlimited ? 'UNLIMITED TIMER MODE' : 'GAME SHOW ROUND'}</span>
-              <h3 class="text-base sm:text-2xl font-black text-white mt-0.5">${activeQ.title || activeQ.question || 'Live Question'}</h3>
+              <span class="text-[10px] uppercase font-extrabold text-amber-500 dark:text-amber-400 tracking-wider">${isUnlimited ? 'UNLIMITED TIMER MODE' : 'GAME SHOW ROUND'}</span>
+              <h3 class="text-base sm:text-2xl font-black text-white dark:text-white light:text-slate-900 mt-0.5">${activeQ.title || activeQ.question || 'Live Question'}</h3>
             </div>
             
-            <div class="text-center bg-gray-950 px-3 py-1.5 rounded-xl border border-amber-500/40">
-              <span class="block text-[9px] font-bold text-gray-400">${isUnlimited ? 'ELAPSED' : 'TIMER'}</span>
-              <span class="text-lg sm:text-2xl font-mono font-black ${!isUnlimited && state.quizTimeRemaining < 10 ? 'text-red-500 animate-ping' : 'text-amber-400'}">${timerDisplayStr}</span>
+            <div class="text-center bg-gray-950 dark:bg-gray-950 light:bg-slate-100 px-3 py-1.5 rounded-xl border border-amber-500/40">
+              <span class="block text-[9px] font-bold text-gray-400 dark:text-gray-400 light:text-slate-500">${isUnlimited ? 'ELAPSED' : 'TIMER'}</span>
+              <span class="text-lg sm:text-2xl font-mono font-black ${!isUnlimited && state.quizTimeRemaining < 10 ? 'text-red-500 animate-ping' : 'text-amber-500 dark:text-amber-400'}">${timerDisplayStr}</span>
             </div>
           </div>
 
           ${state.hasSubmittedAnswer && !showAnswerAndVotes ? `
-            <div class="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-center text-xs text-amber-400 font-bold animate-pulse">
+            <div class="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-center text-xs text-amber-500 dark:text-amber-400 font-bold animate-pulse">
               ✓ Locked In! Waiting for presenter to stop question and reveal results...
             </div>
           ` : ''}
@@ -1678,7 +1714,7 @@
                 if (isCorrect) {
                   btnStyle = "bg-emerald-600 border-2 border-white text-white font-black shadow-xl ring-4 ring-emerald-400/40";
                 } else {
-                  btnStyle = "bg-gray-900 border border-gray-800 text-gray-500 opacity-50";
+                  btnStyle = "bg-gray-900 dark:bg-gray-900 light:bg-slate-200 border border-gray-800 dark:border-gray-800 light:border-slate-300 text-gray-500 opacity-50";
                 }
               } else if (isSelected) {
                 btnStyle = `${style.bg} ring-4 ring-white text-white font-black`;
@@ -1707,7 +1743,6 @@
 
     function renderSpotlight() {
       const displayArea = document.getElementById('spotlightDisplayArea');
-      const leaderboardCard = document.getElementById('presenterLeaderboardCard');
       const clearBtnContainer = document.getElementById('clearSpotlightBtnContainer');
       const item = state.spotlightedItem;
 
@@ -1716,9 +1751,9 @@
       if (!item) {
         displayArea.innerHTML = `
           <div class="space-y-3">
-            <i data-lucide="presentation" class="w-12 h-12 text-gray-700 mx-auto"></i>
-            <h2 class="text-xl sm:text-3xl font-black text-gray-400">No Item Spotlighted</h2>
-            <p class="text-xs sm:text-base text-gray-500 font-medium max-w-xl mx-auto">Select a Q&A question or release a game question to spotlight on screen.</p>
+            <i data-lucide="presentation" class="w-12 h-12 text-gray-700 dark:text-gray-700 light:text-slate-300 mx-auto"></i>
+            <h2 class="text-xl sm:text-3xl font-black text-gray-400 dark:text-gray-400 light:text-slate-500">No Item Spotlighted</h2>
+            <p class="text-xs sm:text-base text-gray-500 dark:text-gray-500 light:text-slate-400 font-medium max-w-xl mx-auto">Select a Q&A question or release a game question to spotlight on screen.</p>
           </div>
         `;
         if (clearBtnContainer) clearBtnContainer.classList.add('hidden');
@@ -1731,11 +1766,11 @@
         const q = item.data;
         displayArea.innerHTML = `
           <div class="space-y-3 text-left max-w-3xl mx-auto py-2">
-            <div class="flex items-center space-x-2 text-xs font-bold text-amber-400">
+            <div class="flex items-center space-x-2 text-xs font-bold text-amber-500 dark:text-amber-400">
               <span class="bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/30">SPOTLIGHT</span>
               <span>• Asked by ${q.author} (${q.upvotes} Votes)</span>
             </div>
-            <h2 class="text-2xl sm:text-5xl font-black text-white leading-tight gold-gradient-text">
+            <h2 class="text-2xl sm:text-5xl font-black text-white dark:text-white light:text-slate-900 leading-tight gold-gradient-text">
               "${q.text}"
             </h2>
           </div>
@@ -1762,7 +1797,7 @@
             <div class="flex items-center justify-between flex-wrap gap-2">
               <div class="flex items-center space-x-2">
                 <span class="bg-amber-500 text-slate-950 px-2.5 py-1 rounded-lg font-black text-xs">${isUnlimited ? 'UNLIMITED LIVE QUESTION' : 'LIVE GAME QUESTION'}</span>
-                <span class="text-xs text-gray-400 font-bold">Total Responses: ${state.totalResponses}</span>
+                <span class="text-xs text-gray-400 dark:text-gray-400 light:text-slate-500 font-bold">Total Responses: ${state.totalResponses}</span>
               </div>
               
               <div class="flex items-center space-x-3">
@@ -1772,11 +1807,11 @@
                     <span>Stop Question & Reveal</span>
                   </button>
                 ` : ''}
-                <span class="text-2xl font-mono font-black ${!isUnlimited && state.quizTimeRemaining < 10 ? 'text-red-500 animate-pulse' : 'text-amber-400'}">${timerDisplayStr}</span>
+                <span class="text-2xl font-mono font-black ${!isUnlimited && state.quizTimeRemaining < 10 ? 'text-red-500 animate-pulse' : 'text-amber-500 dark:text-amber-400'}">${timerDisplayStr}</span>
               </div>
             </div>
 
-            <h2 class="text-xl sm:text-3xl font-black text-white">${q.title || q.question || 'Live Question'}</h2>
+            <h2 class="text-xl sm:text-3xl font-black text-white dark:text-white light:text-slate-900">${q.title || q.question || 'Live Question'}</h2>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               ${(q.options || []).map((opt, idx) => {
@@ -1823,16 +1858,16 @@
       const seriesName = getLectureSeries(state.eventCode);
 
       const toggleHtml = `
-        <div class="flex items-center justify-between col-span-full mb-2 bg-gray-950 p-1.5 rounded-xl border border-gray-800">
+        <div class="flex items-center justify-between col-span-full mb-2 bg-gray-950 dark:bg-gray-950 light:bg-slate-100 p-1.5 rounded-xl border border-gray-800 dark:border-gray-800 light:border-slate-200">
           <div class="flex items-center space-x-1 text-xs">
-            <button onclick="setLeaderboardMode('session')" class="px-3 py-1 rounded-lg font-bold transition ${!isSeries ? 'bg-amber-500 text-slate-950 shadow' : 'text-gray-400 hover:text-white'}">
+            <button onclick="setLeaderboardMode('session')" class="px-3 py-1 rounded-lg font-bold transition ${!isSeries ? 'bg-amber-500 text-slate-950 shadow' : 'text-gray-400 dark:text-gray-400 light:text-slate-600 hover:text-white'}">
               This Session (${state.eventCode})
             </button>
-            <button onclick="setLeaderboardMode('series')" class="px-3 py-1 rounded-lg font-bold transition ${isSeries ? 'bg-amber-500 text-slate-950 shadow' : 'text-gray-400 hover:text-white'}">
+            <button onclick="setLeaderboardMode('series')" class="px-3 py-1 rounded-lg font-bold transition ${isSeries ? 'bg-amber-500 text-slate-950 shadow' : 'text-gray-400 dark:text-gray-400 light:text-slate-600 hover:text-white'}">
               Series Global (${seriesName})
             </button>
           </div>
-          <span class="text-[10px] text-gray-400 font-mono hidden sm:inline px-2">Mode: ${isSeries ? 'Lecture Series Aggregated' : 'Single Session'}</span>
+          <span class="text-[10px] text-gray-400 dark:text-gray-400 light:text-slate-500 font-mono hidden sm:inline px-2">Mode: ${isSeries ? 'Lecture Series Aggregated' : 'Single Session'}</span>
         </div>
       `;
 
@@ -1846,12 +1881,12 @@
       }
 
       const rowsHtml = toggleHtml + leaderboardData.map((item, idx) => `
-        <div class="flex items-center justify-between p-3.5 rounded-xl bg-gray-950 border ${item.name === state.userName ? 'border-amber-500/50 bg-amber-500/5' : 'border-gray-800'} text-xs sm:text-sm shadow">
+        <div class="flex items-center justify-between p-3.5 rounded-xl bg-gray-950 dark:bg-gray-950 light:bg-slate-100 border ${item.name === state.userName ? 'border-amber-500/50 bg-amber-500/5' : 'border-gray-800 dark:border-gray-800 light:border-slate-200'} text-xs sm:text-sm shadow">
           <div class="flex items-center space-x-3 truncate">
             <span class="w-7 h-7 rounded-full ${idx === 0 ? 'bg-amber-500 text-slate-950 font-black text-base' : idx === 1 ? 'bg-gray-300 text-slate-950 font-bold' : idx === 2 ? 'bg-amber-700 text-white font-bold' : 'bg-gray-800 text-gray-300'} flex items-center justify-center shrink-0">${idx + 1}</span>
-            <span class="font-black text-white truncate text-sm sm:text-base">${item.name} ${item.name === state.userName ? '<span class="text-[10px] text-amber-400 font-bold">(You)</span>' : ''}</span>
+            <span class="font-black text-white dark:text-white light:text-slate-900 truncate text-sm sm:text-base">${item.name} ${item.name === state.userName ? '<span class="text-[10px] text-amber-500 dark:text-amber-400 font-bold">(You)</span>' : ''}</span>
           </div>
-          <span class="font-mono font-black text-amber-400 text-base shrink-0 ml-2">${item.score} pts</span>
+          <span class="font-mono font-black text-amber-500 dark:text-amber-400 text-base shrink-0 ml-2">${item.score} pts</span>
         </div>
       `).join('');
 
