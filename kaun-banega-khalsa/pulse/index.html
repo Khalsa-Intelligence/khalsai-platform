@@ -299,17 +299,17 @@
         <!-- Projector Focus Card -->
         <div id="spotlightContent" class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-2xl p-4 sm:p-8 text-center min-h-[240px] sm:min-h-[320px] flex flex-col shadow-sm relative overflow-hidden">
           
-          <!-- Header Bar: In-flow Flex Layout (Prevents Any Text Overlap) -->
-          <div class="flex items-center justify-between gap-2 border-b border-slate-100 dark:border-gray-800/60 pb-3 mb-3">
-            <div class="flex items-center space-x-1.5 text-slate-400 dark:text-gray-500 uppercase font-bold text-xs tracking-wider">
-              <i data-lucide="sparkles" class="w-4 h-4 text-amber-500 shrink-0"></i>
+          <!-- Header Bar: Mobile-Safe Responsive Layout -->
+          <div class="flex items-center justify-between gap-2 border-b border-slate-100 dark:border-gray-800/60 pb-2.5 mb-3">
+            <div class="flex items-center space-x-1.5 min-w-0 flex-1 text-slate-400 dark:text-gray-500 uppercase font-bold text-[10px] sm:text-xs tracking-wider">
+              <i data-lucide="sparkles" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500 shrink-0"></i>
               <span class="truncate">Projector Screen Focus</span>
             </div>
 
             <div id="clearSpotlightBtnContainer" class="hidden shrink-0">
-              <button onclick="clearActivePollAndReturnWaiting()" class="px-2.5 py-1 rounded-lg bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/60 border border-red-200 dark:border-red-800/40 font-bold text-xs flex items-center space-x-1 transition">
+              <button onclick="clearActivePollAndReturnWaiting()" class="px-2 py-1 rounded-lg bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/60 border border-red-200 dark:border-red-800/40 font-bold text-[11px] sm:text-xs flex items-center space-x-1 transition whitespace-nowrap">
                 <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
-                <span>Return to Waiting</span>
+                <span>Return<span class="hidden sm:inline"> to Waiting</span></span>
               </button>
             </div>
           </div>
