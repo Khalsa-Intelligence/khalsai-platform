@@ -646,6 +646,7 @@
 
       if (confirm(`Are you sure you want to reset the leaderboard for event code "${state.eventCode}"?`)) {
         const resetTime = Date.now();
+        state.lastLeaderboardResetAt = resetTime; // Immediately update threshold so old pulses are ignored
         state.sessionLeaderboard = {};
         
         const cleanKey = (state.eventCode || '').replace(/^#/, '').trim().toUpperCase();
