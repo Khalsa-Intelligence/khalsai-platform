@@ -468,7 +468,7 @@
     
     // Read session code dynamically from URL query parameter (cleaned of any hashes)
     const urlParams = new URLSearchParams(window.location.search);
-    const initialCodeParam = urlParams.get('code');
+    const initialCodeParam = urlParams.get('code') || urlParams.get('eventCode');
     
     // Set to deduplicate operational event processing
     const processedPulseIds = new Set();
@@ -747,31 +747,24 @@
           const sortedPulses = [...data.recent_pulses].sort((a, b) => a.id - b.id);
 
           const deckMap = new Map();
-          (state.quizDeck || []).forEach(q => {
-            if (q && (q.id || q.title || q.question)) {
-              deckMap.set(q.id || q.title || q.question, q);
-            }
-          });
 
-          sortedPulses.forEach(p => {
-            if (p.event_type === 'leaderboard_reset') {
-              const resetTime = p.created_at ? new Date(p.created_at).getTime() : Date.now();
-              if (resetTime > state.lastLeaderboardResetAt) {
-                state.lastLeaderboardResetAt = resetTime;
-                state.sessionLeaderboard = {};
+          // Seed with localStorage cache for immediate availability
+          try {
+            const localSaved = JSON.parse(localStorage.getItem(`pulse_deck_${cleanCode}`) || '[]');
+            localSaved.forEach(q => {
+              if (q && (q.id || q.title || q.question)) {
+                deckMap.set(q.id || q.title || q.question, q);
               }
-            }
-          });
+            });
+          } catch(e) {}
 
+          // Pass 1: Rebuild the entire Quiz Deck map chronologically (unaffected by processedPulseIds)
           sortedPulses.forEach(p => {
-            if (processedPulseIds.has(p.id)) return;
-            processedPulseIds.add(p.id);
-
             if (p.event_type === 'quiz_save' && p.metadata) {
               let savedQuiz = null;
               try {
                 let meta = p.metadata;
-                if (typeof meta === 'string') {
+                while (typeof meta === 'string') {
                   meta = meta.replace(/[\u2026]/g, '...'); 
                   meta = JSON.parse(meta);
                 }
@@ -794,17 +787,31 @@
               if (typeof meta === 'string') {
                 try { meta = JSON.parse(meta); } catch(e) {}
               }
-              if (meta && meta.id) {
-                deckMap.delete(meta.id);
+              if (meta && (meta.id || meta.title)) {
+                deckMap.delete(meta.id || meta.title);
               }
             }
+
+            if (p.event_type === 'leaderboard_reset') {
+              const resetTime = p.created_at ? new Date(p.created_at).getTime() : Date.now();
+              if (resetTime > state.lastLeaderboardResetAt) {
+                state.lastLeaderboardResetAt = resetTime;
+                state.sessionLeaderboard = {};
+              }
+            }
+          });
+
+          // Pass 2: Process once-only live triggers using processedPulseIds
+          sortedPulses.forEach(p => {
+            if (processedPulseIds.has(p.id)) return;
+            processedPulseIds.add(p.id);
 
             if (p.event_type === 'question' && p.metadata) {
               let meta = p.metadata;
               if (typeof meta === 'string') {
                 try { meta = JSON.parse(meta); } catch(e) {}
               }
-              if (meta.id && !state.questions.some(q => q.id === meta.id)) {
+              if (meta && meta.id && !state.questions.some(q => q.id === meta.id)) {
                 state.questions.unshift(meta);
               }
             }
@@ -872,20 +879,24 @@
 
               const pulseTime = p.created_at ? new Date(p.created_at).getTime() : Date.now();
 
-              if (state.activeQuizQuestion && meta.quizId === state.activeQuizQuestion.id) {
+              if (state.activeQuizQuestion && meta && meta.quizId === state.activeQuizQuestion.id) {
                 if (typeof meta.selectedIndex === 'number' && meta.selectedIndex >= 0 && meta.selectedIndex < 4) {
                   state.responseCounts[meta.selectedIndex]++;
                   state.totalResponses++;
                 }
               }
 
-              if (pulseTime >= state.lastLeaderboardResetAt && meta.userName && meta.pointsEarned) {
+              if (pulseTime >= state.lastLeaderboardResetAt && meta && meta.userName && meta.pointsEarned) {
                 recordSessionScore(meta.userName, meta.pointsEarned);
               }
             }
           });
 
-          state.quizDeck = Array.from(deckMap.values());
+          const updatedDeck = Array.from(deckMap.values());
+          state.quizDeck = updatedDeck;
+          try {
+            localStorage.setItem(`pulse_deck_${cleanCode}`, JSON.stringify(updatedDeck));
+          } catch(e) {}
 
           renderQuizDeck();
           renderQuestions();
