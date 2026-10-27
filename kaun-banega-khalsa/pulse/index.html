@@ -401,7 +401,7 @@
                   </select>
                 </div>
                 <div>
-                  <label class="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">Points</label>
+                  <label class="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">Max Points</label>
                   <input type="number" id="newQuizPoints" value="100" class="w-full bg-slate-50 dark:bg-gray-950 border border-slate-300 dark:border-gray-800 rounded-xl px-2.5 py-2 text-xs text-slate-900 dark:text-white">
                 </div>
               </div>
@@ -880,8 +880,6 @@
         state.quizElapsedTime = elapsedSeconds;
 
         if (durationSeconds <= 0) {
-          // In unlimited timer mode, if a stop pulse occurred, quizTimeRemaining is set to 0.
-          // Otherwise, it stays > 0 so the timer continues counting up.
           if (state.activeQuizQuestion && state.activeQuizQuestion.stoppedAt) {
             state.quizTimeRemaining = 0;
           } else {
@@ -1513,13 +1511,18 @@
 
       let pointsEarned = 0;
       if (isCorrect) {
-        const basePoints = state.activeQuizQuestion.points || 100;
+        const maxPoints = state.activeQuizQuestion.points || 100;
         const totalTime = Number(state.activeQuizQuestion.timeLimit) || 30;
-        const speedBonus = totalTime > 0 ? Math.round((Math.max(0, totalTime - state.quizElapsedTime) / totalTime) * 50) : 25;
         
-        const streak = getUserStreak(state.userName);
-        const streakMultiplier = streak > 2 ? 1.5 : 1.0;
-        pointsEarned = Math.round((basePoints + speedBonus) * streakMultiplier);
+        let speedRatio = 1.0;
+        if (totalTime > 0) {
+          const timeRemaining = Math.max(0, totalTime - state.quizElapsedTime);
+          speedRatio = timeRemaining / totalTime;
+        }
+
+        // Linear scale between 100% and 50% of Max Points
+        const multiplier = 0.5 + (0.5 * speedRatio);
+        pointsEarned = Math.round(maxPoints * multiplier);
       }
 
       renderAudienceQuizPane();
@@ -1644,7 +1647,7 @@
               <div class="space-y-1 pr-4">
                 <div class="flex items-center space-x-2">
                   <span class="bg-amber-100 text-amber-800 dark:bg-amber-500/10 dark:text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded">Q${index + 1}</span>
-                  <span class="text-slate-500 dark:text-gray-400 text-[10px] font-medium">${timerStr} • ${points} pts</span>
+                  <span class="text-slate-500 dark:text-gray-400 text-[10px] font-medium">${timerStr} • Max ${points} pts</span>
                 </div>
                 <h4 class="text-sm font-semibold text-slate-900 dark:text-white leading-tight">${title}</h4>
               </div>
