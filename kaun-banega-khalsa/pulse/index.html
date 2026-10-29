@@ -254,7 +254,7 @@
     </div>
 
     <!-- PRESENTER VIEW CONTAINER -->
-    <div id="presenterView" class="hidden flex-1 flex-col space-y-4 sm:space-y-6">
+    <div id="presenterView" class="hidden flex-1-col space-y-4 sm:space-y-6">
       
       <!-- Presenter Header Controller -->
       <div class="flex flex-col space-y-3 bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 p-3 sm:p-4 rounded-2xl shadow-sm">
@@ -451,16 +451,16 @@
         </div>
       </div>
 
-      <!-- SUB-TAB 2.5: SIDE QUIZ BUILDER -->
+      <!-- SUB-TAB 2.5: SIDE QUIZ BUILDER (CLOUD-SYNCED VIA D1) -->
       <div id="presenterSideBuilderPane" class="hidden space-y-6">
         <div class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-2xl p-4 sm:p-6 space-y-6 shadow-sm">
           <div class="border-b border-slate-200 dark:border-gray-800 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div>
               <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center space-x-2">
                 <i data-lucide="layers" class="w-5 h-5 text-amber-500"></i>
-                <span>Side Quiz Assembly Manager</span>
+                <span>Side Quiz Assembly Manager (Cloud-Synced)</span>
               </h3>
-              <p class="text-xs text-slate-500 dark:text-gray-400">Assemble custom side quizzes by selecting specific questions from the Global Deck.</p>
+              <p class="text-xs text-slate-500 dark:text-gray-400">Assemble custom side quizzes by selecting specific questions from the Global Deck. Published quizzes automatically sync to all audience devices via D1.</p>
             </div>
           </div>
 
@@ -484,14 +484,15 @@
                 </div>
               </div>
 
-              <button onclick="saveSideQuiz()" class="w-full py-2.5 rounded-xl gold-gradient-bg text-slate-950 font-bold text-sm hover:brightness-110 transition shadow">
-                Save Side Quiz to Catalog
+              <button onclick="saveSideQuiz()" class="w-full py-2.5 rounded-xl gold-gradient-bg text-slate-950 font-bold text-sm hover:brightness-110 transition shadow flex items-center justify-center space-x-2">
+                <i data-lucide="cloud-upload" class="w-4 h-4"></i>
+                <span>Save & Publish to Cloud</span>
               </button>
             </div>
 
             <!-- Right Column: List of Configured Side Quizzes -->
             <div class="lg:col-span-7 space-y-3">
-              <h4 class="text-sm font-bold text-slate-900 dark:text-white">Configured Side Quizzes</h4>
+              <h4 class="text-sm font-bold text-slate-900 dark:text-white">Published Side Quizzes in Series</h4>
               <div id="sideQuizCatalogList" class="space-y-3">
                 <!-- Rendered dynamically -->
               </div>
@@ -623,7 +624,7 @@
     /* ==========================================================================
        APP STATE MANAGEMENT & PULSE_DB SYNC (HASH-FREE CODES)
        ========================================================================== */
-    const DEFAULT_EVENT_CODE = "SESSION1";
+    const DEFAULT_EVENT_CODE = "TWGCSESSION4";
     const PRESENTER_PASSCODE = "6789";
     
     let isPresenterAuthenticated = sessionStorage.getItem('pulse_presenter_auth') === 'true';
@@ -1154,6 +1155,22 @@
           } catch(e) {}
 
           sortedPulses.forEach(p => {
+            // Also sync side quiz saves from D1 event log
+            if (p.event_type === 'side_quiz_save' && p.metadata) {
+              let meta = p.metadata;
+              try {
+                while (typeof meta === 'string') meta = JSON.parse(meta);
+              } catch(e) {}
+              if (meta && meta.code) {
+                const series = getLectureSeries(state.eventCode);
+                loadSideQuizCatalog();
+                state.sideQuizCatalog[meta.code] = meta;
+                try {
+                  localStorage.setItem(`pulse_side_catalog_${series}`, JSON.stringify(state.sideQuizCatalog));
+                } catch(e) {}
+              }
+            }
+
             if (p.event_type === 'quiz_save' && p.metadata) {
               let savedQuiz = null;
               try {
@@ -1425,7 +1442,7 @@
             <div>
               <span class="font-mono font-bold text-amber-600 dark:text-amber-400">${sq.code}</span>
               <span class="font-bold text-slate-900 dark:text-white ml-2">${sq.title}</span>
-              <span class="text-slate-500 dark:text-gray-400 block text-[10px] mt-0.5">${sq.questions.length} questions included</span>
+              <span class="text-slate-500 dark:text-gray-400 block text-[10px] mt-0.5">${sq.questions.length} questions included (Cloud Synced)</span>
             </div>
             <button onclick="deleteSideQuiz('${sq.code}')" class="text-slate-400 hover:text-red-500 p-1.5 transition">
               <i data-lucide="trash-2" class="w-4 h-4"></i>
@@ -1436,7 +1453,7 @@
       lucide.createIcons();
     }
 
-    function saveSideQuiz() {
+    async function saveSideQuiz() {
       const codeInput = document.getElementById('sideQuizCodeInput').value.trim().toUpperCase();
       const titleInput = document.getElementById('sideQuizTitleInput').value.trim();
       if (!codeInput) {
@@ -1469,7 +1486,11 @@
       document.getElementById('sideQuizCodeInput').value = "";
       document.getElementById('sideQuizTitleInput').value = "";
       renderSideQuizBuilder();
-      alert(`Side Quiz ${codeInput} saved with ${selectedQuestions.length} questions!`);
+
+      // Dispatch to Cloudflare D1 backend via pulse_events
+      await sendPulse('side_quiz_save', state.sideQuizCatalog[codeInput]);
+
+      alert(`Side Quiz ${codeInput} saved & published to cloud via D1!`);
     }
 
     function deleteSideQuiz(code) {
@@ -1507,7 +1528,7 @@
           <div class="border-b border-slate-200 dark:border-gray-800 pb-3">
             <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center space-x-2">
               <i data-lucide="layers" class="w-5 h-5 text-amber-500"></i>
-              <span>Available Side Quizzes</span>
+              <span>Available Side Quizzes (Cloud Synced)</span>
             </h3>
             <p class="text-xs text-slate-500 dark:text-gray-400">Select any quiz to play at your own pace. All points count towards the Global Series Leaderboard.</p>
           </div>
