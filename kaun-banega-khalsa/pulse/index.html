@@ -37,6 +37,14 @@
     body { font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.3s, color 0.3s; }
     .gold-gradient-bg { background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); }
     #qrcode canvas, #qrcode img { margin: 0 auto; border-radius: 8px; padding: 4px; background: white; }
+    @keyframes pulse-border {
+      0%, 100% { border-color: #22c55e; box-shadow: 0 0 15px rgba(34, 197, 94, 0.6); }
+      50% { border-color: #86efac; box-shadow: 0 0 5px rgba(34, 197, 94, 0.2); }
+    }
+    .correct-flash-border {
+      animation: pulse-border 1s infinite ease-in-out;
+      border-width: 4px !important;
+    }
   </style>
 </head>
 <body class="h-full flex flex-col bg-slate-100 text-slate-900 dark:bg-[#080C14] dark:text-gray-100 antialiased selection:bg-amber-500 selection:text-black">
@@ -74,7 +82,7 @@
       <!-- Desktop Event Code Selector -->
       <div class="hidden lg:flex items-center space-x-2 bg-slate-200/80 dark:bg-gray-900/90 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-gray-800">
         <span class="text-xs uppercase tracking-wider font-extrabold text-slate-600 dark:text-gray-400">Code:</span>
-        <input type="text" id="headerAudienceCodeInput" value="" class="bg-white dark:bg-gray-950 px-2 py-0.5 rounded border border-slate-300 dark:border-gray-700 font-mono font-bold text-amber-600 dark:text-amber-400 text-sm focus:outline-none focus:border-amber-500 w-32 uppercase">
+        <input type="text" id="headerAudienceCodeInput" value="" class="bg-white dark:bg-gray-950 px-2 py-0.5 rounded border border-slate-300 dark:border-gray-700 font-mono font-bold text-amber-600 dark:text-amber-400 text-sm focus:outline-none focus:border-amber-500 w-36 uppercase">
         <button onclick="changeAudienceEventCode()" class="bg-amber-500 text-slate-950 font-extrabold text-xs px-2.5 py-1 rounded-lg hover:brightness-110 transition flex items-center space-x-1 shadow">
           <span>Join</span>
         </button>
@@ -117,7 +125,7 @@
   <div class="lg:hidden bg-slate-200 dark:bg-gray-950/80 border-b border-slate-300 dark:border-gray-800 px-3 py-1.5 flex items-center justify-between text-xs gap-2">
     <div class="flex items-center space-x-1.5 font-mono">
       <span class="text-slate-600 dark:text-gray-400 font-sans uppercase font-extrabold text-[10px]">CODE:</span>
-      <input type="text" id="mobileAudienceCodeInput" value="" class="bg-white dark:bg-gray-900 px-1.5 py-0.5 rounded border border-slate-300 dark:border-gray-700 font-mono font-bold text-amber-600 dark:text-amber-400 text-xs w-28 uppercase">
+      <input type="text" id="mobileAudienceCodeInput" value="" class="bg-white dark:bg-gray-900 px-1.5 py-0.5 rounded border border-slate-300 dark:border-gray-700 font-mono font-bold text-amber-600 dark:text-amber-400 text-xs w-32 uppercase">
       <button onclick="changeMobileAudienceCode()" class="bg-amber-500 text-slate-950 font-bold text-[10px] px-2 py-0.5 rounded">Join</button>
     </div>
     <button onclick="copyEventCode()" class="text-amber-700 dark:text-amber-400 font-bold flex items-center space-x-1 hover:underline shrink-0">
@@ -249,7 +257,7 @@
 
           <div class="flex items-center space-x-2 bg-slate-100 dark:bg-gray-950 px-2.5 py-1 rounded-xl border border-slate-300 dark:border-gray-800">
             <label for="eventCodeInput" class="text-[10px] sm:text-xs font-bold text-slate-600 dark:text-gray-400 uppercase">Code:</label>
-            <input type="text" id="eventCodeInput" value="" class="bg-white dark:bg-gray-900 px-1.5 py-0.5 rounded border border-slate-300 dark:border-gray-700 font-mono font-bold text-amber-600 dark:text-amber-400 text-xs sm:text-sm focus:outline-none focus:border-amber-500 w-24 sm:w-32 uppercase">
+            <input type="text" id="eventCodeInput" value="" class="bg-white dark:bg-gray-900 px-1.5 py-0.5 rounded border border-slate-300 dark:border-gray-700 font-mono font-bold text-amber-600 dark:text-amber-400 text-xs sm:text-sm focus:outline-none focus:border-amber-500 w-28 sm:w-36 uppercase">
             <button onclick="updateEventCode()" class="bg-amber-500 text-slate-950 font-bold text-[10px] sm:text-xs px-2.5 py-1 rounded-lg hover:brightness-110 transition flex items-center space-x-1 shadow">
               <i data-lucide="check" class="w-3 h-3 stroke-[3]"></i>
               <span>Set</span>
@@ -589,12 +597,24 @@
       spotlightedItem: null,
       confettiFired: false,
       leaderboardMode: 'session',
-      sessionLeaderboard: {}
+      sessionLeaderboard: {},
+      sideQuizActive: false,
+      sideQuizQuestions: [],
+      sideQuizIndex: 0,
+      sideQuizAnswers: {},
+      sideQuizReviewTimer: null
     };
+
+    function isSideQuizCode(code) {
+      if (!code) return false;
+      const clean = code.replace(/^#/, '').trim().toUpperCase();
+      return clean.startsWith('TWGCQUIZ');
+    }
 
     function getLectureSeries(eventCode) {
       if (!eventCode) return '';
       const clean = eventCode.replace(/^#/, '').toUpperCase();
+      if (clean.startsWith('TWGCQUIZ')) return 'TWGC';
       const sessionIdx = clean.indexOf('SESSION');
       if (sessionIdx > 0) {
         return clean.substring(0, sessionIdx);
@@ -717,6 +737,30 @@
       if (!state.eventCode || !userName) return;
 
       const cleanKey = (state.eventCode || '').replace(/^#/, '').trim().toUpperCase();
+      
+      if (isSideQuizCode(cleanKey)) {
+        const seriesKey = getLectureSeries(cleanKey);
+        const scoredQuizzesKey = `pulse_scored_${seriesKey}_${userName}`;
+        let scoredQuizzes = [];
+        try {
+          scoredQuizzes = JSON.parse(localStorage.getItem(scoredQuizzesKey) || '[]');
+        } catch (e) {}
+
+        if (quizId && scoredQuizzes.includes(quizId)) return;
+        if (quizId) {
+          scoredQuizzes.push(quizId);
+          try { localStorage.setItem(scoredQuizzesKey, JSON.stringify(scoredQuizzes)); } catch (e) {}
+        }
+
+        const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
+        if (!allLeaderboards[seriesKey]) allLeaderboards[seriesKey] = {};
+        allLeaderboards[seriesKey][userName] = (allLeaderboards[seriesKey][userName] || 0) + pointsEarned;
+        localStorage.setItem('pulse_leaderboards', JSON.stringify(allLeaderboards));
+
+        renderLeaderboard();
+        return;
+      }
+
       const scoredQuizzesKey = `pulse_scored_${cleanKey}_${userName}`;
       let scoredQuizzes = [];
       try {
@@ -818,14 +862,31 @@
       state.eventCode = clean;
       state.quizDeck = [];
       
+      if (isSideQuizCode(clean)) {
+        state.leaderboardMode = 'series';
+        initSideQuizMode(clean);
+      } else {
+        state.sideQuizActive = false;
+        if (state.sideQuizReviewTimer) {
+          clearTimeout(state.sideQuizReviewTimer);
+          state.sideQuizReviewTimer = null;
+        }
+      }
+
       const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
       state.sessionLeaderboard = allLeaderboards[clean] || {};
 
       processedPulseIds.clear();
       handledQuizReleases.clear();
 
-      const newUrl = `${window.location.pathname}?code=${encodeURIComponent(clean)}`;
-      window.history.replaceState({ path: newUrl }, '', newUrl);
+      try {
+        if (window.location.protocol.startsWith('http')) {
+          const newUrl = `${window.location.pathname}?code=${encodeURIComponent(clean)}`;
+          window.history.replaceState({ path: newUrl }, '', newUrl);
+        }
+      } catch (e) {
+        console.warn('Unable to update history state in sandboxed environment:', e);
+      }
 
       document.querySelectorAll('.event-code-display').forEach(el => {
         el.textContent = clean;
@@ -842,6 +903,91 @@
       renderQRCode();
       renderLeaderboard();
       fetchPulseDatabase();
+    }
+
+    function initSideQuizMode(code) {
+      state.sideQuizActive = true;
+      state.sideQuizIndex = 0;
+      state.sideQuizAnswers = {};
+      
+      try {
+        const localSaved = JSON.parse(localStorage.getItem(`pulse_deck_${code}`) || '[]');
+        if (localSaved.length > 0) {
+          state.sideQuizQuestions = localSaved.map(item => item.quiz || item);
+        } else {
+          state.sideQuizQuestions = [
+            {
+              id: `${code}_q1`,
+              title: `${code} Question 1: What is the core foundation of Khalsai Pulse?`,
+              options: ["Real-time synchronization", "Static slides", "Email newsletters", "File storage"],
+              correct: 0,
+              timeLimit: 30,
+              points: 100
+            },
+            {
+              id: `${code}_q2`,
+              title: `${code} Question 2: Which technology powers instant pulse database events?`,
+              options: ["Cloudflare Workers & D1", "Floppy Disks", "Mainframes", "FTP servers"],
+              correct: 0,
+              timeLimit: 30,
+              points: 150
+            }
+          ];
+          localStorage.setItem(`pulse_deck_${code}`, JSON.stringify(state.sideQuizQuestions.map(q => ({ quiz: q }))));
+        }
+      } catch(e) {
+        state.sideQuizQuestions = [];
+      }
+
+      loadSideQuizQuestion();
+    }
+
+    function loadSideQuizQuestion() {
+      if (!state.sideQuizActive) return;
+      if (state.sideQuizIndex >= state.sideQuizQuestions.length) {
+        finishSideQuiz();
+        return;
+      }
+
+      const q = state.sideQuizQuestions[state.sideQuizIndex];
+      state.activeQuizQuestion = q;
+      state.activeQuizQuestionId = q.id;
+      
+      const prevAnswer = state.sideQuizAnswers[q.id];
+      if (prevAnswer !== undefined) {
+        state.hasSubmittedAnswer = true;
+        state.userSelectedOption = prevAnswer;
+      } else {
+        state.hasSubmittedAnswer = false;
+        state.userSelectedOption = null;
+      }
+
+      state.confettiFired = false;
+      renderAudienceQuizPane();
+    }
+
+    function nextSideQuizQuestion() {
+      if (!state.sideQuizActive) return;
+      if (state.sideQuizIndex < state.sideQuizQuestions.length - 1) {
+        state.sideQuizIndex++;
+        loadSideQuizQuestion();
+      } else {
+        finishSideQuiz();
+      }
+    }
+
+    function prevSideQuizQuestion() {
+      if (!state.sideQuizActive) return;
+      if (state.sideQuizIndex > 0) {
+        state.sideQuizIndex--;
+        loadSideQuizQuestion();
+      }
+    }
+
+    function finishSideQuiz() {
+      state.activeQuizQuestion = null;
+      state.sideQuizCompleted = true;
+      renderAudienceQuizPane();
     }
 
     function changeAudienceEventCode() {
@@ -896,7 +1042,17 @@
             clearInterval(state.activeQuizTimer);
             state.activeQuizTimer = null;
 
-            if (state.view === 'audience' && !audienceLeaderboardTimeout) {
+            if (state.sideQuizActive && state.userSelectedOption === null) {
+              state.hasSubmittedAnswer = true;
+              state.userSelectedOption = -1;
+              renderAudienceQuizPane();
+              
+              if (state.sideQuizReviewTimer) clearTimeout(state.sideQuizReviewTimer);
+              state.sideQuizReviewTimer = setTimeout(() => {
+                state.sideQuizIndex++;
+                loadSideQuizQuestion();
+              }, 15000);
+            } else if (state.view === 'audience' && !audienceLeaderboardTimeout) {
               audienceLeaderboardTimeout = setTimeout(() => {
                 if (state.activeQuizQuestion && state.quizTimeRemaining <= 0) {
                   switchAudienceTab('leaderboard');
@@ -921,6 +1077,8 @@
     }
     
     async function sendPulse(eventType, metadata = {}, userId = null) {
+      if (state.sideQuizActive) return;
+
       try {
         const cleanCode = state.eventCode.replace(/^#/, '').trim().toUpperCase();
         await fetch('/api/pulse', {
@@ -934,6 +1092,8 @@
     }
 
     async function fetchPulseDatabase() {
+      if (state.sideQuizActive) return;
+
       try {
         let cleanCode = (state.eventCode || '').replace(/^#/, '').trim().toUpperCase();
         if (!cleanCode) return;
@@ -1520,7 +1680,6 @@
           speedRatio = timeRemaining / totalTime;
         }
 
-        // Linear scale between 100% and 50% of Max Points
         const multiplier = 0.5 + (0.5 * speedRatio);
         pointsEarned = Math.round(maxPoints * multiplier);
       }
@@ -1528,13 +1687,18 @@
       renderAudienceQuizPane();
       renderSpotlight();
 
-      await sendPulse('quiz_answer', {
-        quizId: state.activeQuizQuestion.id,
-        selectedIndex,
-        isCorrect,
-        userName: state.userName,
-        pointsEarned
-      });
+      if (state.sideQuizActive) {
+        state.sideQuizAnswers[questionId] = selectedIndex;
+        recordSessionScore(state.userName, pointsEarned, questionId);
+      } else {
+        await sendPulse('quiz_answer', {
+          quizId: state.activeQuizQuestion.id,
+          selectedIndex,
+          isCorrect,
+          userName: state.userName,
+          pointsEarned
+        });
+      }
     }
 
     async function summarizeOrEnhanceQuestion() {
@@ -1675,6 +1839,29 @@
       const container = document.getElementById('audienceQuizContainer');
       if (!container) return;
 
+      if (state.sideQuizActive && state.sideQuizCompleted) {
+        container.innerHTML = `
+          <div class="py-8 space-y-4">
+            <div class="w-16 h-16 rounded-full gold-gradient-bg text-slate-950 flex items-center justify-center mx-auto shadow-lg animate-bounce">
+              <i data-lucide="trophy" class="w-8 h-8"></i>
+            </div>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Thank you for completing this quiz!</h2>
+            <p class="text-slate-500 dark:text-gray-400 max-w-md mx-auto text-sm font-medium">Your score has been submitted directly to the Global Series Leaderboard.</p>
+            
+            <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <button onclick="switchAudienceTab('leaderboard')" class="w-full sm:w-auto px-6 py-2.5 rounded-xl gold-gradient-bg text-slate-950 font-bold text-sm hover:brightness-110 transition shadow">
+                View Global Leaderboard
+              </button>
+              <button onclick="initSideQuizMode(state.eventCode); state.sideQuizCompleted = false;" class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-slate-200 dark:bg-gray-800 text-slate-800 dark:text-gray-200 font-bold text-sm hover:bg-slate-300 dark:hover:bg-gray-700 transition">
+                Retake Side Quiz
+              </button>
+            </div>
+          </div>
+        `;
+        lucide.createIcons();
+        return;
+      }
+
       const activeQ = state.activeQuizQuestion;
 
       if (!activeQ) {
@@ -1689,16 +1876,16 @@
               <i data-lucide="clock" class="w-6 h-6 text-amber-500"></i>
             </div>
             <h2 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">Waiting for Presenter...</h2>
-            <p class="text-slate-500 dark:text-gray-400 max-w-md mx-auto text-xs sm:text-sm">When a live quiz question is released, it will appear here instantly!</p>
+            <p class="text-slate-500 dark:text-gray-400 max-w-md mx-auto text-xs sm:text-sm">When a live quiz question is released, it will appear here instantly! Or join a side quiz like <code class="text-amber-500">TWGCQUIZ1</code> via the event code bar.</p>
           </div>
         `;
         return;
       }
 
-      const isUnlimited = Number(activeQ.timeLimit) === 0;
-      const showAnswerAndVotes = isUnlimited 
-        ? (activeQ.stoppedAt || (state.quizTimeRemaining === 0 && state.activeQuizTimer === null)) 
-        : (state.quizTimeRemaining <= 0);
+      const isUnlimited = Number(activeQ.timeLimit) === 0 && !state.sideQuizActive;
+      const showAnswerAndVotes = state.sideQuizActive 
+        ? state.hasSubmittedAnswer 
+        : (isUnlimited ? (activeQ.stoppedAt || (state.quizTimeRemaining === 0 && state.activeQuizTimer === null)) : (state.quizTimeRemaining <= 0));
 
       if (showAnswerAndVotes && state.userSelectedOption !== null && state.userSelectedOption === activeQ.correct && !state.confettiFired) {
         state.confettiFired = true;
@@ -1720,19 +1907,27 @@
         <div class="space-y-4 text-left">
           <div class="flex items-center justify-between border-b border-slate-200 dark:border-gray-800 pb-3">
             <div>
-              <span class="text-[10px] uppercase font-bold text-amber-600 dark:text-amber-400 tracking-wider">${isUnlimited ? 'UNLIMITED TIMER MODE' : 'QUIZ ROUND'}</span>
+              <span class="text-[10px] uppercase font-bold text-amber-600 dark:text-amber-400 tracking-wider">${state.sideQuizActive ? `SIDE QUIZ (${state.eventCode}) - Q${state.sideQuizIndex + 1}/${state.sideQuizQuestions.length}` : (isUnlimited ? 'UNLIMITED TIMER MODE' : 'QUIZ ROUND')}</span>
               <h3 class="text-base sm:text-xl font-bold text-slate-900 dark:text-white mt-0.5">${activeQ.title || activeQ.question || 'Live Question'}</h3>
             </div>
             
-            <div class="text-center bg-slate-100 dark:bg-gray-950 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-gray-800">
-              <span class="block text-[9px] font-bold text-slate-500 dark:text-gray-400">${isUnlimited ? 'ELAPSED' : 'TIMER'}</span>
-              <span class="text-lg sm:text-2xl font-mono font-bold ${!isUnlimited && state.quizTimeRemaining < 10 ? 'text-red-500 animate-ping' : 'text-amber-600 dark:text-amber-400'}">${timerDisplayStr}</span>
-            </div>
+            ${!state.sideQuizActive ? `
+              <div class="text-center bg-slate-100 dark:bg-gray-950 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-gray-800">
+                <span class="block text-[9px] font-bold text-slate-500 dark:text-gray-400">${isUnlimited ? 'ELAPSED' : 'TIMER'}</span>
+                <span class="text-lg sm:text-2xl font-mono font-bold ${!isUnlimited && state.quizTimeRemaining < 10 ? 'text-red-500 animate-ping' : 'text-amber-600 dark:text-amber-400'}">${timerDisplayStr}</span>
+              </div>
+            ` : ''}
           </div>
 
-          ${state.hasSubmittedAnswer && !showAnswerAndVotes ? `
+          ${state.hasSubmittedAnswer && !showAnswerAndVotes && !state.sideQuizActive ? `
             <div class="p-3 bg-amber-100 dark:bg-amber-500/10 border border-amber-300 dark:border-amber-500/30 rounded-xl text-center text-xs text-amber-800 dark:text-amber-400 font-bold animate-pulse">
               ✓ Locked In! Waiting for presenter to stop question and reveal results...
+            </div>
+          ` : ''}
+
+          ${state.sideQuizActive && state.hasSubmittedAnswer ? `
+            <div class="p-3 bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-300 dark:border-emerald-500/30 rounded-xl text-center text-xs text-emerald-800 dark:text-emerald-400 font-bold">
+              ✓ Answer locked. Click 'Next Question' below to proceed.
             </div>
           ` : ''}
 
@@ -1748,9 +1943,9 @@
 
               if (showAnswerAndVotes) {
                 if (isCorrect) {
-                  btnStyle = "bg-emerald-600 border-2 border-white text-white font-bold shadow-md ring-2 ring-emerald-400/40";
+                  btnStyle = `${style.bg} text-white correct-flash-border`;
                 } else {
-                  btnStyle = "bg-slate-200 dark:bg-gray-900 border border-slate-300 dark:border-gray-800 text-slate-400 dark:text-gray-500 opacity-50";
+                  btnStyle = "bg-slate-200 dark:bg-gray-900 border border-slate-300 dark:border-gray-800 text-slate-400 dark:text-gray-500 opacity-40";
                 }
               } else if (isSelected) {
                 btnStyle = `${style.bg} ring-4 ring-slate-900 dark:ring-white text-white font-black`;
@@ -1760,9 +1955,9 @@
                 <button onclick="submitAudienceAnswer(${idx})" ${state.hasSubmittedAnswer || showAnswerAndVotes ? 'disabled' : ''} class="w-full p-4 rounded-xl text-left font-bold text-sm sm:text-base transition flex flex-col justify-between ${btnStyle}">
                   <div class="flex items-center justify-between w-full">
                     <span class="text-base font-bold">${style.symbol} ${opt}</span>
-                    ${showAnswerAndVotes && isCorrect ? '<span class="bg-white text-emerald-700 px-2 py-0.5 rounded-full text-xs font-bold">CORRECT</span>' : ''}
+                    ${showAnswerAndVotes && isCorrect ? '<span class="bg-black/40 text-emerald-300 px-2.5 py-0.5 rounded-full text-xs font-bold border border-emerald-400">CORRECT ANSWER</span>' : ''}
                   </div>
-                  ${showAnswerAndVotes ? `
+                  ${showAnswerAndVotes && !state.sideQuizActive ? `
                     <div class="mt-3 pt-2 border-t border-white/20 text-xs font-mono font-bold flex justify-between text-white/90">
                       <span>${count} votes</span>
                       <span>${pct}%</span>
@@ -1772,6 +1967,20 @@
               `;
             }).join('')}
           </div>
+
+          ${state.sideQuizActive ? `
+            <div class="pt-4 flex items-center justify-between border-t border-slate-200 dark:border-gray-800">
+              <button onclick="prevSideQuizQuestion()" ${state.sideQuizIndex === 0 ? 'disabled' : ''} class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-gray-800 text-slate-800 dark:text-gray-200 font-bold text-xs sm:text-sm hover:bg-slate-300 dark:hover:bg-gray-700 disabled:opacity-30 transition flex items-center space-x-1">
+                <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                <span>Previous</span>
+              </button>
+
+              <button onclick="nextSideQuizQuestion()" class="px-5 py-2 rounded-xl gold-gradient-bg text-slate-950 font-extrabold text-xs sm:text-sm hover:brightness-110 transition flex items-center space-x-1 shadow">
+                <span>${state.sideQuizIndex === state.sideQuizQuestions.length - 1 ? 'Finish & Submit' : 'Next Question'}</span>
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+              </button>
+            </div>
+          ` : ''}
         </div>
       `;
 
@@ -1860,9 +2069,9 @@
                 const style = kahootStyles[idx % 4];
                 
                 return `
-                  <div class="p-4 rounded-xl border flex flex-col justify-between ${showAnswer && isCorrect ? 'bg-emerald-600 border-white ring-2 ring-emerald-400/40 text-white font-bold' : `${style.bg} text-white`}">
+                  <div class="p-4 rounded-xl border flex flex-col justify-between ${showAnswer && isCorrect ? `${style.bg} text-white correct-flash-border` : `${style.bg} text-white`}">
                     <div class="flex items-center justify-between">
-                      <span class="text-base font-bold">${style.symbol} ${opt}${showAnswer && isCorrect ? ' ✓' : ''}</span>
+                      <span class="text-base font-bold">${style.symbol} ${opt}${showAnswer && isCorrect ? ' ✓ (Correct)' : ''}</span>
                     </div>
                     ${showAnswer ? `
                       <div class="mt-3 pt-2 border-t border-white/20 flex items-center justify-between text-xs font-mono font-bold text-white/90">
