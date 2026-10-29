@@ -1392,21 +1392,119 @@
       const checklist = document.getElementById('globalQuestionsChecklist');
       const catalogList = document.getElementById('sideQuizCatalogList');
 
+      // Aggregate all questions across all sessions in the same lecture series (e.g. TWGC)
+      const currentSeries = getLectureSeries(state.eventCode);
+      const aggregatedGlobalDeckMap = new Map();
+
+      // 1. Add questions from current active deck
+      state.quizDeck.forEach(q => {
+        const qId = String(q.id || q.title || q.question);
+        aggregatedGlobalDeckMap.set(qId, { ...q, sourceSession: state.eventCode });
+      });
+
+      // 2. Scan localStorage for decks belonging to the same series (e.g., TWGCSESSION1, TWGCSESSION2, etc.)
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('pulse_deck_')) {
+          const codeKey = key.replace('pulse_deck_', '');
+          if (getLectureSeries(codeKey) === currentSeries) {
+            try {
+              const savedDeck = JSON.parse(localStorage.getItem(key) || '[]');
+              savedDeck.forEach(item => {
+                const q = (item && item.quiz) ? item.quiz : (item || {});
+                const qId = String(q.id || q.title || q.question);
+                if (qId && !aggregatedGlobalDeckMap.has(qId)) {
+                  aggregatedGlobalDeckMap.set(qId, { ...q, sourceSession: codeKey });
+                }
+              });
+            } catch(e) {}
+          }
+        }
+      }
+
+      const seriesQuestions = Array.from(aggregatedGlobalDeckMap.values());
+
       if (checklist) {
-        if (state.quizDeck.length === 0) {
-          checklist.innerHTML = `<div class="text-xs text-slate-500 italic p-2">Global deck is empty. Create questions in Quiz Builder first!</div>`;
+        if (seriesQuestions.length === 0) {
+          checklist.innerHTML = `<div class="text-xs text-slate-500 italic p-2">Global deck is empty for ${currentSeries}. Create questions in Quiz Builder first!</div>`;
         } else {
-          checklist.innerHTML = state.quizDeck.map((q, idx) => {
+          checklist.innerHTML = seriesQuestions.map((q, idx) => {
             const id = String(q.id || q.title || q.question);
             const title = q.title || q.question || `Question ${idx + 1}`;
+            const origin = q.sourceSession ? ` [${q.sourceSession}]` : '';
             return `
-              <label class="flex items-center space-x-2 text-xs text-slate-800 dark:text-gray-200 cursor-pointer bg-white dark:bg-gray-900 p-1.5 rounded border border-slate-200 dark:border-gray-800">
-                <input type="checkbox" value="${id}" class="global-q-checkbox accent-amber-500 w-4 h-4 rounded">
-                <span class="truncate">${title}</span>
+              <label class="flex items-center space-x-2 text-xs text-slate-800 dark:text-gray-200 cursor-pointer bg-white dark:bg-gray-900 p-1.5 rounded border border-slate-200 dark:border-gray-800 hover:border-amber-500/50 transition">
+                <input type="checkbox" value="${id}" data-quiz-json="${encodeURIComponent(JSON.stringify(q))}" class="global-q-checkbox accent-amber-500 w-4 h-4 rounded shrink-0">
+                <span class="truncate"><strong class="text-amber-600 dark:text-amber-400 font-mono">${origin}</strong> ${title}</span>
               </label>
             `;
           }).join('');
         }
+      }
+
+      if (catalogList) {
+        const keys = Object.keys(state.sideQuizCatalog);
+        if (keys.length === 0) {
+          catalogList.innerHTML = `<div class="text-xs text-slate-500 italic py-4">No side quizzes created yet. Fill out the form to build one!</div>`;
+        } else {
+          catalogList.innerHTML = keys.map(k => {
+            const sq = state.sideQuizCatalog[k];
+            return `
+              <div class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-xl p-3 flex items-center justify-between shadow-sm">
+                <div>
+                  <span class="font-mono font-bold text-amber-600 dark:text-amber-400 text-xs">${sq.code}</span>
+                  <h5 class="text-xs font-bold text-slate-900 dark:text-white">${sq.title}</h5>
+                  <span class="text-[10px] text-slate-500">${sq.questions.length} Selected Questions</span>
+                </div>
+                <button onclick="startSideQuizByCode('${sq.code}')" class="px-3 py-1 rounded-lg bg-amber-500 text-slate-950 font-bold text-xs hover:brightness-110">
+                  Launch
+                </button>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+    }
+
+    function saveSideQuiz() {
+      const codeInput = document.getElementById('sideQuizCodeInput').value.trim().toUpperCase();
+      const titleInput = document.getElementById('sideQuizTitleInput').value.trim();
+      if (!codeInput) {
+        alert("Please specify a Side Quiz Code (e.g. TWGCQUIZ1).");
+        return;
+      }
+
+      const checkboxes = document.querySelectorAll('.global-q-checkbox:checked');
+      if (checkboxes.length === 0) {
+        alert("Please select at least one question from the Global Deck.");
+        return;
+      }
+
+      const selectedQuestions = Array.from(checkboxes).map(cb => {
+        try {
+          return JSON.parse(decodeURIComponent(cb.getAttribute('data-quiz-json')));
+        } catch(e) {
+          return null;
+        }
+      }).filter(Boolean);
+
+      const series = getLectureSeries(state.eventCode);
+
+      state.sideQuizCatalog[codeInput] = {
+        code: codeInput,
+        title: titleInput || `Side Quiz ${codeInput}`,
+        questions: selectedQuestions
+      };
+
+      try {
+        localStorage.setItem(`pulse_side_catalog_${series}`, JSON.stringify(state.sideQuizCatalog));
+      } catch(e) {}
+
+      document.getElementById('sideQuizCodeInput').value = "";
+      document.getElementById('sideQuizTitleInput').value = "";
+      renderSideQuizBuilder();
+      alert(`Side Quiz ${codeInput} saved with ${selectedQuestions.length} questions!`);
+    }
       }
 
       if (catalogList) {
