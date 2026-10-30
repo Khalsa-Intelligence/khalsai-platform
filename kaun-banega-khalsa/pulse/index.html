@@ -54,7 +54,7 @@
     }
     .p-nav-btn {
       height: 38px;
-      padding: 0 16px;
+      padding: 0 14px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -82,25 +82,39 @@
 </head>
 <body class="h-full flex flex-col bg-slate-50 text-slate-900 dark:bg-[#090D16] dark:text-gray-100 antialiased selection:bg-amber-500 selection:text-black">
 
-  <!-- Top Navigation Header -->
-  <header class="sticky top-0 z-40 border-b border-slate-200 dark:border-gray-800/80 bg-white/90 dark:bg-[#0D121F]/90 backdrop-blur-md px-4 sm:px-6 py-2.5 transition-all">
-    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
+  <!-- Top Navigation Header with Responsive Mobile Layout Stack -->
+  <header class="sticky top-0 z-40 border-b border-slate-200 dark:border-gray-800/80 bg-white/95 dark:bg-[#0D121F]/95 backdrop-blur-md px-4 sm:px-6 py-2.5 transition-all">
+    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
       
-      <!-- Brand & Title -->
-      <div class="flex items-center space-x-3 shrink-0">
-        <div class="w-9 h-9 rounded-xl gold-gradient-bg flex items-center justify-center text-slate-950 shadow-md shadow-amber-500/20 font-black text-lg">
-          <i data-lucide="zap" class="w-5 h-5 stroke-[2.5]"></i>
-        </div>
-        <div>
-          <div class="flex items-center space-x-2">
-            <span class="text-lg font-black tracking-tight text-slate-900 dark:text-white uppercase">Khalsai Pulse</span>
-            <span class="bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-400 text-[10px] px-2 py-0.5 rounded-full font-bold border border-amber-300 dark:border-amber-500/30">KI</span>
+      <!-- Primary Top Row: Brand & Mobile Quick Controls -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center space-x-3 shrink-0">
+          <div class="w-9 h-9 rounded-xl gold-gradient-bg flex items-center justify-center text-slate-950 shadow-md shadow-amber-500/20 font-black text-lg">
+            <i data-lucide="zap" class="w-5 h-5 stroke-[2.5]"></i>
           </div>
-          <p class="hidden sm:block text-[11px] font-medium text-slate-500 dark:text-gray-400">Interactive Quiz & Live Audience Platform</p>
+          <div>
+            <div class="flex items-center space-x-2">
+              <span class="text-base sm:text-lg font-black tracking-tight text-slate-900 dark:text-white uppercase">Khalsai Pulse</span>
+              <span class="bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-400 text-[10px] px-2 py-0.5 rounded-full font-bold border border-amber-300 dark:border-amber-500/30">KI</span>
+            </div>
+            <p class="hidden md:block text-[11px] font-medium text-slate-500 dark:text-gray-400">Interactive Quiz & Live Audience Platform</p>
+          </div>
+        </div>
+
+        <!-- Mobile Inline Right Controls (Theme & Switcher) -->
+        <div class="flex items-center space-x-2 sm:hidden">
+          <div class="bg-slate-200 dark:bg-gray-950 p-1 rounded-xl border border-slate-300 dark:border-gray-800 flex items-center gap-1">
+            <button id="btnAudienceViewMobile" onclick="switchView('audience')" class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition bg-amber-500 text-slate-950 shadow">Audience</button>
+            <button id="btnPresenterViewMobile" onclick="switchView('presenter')" class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold text-slate-600 dark:text-gray-400">Presenter</button>
+          </div>
+          <button onclick="toggleTheme()" class="p-2 rounded-xl bg-slate-100 dark:bg-gray-900 border border-slate-200 dark:border-gray-800 text-slate-700 dark:text-gray-300" title="Toggle Theme">
+            <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
+            <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
+          </button>
         </div>
       </div>
 
-      <!-- Center Event Code & Quick Actions -->
+      <!-- Center Event Code Pill (Desktop & Tablet) -->
       <div class="hidden lg:flex items-center space-x-2 bg-slate-100 dark:bg-gray-900/80 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-gray-800">
         <span class="text-[11px] uppercase tracking-wider font-extrabold text-slate-500 dark:text-gray-400">SESSION CODE:</span>
         <input type="text" id="headerAudienceCodeInput" value="" class="bg-white dark:bg-gray-950 px-2 py-0.5 rounded-lg border border-slate-300 dark:border-gray-700 font-mono font-bold text-amber-600 dark:text-amber-400 text-xs focus:outline-none focus:border-amber-500 w-32 uppercase text-center">
@@ -112,9 +126,9 @@
         </button>
       </div>
 
-      <!-- Header Button Controls -->
-      <div class="flex items-center space-x-2">
-        <a href="https://khalsai.com/why-guru-feedback/" target="_blank" rel="noopener noreferrer" class="hidden sm:flex items-center space-x-1 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-gray-800/60 hover:bg-slate-200 dark:hover:bg-gray-800 text-slate-700 dark:text-gray-300 font-bold text-xs transition border border-slate-200 dark:border-gray-700">
+      <!-- Desktop Header Button Controls -->
+      <div class="hidden sm:flex items-center space-x-2">
+        <a href="https://khalsai.com/why-guru-feedback/" target="_blank" rel="noopener noreferrer" class="hidden md:flex items-center space-x-1 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-gray-800/60 hover:bg-slate-200 dark:hover:bg-gray-800 text-slate-700 dark:text-gray-300 font-bold text-xs transition border border-slate-200 dark:border-gray-700">
           <i data-lucide="message-square-heart" class="w-3.5 h-3.5 text-amber-500"></i>
           <span>Feedback</span>
         </a>
@@ -136,6 +150,7 @@
           <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
         </button>
       </div>
+
     </div>
   </header>
 
@@ -677,6 +692,7 @@
     
     const processedPulseIds = new Set();
     const handledQuizReleases = new Set();
+    const handledReactionIds = new Set(); // Fixed: track reaction IDs to prevent glitchy loops
     let audienceLeaderboardTimeout = null;
 
     let state = {
@@ -1171,6 +1187,7 @@
       checkParticipantName();
       await sendPulse('reaction', { emoji }, state.userName);
       
+      // Fixed: Clean standalone floating element with unique lifecycle to avoid persistent loops
       const floatEl = document.createElement('div');
       floatEl.textContent = emoji;
       floatEl.className = "fixed bottom-20 left-1/2 -translate-x-1/2 text-3xl animate-bounce z-50 pointer-events-none transition-all duration-1000";
@@ -1205,21 +1222,25 @@
           } catch(e) {}
 
           sortedPulses.forEach(p => {
-            if (p.event_type === 'reaction' && p.metadata && state.view === 'presenter' && state.presenterSubTab === 'spotlight') {
-              let meta = p.metadata;
-              try { while (typeof meta === 'string') meta = JSON.parse(meta); } catch(e) {}
-              if (meta && meta.emoji) {
-                const spotCard = document.getElementById('spotlightContent');
-                if (spotCard) {
-                  const rEl = document.createElement('div');
-                  rEl.textContent = meta.emoji;
-                  rEl.className = "absolute bottom-4 right-6 text-4xl animate-bounce z-50 pointer-events-none transition-all duration-1000";
-                  spotCard.appendChild(rEl);
-                  setTimeout(() => {
-                    rEl.style.transform = `translate(${(Math.random() - 0.5) * 200}px, -220px) scale(1.8)`;
-                    rEl.style.opacity = '0';
-                  }, 50);
-                  setTimeout(() => rEl.remove(), 1000);
+            // Fixed: De-duplicate incoming reactions using handledReactionIds so polling doesn't replay old ones
+            if (p.event_type === 'reaction' && !handledReactionIds.has(p.id)) {
+              handledReactionIds.add(p.id);
+              if (state.view === 'presenter' && state.presenterSubTab === 'spotlight') {
+                let meta = p.metadata;
+                try { while (typeof meta === 'string') meta = JSON.parse(meta); } catch(e) {}
+                if (meta && meta.emoji) {
+                  const spotCard = document.getElementById('spotlightContent');
+                  if (spotCard) {
+                    const rEl = document.createElement('div');
+                    rEl.textContent = meta.emoji;
+                    rEl.className = "absolute bottom-4 right-6 text-4xl animate-bounce z-50 pointer-events-none transition-all duration-1000";
+                    spotCard.appendChild(rEl);
+                    setTimeout(() => {
+                      rEl.style.transform = `translate(${(Math.random() - 0.5) * 200}px, -220px) scale(1.8)`;
+                      rEl.style.opacity = '0';
+                    }, 50);
+                    setTimeout(() => rEl.remove(), 1000);
+                  }
                 }
               }
             }
@@ -1438,6 +1459,8 @@
 
       const audBtn = document.getElementById('btnAudienceView');
       const presBtn = document.getElementById('btnPresenterView');
+      const audBtnMob = document.getElementById('btnAudienceViewMobile');
+      const presBtnMob = document.getElementById('btnPresenterViewMobile');
       const audView = document.getElementById('audienceView');
       const presView = document.getElementById('presenterView');
 
@@ -1448,16 +1471,31 @@
         presView.classList.add('hidden');
         presView.classList.remove('flex');
 
-        audBtn.className = "px-3 py-1.5 rounded-lg text-xs font-extrabold transition flex items-center space-x-1.5 bg-amber-500 text-slate-950 shadow";
-        presBtn.className = "px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition flex items-center space-x-1.5";
+        const activeClass = "px-3 py-1.5 rounded-lg text-xs font-extrabold transition flex items-center space-x-1.5 bg-amber-500 text-slate-950 shadow";
+        const inactiveClass = "px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition flex items-center space-x-1.5";
+        const mobActiveClass = "px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition bg-amber-500 text-slate-950 shadow";
+        const mobInactiveClass = "px-2.5 py-1 rounded-lg text-[11px] font-extrabold text-slate-600 dark:text-gray-400";
+
+        if (audBtn) audBtn.className = activeClass;
+        if (presBtn) presBtn.className = inactiveClass;
+        if (audBtnMob) audBtnMob.className = mobActiveClass;
+        if (presBtnMob) presBtnMob.className = mobInactiveClass;
       } else {
         presView.classList.remove('hidden');
         presView.classList.add('flex');
         audView.classList.add('hidden');
         audView.classList.remove('flex');
 
-        presBtn.className = "px-3 py-1.5 rounded-lg text-xs font-extrabold transition flex items-center space-x-1.5 bg-amber-500 text-slate-950 shadow";
-        audBtn.className = "px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition flex items-center space-x-1.5";
+        const activeClass = "px-3 py-1.5 rounded-lg text-xs font-extrabold transition flex items-center space-x-1.5 bg-amber-500 text-slate-950 shadow";
+        const inactiveClass = "px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition flex items-center space-x-1.5";
+        const mobActiveClass = "px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition bg-amber-500 text-slate-950 shadow";
+        const mobInactiveClass = "px-2.5 py-1 rounded-lg text-[11px] font-extrabold text-slate-600 dark:text-gray-400";
+
+        if (presBtn) presBtn.className = activeClass;
+        if (audBtn) audBtn.className = inactiveClass;
+        if (presBtnMob) presBtnMob.className = mobActiveClass;
+        if (audBtnMob) audBtnMob.className = mobInactiveClass;
+
         renderQRCode();
       }
       lucide.createIcons();
