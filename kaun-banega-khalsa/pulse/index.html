@@ -75,7 +75,7 @@
     }
     .q-select-card:has(input:checked) {
       border-color: #f59e0b !important;
-      background-color: rgba(245, 158, 11, 0.05) !important;
+      background-color: rgba(245, 158, 11, 0.08) !important;
       box-shadow: 0 0 0 1px #f59e0b;
     }
   </style>
@@ -87,7 +87,7 @@
     <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
       
       <!-- Brand & Title -->
-      <div class="flex items-center space-x-2.5 min-w-0 shrink">
+      <div class="flex items-center space-x-2 min-w-0 shrink">
         <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl gold-gradient-bg flex items-center justify-center text-slate-950 shadow-md shadow-amber-500/20 font-black text-base shrink-0">
           <i data-lucide="zap" class="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]"></i>
         </div>
@@ -111,16 +111,16 @@
         </button>
       </div>
 
-      <!-- Right Controls: Audience/Presenter Switcher & Theme Toggle (Fully Responsive & Compact) -->
+      <!-- Right Controls: Audience/Presenter Switcher & Theme Toggle (Compact & Responsive) -->
       <div class="flex items-center space-x-1.5 shrink-0">
         
         <!-- View Switcher -->
-        <div class="bg-slate-200 dark:bg-gray-950 p-0.5 sm:p-1 rounded-xl border border-slate-300 dark:border-gray-800 flex items-center gap-1">
-          <button id="btnAudienceView" onclick="switchView('audience')" class="px-2.5 sm:px-3 py-1 rounded-lg text-[11px] sm:text-xs font-extrabold transition flex items-center space-x-1 bg-amber-500 text-slate-950 shadow">
+        <div class="bg-slate-200 dark:bg-gray-950 p-0.5 sm:p-1 rounded-xl border border-slate-300 dark:border-gray-800 flex items-center gap-0.5 sm:gap-1">
+          <button id="btnAudienceView" onclick="switchView('audience')" class="px-2 sm:px-3 py-1 rounded-lg text-[10px] sm:text-xs font-extrabold transition flex items-center space-x-1 bg-amber-500 text-slate-950 shadow">
             <i data-lucide="users" class="w-3 h-3"></i>
             <span>Audience</span>
           </button>
-          <button id="btnPresenterView" onclick="switchView('presenter')" class="px-2.5 sm:px-3 py-1 rounded-lg text-[11px] sm:text-xs font-extrabold text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition flex items-center space-x-1">
+          <button id="btnPresenterView" onclick="switchView('presenter')" class="px-2 sm:px-3 py-1 rounded-lg text-[10px] sm:text-xs font-extrabold text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition flex items-center space-x-1">
             <i data-lucide="presentation" class="w-3 h-3"></i>
             <span>Presenter</span>
           </button>
@@ -463,26 +463,30 @@
         </div>
       </div>
 
-      <!-- SUB-TAB 2.5: SIDE QUIZ BUILDER (REFINED HIGH-POLISH SAAS LAYOUT) -->
+      <!-- SUB-TAB 2.5: SIDE QUIZ BUILDER -->
       <div id="presenterSideBuilderPane" class="hidden space-y-6">
         <div class="bg-white dark:bg-[#0D121F] border border-slate-200 dark:border-gray-800 rounded-2xl p-5 sm:p-6 shadow-sm">
           
-          <!-- Header Bar -->
           <div class="flex items-center justify-between border-b border-slate-200 dark:border-gray-800/80 pb-4 mb-6">
             <div>
-              <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+              <h3 id="sideQuizFormHeading" class="text-lg font-bold text-slate-900 dark:text-white flex items-center space-x-2">
                 <i data-lucide="layers" class="w-5 h-5 text-amber-500"></i>
                 <span>Side Quiz Assembly Manager</span>
               </h3>
-              <p class="text-xs text-slate-500 dark:text-gray-400 mt-0.5">Bundle questions from your Global Deck into untimed self-paced side quizzes.</p>
+              <p class="text-xs text-slate-500 dark:text-gray-400 mt-0.5">Bundle and reorder questions from your Global Deck into untimed self-paced side quizzes.</p>
             </div>
-            <span id="sideQuizSelectedCountBadge" class="text-xs font-mono text-amber-600 dark:text-amber-400 font-bold bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">0 selected</span>
+            <div class="flex items-center space-x-2">
+              <button id="btnCancelEditSideQuiz" onclick="cancelEditSideQuiz()" class="hidden text-xs bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 text-slate-700 dark:text-gray-300 px-3 py-1.5 rounded-xl font-bold">
+                Cancel Edit
+              </button>
+              <span id="sideQuizSelectedCountBadge" class="text-xs font-mono text-amber-600 dark:text-amber-400 font-bold bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">0 selected</span>
+            </div>
           </div>
 
-          <!-- Clean Split Layout -->
+          <input type="hidden" id="editingSideQuizCode" value="">
+
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             
-            <!-- Left Panel: Form Settings & Published Catalog -->
             <div class="lg:col-span-5 space-y-5">
               
               <div class="bg-slate-50 dark:bg-[#080D17] border border-slate-200 dark:border-gray-800/80 rounded-2xl p-4 space-y-3.5 shadow-inner">
@@ -498,23 +502,32 @@
                   <input type="text" id="sideQuizTitleInput" placeholder="e.g. Special Topics & Mid-Term Review" class="w-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none">
                 </div>
 
-                <button onclick="saveSideQuiz()" class="w-full py-2.5 rounded-xl gold-gradient-bg text-slate-950 font-bold text-sm hover:brightness-110 transition shadow flex items-center justify-center space-x-2">
+                <button id="btnSaveSideQuiz" onclick="saveSideQuiz()" class="w-full py-2.5 rounded-xl gold-gradient-bg text-slate-950 font-bold text-sm hover:brightness-110 transition shadow flex items-center justify-center space-x-2">
                   <i data-lucide="cloud-upload" class="w-4 h-4"></i>
                   <span>Save & Publish Side Quiz</span>
                 </button>
               </div>
 
-              <!-- Published Side Quizzes List -->
+              <!-- Selected Questions Reordering Box -->
+              <div class="bg-slate-50 dark:bg-[#080D17] border border-slate-200 dark:border-gray-800/80 rounded-2xl p-4 space-y-3">
+                <div class="flex items-center justify-between">
+                  <span class="text-[11px] font-extrabold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Selected Sequence & Order</span>
+                  <span id="sideQuizSequenceCount" class="text-[10px] font-mono text-slate-400">0 items</span>
+                </div>
+                <div id="sideQuizSelectedSequenceList" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                  <p class="text-[11px] text-slate-400 dark:text-gray-500 text-center py-4 italic">Check questions on the right to sequence them here.</p>
+                </div>
+              </div>
+
               <div class="space-y-2">
                 <span class="text-xs font-extrabold text-slate-700 dark:text-gray-300 uppercase tracking-wider block px-1">Published Side Quizzes</span>
-                <div id="sideQuizCatalogList" class="space-y-2 max-h-56 overflow-y-auto pr-1">
+                <div id="sideQuizCatalogList" class="space-y-2 max-h-48 overflow-y-auto pr-1">
                   <!-- Catalog items rendered via JS -->
                 </div>
               </div>
 
             </div>
 
-            <!-- Right Panel: Global Question Selection Cards -->
             <div class="lg:col-span-7 space-y-3">
               <div class="flex items-center justify-between px-1">
                 <span class="text-[11px] font-extrabold text-amber-600 dark:text-amber-400 uppercase tracking-wider">2. Select Questions from Global Deck</span>
@@ -525,7 +538,7 @@
                 </div>
               </div>
 
-              <div id="globalQuestionsChecklist" class="space-y-2 max-h-[480px] overflow-y-auto pr-2">
+              <div id="globalQuestionsChecklist" class="space-y-3 max-h-[600px] overflow-y-auto pr-2">
                 <!-- Selectable Question Cards rendered via JS -->
               </div>
             </div>
@@ -1280,113 +1293,6 @@
             }
           });
 
-          sortedPulses.forEach(p => {
-            if (processedPulseIds.has(p.id)) return;
-            processedPulseIds.add(p.id);
-
-            if (p.event_type === 'question' && p.metadata) {
-              let meta = p.metadata;
-              if (typeof meta === 'string') {
-                try { meta = JSON.parse(meta); } catch(e) {}
-              }
-              if (meta && meta.id && !state.questions.some(q => q.id === meta.id)) {
-                state.questions.unshift(meta);
-              }
-            }
-
-            if (p.event_type === 'quiz_clear') {
-              const clearTime = p.created_at ? new Date(p.created_at).getTime() : Date.now();
-              state.lastQuizClearedAt = Math.max(state.lastQuizClearedAt, clearTime);
-            
-              state.activeQuizQuestion = null;
-              state.activeQuizQuestionId = null;
-              state.activeQuizQuestionStartedAt = null;
-              state.hasSubmittedAnswer = false;
-              state.userSelectedOption = null;
-              state.spotlightedItem = null;
-              state.confettiFired = false;
-              
-              if (state.activeQuizTimer) {
-                clearInterval(state.activeQuizTimer);
-                state.activeQuizTimer = null;
-              }
-            }
-
-            if (p.event_type === 'quiz_release' && p.metadata) {
-              let meta = p.metadata;
-              while (typeof meta === 'string') {
-                try { meta = JSON.parse(meta); } catch(e) { break; }
-              }
-              let quiz = meta ? (meta.quiz || meta) : null;
-              if (quiz && typeof quiz === 'string') {
-                try { quiz = JSON.parse(quiz); } catch(e) {}
-              }
-              const startedAt = (meta && meta.startedAt) || (p.created_at ? new Date(p.created_at).getTime() : Date.now());
-              
-              if (startedAt <= state.lastQuizClearedAt || handledQuizReleases.has(p.id)) {
-                return;
-              }
-
-              if (quiz) {
-                handledQuizReleases.add(p.id);
-                const qId = String(quiz.id || quiz.title || quiz.question || 'active_quiz');
-                const answeredMap = JSON.parse(sessionStorage.getItem('pulse_answered_quizzes') || '{}');
-                const alreadyAnsweredOption = answeredMap[quiz.id] !== undefined ? answeredMap[quiz.id] : null;
-
-                if (String(state.activeQuizQuestionId) !== qId) {
-                  state.activeQuizQuestion = quiz;
-                  state.activeQuizQuestionId = qId;
-                  state.activeQuizQuestionStartedAt = startedAt;
-                  state.hasSubmittedAnswer = answeredMap[quiz.id] !== undefined;
-                  state.userSelectedOption = alreadyAnsweredOption;
-                  state.responseCounts = [0, 0, 0, 0];
-                  state.totalResponses = 0;
-                  state.spotlightedItem = { type: 'quiz', data: quiz };
-                  state.confettiFired = false;
-                  
-                  startQuizTimer(qId, quiz.timeLimit !== undefined ? Number(quiz.timeLimit) : 30, startedAt);
-                }
-              }
-            }
-
-            if (p.event_type === 'quiz_stop' && p.metadata) {
-              let meta = p.metadata;
-              if (typeof meta === 'string') {
-                try { meta = JSON.parse(meta); } catch(e) {}
-              }
-              const stoppedQuizId = meta ? meta.quizId : null;
-              
-              if (state.activeQuizQuestion && String(state.activeQuizQuestionId) === String(stoppedQuizId)) {
-                state.activeQuizQuestion.stoppedAt = meta.stoppedAt || Date.now();
-                state.quizTimeRemaining = 0;
-                if (state.activeQuizTimer) {
-                  clearInterval(state.activeQuizTimer);
-                  state.activeQuizTimer = null;
-                }
-              }
-            }
-
-            if (p.event_type === 'quiz_answer' && p.metadata) {
-              let meta = p.metadata;
-              if (typeof meta === 'string') {
-                try { meta = JSON.parse(meta); } catch(e) {}
-              }
-
-              const pulseTime = p.created_at ? new Date(p.created_at).getTime() : Date.now();
-
-              if (state.activeQuizQuestion && meta && meta.quizId === state.activeQuizQuestion.id) {
-                if (typeof meta.selectedIndex === 'number' && meta.selectedIndex >= 0 && meta.selectedIndex < 4) {
-                  state.responseCounts[meta.selectedIndex]++;
-                  state.totalResponses++;
-                }
-              }
-
-              if (pulseTime >= state.lastLeaderboardResetAt && meta && meta.userName && meta.pointsEarned) {
-                recordSessionScore(meta.userName, meta.pointsEarned, meta.quizId);
-              }
-            }
-          });
-
           const updatedDeck = Array.from(deckMap.values());
           state.quizDeck = updatedDeck;
           try {
@@ -1450,8 +1356,8 @@
         presView.classList.add('hidden');
         presView.classList.remove('flex');
 
-        const activeClass = "px-2.5 sm:px-3 py-1 rounded-lg text-[11px] sm:text-xs font-extrabold transition flex items-center space-x-1 bg-amber-500 text-slate-950 shadow";
-        const inactiveClass = "px-2.5 sm:px-3 py-1 rounded-lg text-[11px] sm:text-xs font-extrabold text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition flex items-center space-x-1";
+        const activeClass = "px-2 sm:px-3 py-1 rounded-lg text-[10px] sm:text-xs font-extrabold transition flex items-center space-x-1 bg-amber-500 text-slate-950 shadow";
+        const inactiveClass = "px-2 sm:px-3 py-1 rounded-lg text-[10px] sm:text-xs font-extrabold text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition flex items-center space-x-1";
 
         if (audBtn) audBtn.className = activeClass;
         if (presBtn) presBtn.className = inactiveClass;
@@ -1461,8 +1367,8 @@
         audView.classList.add('hidden');
         audView.classList.remove('flex');
 
-        const activeClass = "px-2.5 sm:px-3 py-1 rounded-lg text-[11px] sm:text-xs font-extrabold transition flex items-center space-x-1 bg-amber-500 text-slate-950 shadow";
-        const inactiveClass = "px-2.5 sm:px-3 py-1 rounded-lg text-[11px] sm:text-xs font-extrabold text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition flex items-center space-x-1";
+        const activeClass = "px-2 sm:px-3 py-1 rounded-lg text-[10px] sm:text-xs font-extrabold transition flex items-center space-x-1 bg-amber-500 text-slate-950 shadow";
+        const inactiveClass = "px-2 sm:px-3 py-1 rounded-lg text-[10px] sm:text-xs font-extrabold text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition flex items-center space-x-1";
 
         if (presBtn) presBtn.className = activeClass;
         if (audBtn) audBtn.className = inactiveClass;
@@ -1481,34 +1387,39 @@
       }
     }
 
+    // In-memory builder staging for reordering selected questions in side quiz builder
+    let sideQuizBuilderQuestions = [];
+
     function renderSideQuizBuilder() {
       const checklistContainer = document.getElementById('globalQuestionsChecklist');
       const catalogContainer = document.getElementById('sideQuizCatalogList');
-      if (!checklistContainer || !catalogContainer) return;
+      const sequenceContainer = document.getElementById('sideQuizSelectedSequenceList');
+      if (!checklistContainer || !catalogContainer || !sequenceContainer) return;
 
       const allQuestions = getAllSeriesQuestions();
 
       if (allQuestions.length === 0) {
-        checklistContainer.innerHTML = `<p class="text-xs text-slate-400 dark:text-gray-500 py-6 text-center">No questions found in Global Deck.</p>`;
+        checklistContainer.innerHTML = `<p class="text-sm text-slate-400 dark:text-gray-500 py-6 text-center font-medium">No questions found in Global Deck.</p>`;
       } else {
         checklistContainer.innerHTML = allQuestions.map((q, idx) => {
           const qId = q.id || q.title || q.question || `q_${idx}`;
           const title = q.title || q.question || 'Untitled Question';
           const sessionTag = q.sourceSession ? q.sourceSession.replace('TWGC', '') : 'SERIES';
+          const isChecked = sideQuizBuilderQuestions.some(item => String(item.id || item.title || item.question) === String(qId));
           
           return `
-            <label class="q-select-card flex items-start space-x-3 text-xs text-slate-800 dark:text-gray-200 cursor-pointer bg-slate-50 dark:bg-gray-900/60 p-3 rounded-xl border border-slate-200 dark:border-gray-800/80 hover:border-amber-500/40 transition shadow-sm">
-              <input type="checkbox" value="${qId}" onchange="updateSideQuizChecklistCount()" class="global-q-checkbox mt-0.5 accent-amber-500 shrink-0 w-4 h-4 rounded">
-              <div class="space-y-1 min-w-0 flex-1">
-                <span class="inline-block bg-amber-100 dark:bg-amber-500/10 text-amber-800 dark:text-amber-400 font-mono font-bold text-[9px] px-1.5 py-0.5 rounded border border-amber-300 dark:border-amber-500/20">${sessionTag}</span>
-                <p class="font-medium text-slate-900 dark:text-gray-100 leading-snug">${title}</p>
+            <label class="q-select-card flex items-start space-x-3.5 bg-slate-50 dark:bg-gray-900/80 p-4 sm:p-4.5 rounded-xl border border-slate-200 dark:border-gray-800 hover:border-amber-500/50 transition cursor-pointer shadow-sm">
+              <input type="checkbox" value="${qId}" ${isChecked ? 'checked' : ''} onchange="handleSideQuizCheckboxChange(this, ${JSON.stringify(q).replace(/"/g, '&quot;')})" class="global-q-checkbox mt-1 accent-amber-500 shrink-0 w-5 h-5 rounded cursor-pointer">
+              <div class="space-y-1.5 min-w-0 flex-1">
+                <span class="inline-block bg-amber-100 dark:bg-amber-500/15 text-amber-800 dark:text-amber-400 font-mono font-extrabold text-xs px-2 py-0.5 rounded border border-amber-300 dark:border-amber-500/30">${sessionTag}</span>
+                <p class="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-relaxed">${title}</p>
               </div>
             </label>
           `;
         }).join('');
       }
 
-      updateSideQuizChecklistCount();
+      updateSideQuizSequenceUI();
 
       loadSideQuizCatalog();
       const keys = Object.keys(state.sideQuizCatalog);
@@ -1527,64 +1438,160 @@
               <span class="font-bold text-slate-900 dark:text-white ml-1.5 truncate">${sq.title}</span>
               <span class="text-slate-400 dark:text-gray-500 block text-[10px] mt-0.5">${sq.questions.length} Questions</span>
             </div>
-            <button onclick="deleteSideQuiz('${sq.code}')" class="text-slate-400 hover:text-red-500 p-1 transition shrink-0">
-              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-            </button>
+            <div class="flex items-center space-x-1 shrink-0">
+              <button onclick="editSideQuiz('${sq.code}')" class="bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 text-slate-700 dark:text-gray-300 font-bold text-[10px] px-2 py-1 rounded transition" title="Edit Side Quiz">
+                Edit
+              </button>
+              <button onclick="deleteSideQuiz('${sq.code}')" class="text-slate-400 hover:text-red-500 p-1 transition" title="Delete">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
           </div>
         `;
       }).join('');
       lucide.createIcons();
     }
 
-    function selectAllGlobalQuestions(select) {
-      document.querySelectorAll('.global-q-checkbox').forEach(cb => {
-        cb.checked = select;
-      });
-      updateSideQuizChecklistCount();
+    function handleSideQuizCheckboxChange(checkbox, questionObj) {
+      const qId = questionObj.id || questionObj.title || questionObj.question;
+      if (checkbox.checked) {
+        if (!sideQuizBuilderQuestions.some(q => String(q.id || q.title || q.question) === String(qId))) {
+          sideQuizBuilderQuestions.push(questionObj);
+        }
+      } else {
+        sideQuizBuilderQuestions = sideQuizBuilderQuestions.filter(q => String(q.id || q.title || q.question) !== String(qId));
+      }
+      updateSideQuizSequenceUI();
     }
 
-    function updateSideQuizChecklistCount() {
-      const selected = document.querySelectorAll('.global-q-checkbox:checked').length;
-      const badge = document.getElementById('sideQuizSelectedCountBadge');
-      if (badge) badge.textContent = `${selected} selected`;
+    function updateSideQuizSequenceUI() {
+      const sequenceContainer = document.getElementById('sideQuizSelectedSequenceList');
+      const countBadge = document.getElementById('sideQuizSelectedCountBadge');
+      const sequenceCount = document.getElementById('sideQuizSequenceCount');
+      if (!sequenceContainer) return;
+
+      if (countBadge) countBadge.textContent = `${sideQuizBuilderQuestions.length} selected`;
+      if (sequenceCount) sequenceCount.textContent = `${sideQuizBuilderQuestions.length} items`;
+
+      if (sideQuizBuilderQuestions.length === 0) {
+        sequenceContainer.innerHTML = `<p class="text-[11px] text-slate-400 dark:text-gray-500 text-center py-4 italic">Check questions on the right to sequence them here.</p>`;
+        return;
+      }
+
+      sequenceContainer.innerHTML = sideQuizBuilderQuestions.map((q, idx) => {
+        const title = q.title || q.question || 'Untitled Question';
+        return `
+          <div class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-xl p-2.5 flex items-center justify-between text-xs shadow-sm">
+            <div class="flex items-center space-x-2 truncate pr-2">
+              <span class="font-mono font-bold text-amber-600 text-[10px]">#${idx + 1}</span>
+              <span class="truncate font-medium text-slate-900 dark:text-white">${title}</span>
+            </div>
+            <div class="flex items-center space-x-1 shrink-0">
+              <button onclick="moveSideQuizQuestion(${idx}, -1)" ${idx === 0 ? 'disabled' : ''} class="text-slate-400 hover:text-amber-500 disabled:opacity-20 p-1" title="Move Up">
+                <i data-lucide="chevron-up" class="w-3.5 h-3.5"></i>
+              </button>
+              <button onclick="moveSideQuizQuestion(${idx}, 1)" ${idx === sideQuizBuilderQuestions.length - 1 ? 'disabled' : ''} class="text-slate-400 hover:text-amber-500 disabled:opacity-20 p-1" title="Move Down">
+                <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
+    function moveSideQuizQuestion(index, direction) {
+      const targetIndex = index + direction;
+      if (targetIndex < 0 || targetIndex >= sideQuizBuilderQuestions.length) return;
+
+      const temp = sideQuizBuilderQuestions[index];
+      sideQuizBuilderQuestions[index] = sideQuizBuilderQuestions[targetIndex];
+      sideQuizBuilderQuestions[targetIndex] = temp;
+
+      updateSideQuizSequenceUI();
+    }
+
+    function selectAllGlobalQuestions(select) {
+      if (select) {
+        sideQuizBuilderQuestions = getAllSeriesQuestions();
+      } else {
+        sideQuizBuilderQuestions = [];
+      }
+      renderSideQuizBuilder();
     }
 
     async function saveSideQuiz() {
       const codeInput = document.getElementById('sideQuizCodeInput').value.trim().toUpperCase();
       const titleInput = document.getElementById('sideQuizTitleInput').value.trim();
+      const editingCode = document.getElementById('editingSideQuizCode').value.trim();
+
       if (!codeInput) {
         alert("Please specify a Side Quiz Code (e.g. TWGCQUIZ1).");
         return;
       }
 
-      const checkboxes = document.querySelectorAll('.global-q-checkbox:checked');
-      const selectedIds = Array.from(checkboxes).map(cb => cb.value);
-
-      if (selectedIds.length === 0) {
-        alert("Please select at least one question from the Global Deck.");
+      if (sideQuizBuilderQuestions.length === 0) {
+        alert("Please select at least one question for this side quiz.");
         return;
       }
 
       const series = getLectureSeries(state.eventCode);
-      const allQuestions = getAllSeriesQuestions();
-      const selectedQuestions = allQuestions.filter(q => selectedIds.includes(String(q.id || q.title || q.question)));
+
+      // If code was changed during edit, remove the old code entry
+      if (editingCode && editingCode !== codeInput) {
+        delete state.sideQuizCatalog[editingCode];
+      }
 
       state.sideQuizCatalog[codeInput] = {
         code: codeInput,
         title: titleInput || `Side Quiz ${codeInput}`,
-        questions: selectedQuestions
+        questions: sideQuizBuilderQuestions
       };
 
       try {
         localStorage.setItem(`pulse_side_catalog_${series}`, JSON.stringify(state.sideQuizCatalog));
       } catch(e) {}
 
-      document.getElementById('sideQuizCodeInput').value = "";
-      document.getElementById('sideQuizTitleInput').value = "";
+      cancelEditSideQuiz();
       renderSideQuizBuilder();
 
       await sendPulse('side_quiz_save', state.sideQuizCatalog[codeInput]);
-      alert(`Side Quiz ${codeInput} saved & published to cloud via D1!`);
+      alert(`Side Quiz ${codeInput} saved & published successfully!`);
+    }
+
+    function editSideQuiz(code) {
+      loadSideQuizCatalog();
+      const sq = state.sideQuizCatalog[code];
+      if (!sq) return;
+
+      document.getElementById('editingSideQuizCode').value = sq.code;
+      document.getElementById('sideQuizCodeInput').value = sq.code;
+      document.getElementById('sideQuizCodeInput').disabled = true;
+      document.getElementById('sideQuizTitleInput').value = sq.title || '';
+      sideQuizBuilderQuestions = [...sq.questions];
+
+      document.getElementById('sideQuizFormHeading').innerHTML = `<i data-lucide="edit-3" class="w-5 h-5 text-amber-500"></i><span>Edit Side Quiz (${sq.code})</span>`;
+      document.getElementById('btnSaveSideQuiz').textContent = "Update Side Quiz";
+      document.getElementById('btnCancelEditSideQuiz').classList.remove('hidden');
+
+      renderSideQuizBuilder();
+      lucide.createIcons();
+    }
+
+    function cancelEditSideQuiz() {
+      document.getElementById('editingSideQuizCode').value = "";
+      const codeInput = document.getElementById('sideQuizCodeInput');
+      codeInput.value = "";
+      codeInput.disabled = false;
+      document.getElementById('sideQuizTitleInput').value = "";
+      sideQuizBuilderQuestions = [];
+
+      document.getElementById('sideQuizFormHeading').innerHTML = `<i data-lucide="layers" class="w-5 h-5 text-amber-500"></i><span>Side Quiz Assembly Manager</span>`;
+      document.getElementById('btnSaveSideQuiz').textContent = "Save & Publish Side Quiz";
+      document.getElementById('btnCancelEditSideQuiz').classList.add('hidden');
+
+      renderSideQuizBuilder();
+      lucide.createIcons();
     }
 
     function deleteSideQuiz(code) {
