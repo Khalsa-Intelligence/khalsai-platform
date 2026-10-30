@@ -45,7 +45,6 @@
       animation: pulse-border 1s infinite ease-in-out;
       border-width: 4px !important;
     }
-    /* Fixed navigation button styling to prevent tab layout shifts */
     .p-nav-btn {
       min-width: 130px;
       height: 40px;
@@ -55,7 +54,6 @@
       box-sizing: border-box;
       white-space: nowrap;
     }
-    /* Kahoot-style mobile answer buttons */
     .kahoot-btn-red { background-color: #E21B3C !important; color: white !important; }
     .kahoot-btn-blue { background-color: #1368CE !important; color: white !important; }
     .kahoot-btn-gold { background-color: #D89E00 !important; color: white !important; }
@@ -68,7 +66,6 @@
   <header class="sticky top-0 z-40 border-b border-slate-200 dark:border-gray-800/80 bg-white/95 dark:bg-[#0B0F17]/95 backdrop-blur-md px-3 sm:px-6 py-2.5 transition-all shadow-sm">
     <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-4">
       
-      <!-- Top Row on Mobile: Brand & Fullscreen / Code -->
       <div class="flex items-center justify-between">
         <div class="flex items-center space-x-2 sm:space-x-3 shrink-0">
           <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl gold-gradient-bg flex items-center justify-center text-slate-950 shadow-md shadow-amber-500/20 font-black text-lg">
@@ -155,7 +152,6 @@
     <!-- AUDIENCE VIEW CONTAINER -->
     <div id="audienceView" class="flex-1 flex flex-col space-y-4 sm:space-y-6">
       
-      <!-- Sync Status & Desktop Tab Bar -->
       <div class="flex items-center justify-between bg-white dark:bg-gray-900/80 border border-slate-200 dark:border-gray-800 p-2.5 sm:p-3 rounded-2xl shadow-sm">
         <div class="hidden sm:flex space-x-2">
           <button onclick="switchAudienceTab('qa')" id="tabAudienceQA" class="px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow">
@@ -255,7 +251,7 @@
       <!-- TAB 2.5: AUDIENCE SIDE QUIZZES SELECTOR & RUNNER -->
       <div id="audienceSideQuizzesPane" class="hidden space-y-6">
         <div id="audienceSideQuizzesContainer" class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-2xl p-5 sm:p-8 space-y-6 shadow-sm">
-          <!-- Rendered dynamically via renderAudienceSideQuizzesPane() -->
+          <!-- Rendered dynamically -->
         </div>
       </div>
 
@@ -284,7 +280,6 @@
       <!-- Presenter Header Controller -->
       <div class="flex flex-col space-y-3 bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 p-3 sm:p-4 rounded-2xl shadow-sm">
         
-        <!-- Status & Code Input Row -->
         <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 dark:border-gray-800/80 pb-2.5">
           <span class="bg-emerald-100 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400 font-extrabold px-2.5 py-1 rounded-lg border border-emerald-300 dark:border-emerald-500/30 text-xs flex items-center space-x-1">
             <i data-lucide="tv" class="w-3.5 h-3.5"></i>
@@ -301,7 +296,7 @@
           </div>
         </div>
 
-        <!-- Presenter Nav Tabs (Fixed Dimension Buttons) -->
+        <!-- Presenter Nav Tabs -->
         <div class="flex items-center justify-start sm:justify-end gap-2 overflow-x-auto pb-1">
           <button onclick="switchPresenterSubTab('spotlight')" id="subTabSpotlight" class="p-nav-btn rounded-xl font-bold text-xs sm:text-sm bg-amber-500 text-slate-950 shadow transition shrink-0">
             <i data-lucide="sparkles" class="w-3.5 h-3.5 mr-1.5"></i>
@@ -327,10 +322,8 @@
 
       </div>
 
-      <!-- SUB-TAB 1: PRESENTER SPOTLIGHT & QR CODE -->
+      <!-- SUB-TAB 1: SPOTLIGHT & QR CODE -->
       <div id="presenterSpotlightPane" class="space-y-4 sm:space-y-6">
-        
-        <!-- Clean QR Hero Container -->
         <div class="bg-white dark:bg-[#0D131F] border border-slate-200 dark:border-amber-500/30 rounded-2xl p-4 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
           <div class="text-center md:text-left space-y-1">
             <p class="text-amber-600 dark:text-amber-400 text-xs font-bold tracking-widest uppercase">SCAN QR CODE TO JOIN QUIZ</p>
@@ -344,10 +337,7 @@
           </div>
         </div>
 
-        <!-- Projector Focus Card -->
         <div id="spotlightContent" class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-2xl p-4 sm:p-8 text-center min-h-[240px] sm:min-h-[320px] flex flex-col shadow-sm relative overflow-hidden">
-          
-          <!-- Header Bar: Mobile-Safe Responsive Layout -->
           <div class="flex items-center justify-between gap-2 border-b border-slate-100 dark:border-gray-800/60 pb-2.5 mb-3">
             <div class="flex items-center space-x-1.5 min-w-0 flex-1 text-slate-400 dark:text-gray-500 uppercase font-bold text-[10px] sm:text-xs tracking-wider">
               <i data-lucide="sparkles" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500 shrink-0"></i>
@@ -371,7 +361,6 @@
           </div>
         </div>
 
-        <!-- Clean Live Leaderboard Card -->
         <div id="presenterLeaderboardCard" class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-2xl p-4 sm:p-6 space-y-4 shadow-sm">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-gray-800 pb-3">
             <div class="flex items-center space-x-2">
@@ -468,7 +457,6 @@
               </button>
             </div>
 
-            <!-- Pre-Loaded Deck List Container -->
             <div id="quizDeckList" class="space-y-3">
               <!-- Rendered dynamically -->
             </div>
@@ -476,59 +464,69 @@
         </div>
       </div>
 
-      <!-- SUB-TAB 2.5: SIDE QUIZ BUILDER (STREAMLINED INTUITIVE LAYOUT) -->
+      <!-- SUB-TAB 2.5: SIDE QUIZ BUILDER (OPTIMIZED 2-COLUMN SPLIT LAYOUT) -->
       <div id="presenterSideBuilderPane" class="hidden space-y-6">
-        <div class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-2xl p-5 sm:p-8 space-y-6 shadow-sm">
+        <div class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-2xl p-4 sm:p-6 shadow-sm">
           
-          <div class="border-b border-slate-200 dark:border-gray-800 pb-4">
-            <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center space-x-2">
-              <i data-lucide="layers" class="w-6 h-6 text-amber-500"></i>
-              <span>Side Quiz Assembly Manager (Cloud-Synced)</span>
-            </h3>
-            <p class="text-xs text-slate-500 dark:text-gray-400 mt-1">Select questions from across the Global Deck to assemble untimed side quizzes for your audience.</p>
+          <div class="border-b border-slate-200 dark:border-gray-800 pb-3 mb-5 flex items-center justify-between">
+            <div>
+              <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+                <i data-lucide="layers" class="w-5 h-5 text-amber-500"></i>
+                <span>Side Quiz Assembly Manager</span>
+              </h3>
+              <p class="text-xs text-slate-500 dark:text-gray-400 mt-0.5">Quickly assemble untimed side quizzes from your Global Series Deck.</p>
+            </div>
+            <span id="sideQuizSelectedCountBadge" class="text-xs font-mono text-amber-600 dark:text-amber-400 font-bold bg-amber-100 dark:bg-amber-500/10 px-3 py-1 rounded-full border border-amber-300 dark:border-amber-500/30">0 selected</span>
           </div>
 
-          <!-- Top Section: Creation Form -->
-          <div class="bg-slate-50 dark:bg-gray-950 border border-slate-200 dark:border-gray-800/80 rounded-2xl p-4 sm:p-6 space-y-5">
+          <!-- Split Layout: Left Form & Controls, Right Question Selector Grid -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Left Side: Form Controls & Sticky Publish Button -->
+            <div class="lg:col-span-5 bg-slate-50 dark:bg-gray-950 border border-slate-200 dark:border-gray-800/80 rounded-2xl p-4 sm:p-5 space-y-4 sticky top-20 shadow-inner">
+              <h4 class="text-sm font-extrabold text-slate-900 dark:text-white uppercase tracking-wider text-amber-600 dark:text-amber-400">1. Side Quiz Info</h4>
+              
               <div>
                 <label class="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">Side Quiz Identifier / Code</label>
-                <input type="text" id="sideQuizCodeInput" placeholder="e.g. TWGCQUIZ1" class="w-full bg-white dark:bg-gray-900 border border-slate-300 dark:border-gray-800 rounded-xl px-3 py-2.5 text-sm text-amber-600 dark:text-amber-400 font-mono font-bold focus:outline-none uppercase shadow-inner">
+                <input type="text" id="sideQuizCodeInput" placeholder="e.g. TWGCQUIZ1" class="w-full bg-white dark:bg-gray-900 border border-slate-300 dark:border-gray-800 rounded-xl px-3 py-2 text-sm text-amber-600 dark:text-amber-400 font-mono font-bold focus:outline-none uppercase">
               </div>
 
               <div>
                 <label class="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">Side Quiz Title / Description</label>
-                <input type="text" id="sideQuizTitleInput" placeholder="e.g. Special Topics & Mid-Term Review" class="w-full bg-white dark:bg-gray-900 border border-slate-300 dark:border-gray-800 rounded-xl px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none shadow-inner">
+                <input type="text" id="sideQuizTitleInput" placeholder="e.g. Special Topics & Review" class="w-full bg-white dark:bg-gray-900 border border-slate-300 dark:border-gray-800 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none">
+              </div>
+
+              <div class="pt-2">
+                <button onclick="saveSideQuiz()" class="w-full py-3 rounded-xl gold-gradient-bg text-slate-950 font-bold text-sm hover:brightness-110 transition shadow flex items-center justify-center space-x-2">
+                  <i data-lucide="cloud-upload" class="w-4 h-4"></i>
+                  <span>Save & Publish to Cloud</span>
+                </button>
+              </div>
+
+              <div class="pt-4 border-t border-slate-200 dark:border-gray-800">
+                <h4 class="text-xs font-extrabold text-slate-900 dark:text-white uppercase tracking-wider mb-2">Published Side Quizzes</h4>
+                <div id="sideQuizCatalogList" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                  <!-- Catalog rendered dynamically -->
+                </div>
               </div>
             </div>
 
-            <!-- Question Picker Grid -->
-            <div>
-              <div class="flex items-center justify-between mb-2">
-                <span class="text-xs font-bold text-slate-700 dark:text-gray-300">Select Questions from Global Series Deck:</span>
-                <span id="sideQuizSelectedCountBadge" class="text-[11px] font-mono text-amber-600 dark:text-amber-400 font-bold bg-amber-100 dark:bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-300 dark:border-amber-500/30">0 selected</span>
+            <!-- Right Side: Interactive Checklist Grid -->
+            <div class="lg:col-span-7 space-y-3">
+              <div class="flex items-center justify-between">
+                <h4 class="text-sm font-extrabold text-slate-900 dark:text-white uppercase tracking-wider text-amber-600 dark:text-amber-400">2. Select Questions from Global Deck</h4>
+                <div class="flex items-center space-x-2 text-xs">
+                  <button onclick="selectAllGlobalQuestions(true)" class="text-amber-600 dark:text-amber-400 font-bold hover:underline">Select All</button>
+                  <span class="text-slate-400">|</span>
+                  <button onclick="selectAllGlobalQuestions(false)" class="text-slate-500 hover:text-slate-700 dark:hover:text-gray-300 font-bold">Clear</button>
+                </div>
               </div>
-              <div id="globalQuestionsChecklist" class="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-64 overflow-y-auto pr-1">
+
+              <div id="globalQuestionsChecklist" class="space-y-2 max-h-[460px] overflow-y-auto pr-2">
                 <!-- Rendered dynamically -->
               </div>
             </div>
 
-            <button onclick="saveSideQuiz()" class="w-full py-3 rounded-xl gold-gradient-bg text-slate-950 font-bold text-sm hover:brightness-110 transition shadow flex items-center justify-center space-x-2">
-              <i data-lucide="cloud-upload" class="w-4 h-4"></i>
-              <span>Save & Publish Side Quiz to Cloud</span>
-            </button>
-          </div>
-
-          <!-- Bottom Section: Published Catalog -->
-          <div class="space-y-3 pt-2">
-            <h4 class="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
-              <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i>
-              <span>Published Side Quizzes in Series</span>
-            </h4>
-            <div id="sideQuizCatalogList" class="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <!-- Rendered dynamically -->
-            </div>
           </div>
 
         </div>
@@ -655,7 +653,7 @@
     }
 
     /* ==========================================================================
-       APP STATE MANAGEMENT & PULSE_DB SYNC (HASH-FREE CODES)
+       APP STATE MANAGEMENT & PULSE_DB SYNC
        ========================================================================== */
     const DEFAULT_EVENT_CODE = "TWGCSESSION4";
     const PRESENTER_PASSCODE = "6789";
@@ -1168,7 +1166,6 @@
       checkParticipantName();
       await sendPulse('reaction', { emoji }, state.userName);
       
-      // Spawn floating animation on mobile/audience screen locally
       const floatEl = document.createElement('div');
       floatEl.textContent = emoji;
       floatEl.className = "fixed bottom-20 left-1/2 -translate-x-1/2 text-3xl animate-bounce z-50 pointer-events-none transition-all duration-1000";
@@ -1191,7 +1188,6 @@
 
         if (data && data.recent_pulses) {
           const sortedPulses = [...data.recent_pulses].sort((a, b) => a.id - b.id);
-
           const deckMap = new Map();
 
           try {
@@ -1204,7 +1200,6 @@
           } catch(e) {}
 
           sortedPulses.forEach(p => {
-            // Render floating reaction on projector screen if presenter view
             if (p.event_type === 'reaction' && p.metadata && state.view === 'presenter' && state.presenterSubTab === 'spotlight') {
               let meta = p.metadata;
               try { while (typeof meta === 'string') meta = JSON.parse(meta); } catch(e) {}
@@ -1480,15 +1475,15 @@
       const allQuestions = getAllSeriesQuestions();
 
       if (allQuestions.length === 0) {
-        checklistContainer.innerHTML = `<p class="text-xs text-slate-500 dark:text-gray-400 py-2 col-span-full">Global deck is empty. Create questions in Quiz Builder first!</p>`;
+        checklistContainer.innerHTML = `<p class="text-xs text-slate-500 dark:text-gray-400 py-4 text-center col-span-full">Global deck is empty. Create questions in Quiz Builder first!</p>`;
       } else {
         checklistContainer.innerHTML = allQuestions.map((q, idx) => {
           const qId = q.id || q.title || q.question || `q_${idx}`;
           const title = q.title || q.question || 'Untitled Question';
           const sessionTag = q.sourceSession ? `[${q.sourceSession}]` : '';
           return `
-            <label class="flex items-start space-x-2 text-xs text-slate-800 dark:text-gray-200 cursor-pointer bg-white dark:bg-gray-900 p-2.5 rounded-xl border border-slate-200 dark:border-gray-800 hover:border-amber-500/50 transition">
-              <input type="checkbox" value="${qId}" onchange="updateSideQuizChecklistCount()" class="global-q-checkbox mt-0.5 accent-amber-500 shrink-0">
+            <label class="flex items-start space-x-2.5 text-xs text-slate-800 dark:text-gray-200 cursor-pointer bg-white dark:bg-gray-900 p-3 rounded-xl border border-slate-200 dark:border-gray-800 hover:border-amber-500/50 transition">
+              <input type="checkbox" value="${qId}" onchange="updateSideQuizChecklistCount()" class="global-q-checkbox mt-0.5 accent-amber-500 shrink-0 w-4 h-4 rounded">
               <span class="leading-snug"><strong>${sessionTag}</strong> ${title}</span>
             </label>
           `;
@@ -1501,26 +1496,33 @@
       const keys = Object.keys(state.sideQuizCatalog);
 
       if (keys.length === 0) {
-        catalogContainer.innerHTML = `<p class="text-xs text-slate-500 dark:text-gray-400 col-span-full">No side quizzes created yet. Fill out the form above to build one!</p>`;
+        catalogContainer.innerHTML = `<p class="text-xs text-slate-500 dark:text-gray-400 text-center py-2">No side quizzes created yet.</p>`;
         return;
       }
 
       catalogContainer.innerHTML = keys.map(k => {
         const sq = state.sideQuizCatalog[k];
         return `
-          <div class="bg-slate-50 dark:bg-gray-950 border border-slate-200 dark:border-gray-800 rounded-xl p-3.5 flex items-center justify-between text-xs shadow-sm">
-            <div>
-              <span class="font-mono font-bold text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-500/10 px-2 py-0.5 rounded border border-amber-300 dark:border-amber-500/30">${sq.code}</span>
-              <span class="font-bold text-slate-900 dark:text-white ml-2">${sq.title}</span>
-              <span class="text-slate-500 dark:text-gray-400 block text-[10px] mt-1">${sq.questions.length} questions included • Cloud Synced</span>
+          <div class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-xl p-3 flex items-center justify-between text-xs shadow-sm">
+            <div class="truncate pr-2">
+              <span class="font-mono font-bold text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-500/10 px-1.5 py-0.5 rounded">${sq.code}</span>
+              <span class="font-bold text-slate-900 dark:text-white ml-1.5 truncate">${sq.title}</span>
+              <span class="text-slate-500 dark:text-gray-400 block text-[10px] mt-0.5">${sq.questions.length} questions</span>
             </div>
-            <button onclick="deleteSideQuiz('${sq.code}')" class="text-slate-400 hover:text-red-500 p-1.5 transition">
+            <button onclick="deleteSideQuiz('${sq.code}')" class="text-slate-400 hover:text-red-500 p-1 transition shrink-0">
               <i data-lucide="trash-2" class="w-4 h-4"></i>
             </button>
           </div>
         `;
       }).join('');
       lucide.createIcons();
+    }
+
+    function selectAllGlobalQuestions(select) {
+      document.querySelectorAll('.global-q-checkbox').forEach(cb => {
+        cb.checked = select;
+      });
+      updateSideQuizChecklistCount();
     }
 
     function updateSideQuizChecklistCount() {
@@ -1563,9 +1565,7 @@
       document.getElementById('sideQuizTitleInput').value = "";
       renderSideQuizBuilder();
 
-      // Dispatch to Cloudflare D1 backend via pulse_events
       await sendPulse('side_quiz_save', state.sideQuizCatalog[codeInput]);
-
       alert(`Side Quiz ${codeInput} saved & published to cloud via D1!`);
     }
 
