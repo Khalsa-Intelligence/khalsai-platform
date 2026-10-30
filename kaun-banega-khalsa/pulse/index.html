@@ -45,6 +45,21 @@
       animation: pulse-border 1s infinite ease-in-out;
       border-width: 4px !important;
     }
+    /* Fixed navigation button styling to prevent tab layout shifts */
+    .p-nav-btn {
+      min-width: 130px;
+      height: 40px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: border-box;
+      white-space: nowrap;
+    }
+    /* Kahoot-style mobile answer buttons */
+    .kahoot-btn-red { background-color: #E21B3C !important; color: white !important; }
+    .kahoot-btn-blue { background-color: #1368CE !important; color: white !important; }
+    .kahoot-btn-gold { background-color: #D89E00 !important; color: white !important; }
+    .kahoot-btn-green { background-color: #26890C !important; color: white !important; }
   </style>
 </head>
 <body class="h-full flex flex-col bg-slate-100 text-slate-900 dark:bg-[#080C14] dark:text-gray-100 antialiased selection:bg-amber-500 selection:text-black">
@@ -218,6 +233,16 @@
             <!-- Questions rendered via JS -->
           </div>
         </div>
+
+        <!-- Slido-Inspired Floating Reaction Bar -->
+        <div class="flex items-center justify-center gap-2 bg-white/80 dark:bg-gray-900/80 backdrop-blur border border-slate-200 dark:border-gray-800 p-2.5 rounded-2xl shadow-sm">
+          <span class="text-xs font-bold text-slate-500 dark:text-gray-400 mr-2">React:</span>
+          <button onclick="sendReaction('🔥')" class="px-3 py-1.5 bg-slate-100 dark:bg-gray-800 hover:scale-110 transition rounded-xl text-sm shadow-sm">🔥</button>
+          <button onclick="sendReaction('👏')" class="px-3 py-1.5 bg-slate-100 dark:bg-gray-800 hover:scale-110 transition rounded-xl text-sm shadow-sm">👏</button>
+          <button onclick="sendReaction('💡')" class="px-3 py-1.5 bg-slate-100 dark:bg-gray-800 hover:scale-110 transition rounded-xl text-sm shadow-sm">💡</button>
+          <button onclick="sendReaction('❤️')" class="px-3 py-1.5 bg-slate-100 dark:bg-gray-800 hover:scale-110 transition rounded-xl text-sm shadow-sm">❤️</button>
+          <button onclick="sendReaction('🚀')" class="px-3 py-1.5 bg-slate-100 dark:bg-gray-800 hover:scale-110 transition rounded-xl text-sm shadow-sm">🚀</button>
+        </div>
       </div>
 
       <!-- TAB 2: AUDIENCE QUIZ INTERFACE -->
@@ -254,7 +279,7 @@
     </div>
 
     <!-- PRESENTER VIEW CONTAINER -->
-    <div id="presenterView" class="hidden flex-1-col space-y-4 sm:space-y-6">
+    <div id="presenterView" class="hidden flex-1 flex-col space-y-4 sm:space-y-6">
       
       <!-- Presenter Header Controller -->
       <div class="flex flex-col space-y-3 bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 p-3 sm:p-4 rounded-2xl shadow-sm">
@@ -276,26 +301,26 @@
           </div>
         </div>
 
-        <!-- Presenter Nav Tabs -->
-        <div class="grid grid-cols-2 sm:flex sm:items-center sm:justify-end gap-2">
-          <button onclick="switchPresenterSubTab('spotlight')" id="subTabSpotlight" class="w-full sm:w-auto px-4 py-2 sm:py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-amber-500 text-slate-950 shadow flex items-center justify-center space-x-1.5 transition">
-            <i data-lucide="sparkles" class="w-3.5 h-3.5 sm:hidden"></i>
+        <!-- Presenter Nav Tabs (Fixed Dimension Buttons) -->
+        <div class="flex items-center justify-start sm:justify-end gap-2 overflow-x-auto pb-1">
+          <button onclick="switchPresenterSubTab('spotlight')" id="subTabSpotlight" class="p-nav-btn rounded-xl font-bold text-xs sm:text-sm bg-amber-500 text-slate-950 shadow transition shrink-0">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 mr-1.5"></i>
             <span>Spotlight</span>
           </button>
-          <button onclick="switchPresenterSubTab('manager')" id="subTabManager" class="w-full sm:w-auto px-4 py-2 sm:py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-slate-200 dark:bg-gray-800 text-slate-800 dark:text-gray-300 hover:text-slate-950 dark:hover:text-white flex items-center justify-center space-x-1.5 transition">
-            <i data-lucide="plus-circle" class="w-3.5 h-3.5 sm:hidden"></i>
+          <button onclick="switchPresenterSubTab('manager')" id="subTabManager" class="p-nav-btn rounded-xl font-bold text-xs sm:text-sm bg-slate-200 dark:bg-gray-800 text-slate-800 dark:text-gray-300 hover:text-slate-950 dark:hover:text-white transition shrink-0">
+            <i data-lucide="plus-circle" class="w-3.5 h-3.5 mr-1.5"></i>
             <span>Quiz Builder</span>
           </button>
-          <button onclick="switchPresenterSubTab('sidebuilder')" id="subTabSideBuilder" class="w-full sm:w-auto px-4 py-2 sm:py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-slate-200 dark:bg-gray-800 text-slate-800 dark:text-gray-300 hover:text-slate-950 dark:hover:text-white flex items-center justify-center space-x-1.5 transition">
-            <i data-lucide="layers" class="w-3.5 h-3.5 sm:hidden"></i>
+          <button onclick="switchPresenterSubTab('sidebuilder')" id="subTabSideBuilder" class="p-nav-btn rounded-xl font-bold text-xs sm:text-sm bg-slate-200 dark:bg-gray-800 text-slate-800 dark:text-gray-300 hover:text-slate-950 dark:hover:text-white transition shrink-0">
+            <i data-lucide="layers" class="w-3.5 h-3.5 mr-1.5"></i>
             <span>Side Quiz Builder</span>
           </button>
-          <button onclick="switchPresenterSubTab('questions')" id="subTabQuestions" class="w-full sm:w-auto px-4 py-2 sm:py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-slate-200 dark:bg-gray-800 text-slate-800 dark:text-gray-300 hover:text-slate-950 dark:hover:text-white flex items-center justify-center space-x-1.5 transition">
-            <i data-lucide="message-square" class="w-3.5 h-3.5 sm:hidden"></i>
+          <button onclick="switchPresenterSubTab('questions')" id="subTabQuestions" class="p-nav-btn rounded-xl font-bold text-xs sm:text-sm bg-slate-200 dark:bg-gray-800 text-slate-800 dark:text-gray-300 hover:text-slate-950 dark:hover:text-white transition shrink-0">
+            <i data-lucide="message-square" class="w-3.5 h-3.5 mr-1.5"></i>
             <span>Q&A Control</span>
           </button>
-          <button onclick="switchPresenterSubTab('leaderboard')" id="subTabPresenterLeaderboard" class="w-full sm:w-auto px-4 py-2 sm:py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-slate-200 dark:bg-gray-800 text-slate-800 dark:text-gray-300 hover:text-slate-950 dark:hover:text-white flex items-center justify-center space-x-1.5 transition">
-            <i data-lucide="trophy" class="w-3.5 h-3.5 sm:hidden"></i>
+          <button onclick="switchPresenterSubTab('leaderboard')" id="subTabPresenterLeaderboard" class="p-nav-btn rounded-xl font-bold text-xs sm:text-sm bg-slate-200 dark:bg-gray-800 text-slate-800 dark:text-gray-300 hover:text-slate-950 dark:hover:text-white transition shrink-0">
+            <i data-lucide="trophy" class="w-3.5 h-3.5 mr-1.5"></i>
             <span>Leaderboard</span>
           </button>
         </div>
@@ -451,53 +476,61 @@
         </div>
       </div>
 
-      <!-- SUB-TAB 2.5: SIDE QUIZ BUILDER (CLOUD-SYNCED VIA D1) -->
+      <!-- SUB-TAB 2.5: SIDE QUIZ BUILDER (STREAMLINED INTUITIVE LAYOUT) -->
       <div id="presenterSideBuilderPane" class="hidden space-y-6">
-        <div class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-2xl p-4 sm:p-6 space-y-6 shadow-sm">
-          <div class="border-b border-slate-200 dark:border-gray-800 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div>
-              <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center space-x-2">
-                <i data-lucide="layers" class="w-5 h-5 text-amber-500"></i>
-                <span>Side Quiz Assembly Manager (Cloud-Synced)</span>
-              </h3>
-              <p class="text-xs text-slate-500 dark:text-gray-400">Assemble custom side quizzes by selecting specific questions from the Global Deck. Published quizzes automatically sync to all audience devices via D1.</p>
-            </div>
+        <div class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-2xl p-5 sm:p-8 space-y-6 shadow-sm">
+          
+          <div class="border-b border-slate-200 dark:border-gray-800 pb-4">
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+              <i data-lucide="layers" class="w-6 h-6 text-amber-500"></i>
+              <span>Side Quiz Assembly Manager (Cloud-Synced)</span>
+            </h3>
+            <p class="text-xs text-slate-500 dark:text-gray-400 mt-1">Select questions from across the Global Deck to assemble untimed side quizzes for your audience.</p>
           </div>
 
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <!-- Left Column: Create / Edit Side Quiz Metadata -->
-            <div class="lg:col-span-5 space-y-4">
+          <!-- Top Section: Creation Form -->
+          <div class="bg-slate-50 dark:bg-gray-950 border border-slate-200 dark:border-gray-800/80 rounded-2xl p-4 sm:p-6 space-y-5">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">Side Quiz Identifier / Code</label>
-                <input type="text" id="sideQuizCodeInput" placeholder="e.g. TWGCQUIZ1" class="w-full bg-slate-50 dark:bg-gray-950 border border-slate-300 dark:border-gray-800 rounded-xl px-3 py-2 text-xs sm:text-sm text-amber-600 dark:text-amber-400 font-mono font-bold focus:outline-none uppercase">
+                <input type="text" id="sideQuizCodeInput" placeholder="e.g. TWGCQUIZ1" class="w-full bg-white dark:bg-gray-900 border border-slate-300 dark:border-gray-800 rounded-xl px-3 py-2.5 text-sm text-amber-600 dark:text-amber-400 font-mono font-bold focus:outline-none uppercase shadow-inner">
               </div>
 
               <div>
                 <label class="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">Side Quiz Title / Description</label>
-                <input type="text" id="sideQuizTitleInput" placeholder="e.g. Special Topics & Mid-Term Review" class="w-full bg-slate-50 dark:bg-gray-950 border border-slate-300 dark:border-gray-800 rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-900 dark:text-white focus:outline-none">
+                <input type="text" id="sideQuizTitleInput" placeholder="e.g. Special Topics & Mid-Term Review" class="w-full bg-white dark:bg-gray-900 border border-slate-300 dark:border-gray-800 rounded-xl px-3 py-2.5 text-sm text-slate-900 dark:text-white focus:outline-none shadow-inner">
               </div>
-
-              <div class="p-3 bg-slate-50 dark:bg-gray-950 border border-slate-200 dark:border-gray-800 rounded-xl space-y-2">
-                <span class="text-xs font-bold text-slate-700 dark:text-gray-300 block">Select Questions from Global Deck:</span>
-                <div id="globalQuestionsChecklist" class="space-y-2 max-h-56 overflow-y-auto pr-1">
-                  <!-- Rendered dynamically -->
-                </div>
-              </div>
-
-              <button onclick="saveSideQuiz()" class="w-full py-2.5 rounded-xl gold-gradient-bg text-slate-950 font-bold text-sm hover:brightness-110 transition shadow flex items-center justify-center space-x-2">
-                <i data-lucide="cloud-upload" class="w-4 h-4"></i>
-                <span>Save & Publish to Cloud</span>
-              </button>
             </div>
 
-            <!-- Right Column: List of Configured Side Quizzes -->
-            <div class="lg:col-span-7 space-y-3">
-              <h4 class="text-sm font-bold text-slate-900 dark:text-white">Published Side Quizzes in Series</h4>
-              <div id="sideQuizCatalogList" class="space-y-3">
+            <!-- Question Picker Grid -->
+            <div>
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-xs font-bold text-slate-700 dark:text-gray-300">Select Questions from Global Series Deck:</span>
+                <span id="sideQuizSelectedCountBadge" class="text-[11px] font-mono text-amber-600 dark:text-amber-400 font-bold bg-amber-100 dark:bg-amber-500/10 px-2.5 py-0.5 rounded-full border border-amber-300 dark:border-amber-500/30">0 selected</span>
+              </div>
+              <div id="globalQuestionsChecklist" class="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-64 overflow-y-auto pr-1">
                 <!-- Rendered dynamically -->
               </div>
             </div>
+
+            <button onclick="saveSideQuiz()" class="w-full py-3 rounded-xl gold-gradient-bg text-slate-950 font-bold text-sm hover:brightness-110 transition shadow flex items-center justify-center space-x-2">
+              <i data-lucide="cloud-upload" class="w-4 h-4"></i>
+              <span>Save & Publish Side Quiz to Cloud</span>
+            </button>
           </div>
+
+          <!-- Bottom Section: Published Catalog -->
+          <div class="space-y-3 pt-2">
+            <h4 class="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+              <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500"></i>
+              <span>Published Side Quizzes in Series</span>
+            </h4>
+            <div id="sideQuizCatalogList" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <!-- Rendered dynamically -->
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -1131,6 +1164,22 @@
       }
     }
 
+    async function sendReaction(emoji) {
+      checkParticipantName();
+      await sendPulse('reaction', { emoji }, state.userName);
+      
+      // Spawn floating animation on mobile/audience screen locally
+      const floatEl = document.createElement('div');
+      floatEl.textContent = emoji;
+      floatEl.className = "fixed bottom-20 left-1/2 -translate-x-1/2 text-3xl animate-bounce z-50 pointer-events-none transition-all duration-1000";
+      document.body.appendChild(floatEl);
+      setTimeout(() => {
+        floatEl.style.transform = `translate(${(Math.random() - 0.5) * 150}px, -180px) scale(1.5)`;
+        floatEl.style.opacity = '0';
+      }, 50);
+      setTimeout(() => floatEl.remove(), 1000);
+    }
+
     async function fetchPulseDatabase() {
       try {
         let cleanCode = (state.eventCode || '').replace(/^#/, '').trim().toUpperCase();
@@ -1155,7 +1204,26 @@
           } catch(e) {}
 
           sortedPulses.forEach(p => {
-            // Also sync side quiz saves from D1 event log
+            // Render floating reaction on projector screen if presenter view
+            if (p.event_type === 'reaction' && p.metadata && state.view === 'presenter' && state.presenterSubTab === 'spotlight') {
+              let meta = p.metadata;
+              try { while (typeof meta === 'string') meta = JSON.parse(meta); } catch(e) {}
+              if (meta && meta.emoji) {
+                const spotCard = document.getElementById('spotlightContent');
+                if (spotCard) {
+                  const rEl = document.createElement('div');
+                  rEl.textContent = meta.emoji;
+                  rEl.className = "absolute bottom-4 right-6 text-4xl animate-bounce z-50 pointer-events-none transition-all duration-1000";
+                  spotCard.appendChild(rEl);
+                  setTimeout(() => {
+                    rEl.style.transform = `translate(${(Math.random() - 0.5) * 200}px, -220px) scale(1.8)`;
+                    rEl.style.opacity = '0';
+                  }, 50);
+                  setTimeout(() => rEl.remove(), 1000);
+                }
+              }
+            }
+
             if (p.event_type === 'side_quiz_save' && p.metadata) {
               let meta = p.metadata;
               try {
@@ -1412,37 +1480,39 @@
       const allQuestions = getAllSeriesQuestions();
 
       if (allQuestions.length === 0) {
-        checklistContainer.innerHTML = `<p class="text-xs text-slate-500 dark:text-gray-400 py-2">Global deck is empty. Create questions in Quiz Builder first!</p>`;
+        checklistContainer.innerHTML = `<p class="text-xs text-slate-500 dark:text-gray-400 py-2 col-span-full">Global deck is empty. Create questions in Quiz Builder first!</p>`;
       } else {
         checklistContainer.innerHTML = allQuestions.map((q, idx) => {
           const qId = q.id || q.title || q.question || `q_${idx}`;
           const title = q.title || q.question || 'Untitled Question';
           const sessionTag = q.sourceSession ? `[${q.sourceSession}]` : '';
           return `
-            <label class="flex items-start space-x-2 text-xs text-slate-800 dark:text-gray-200 cursor-pointer bg-white dark:bg-gray-900 p-2 rounded-lg border border-slate-200 dark:border-gray-800 hover:border-amber-500/50">
-              <input type="checkbox" value="${qId}" class="global-q-checkbox mt-0.5 accent-amber-500 shrink-0">
+            <label class="flex items-start space-x-2 text-xs text-slate-800 dark:text-gray-200 cursor-pointer bg-white dark:bg-gray-900 p-2.5 rounded-xl border border-slate-200 dark:border-gray-800 hover:border-amber-500/50 transition">
+              <input type="checkbox" value="${qId}" onchange="updateSideQuizChecklistCount()" class="global-q-checkbox mt-0.5 accent-amber-500 shrink-0">
               <span class="leading-snug"><strong>${sessionTag}</strong> ${title}</span>
             </label>
           `;
         }).join('');
       }
 
+      updateSideQuizChecklistCount();
+
       loadSideQuizCatalog();
       const keys = Object.keys(state.sideQuizCatalog);
 
       if (keys.length === 0) {
-        catalogContainer.innerHTML = `<p class="text-xs text-slate-500 dark:text-gray-400">No side quizzes created yet. Fill out the form to build one!</p>`;
+        catalogContainer.innerHTML = `<p class="text-xs text-slate-500 dark:text-gray-400 col-span-full">No side quizzes created yet. Fill out the form above to build one!</p>`;
         return;
       }
 
       catalogContainer.innerHTML = keys.map(k => {
         const sq = state.sideQuizCatalog[k];
         return `
-          <div class="bg-slate-50 dark:bg-gray-950 border border-slate-200 dark:border-gray-800 rounded-xl p-3 flex items-center justify-between text-xs">
+          <div class="bg-slate-50 dark:bg-gray-950 border border-slate-200 dark:border-gray-800 rounded-xl p-3.5 flex items-center justify-between text-xs shadow-sm">
             <div>
-              <span class="font-mono font-bold text-amber-600 dark:text-amber-400">${sq.code}</span>
+              <span class="font-mono font-bold text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-500/10 px-2 py-0.5 rounded border border-amber-300 dark:border-amber-500/30">${sq.code}</span>
               <span class="font-bold text-slate-900 dark:text-white ml-2">${sq.title}</span>
-              <span class="text-slate-500 dark:text-gray-400 block text-[10px] mt-0.5">${sq.questions.length} questions included (Cloud Synced)</span>
+              <span class="text-slate-500 dark:text-gray-400 block text-[10px] mt-1">${sq.questions.length} questions included • Cloud Synced</span>
             </div>
             <button onclick="deleteSideQuiz('${sq.code}')" class="text-slate-400 hover:text-red-500 p-1.5 transition">
               <i data-lucide="trash-2" class="w-4 h-4"></i>
@@ -1451,6 +1521,12 @@
         `;
       }).join('');
       lucide.createIcons();
+    }
+
+    function updateSideQuizChecklistCount() {
+      const selected = document.querySelectorAll('.global-q-checkbox:checked').length;
+      const badge = document.getElementById('sideQuizSelectedCountBadge');
+      if (badge) badge.textContent = `${selected} selected`;
     }
 
     async function saveSideQuiz() {
@@ -1601,8 +1677,8 @@
     function switchPresenterSubTab(subTab) {
       state.presenterSubTab = subTab;
 
-      const activeClass = "w-full sm:w-auto px-4 py-2 sm:py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-amber-500 text-slate-950 shadow flex items-center justify-center space-x-1.5 transition";
-      const inactiveClass = "w-full sm:w-auto px-4 py-2 sm:py-1.5 rounded-xl font-bold text-xs sm:text-sm bg-slate-200 dark:bg-gray-800 text-slate-800 dark:text-gray-300 hover:text-slate-950 dark:hover:text-white flex items-center justify-center space-x-1.5 transition";
+      const activeClass = "p-nav-btn rounded-xl font-bold text-xs sm:text-sm bg-amber-500 text-slate-950 shadow transition shrink-0";
+      const inactiveClass = "p-nav-btn rounded-xl font-bold text-xs sm:text-sm bg-slate-200 dark:bg-gray-800 text-slate-800 dark:text-gray-300 hover:text-slate-950 dark:hover:text-white transition shrink-0";
 
       document.getElementById('subTabSpotlight').className = subTab === 'spotlight' ? activeClass : inactiveClass;
       document.getElementById('subTabManager').className = subTab === 'manager' ? activeClass : inactiveClass;
@@ -2155,10 +2231,10 @@
       }
 
       const kahootStyles = [
-        { bg: 'bg-[#E21B3C] hover:bg-[#c91432]', symbol: '▲', label: 'Red' },
-        { bg: 'bg-[#1368CE] hover:bg-[#1059b5]', symbol: '◆', label: 'Blue' },
-        { bg: 'bg-[#D89E00] hover:bg-[#c08d00]', symbol: '●', label: 'Yellow' },
-        { bg: 'bg-[#26890C] hover:bg-[#1f7009]', symbol: '■', label: 'Green' }
+        { class: 'kahoot-btn-red', symbol: '▲' },
+        { class: 'kahoot-btn-blue', symbol: '◆' },
+        { class: 'kahoot-btn-gold', symbol: '●' },
+        { class: 'kahoot-btn-green', symbol: '■' }
       ];
 
       const mins = Math.floor(state.quizElapsedTime / 60).toString().padStart(2, '0');
@@ -2193,7 +2269,7 @@
             </div>
           ` : ''}
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             ${(activeQ.options || []).map((opt, idx) => {
               const isCorrect = idx === activeQ.correct;
               const isSelected = state.userSelectedOption === idx;
@@ -2201,26 +2277,26 @@
               const pct = state.totalResponses > 0 ? Math.round((count / state.totalResponses) * 100) : 0;
               const style = kahootStyles[idx % 4];
               
-              let btnStyle = `${style.bg} text-white shadow-sm`;
+              let btnStyle = `${style.class} shadow-md`;
 
               if (showAnswerAndVotes) {
                 if (isCorrect) {
-                  btnStyle = `${style.bg} text-white correct-flash-border`;
+                  btnStyle = `${style.class} correct-flash-border`;
                 } else {
                   btnStyle = "bg-slate-200 dark:bg-gray-900 border border-slate-300 dark:border-gray-800 text-slate-400 dark:text-gray-500 opacity-40";
                 }
               } else if (isSelected) {
-                btnStyle = `${style.bg} ring-4 ring-slate-900 dark:ring-white text-white font-black`;
+                btnStyle = `${style.class} ring-4 ring-white dark:ring-slate-900 font-black scale-[1.02]`;
               }
 
               return `
-                <button onclick="submitAudienceAnswer(${idx})" ${state.hasSubmittedAnswer || showAnswerAndVotes ? 'disabled' : ''} class="w-full p-4 rounded-xl text-left font-bold text-sm sm:text-base transition flex flex-col justify-between ${btnStyle}">
+                <button onclick="submitAudienceAnswer(${idx})" ${state.hasSubmittedAnswer || showAnswerAndVotes ? 'disabled' : ''} class="w-full p-5 sm:p-6 rounded-2xl text-left font-extrabold text-base sm:text-lg transition transform active:scale-95 flex flex-col justify-between ${btnStyle}">
                   <div class="flex items-center justify-between w-full">
-                    <span class="text-base font-bold">${style.symbol} ${opt}</span>
-                    ${showAnswerAndVotes && isCorrect ? '<span class="bg-black/40 text-emerald-300 px-2.5 py-0.5 rounded-full text-xs font-bold border border-emerald-400">CORRECT ANSWER</span>' : ''}
+                    <span>${style.symbol} ${opt}</span>
+                    ${showAnswerAndVotes && isCorrect ? '<span class="bg-black/40 text-emerald-300 px-2.5 py-0.5 rounded-full text-xs font-bold border border-emerald-400">CORRECT</span>' : ''}
                   </div>
                   ${showAnswerAndVotes && !state.sideQuizActive ? `
-                    <div class="mt-3 pt-2 border-t border-white/20 text-xs font-mono font-bold flex justify-between text-white/90">
+                    <div class="mt-4 pt-2 border-t border-white/20 text-xs font-mono font-bold flex justify-between text-white/90">
                       <span>${count} votes</span>
                       <span>${pct}%</span>
                     </div>
@@ -2292,10 +2368,10 @@
           : (state.quizTimeRemaining <= 0);
 
         const kahootStyles = [
-          { bg: 'bg-[#E21B3C]', symbol: '▲' },
-          { bg: 'bg-[#1368CE]', symbol: '◆' },
-          { bg: 'bg-[#D89E00]', symbol: '●' },
-          { bg: 'bg-[#26890C]', symbol: '■' }
+          { class: 'kahoot-btn-red', symbol: '▲' },
+          { class: 'kahoot-btn-blue', symbol: '◆' },
+          { class: 'kahoot-btn-gold', symbol: '●' },
+          { class: 'kahoot-btn-green', symbol: '■' }
         ];
 
         const mins = Math.floor(state.quizElapsedTime / 60).toString().padStart(2, '0');
@@ -2331,7 +2407,7 @@
                 const style = kahootStyles[idx % 4];
                 
                 return `
-                  <div class="p-4 rounded-xl border flex flex-col justify-between ${showAnswer && isCorrect ? `${style.bg} text-white correct-flash-border` : `${style.bg} text-white`}">
+                  <div class="p-4 rounded-xl border flex flex-col justify-between ${showAnswer && isCorrect ? `${style.class} correct-flash-border` : `${style.class}`}">
                     <div class="flex items-center justify-between">
                       <span class="text-base font-bold">${style.symbol} ${opt}${showAnswer && isCorrect ? ' ✓ (Correct)' : ''}</span>
                     </div>
