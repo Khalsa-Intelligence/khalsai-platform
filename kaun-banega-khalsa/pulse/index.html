@@ -75,7 +75,7 @@
     }
     .q-select-card:has(input:checked) {
       border-color: #f59e0b !important;
-      background-color: rgba(245, 158, 11, 0.08) !important;
+      background-color: rgba(245, 158, 11, 0.05) !important;
       box-shadow: 0 0 0 1px #f59e0b;
     }
   </style>
@@ -1284,6 +1284,19 @@
               }
             }
 
+            if (p.event_type === 'quiz_reorder' && p.metadata) {
+              let meta = p.metadata;
+              if (typeof meta === 'string') {
+                try { meta = JSON.parse(meta); } catch(e) {}
+              }
+              if (meta && meta.deck && Array.isArray(meta.deck)) {
+                state.quizDeck = meta.deck;
+                try {
+                  localStorage.setItem(`pulse_deck_${cleanCode}`, JSON.stringify(meta.deck));
+                } catch(e) {}
+              }
+            }
+
             if (p.event_type === 'leaderboard_reset') {
               const resetTime = p.created_at ? new Date(p.created_at).getTime() : Date.now();
               if (resetTime > state.lastLeaderboardResetAt) {
@@ -1294,9 +1307,11 @@
           });
 
           const updatedDeck = Array.from(deckMap.values());
-          state.quizDeck = updatedDeck;
+          if (!state.quizDeck || state.quizDeck.length === 0) {
+            state.quizDeck = updatedDeck;
+          }
           try {
-            localStorage.setItem(`pulse_deck_${cleanCode}`, JSON.stringify(updatedDeck));
+            localStorage.setItem(`pulse_deck_${cleanCode}`, JSON.stringify(state.quizDeck));
           } catch(e) {}
 
           renderQuizDeck();
@@ -1387,7 +1402,6 @@
       }
     }
 
-    // In-memory builder staging for reordering selected questions in side quiz builder
     let sideQuizBuilderQuestions = [];
 
     function renderSideQuizBuilder() {
@@ -1399,7 +1413,7 @@
       const allQuestions = getAllSeriesQuestions();
 
       if (allQuestions.length === 0) {
-        checklistContainer.innerHTML = `<p class="text-sm text-slate-400 dark:text-gray-500 py-6 text-center font-medium">No questions found in Global Deck.</p>`;
+        checklistContainer.innerHTML = `<p class="text-xs text-slate-400 dark:text-gray-500 py-6 text-center">No questions found in Global Deck.</p>`;
       } else {
         checklistContainer.innerHTML = allQuestions.map((q, idx) => {
           const qId = q.id || q.title || q.question || `q_${idx}`;
@@ -1408,11 +1422,11 @@
           const isChecked = sideQuizBuilderQuestions.some(item => String(item.id || item.title || item.question) === String(qId));
           
           return `
-            <label class="q-select-card flex items-start space-x-3.5 bg-slate-50 dark:bg-gray-900/80 p-4 sm:p-4.5 rounded-xl border border-slate-200 dark:border-gray-800 hover:border-amber-500/50 transition cursor-pointer shadow-sm">
-              <input type="checkbox" value="${qId}" ${isChecked ? 'checked' : ''} onchange="handleSideQuizCheckboxChange(this, ${JSON.stringify(q).replace(/"/g, '&quot;')})" class="global-q-checkbox mt-1 accent-amber-500 shrink-0 w-5 h-5 rounded cursor-pointer">
+            <label class="q-select-card flex items-start space-x-3.5 text-slate-800 dark:text-gray-200 cursor-pointer bg-slate-50 dark:bg-gray-900/60 p-4 rounded-xl border border-slate-200 dark:border-gray-800/80 hover:border-amber-500/40 transition shadow-sm">
+              <input type="checkbox" value="${qId}" ${isChecked ? 'checked' : ''} onchange="handleSideQuizCheckboxChange(this, ${JSON.stringify(q).replace(/"/g, '&quot;')})" class="global-q-checkbox mt-1 accent-amber-500 shrink-0 w-5 h-5 rounded">
               <div class="space-y-1.5 min-w-0 flex-1">
-                <span class="inline-block bg-amber-100 dark:bg-amber-500/15 text-amber-800 dark:text-amber-400 font-mono font-extrabold text-xs px-2 py-0.5 rounded border border-amber-300 dark:border-amber-500/30">${sessionTag}</span>
-                <p class="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-relaxed">${title}</p>
+                <span class="inline-block bg-amber-100 dark:bg-amber-500/10 text-amber-800 dark:text-amber-400 font-mono font-extrabold text-xs px-2 py-0.5 rounded border border-amber-300 dark:border-amber-500/20">${sessionTag}</span>
+                <p class="font-bold text-sm sm:text-base text-slate-900 dark:text-gray-100 leading-snug">${title}</p>
               </div>
             </label>
           `;
@@ -1537,7 +1551,6 @@
 
       const series = getLectureSeries(state.eventCode);
 
-      // If code was changed during edit, remove the old code entry
       if (editingCode && editingCode !== codeInput) {
         delete state.sideQuizCatalog[editingCode];
       }
@@ -2175,6 +2188,7 @@
             </div>
           `;
         }).join('');
+        lucide.createIcons();
     
       } catch (err) {
         console.error('Error inside renderQuizDeck:', err);
