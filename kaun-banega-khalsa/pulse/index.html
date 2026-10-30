@@ -83,7 +83,7 @@
 </head>
 <body class="h-full flex flex-col bg-slate-50 text-slate-900 dark:bg-[#090D16] dark:text-gray-100 antialiased selection:bg-amber-500 selection:text-black">
 
-  <!-- Top Navigation Header with Strict Mobile Containment -->
+  <!-- Top Navigation Header with Unified Controls -->
   <header class="sticky top-0 z-40 border-b border-slate-200 dark:border-gray-800/80 bg-white/95 dark:bg-[#0D121F]/95 backdrop-blur-md px-3 sm:px-6 py-2 transition-all">
     <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
       
@@ -112,7 +112,7 @@
         </button>
       </div>
 
-      <!-- Right Controls: Audience/Presenter Switcher & Theme Toggle (Compact & Responsive) -->
+      <!-- Right Controls: Audience/Presenter Switcher & Theme Toggle -->
       <div class="flex items-center space-x-1.5 shrink-0">
         
         <!-- View Switcher -->
@@ -158,27 +158,6 @@
     <div id="audienceView" class="flex-1 flex flex-col space-y-4 sm:space-y-6">
       
       <div class="flex items-center justify-between bg-white dark:bg-gray-900/90 border border-slate-200 dark:border-gray-800 p-2.5 sm:p-3 rounded-2xl shadow-sm">
-        <div class="hidden sm:flex space-x-2">
-          <button onclick="switchAudienceTab('qa')" id="tabAudienceQA" class="px-4 py-2 rounded-xl font-bold text-sm transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow">
-            <i data-lucide="message-square" class="w-4 h-4"></i>
-            <span>Live Q&A</span>
-            <span id="qaBadge" class="ml-1 bg-black/20 px-2 py-0.5 rounded-full text-xs">0</span>
-          </button>
-          <button onclick="switchAudienceTab('quiz')" id="tabAudienceQuiz" class="px-4 py-2 rounded-xl font-bold text-sm transition flex items-center space-x-2 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800">
-            <i data-lucide="award" class="w-4 h-4"></i>
-            <span>Live Quiz</span>
-            <span id="activeQuizIndicator" class="hidden w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-          </button>
-          <button onclick="switchAudienceTab('sidequizzes')" id="tabAudienceSideQuizzes" class="px-4 py-2 rounded-xl font-bold text-sm transition flex items-center space-x-2 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800">
-            <i data-lucide="layers" class="w-4 h-4"></i>
-            <span>Side Quizzes</span>
-          </button>
-          <button onclick="switchAudienceTab('leaderboard')" id="tabAudienceLeaderboard" class="px-4 py-2 rounded-xl font-bold text-sm transition flex items-center space-x-2 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800">
-            <i data-lucide="trophy" class="w-4 h-4"></i>
-            <span>Leaderboard</span>
-          </button>
-        </div>
-
         <div class="flex items-center space-x-1.5 text-xs bg-slate-100 dark:bg-gray-950 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-gray-800 text-amber-700 dark:text-amber-400 font-bold">
           <i data-lucide="user" class="w-3.5 h-3.5"></i>
           <span id="audiencePlayerDisplay" class="truncate max-w-[120px]">...</span>
@@ -188,7 +167,7 @@
           </button>
         </div>
 
-        <div class="flex items-center space-x-2 text-xs text-slate-500 dark:text-gray-400 px-3 py-1 bg-slate-100 dark:bg-gray-950 rounded-xl border border-slate-200 dark:border-gray-800 w-full sm:w-auto justify-center">
+        <div class="flex items-center space-x-2 text-xs text-slate-500 dark:text-gray-400 px-3 py-1 bg-slate-100 dark:bg-gray-950 rounded-xl border border-slate-200 dark:border-gray-800">
           <i data-lucide="circle" class="w-2.5 h-2.5 text-emerald-500 fill-emerald-500 animate-pulse"></i>
           <span class="font-bold text-slate-700 dark:text-gray-300">Sync Active</span>
         </div>
@@ -279,7 +258,7 @@
 
     </div>
 
-    <!-- PRESENTER VIEW CONTAINER (REFINED SAAS DASHBOARD) -->
+    <!-- PRESENTER VIEW CONTAINER -->
     <div id="presenterView" class="hidden flex-1 flex-col space-y-5">
       
       <!-- Streamlined Presenter Top Navigation Strip -->
@@ -298,7 +277,7 @@
           </div>
         </div>
 
-        <!-- Presenter Section Switcher Tabs (Scrollable & Non-Overlapping on Mobile) -->
+        <!-- Presenter Section Switcher Tabs -->
         <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none w-full sm:w-auto">
           <button onclick="switchPresenterSubTab('spotlight')" id="subTabSpotlight" class="p-nav-btn bg-amber-500 text-slate-950 shadow">
             <i data-lucide="sparkles" class="w-3.5 h-3.5 mr-1.5"></i>
@@ -587,8 +566,8 @@
 
   </main>
 
-  <!-- Sticky Mobile Navigation Bar -->
-  <nav class="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-[#0D121F]/95 backdrop-blur-md border-t border-slate-200 dark:border-gray-800 px-4 py-2 flex items-center justify-around shadow-lg">
+  <!-- Sticky Unified Bottom Navigation Bar -->
+  <nav class="fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-[#0D121F]/95 backdrop-blur-md border-t border-slate-200 dark:border-gray-800 px-3 py-2 flex items-center justify-around shadow-lg">
     <button onclick="switchAudienceTab('qa')" id="mobileNavQA" class="flex flex-col items-center space-y-1 text-amber-600 dark:text-amber-400 font-bold text-[10px]">
       <i data-lucide="message-square" class="w-5 h-5"></i>
       <span>Live Q&A</span>
@@ -1678,11 +1657,7 @@
     function switchAudienceTab(tab) {
       if (tab === 'quiz' || tab === 'leaderboard' || tab === 'sidequizzes') checkParticipantName();
       state.audienceTab = tab;
-      const qaBtn = document.getElementById('tabAudienceQA');
-      const quizBtn = document.getElementById('tabAudienceQuiz');
-      const sideBtn = document.getElementById('tabAudienceSideQuizzes');
-      const ldrBtn = document.getElementById('tabAudienceLeaderboard');
-
+      
       const mobileQA = document.getElementById('mobileNavQA');
       const mobileQuiz = document.getElementById('mobileNavQuiz');
       const mobileSide = document.getElementById('mobileNavSideQuizzes');
@@ -1697,11 +1672,6 @@
       quizPane.classList.toggle('hidden', tab !== 'quiz');
       if (sidePane) sidePane.classList.toggle('hidden', tab !== 'sidequizzes');
       ldrPane.classList.toggle('hidden', tab !== 'leaderboard');
-
-      if (qaBtn) qaBtn.className = tab === 'qa' ? "px-4 py-2 rounded-xl font-bold text-sm transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow" : "px-4 py-2 rounded-xl font-bold text-sm transition flex items-center space-x-2 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800";
-      if (quizBtn) quizBtn.className = tab === 'quiz' ? "px-4 py-2 rounded-xl font-bold text-sm transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow" : "px-4 py-2 rounded-xl font-bold text-sm transition flex items-center space-x-2 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800";
-      if (sideBtn) sideBtn.className = tab === 'sidequizzes' ? "px-4 py-2 rounded-xl font-bold text-sm transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow" : "px-4 py-2 rounded-xl font-bold text-sm transition flex items-center space-x-2 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800";
-      if (ldrBtn) ldrBtn.className = tab === 'leaderboard' ? "px-4 py-2 rounded-xl font-bold text-sm transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow" : "px-4 py-2 rounded-xl font-bold text-sm transition flex items-center space-x-2 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800";
 
       if (mobileQA) mobileQA.className = tab === 'qa' ? "flex flex-col items-center space-y-1 text-amber-600 dark:text-amber-400 font-bold text-[10px]" : "flex flex-col items-center space-y-1 text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white font-bold text-[10px]";
       if (mobileQuiz) mobileQuiz.className = tab === 'quiz' ? "flex flex-col items-center space-y-1 text-amber-600 dark:text-amber-400 font-bold text-[10px]" : "flex flex-col items-center space-y-1 text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white font-bold text-[10px]";
@@ -2077,9 +2047,6 @@
     function renderQuestions() {
       const listContainer = document.getElementById('audienceQuestionsList');
       const presListContainer = document.getElementById('presenterQuestionsList');
-      const qaBadge = document.getElementById('qaBadge');
-
-      if (qaBadge) qaBadge.textContent = state.questions.length;
 
       if (state.questions.length === 0) {
         if (listContainer) listContainer.innerHTML = `<div class="p-6 text-center text-xs text-slate-500 dark:text-gray-500 bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-gray-800">No questions submitted yet. Be the first!</div>`;
