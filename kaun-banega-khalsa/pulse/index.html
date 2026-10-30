@@ -37,6 +37,13 @@
     body { font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.3s, color 0.3s; }
     .gold-gradient-bg { background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); }
     #qrcode canvas, #qrcode img { margin: 0 auto; border-radius: 8px; padding: 4px; background: white; }
+    
+    /* Clean Custom Scrollbars */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.2); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(156, 163, 175, 0.4); }
+
     @keyframes pulse-border {
       0%, 100% { border-color: #22c55e; box-shadow: 0 0 15px rgba(34, 197, 94, 0.6); }
       50% { border-color: #86efac; box-shadow: 0 0 5px rgba(34, 197, 94, 0.2); }
@@ -46,103 +53,102 @@
       border-width: 4px !important;
     }
     .p-nav-btn {
-      min-width: 130px;
-      height: 40px;
+      height: 38px;
+      padding: 0 16px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      box-sizing: border-box;
       white-space: nowrap;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 13px;
+      transition: all 0.2s ease;
     }
     .kahoot-btn-red { background-color: #E21B3C !important; color: white !important; }
     .kahoot-btn-blue { background-color: #1368CE !important; color: white !important; }
     .kahoot-btn-gold { background-color: #D89E00 !important; color: white !important; }
     .kahoot-btn-green { background-color: #26890C !important; color: white !important; }
+
+    /* Interactive Question Card Styling */
+    .q-select-card {
+      transition: all 0.15s ease-in-out;
+    }
+    .q-select-card:has(input:checked) {
+      border-color: #f59e0b !important;
+      background-color: rgba(245, 158, 11, 0.05) !important;
+      box-shadow: 0 0 0 1px #f59e0b;
+    }
   </style>
 </head>
-<body class="h-full flex flex-col bg-slate-100 text-slate-900 dark:bg-[#080C14] dark:text-gray-100 antialiased selection:bg-amber-500 selection:text-black">
+<body class="h-full flex flex-col bg-slate-50 text-slate-900 dark:bg-[#090D16] dark:text-gray-100 antialiased selection:bg-amber-500 selection:text-black">
 
   <!-- Top Navigation Header -->
-  <header class="sticky top-0 z-40 border-b border-slate-200 dark:border-gray-800/80 bg-white/95 dark:bg-[#0B0F17]/95 backdrop-blur-md px-3 sm:px-6 py-2.5 transition-all shadow-sm">
-    <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 sm:gap-4">
+  <header class="sticky top-0 z-40 border-b border-slate-200 dark:border-gray-800/80 bg-white/90 dark:bg-[#0D121F]/90 backdrop-blur-md px-4 sm:px-6 py-2.5 transition-all">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-4">
       
-      <div class="flex items-center justify-between">
-        <div class="flex items-center space-x-2 sm:space-x-3 shrink-0">
-          <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl gold-gradient-bg flex items-center justify-center text-slate-950 shadow-md shadow-amber-500/20 font-black text-lg">
-            <i data-lucide="zap" class="w-5 h-5 stroke-[2.5]"></i>
-          </div>
-          <div>
-            <div class="flex items-center space-x-1.5 sm:space-x-2">
-              <span class="text-base sm:text-xl font-extrabold tracking-tight text-slate-900 dark:text-white uppercase">Khalsai Pulse</span>
-              <span class="bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-400 text-[10px] sm:text-xs px-2 py-0.5 rounded-full font-bold border border-amber-300 dark:border-amber-500/30">KI</span>
-            </div>
-            <p class="hidden sm:block text-xs font-medium text-slate-500 dark:text-gray-400">Interactive Quiz & Conference Platform</p>
-          </div>
+      <!-- Brand & Title -->
+      <div class="flex items-center space-x-3 shrink-0">
+        <div class="w-9 h-9 rounded-xl gold-gradient-bg flex items-center justify-center text-slate-950 shadow-md shadow-amber-500/20 font-black text-lg">
+          <i data-lucide="zap" class="w-5 h-5 stroke-[2.5]"></i>
         </div>
-
-        <div class="flex items-center space-x-2 sm:hidden">
-          <button onclick="toggleTheme()" class="p-2 rounded-xl bg-slate-200 dark:bg-gray-900 border border-slate-300 dark:border-gray-800 text-slate-800 dark:text-gray-300 transition">
-            <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
-            <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
-          </button>
-          <button onclick="toggleFullscreen()" class="p-2 rounded-xl bg-slate-200 dark:bg-gray-900 border border-slate-300 dark:border-gray-800 text-slate-800 dark:text-gray-300 transition">
-            <i data-lucide="maximize" class="w-4 h-4"></i>
-          </button>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="text-lg font-black tracking-tight text-slate-900 dark:text-white uppercase">Khalsai Pulse</span>
+            <span class="bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-400 text-[10px] px-2 py-0.5 rounded-full font-bold border border-amber-300 dark:border-amber-500/30">KI</span>
+          </div>
+          <p class="hidden sm:block text-[11px] font-medium text-slate-500 dark:text-gray-400">Interactive Quiz & Live Audience Platform</p>
         </div>
       </div>
 
-      <!-- Desktop Event Code Selector -->
-      <div class="hidden lg:flex items-center space-x-2 bg-slate-200/80 dark:bg-gray-900/90 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-gray-800">
-        <span class="text-xs uppercase tracking-wider font-extrabold text-slate-600 dark:text-gray-400">Code:</span>
-        <input type="text" id="headerAudienceCodeInput" value="" class="bg-white dark:bg-gray-950 px-2 py-0.5 rounded border border-slate-300 dark:border-gray-700 font-mono font-bold text-amber-600 dark:text-amber-400 text-sm focus:outline-none focus:border-amber-500 w-36 uppercase">
-        <button onclick="changeAudienceEventCode()" class="bg-amber-500 text-slate-950 font-extrabold text-xs px-2.5 py-1 rounded-lg hover:brightness-110 transition flex items-center space-x-1 shadow">
-          <span>Join</span>
+      <!-- Center Event Code & Quick Actions -->
+      <div class="hidden lg:flex items-center space-x-2 bg-slate-100 dark:bg-gray-900/80 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-gray-800">
+        <span class="text-[11px] uppercase tracking-wider font-extrabold text-slate-500 dark:text-gray-400">SESSION CODE:</span>
+        <input type="text" id="headerAudienceCodeInput" value="" class="bg-white dark:bg-gray-950 px-2 py-0.5 rounded-lg border border-slate-300 dark:border-gray-700 font-mono font-bold text-amber-600 dark:text-amber-400 text-xs focus:outline-none focus:border-amber-500 w-32 uppercase text-center">
+        <button onclick="changeAudienceEventCode()" class="bg-amber-500 text-slate-950 font-extrabold text-xs px-2.5 py-1 rounded-lg hover:brightness-110 transition shadow">
+          Join
         </button>
-        <button onclick="copyEventCode()" class="text-slate-600 dark:text-gray-400 hover:text-amber-500 transition ml-1" title="Copy Event Code">
+        <button onclick="copyEventCode()" class="text-slate-500 dark:text-gray-400 hover:text-amber-500 transition ml-1" title="Copy Event Code">
           <i data-lucide="copy" class="w-4 h-4"></i>
         </button>
       </div>
 
       <!-- Header Button Controls -->
-      <div class="flex items-center justify-between sm:justify-end space-x-2 border-t border-slate-200 dark:border-gray-800/80 pt-2 sm:border-t-0 sm:pt-0">
-        <a href="https://khalsai.com/why-guru-feedback/" target="_blank" rel="noopener noreferrer" class="flex-1 sm:flex-none flex items-center justify-center space-x-1 px-3 py-2 rounded-xl bg-amber-100 dark:bg-amber-500/10 hover:bg-amber-200 dark:hover:bg-amber-500/20 border border-amber-300 dark:border-amber-500/30 text-amber-800 dark:text-amber-400 font-bold text-xs sm:text-sm transition shadow-sm">
-          <i data-lucide="message-square-heart" class="w-4 h-4"></i>
+      <div class="flex items-center space-x-2">
+        <a href="https://khalsai.com/why-guru-feedback/" target="_blank" rel="noopener noreferrer" class="hidden sm:flex items-center space-x-1 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-gray-800/60 hover:bg-slate-200 dark:hover:bg-gray-800 text-slate-700 dark:text-gray-300 font-bold text-xs transition border border-slate-200 dark:border-gray-700">
+          <i data-lucide="message-square-heart" class="w-3.5 h-3.5 text-amber-500"></i>
           <span>Feedback</span>
         </a>
 
-        <div class="flex-1 sm:flex-none bg-slate-200 dark:bg-gray-900/90 p-1 rounded-xl border border-slate-300 dark:border-gray-800 flex items-center gap-1">
-          <button id="btnAudienceView" onclick="switchView('audience')" class="flex-1 sm:flex-none px-3 py-2 rounded-lg text-xs sm:text-sm font-extrabold transition flex items-center justify-center space-x-1.5 bg-amber-500 text-slate-950 shadow">
-            <i data-lucide="users" class="w-4 h-4"></i>
+        <!-- Audience / Presenter View Switcher -->
+        <div class="bg-slate-200 dark:bg-gray-950 p-1 rounded-xl border border-slate-300 dark:border-gray-800 flex items-center gap-1">
+          <button id="btnAudienceView" onclick="switchView('audience')" class="px-3 py-1.5 rounded-lg text-xs font-extrabold transition flex items-center space-x-1.5 bg-amber-500 text-slate-950 shadow">
+            <i data-lucide="users" class="w-3.5 h-3.5"></i>
             <span>Audience</span>
           </button>
-          <button id="btnPresenterView" onclick="switchView('presenter')" class="flex-1 sm:flex-none px-3 py-2 rounded-lg text-xs sm:text-sm font-extrabold text-slate-700 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition flex items-center justify-center space-x-1.5">
-            <i data-lucide="presentation" class="w-4 h-4"></i>
+          <button id="btnPresenterView" onclick="switchView('presenter')" class="px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition flex items-center space-x-1.5">
+            <i data-lucide="presentation" class="w-3.5 h-3.5"></i>
             <span>Presenter</span>
           </button>
         </div>
 
-        <button onclick="toggleTheme()" class="hidden sm:block p-2.5 rounded-xl bg-slate-200 dark:bg-gray-900 border border-slate-300 dark:border-gray-800 text-slate-800 dark:text-gray-300 transition" title="Toggle Light/Dark Theme">
+        <button onclick="toggleTheme()" class="p-2 rounded-xl bg-slate-100 dark:bg-gray-900 border border-slate-200 dark:border-gray-800 text-slate-700 dark:text-gray-300 transition" title="Toggle Theme">
           <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
           <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
-        </button>
-
-        <button onclick="toggleFullscreen()" class="hidden sm:block p-2.5 rounded-xl bg-slate-200 dark:bg-gray-900 border border-slate-300 dark:border-gray-800 text-slate-800 dark:text-gray-300 transition" title="Toggle Fullscreen">
-          <i data-lucide="maximize" class="w-4 h-4"></i>
         </button>
       </div>
     </div>
   </header>
 
-  <!-- Mobile Event Code Bar -->
-  <div class="lg:hidden bg-slate-200 dark:bg-gray-950/80 border-b border-slate-300 dark:border-gray-800 px-3 py-1.5 flex items-center justify-between text-xs gap-2">
+  <!-- Mobile Session Code Bar -->
+  <div class="lg:hidden bg-slate-200 dark:bg-gray-950 border-b border-slate-300 dark:border-gray-800 px-3 py-1.5 flex items-center justify-between text-xs gap-2">
     <div class="flex items-center space-x-1.5 font-mono">
-      <span class="text-slate-600 dark:text-gray-400 font-sans uppercase font-extrabold text-[10px]">CODE:</span>
-      <input type="text" id="mobileAudienceCodeInput" value="" class="bg-white dark:bg-gray-900 px-1.5 py-0.5 rounded border border-slate-300 dark:border-gray-700 font-mono font-bold text-amber-600 dark:text-amber-400 text-xs w-32 uppercase">
+      <span class="text-slate-500 dark:text-gray-400 font-sans uppercase font-extrabold text-[10px]">CODE:</span>
+      <input type="text" id="mobileAudienceCodeInput" value="" class="bg-white dark:bg-gray-900 px-2 py-0.5 rounded border border-slate-300 dark:border-gray-700 font-mono font-bold text-amber-600 dark:text-amber-400 text-xs w-28 uppercase">
       <button onclick="changeMobileAudienceCode()" class="bg-amber-500 text-slate-950 font-bold text-[10px] px-2 py-0.5 rounded">Join</button>
     </div>
-    <button onclick="copyEventCode()" class="text-amber-700 dark:text-amber-400 font-bold flex items-center space-x-1 hover:underline shrink-0">
-      <i data-lucide="copy" class="w-3 h-3"></i>
-      <span>Copy</span>
+    <button onclick="copyEventCode()" class="text-amber-600 dark:text-amber-400 font-bold flex items-center space-x-1 text-xs shrink-0">
+      <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+      <span>Copy Link</span>
     </button>
   </div>
 
@@ -152,63 +158,63 @@
     <!-- AUDIENCE VIEW CONTAINER -->
     <div id="audienceView" class="flex-1 flex flex-col space-y-4 sm:space-y-6">
       
-      <div class="flex items-center justify-between bg-white dark:bg-gray-900/80 border border-slate-200 dark:border-gray-800 p-2.5 sm:p-3 rounded-2xl shadow-sm">
+      <div class="flex items-center justify-between bg-white dark:bg-gray-900/90 border border-slate-200 dark:border-gray-800 p-2.5 sm:p-3 rounded-2xl shadow-sm">
         <div class="hidden sm:flex space-x-2">
-          <button onclick="switchAudienceTab('qa')" id="tabAudienceQA" class="px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow">
+          <button onclick="switchAudienceTab('qa')" id="tabAudienceQA" class="px-4 py-2 rounded-xl font-bold text-sm transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow">
             <i data-lucide="message-square" class="w-4 h-4"></i>
             <span>Live Q&A</span>
             <span id="qaBadge" class="ml-1 bg-black/20 px-2 py-0.5 rounded-full text-xs">0</span>
           </button>
-          <button onclick="switchAudienceTab('quiz')" id="tabAudienceQuiz" class="px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800">
+          <button onclick="switchAudienceTab('quiz')" id="tabAudienceQuiz" class="px-4 py-2 rounded-xl font-bold text-sm transition flex items-center space-x-2 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800">
             <i data-lucide="award" class="w-4 h-4"></i>
             <span>Live Quiz</span>
             <span id="activeQuizIndicator" class="hidden w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
           </button>
-          <button onclick="switchAudienceTab('sidequizzes')" id="tabAudienceSideQuizzes" class="px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800">
+          <button onclick="switchAudienceTab('sidequizzes')" id="tabAudienceSideQuizzes" class="px-4 py-2 rounded-xl font-bold text-sm transition flex items-center space-x-2 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800">
             <i data-lucide="layers" class="w-4 h-4"></i>
             <span>Side Quizzes</span>
           </button>
-          <button onclick="switchAudienceTab('leaderboard')" id="tabAudienceLeaderboard" class="px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800">
+          <button onclick="switchAudienceTab('leaderboard')" id="tabAudienceLeaderboard" class="px-4 py-2 rounded-xl font-bold text-sm transition flex items-center space-x-2 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800">
             <i data-lucide="trophy" class="w-4 h-4"></i>
             <span>Leaderboard</span>
           </button>
         </div>
 
-        <div class="flex items-center space-x-1.5 text-xs bg-slate-100 dark:bg-gray-950 px-2.5 py-1 rounded-lg border border-slate-300 dark:border-gray-800 text-amber-700 dark:text-amber-400 font-bold">
+        <div class="flex items-center space-x-1.5 text-xs bg-slate-100 dark:bg-gray-950 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-gray-800 text-amber-700 dark:text-amber-400 font-bold">
           <i data-lucide="user" class="w-3.5 h-3.5"></i>
-          <span id="audiencePlayerDisplay" class="truncate max-w-[100px] sm:max-w-[140px]">...</span>
+          <span id="audiencePlayerDisplay" class="truncate max-w-[120px]">...</span>
           <span id="playerStreakBadge" class="hidden bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400 text-[10px] px-1.5 py-0.5 rounded font-black">🔥 0</span>
-          <button onclick="changePlayerNamePrompt()" class="text-slate-500 dark:text-gray-400 hover:text-amber-500 ml-1" title="Change Name">
+          <button onclick="changePlayerNamePrompt()" class="text-slate-400 hover:text-amber-500 ml-1" title="Edit Nickname">
             <i data-lucide="edit-2" class="w-3 h-3"></i>
           </button>
         </div>
 
-        <div class="flex items-center space-x-2 text-xs text-slate-600 dark:text-gray-400 px-3 py-1 bg-slate-100 dark:bg-gray-950 rounded-lg border border-slate-200 dark:border-gray-800 w-full sm:w-auto justify-center sm:justify-start">
+        <div class="flex items-center space-x-2 text-xs text-slate-500 dark:text-gray-400 px-3 py-1 bg-slate-100 dark:bg-gray-950 rounded-xl border border-slate-200 dark:border-gray-800 w-full sm:w-auto justify-center">
           <i data-lucide="circle" class="w-2.5 h-2.5 text-emerald-500 fill-emerald-500 animate-pulse"></i>
-          <span class="font-bold text-slate-800 dark:text-gray-300">PULSE_DB Live Sync</span>
+          <span class="font-bold text-slate-700 dark:text-gray-300">Sync Active</span>
         </div>
       </div>
 
       <!-- TAB 1: AUDIENCE Q&A -->
-      <div id="audienceQAPane" class="space-y-4 sm:space-y-6">
-        <div class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-2xl p-4 sm:p-6 shadow-sm">
-          <h2 class="text-lg sm:text-xl font-bold mb-2 text-slate-900 dark:text-white flex items-center space-x-2">
+      <div id="audienceQAPane" class="space-y-4">
+        <div class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800/80 rounded-2xl p-5 shadow-sm">
+          <h2 class="text-lg font-bold mb-3 text-slate-900 dark:text-white flex items-center space-x-2">
             <i data-lucide="help-circle" class="w-5 h-5 text-amber-500"></i>
             <span>Ask the Speaker</span>
           </h2>
           <div class="space-y-3">
-            <textarea id="questionInput" rows="3" placeholder="Type your question here..." class="w-full bg-slate-50 dark:bg-gray-950 border border-slate-300 dark:border-gray-800 rounded-xl p-3 sm:p-4 text-sm sm:text-base text-slate-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition resize-none font-medium shadow-inner"></textarea>
+            <textarea id="questionInput" rows="3" placeholder="Type your question here..." class="w-full bg-slate-50 dark:bg-gray-950 border border-slate-200 dark:border-gray-800 rounded-xl p-3.5 text-sm text-slate-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 transition resize-none font-medium"></textarea>
             
             <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
               <div class="flex items-center space-x-2">
-                <input type="text" id="userNameInput" placeholder="Your name (optional)" class="bg-slate-50 dark:bg-gray-950 border border-slate-300 dark:border-gray-800 rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 font-medium flex-1 sm:w-48 shadow-inner">
+                <input type="text" id="userNameInput" placeholder="Your name (optional)" class="bg-slate-50 dark:bg-gray-950 border border-slate-200 dark:border-gray-800 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 font-medium flex-1 sm:w-48">
                 <button onclick="summarizeOrEnhanceQuestion()" class="text-xs font-bold text-amber-800 dark:text-amber-400 bg-amber-100 dark:bg-amber-500/10 hover:bg-amber-200 dark:hover:bg-amber-500/20 px-3 py-2 rounded-xl border border-amber-300 dark:border-amber-500/30 transition flex items-center space-x-1 shrink-0">
                   <i data-lucide="sparkles" class="w-3.5 h-3.5"></i>
                   <span>AI Enhance</span>
                 </button>
               </div>
 
-              <button onclick="submitQuestion()" class="py-2.5 px-5 rounded-xl gold-gradient-bg text-slate-950 font-bold text-sm sm:text-base hover:brightness-110 transition shadow flex items-center justify-center space-x-2">
+              <button onclick="submitQuestion()" class="py-2.5 px-5 rounded-xl gold-gradient-bg text-slate-950 font-bold text-sm hover:brightness-110 transition shadow flex items-center justify-center space-x-2">
                 <span>Submit Question</span>
                 <i data-lucide="send" class="w-4 h-4"></i>
               </button>
@@ -216,9 +222,9 @@
           </div>
         </div>
 
-        <div class="space-y-3 sm:space-y-4">
+        <div class="space-y-3">
           <div class="flex items-center justify-between px-1">
-            <h3 class="text-base sm:text-lg font-bold text-slate-800 dark:text-gray-200">Submitted Questions</h3>
+            <h3 class="text-base font-bold text-slate-800 dark:text-gray-200">Submitted Questions</h3>
             <div class="flex items-center space-x-1.5 text-xs">
               <button onclick="sortQuestions('upvotes')" id="sortUpvotes" class="px-2.5 py-1 rounded-lg bg-slate-200 dark:bg-gray-800 text-amber-800 dark:text-amber-400 font-bold border border-slate-300 dark:border-gray-700">Top Voted</button>
               <button onclick="sortQuestions('recent')" id="sortRecent" class="px-2.5 py-1 rounded-lg bg-white dark:bg-gray-900 text-slate-600 dark:text-gray-400 font-bold hover:text-slate-900 dark:hover:text-white">Recent</button>
@@ -230,9 +236,9 @@
           </div>
         </div>
 
-        <!-- Slido-Inspired Floating Reaction Bar -->
+        <!-- Slido Floating Reaction Bar -->
         <div class="flex items-center justify-center gap-2 bg-white/80 dark:bg-gray-900/80 backdrop-blur border border-slate-200 dark:border-gray-800 p-2.5 rounded-2xl shadow-sm">
-          <span class="text-xs font-bold text-slate-500 dark:text-gray-400 mr-2">React:</span>
+          <span class="text-xs font-bold text-slate-500 dark:text-gray-400 mr-2">Live Reaction:</span>
           <button onclick="sendReaction('🔥')" class="px-3 py-1.5 bg-slate-100 dark:bg-gray-800 hover:scale-110 transition rounded-xl text-sm shadow-sm">🔥</button>
           <button onclick="sendReaction('👏')" class="px-3 py-1.5 bg-slate-100 dark:bg-gray-800 hover:scale-110 transition rounded-xl text-sm shadow-sm">👏</button>
           <button onclick="sendReaction('💡')" class="px-3 py-1.5 bg-slate-100 dark:bg-gray-800 hover:scale-110 transition rounded-xl text-sm shadow-sm">💡</button>
@@ -243,23 +249,23 @@
 
       <!-- TAB 2: AUDIENCE QUIZ INTERFACE -->
       <div id="audienceQuizPane" class="hidden space-y-6">
-        <div id="audienceQuizContainer" class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-2xl p-5 sm:p-8 text-center space-y-6 shadow-sm">
+        <div id="audienceQuizContainer" class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-2xl p-6 sm:p-8 text-center space-y-6 shadow-sm">
           <!-- Quiz details rendered dynamically -->
         </div>
       </div>
 
       <!-- TAB 2.5: AUDIENCE SIDE QUIZZES SELECTOR & RUNNER -->
       <div id="audienceSideQuizzesPane" class="hidden space-y-6">
-        <div id="audienceSideQuizzesContainer" class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-2xl p-5 sm:p-8 space-y-6 shadow-sm">
+        <div id="audienceSideQuizzesContainer" class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-2xl p-6 sm:p-8 space-y-6 shadow-sm">
           <!-- Rendered dynamically -->
         </div>
       </div>
 
       <!-- TAB 3: AUDIENCE LEADERBOARD -->
       <div id="audienceLeaderboardPane" class="hidden space-y-6">
-        <div class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-2xl p-5 sm:p-8 space-y-4 shadow-sm">
+        <div class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-2xl p-6 space-y-4 shadow-sm">
           <div class="flex items-center justify-between border-b border-slate-200 dark:border-gray-800 pb-3">
-            <h2 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+            <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center space-x-2">
               <i data-lucide="trophy" class="w-5 h-5 text-amber-500"></i>
               <span>Session Leaderboard</span>
             </h2>
@@ -274,47 +280,44 @@
 
     </div>
 
-    <!-- PRESENTER VIEW CONTAINER -->
-    <div id="presenterView" class="hidden flex-1 flex-col space-y-4 sm:space-y-6">
+    <!-- PRESENTER VIEW CONTAINER (REFINED SAAS DASHBOARD) -->
+    <div id="presenterView" class="hidden flex-1 flex-col space-y-5">
       
-      <!-- Presenter Header Controller -->
-      <div class="flex flex-col space-y-3 bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 p-3 sm:p-4 rounded-2xl shadow-sm">
+      <!-- Streamlined Presenter Top Navigation Strip -->
+      <div class="flex items-center justify-between bg-white dark:bg-[#0D121F] border border-slate-200 dark:border-gray-800/80 p-2 sm:p-3 rounded-2xl shadow-sm gap-2">
         
-        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 dark:border-gray-800/80 pb-2.5">
-          <span class="bg-emerald-100 text-emerald-800 dark:bg-emerald-500/10 dark:text-emerald-400 font-extrabold px-2.5 py-1 rounded-lg border border-emerald-300 dark:border-emerald-500/30 text-xs flex items-center space-x-1">
+        <div class="flex items-center space-x-3">
+          <span class="bg-amber-500/10 text-amber-600 dark:text-amber-400 font-black px-2.5 py-1 rounded-xl border border-amber-500/20 text-xs flex items-center space-x-1.5 shrink-0">
             <i data-lucide="tv" class="w-3.5 h-3.5"></i>
-            <span>PRESENTER MODE</span>
+            <span>PRESENTER STUDIO</span>
           </span>
 
-          <div class="flex items-center space-x-2 bg-slate-100 dark:bg-gray-950 px-2.5 py-1 rounded-xl border border-slate-300 dark:border-gray-800">
-            <label for="eventCodeInput" class="text-[10px] sm:text-xs font-bold text-slate-600 dark:text-gray-400 uppercase">Code:</label>
-            <input type="text" id="eventCodeInput" value="" class="bg-white dark:bg-gray-900 px-1.5 py-0.5 rounded border border-slate-300 dark:border-gray-700 font-mono font-bold text-amber-600 dark:text-amber-400 text-xs sm:text-sm focus:outline-none focus:border-amber-500 w-28 sm:w-36 uppercase">
-            <button onclick="updateEventCode()" class="bg-amber-500 text-slate-950 font-bold text-[10px] sm:text-xs px-2.5 py-1 rounded-lg hover:brightness-110 transition flex items-center space-x-1 shadow">
-              <i data-lucide="check" class="w-3 h-3 stroke-[3]"></i>
-              <span>Set</span>
-            </button>
+          <div class="hidden sm:flex items-center space-x-2 bg-slate-100 dark:bg-gray-950 px-2.5 py-1 rounded-xl border border-slate-200 dark:border-gray-800">
+            <span class="text-[10px] font-bold text-slate-400 uppercase">ACTIVE SESSION:</span>
+            <input type="text" id="eventCodeInput" value="" class="bg-transparent font-mono font-black text-amber-600 dark:text-amber-400 text-xs focus:outline-none w-28 uppercase">
+            <button onclick="updateEventCode()" class="bg-amber-500 text-slate-950 font-extrabold text-[10px] px-2 py-0.5 rounded hover:brightness-110 transition">Set</button>
           </div>
         </div>
 
-        <!-- Presenter Nav Tabs -->
-        <div class="flex items-center justify-start sm:justify-end gap-2 overflow-x-auto pb-1">
-          <button onclick="switchPresenterSubTab('spotlight')" id="subTabSpotlight" class="p-nav-btn rounded-xl font-bold text-xs sm:text-sm bg-amber-500 text-slate-950 shadow transition shrink-0">
+        <!-- Presenter Section Switcher Tabs -->
+        <div class="flex items-center gap-1.5 overflow-x-auto">
+          <button onclick="switchPresenterSubTab('spotlight')" id="subTabSpotlight" class="p-nav-btn bg-amber-500 text-slate-950 shadow">
             <i data-lucide="sparkles" class="w-3.5 h-3.5 mr-1.5"></i>
             <span>Spotlight</span>
           </button>
-          <button onclick="switchPresenterSubTab('manager')" id="subTabManager" class="p-nav-btn rounded-xl font-bold text-xs sm:text-sm bg-slate-200 dark:bg-gray-800 text-slate-800 dark:text-gray-300 hover:text-slate-950 dark:hover:text-white transition shrink-0">
+          <button onclick="switchPresenterSubTab('manager')" id="subTabManager" class="p-nav-btn bg-slate-100 dark:bg-gray-800/60 text-slate-700 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white">
             <i data-lucide="plus-circle" class="w-3.5 h-3.5 mr-1.5"></i>
             <span>Quiz Builder</span>
           </button>
-          <button onclick="switchPresenterSubTab('sidebuilder')" id="subTabSideBuilder" class="p-nav-btn rounded-xl font-bold text-xs sm:text-sm bg-slate-200 dark:bg-gray-800 text-slate-800 dark:text-gray-300 hover:text-slate-950 dark:hover:text-white transition shrink-0">
+          <button onclick="switchPresenterSubTab('sidebuilder')" id="subTabSideBuilder" class="p-nav-btn bg-slate-100 dark:bg-gray-800/60 text-slate-700 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white">
             <i data-lucide="layers" class="w-3.5 h-3.5 mr-1.5"></i>
             <span>Side Quiz Builder</span>
           </button>
-          <button onclick="switchPresenterSubTab('questions')" id="subTabQuestions" class="p-nav-btn rounded-xl font-bold text-xs sm:text-sm bg-slate-200 dark:bg-gray-800 text-slate-800 dark:text-gray-300 hover:text-slate-950 dark:hover:text-white transition shrink-0">
+          <button onclick="switchPresenterSubTab('questions')" id="subTabQuestions" class="p-nav-btn bg-slate-100 dark:bg-gray-800/60 text-slate-700 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white">
             <i data-lucide="message-square" class="w-3.5 h-3.5 mr-1.5"></i>
             <span>Q&A Control</span>
           </button>
-          <button onclick="switchPresenterSubTab('leaderboard')" id="subTabPresenterLeaderboard" class="p-nav-btn rounded-xl font-bold text-xs sm:text-sm bg-slate-200 dark:bg-gray-800 text-slate-800 dark:text-gray-300 hover:text-slate-950 dark:hover:text-white transition shrink-0">
+          <button onclick="switchPresenterSubTab('leaderboard')" id="subTabPresenterLeaderboard" class="p-nav-btn bg-slate-100 dark:bg-gray-800/60 text-slate-700 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white">
             <i data-lucide="trophy" class="w-3.5 h-3.5 mr-1.5"></i>
             <span>Leaderboard</span>
           </button>
@@ -323,54 +326,52 @@
       </div>
 
       <!-- SUB-TAB 1: SPOTLIGHT & QR CODE -->
-      <div id="presenterSpotlightPane" class="space-y-4 sm:space-y-6">
-        <div class="bg-white dark:bg-[#0D131F] border border-slate-200 dark:border-amber-500/30 rounded-2xl p-4 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
+      <div id="presenterSpotlightPane" class="space-y-5">
+        <div class="bg-white dark:bg-[#0D121F] border border-slate-200 dark:border-gray-800 rounded-2xl p-5 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
           <div class="text-center md:text-left space-y-1">
-            <p class="text-amber-600 dark:text-amber-400 text-xs font-bold tracking-widest uppercase">SCAN QR CODE TO JOIN QUIZ</p>
+            <p class="text-amber-600 dark:text-amber-400 text-xs font-bold tracking-widest uppercase">SCAN QR CODE TO JOIN LIVE SESSION</p>
             <h1 class="text-3xl sm:text-5xl font-mono font-black text-amber-500 dark:text-amber-400 tracking-wider event-code-display" id="projectorEventCode"></h1>
-            <p class="text-slate-500 dark:text-gray-400 text-xs">Scan with camera to auto-join live quiz & Q&A</p>
+            <p class="text-slate-500 dark:text-gray-400 text-xs">Scan with mobile camera to participate instantly</p>
           </div>
 
-          <div class="flex flex-col items-center bg-slate-50 dark:bg-[#080C14] p-3 rounded-xl border border-slate-200 dark:border-gray-800 shrink-0">
+          <div class="flex flex-col items-center bg-slate-50 dark:bg-[#080D17] p-3 rounded-xl border border-slate-200 dark:border-gray-800 shrink-0">
             <div id="qrcode"></div>
             <span class="text-[9px] font-mono font-bold text-amber-600 dark:text-amber-400 mt-1.5 tracking-wider uppercase">Auto-Join QR Code</span>
           </div>
         </div>
 
-        <div id="spotlightContent" class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-2xl p-4 sm:p-8 text-center min-h-[240px] sm:min-h-[320px] flex flex-col shadow-sm relative overflow-hidden">
-          <div class="flex items-center justify-between gap-2 border-b border-slate-100 dark:border-gray-800/60 pb-2.5 mb-3">
-            <div class="flex items-center space-x-1.5 min-w-0 flex-1 text-slate-400 dark:text-gray-500 uppercase font-bold text-[10px] sm:text-xs tracking-wider">
-              <i data-lucide="sparkles" class="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-500 shrink-0"></i>
-              <span class="truncate">Projector Screen Focus</span>
+        <div id="spotlightContent" class="bg-white dark:bg-[#0D121F] border border-slate-200 dark:border-gray-800 rounded-2xl p-6 sm:p-8 text-center min-h-[280px] flex flex-col shadow-sm relative overflow-hidden">
+          <div class="flex items-center justify-between gap-2 border-b border-slate-100 dark:border-gray-800/60 pb-3 mb-3">
+            <div class="flex items-center space-x-1.5 text-slate-400 dark:text-gray-500 uppercase font-bold text-xs tracking-wider">
+              <i data-lucide="sparkles" class="w-4 h-4 text-amber-500 shrink-0"></i>
+              <span>Projector Screen Focus</span>
             </div>
 
             <div id="clearSpotlightBtnContainer" class="hidden shrink-0">
-              <button onclick="clearActivePollAndReturnWaiting()" class="px-2 py-1 rounded-lg bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/60 border border-red-200 dark:border-red-800/40 font-bold text-[11px] sm:text-xs flex items-center space-x-1 transition whitespace-nowrap">
+              <button onclick="clearActivePollAndReturnWaiting()" class="px-2.5 py-1 rounded-lg bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/60 border border-red-200 dark:border-red-800/40 font-bold text-xs flex items-center space-x-1 transition">
                 <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
-                <span>Return<span class="hidden sm:inline"> to Waiting</span></span>
+                <span>Return to Waiting</span>
               </button>
             </div>
           </div>
 
           <div id="spotlightDisplayArea" class="w-full my-auto space-y-4">
-            <div class="space-y-2 sm:space-y-3 py-4">
+            <div class="space-y-2 py-4">
               <i data-lucide="presentation" class="w-12 h-12 text-slate-300 dark:text-gray-700 mx-auto"></i>
-              <h2 class="text-xl sm:text-2xl font-bold text-slate-600 dark:text-gray-300">No Item Spotlighted</h2>
-              <p class="text-xs sm:text-sm text-slate-400 dark:text-gray-500 font-medium max-w-xl mx-auto">Select a question or release a live quiz to present on the main screen.</p>
+              <h2 class="text-xl font-bold text-slate-600 dark:text-gray-300">No Item Spotlighted</h2>
+              <p class="text-xs text-slate-400 dark:text-gray-500 font-medium max-w-xl mx-auto">Select a question or release a live quiz to present on the main screen.</p>
             </div>
           </div>
         </div>
 
-        <div id="presenterLeaderboardCard" class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-2xl p-4 sm:p-6 space-y-4 shadow-sm">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-gray-800 pb-3">
+        <div id="presenterLeaderboardCard" class="bg-white dark:bg-[#0D121F] border border-slate-200 dark:border-gray-800 rounded-2xl p-5 space-y-4 shadow-sm">
+          <div class="flex items-center justify-between border-b border-slate-200 dark:border-gray-800 pb-3">
             <div class="flex items-center space-x-2">
               <i data-lucide="trophy" class="w-5 h-5 text-amber-500"></i>
-              <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">Live Leaderboard</h3>
-              <span class="text-xs text-slate-500 dark:text-gray-400 font-normal ml-1">Session Rankings</span>
+              <h3 class="text-lg font-bold text-slate-900 dark:text-white">Live Leaderboard</h3>
             </div>
-            <button onclick="resetCurrentEventLeaderboard()" class="self-end sm:self-auto px-2.5 py-1 bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800/40 text-[11px] font-bold rounded-lg flex items-center gap-1 transition shrink-0">
-              <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
-              <span>Clear Leaderboard</span>
+            <button onclick="resetCurrentEventLeaderboard()" class="px-2.5 py-1 bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800/40 text-xs font-bold rounded-lg transition">
+              Reset Scores
             </button>
           </div>
           <div id="leaderboardList" class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -382,13 +383,13 @@
       <!-- SUB-TAB 2: QUIZ BUILDER -->
       <div id="presenterManagerPane" class="hidden space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          <div class="lg:col-span-5 bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-2xl p-4 sm:p-6 space-y-4 shadow-sm">
-            <div class="border-b border-slate-200 dark:border-gray-800 pb-2 flex items-center justify-between">
-              <h3 id="quizFormHeading" class="text-lg font-bold text-slate-900 dark:text-white flex items-center space-x-2">
-                <i data-lucide="plus-circle" class="w-5 h-5 text-amber-500"></i>
+          <div class="lg:col-span-5 bg-white dark:bg-[#0D121F] border border-slate-200 dark:border-gray-800 rounded-2xl p-5 space-y-4 shadow-sm">
+            <div class="border-b border-slate-200 dark:border-gray-800 pb-3 flex items-center justify-between">
+              <h3 id="quizFormHeading" class="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+                <i data-lucide="plus-circle" class="w-4 h-4 text-amber-500"></i>
                 <span>Create Quiz Question</span>
               </h3>
-              <button id="btnCancelEdit" onclick="cancelEditQuizQuestion()" class="hidden text-xs bg-slate-200 dark:bg-gray-800 hover:bg-slate-300 dark:hover:bg-gray-700 text-slate-700 dark:text-gray-300 px-2.5 py-1 rounded-lg border border-slate-300 dark:border-gray-700 font-bold">
+              <button id="btnCancelEdit" onclick="cancelEditQuizQuestion()" class="hidden text-xs bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 dark:hover:bg-gray-700 text-slate-700 dark:text-gray-300 px-2 py-1 rounded-lg font-bold">
                 Cancel
               </button>
             </div>
@@ -398,38 +399,38 @@
             <div class="space-y-3">
               <div>
                 <label class="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">Question Title</label>
-                <input type="text" id="newQuizTitle" placeholder="e.g. What is..." class="w-full bg-slate-50 dark:bg-gray-950 border border-slate-300 dark:border-gray-800 rounded-xl px-3 py-2 text-xs sm:text-sm text-slate-900 dark:text-white focus:outline-none focus:border-amber-500">
+                <input type="text" id="newQuizTitle" placeholder="e.g. What is..." class="w-full bg-slate-50 dark:bg-[#080D17] border border-slate-200 dark:border-gray-800 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500">
               </div>
 
               <div class="space-y-2">
                 <label class="block text-xs font-bold text-slate-700 dark:text-gray-300">Options & Correct Selection</label>
                 
-                <div class="flex items-center space-x-2 bg-[#E21B3C]/10 p-1.5 rounded-lg border border-[#E21B3C]/30">
+                <div class="flex items-center space-x-2 bg-[#E21B3C]/10 p-1.5 rounded-lg border border-[#E21B3C]/20">
                   <input type="radio" name="correctOption" value="0" checked class="w-4 h-4 accent-[#E21B3C]">
                   <span class="text-red-500 font-bold text-xs">▲</span>
-                  <input type="text" id="option0" placeholder="Red Option A" class="flex-1 bg-white dark:bg-gray-950 border border-slate-300 dark:border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white">
+                  <input type="text" id="option0" placeholder="Red Option A" class="flex-1 bg-white dark:bg-[#080D17] border border-slate-200 dark:border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white">
                 </div>
-                <div class="flex items-center space-x-2 bg-[#1368CE]/10 p-1.5 rounded-lg border border-[#1368CE]/30">
+                <div class="flex items-center space-x-2 bg-[#1368CE]/10 p-1.5 rounded-lg border border-[#1368CE]/20">
                   <input type="radio" name="correctOption" value="1" class="w-4 h-4 accent-[#1368CE]">
                   <span class="text-blue-500 font-bold text-xs">◆</span>
-                  <input type="text" id="option1" placeholder="Blue Option B" class="flex-1 bg-white dark:bg-gray-950 border border-slate-300 dark:border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white">
+                  <input type="text" id="option1" placeholder="Blue Option B" class="flex-1 bg-white dark:bg-[#080D17] border border-slate-200 dark:border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white">
                 </div>
-                <div class="flex items-center space-x-2 bg-[#D89E00]/10 p-1.5 rounded-lg border border-[#D89E00]/30">
+                <div class="flex items-center space-x-2 bg-[#D89E00]/10 p-1.5 rounded-lg border border-[#D89E00]/20">
                   <input type="radio" name="correctOption" value="2" class="w-4 h-4 accent-[#D89E00]">
-                  <span class="text-amber-600 dark:text-amber-400 font-bold text-xs">●</span>
-                  <input type="text" id="option2" placeholder="Yellow Option C" class="flex-1 bg-white dark:bg-gray-950 border border-slate-300 dark:border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white">
+                  <span class="text-amber-500 font-bold text-xs">●</span>
+                  <input type="text" id="option2" placeholder="Yellow Option C" class="flex-1 bg-white dark:bg-[#080D17] border border-slate-200 dark:border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white">
                 </div>
-                <div class="flex items-center space-x-2 bg-[#26890C]/10 p-1.5 rounded-lg border border-[#26890C]/30">
+                <div class="flex items-center space-x-2 bg-[#26890C]/10 p-1.5 rounded-lg border border-[#26890C]/20">
                   <input type="radio" name="correctOption" value="3" class="w-4 h-4 accent-[#26890C]">
-                  <span class="text-emerald-600 dark:text-emerald-400 font-bold text-xs">■</span>
-                  <input type="text" id="option3" placeholder="Green Option D" class="flex-1 bg-white dark:bg-gray-950 border border-slate-300 dark:border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white">
+                  <span class="text-emerald-500 font-bold text-xs">■</span>
+                  <input type="text" id="option3" placeholder="Green Option D" class="flex-1 bg-white dark:bg-[#080D17] border border-slate-200 dark:border-gray-800 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white">
                 </div>
               </div>
 
               <div class="grid grid-cols-2 gap-3">
                 <div>
                   <label class="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">Timer</label>
-                  <select id="newQuizTimer" class="w-full bg-slate-50 dark:bg-gray-950 border border-slate-300 dark:border-gray-800 rounded-xl px-2.5 py-2 text-xs text-slate-900 dark:text-white focus:outline-none">
+                  <select id="newQuizTimer" class="w-full bg-slate-50 dark:bg-[#080D17] border border-slate-200 dark:border-gray-800 rounded-xl px-2.5 py-2 text-xs text-slate-900 dark:text-white focus:outline-none">
                     <option value="0">⏳ Unlimited / Manual Close</option>
                     <option value="15">15 Seconds</option>
                     <option value="30" selected>30 Seconds</option>
@@ -439,20 +440,20 @@
                 </div>
                 <div>
                   <label class="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">Max Points</label>
-                  <input type="number" id="newQuizPoints" value="100" class="w-full bg-slate-50 dark:bg-gray-950 border border-slate-300 dark:border-gray-800 rounded-xl px-2.5 py-2 text-xs text-slate-900 dark:text-white">
+                  <input type="number" id="newQuizPoints" value="100" class="w-full bg-slate-50 dark:bg-[#080D17] border border-slate-200 dark:border-gray-800 rounded-xl px-2.5 py-2 text-xs text-slate-900 dark:text-white">
                 </div>
               </div>
 
               <button id="btnSaveQuiz" onclick="saveQuizQuestion()" class="w-full py-2.5 rounded-xl gold-gradient-bg text-slate-950 font-bold text-sm hover:brightness-110 transition shadow">
-                Save to Pulse DB Deck
+                Save to Quiz Deck
               </button>
             </div>
           </div>
 
           <div class="lg:col-span-7 space-y-4">
             <div class="flex items-center justify-between">
-              <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Pre-Loaded Deck</h3>
-              <button onclick="resetQuizDeck()" class="text-xs bg-slate-200 dark:bg-gray-800 hover:bg-slate-300 dark:hover:bg-gray-700 text-slate-700 dark:text-gray-300 px-2.5 py-1 rounded-lg border border-slate-300 dark:border-gray-700 font-bold">
+              <h3 class="text-base font-bold text-slate-900 dark:text-white">Pre-Loaded Deck</h3>
+              <button onclick="resetQuizDeck()" class="text-xs bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 dark:hover:bg-gray-700 text-slate-700 dark:text-gray-300 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-gray-700 font-bold">
                 Clear Deck
               </button>
             </div>
@@ -464,66 +465,70 @@
         </div>
       </div>
 
-      <!-- SUB-TAB 2.5: SIDE QUIZ BUILDER (OPTIMIZED 2-COLUMN SPLIT LAYOUT) -->
+      <!-- SUB-TAB 2.5: SIDE QUIZ BUILDER (REFINED HIGH-POLISH SAAS LAYOUT) -->
       <div id="presenterSideBuilderPane" class="hidden space-y-6">
-        <div class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-2xl p-4 sm:p-6 shadow-sm">
+        <div class="bg-white dark:bg-[#0D121F] border border-slate-200 dark:border-gray-800 rounded-2xl p-5 sm:p-6 shadow-sm">
           
-          <div class="border-b border-slate-200 dark:border-gray-800 pb-3 mb-5 flex items-center justify-between">
+          <!-- Header Bar -->
+          <div class="flex items-center justify-between border-b border-slate-200 dark:border-gray-800/80 pb-4 mb-6">
             <div>
-              <h3 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+              <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center space-x-2">
                 <i data-lucide="layers" class="w-5 h-5 text-amber-500"></i>
                 <span>Side Quiz Assembly Manager</span>
               </h3>
-              <p class="text-xs text-slate-500 dark:text-gray-400 mt-0.5">Quickly assemble untimed side quizzes from your Global Series Deck.</p>
+              <p class="text-xs text-slate-500 dark:text-gray-400 mt-0.5">Bundle questions from your Global Deck into untimed self-paced side quizzes.</p>
             </div>
-            <span id="sideQuizSelectedCountBadge" class="text-xs font-mono text-amber-600 dark:text-amber-400 font-bold bg-amber-100 dark:bg-amber-500/10 px-3 py-1 rounded-full border border-amber-300 dark:border-amber-500/30">0 selected</span>
+            <span id="sideQuizSelectedCountBadge" class="text-xs font-mono text-amber-600 dark:text-amber-400 font-bold bg-amber-500/10 px-3 py-1 rounded-full border border-amber-500/20">0 selected</span>
           </div>
 
-          <!-- Split Layout: Left Form & Controls, Right Question Selector Grid -->
+          <!-- Clean Split Layout -->
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             
-            <!-- Left Side: Form Controls & Sticky Publish Button -->
-            <div class="lg:col-span-5 bg-slate-50 dark:bg-gray-950 border border-slate-200 dark:border-gray-800/80 rounded-2xl p-4 sm:p-5 space-y-4 sticky top-20 shadow-inner">
-              <h4 class="text-sm font-extrabold text-slate-900 dark:text-white uppercase tracking-wider text-amber-600 dark:text-amber-400">1. Side Quiz Info</h4>
+            <!-- Left Panel: Form Settings & Published Catalog -->
+            <div class="lg:col-span-5 space-y-5">
               
-              <div>
-                <label class="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">Side Quiz Identifier / Code</label>
-                <input type="text" id="sideQuizCodeInput" placeholder="e.g. TWGCQUIZ1" class="w-full bg-white dark:bg-gray-900 border border-slate-300 dark:border-gray-800 rounded-xl px-3 py-2 text-sm text-amber-600 dark:text-amber-400 font-mono font-bold focus:outline-none uppercase">
-              </div>
+              <div class="bg-slate-50 dark:bg-[#080D17] border border-slate-200 dark:border-gray-800/80 rounded-2xl p-4 space-y-3.5 shadow-inner">
+                <span class="text-[11px] font-extrabold text-amber-600 dark:text-amber-400 uppercase tracking-wider block">1. Side Quiz Info</span>
+                
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">Side Quiz Identifier Code</label>
+                  <input type="text" id="sideQuizCodeInput" placeholder="e.g. TWGCQUIZ1" class="w-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-xl px-3 py-2 text-sm text-amber-600 dark:text-amber-400 font-mono font-bold focus:outline-none uppercase">
+                </div>
 
-              <div>
-                <label class="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">Side Quiz Title / Description</label>
-                <input type="text" id="sideQuizTitleInput" placeholder="e.g. Special Topics & Review" class="w-full bg-white dark:bg-gray-900 border border-slate-300 dark:border-gray-800 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none">
-              </div>
+                <div>
+                  <label class="block text-xs font-bold text-slate-700 dark:text-gray-300 mb-1">Title / Description</label>
+                  <input type="text" id="sideQuizTitleInput" placeholder="e.g. Special Topics & Mid-Term Review" class="w-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white focus:outline-none">
+                </div>
 
-              <div class="pt-2">
-                <button onclick="saveSideQuiz()" class="w-full py-3 rounded-xl gold-gradient-bg text-slate-950 font-bold text-sm hover:brightness-110 transition shadow flex items-center justify-center space-x-2">
+                <button onclick="saveSideQuiz()" class="w-full py-2.5 rounded-xl gold-gradient-bg text-slate-950 font-bold text-sm hover:brightness-110 transition shadow flex items-center justify-center space-x-2">
                   <i data-lucide="cloud-upload" class="w-4 h-4"></i>
-                  <span>Save & Publish to Cloud</span>
+                  <span>Save & Publish Side Quiz</span>
                 </button>
               </div>
 
-              <div class="pt-4 border-t border-slate-200 dark:border-gray-800">
-                <h4 class="text-xs font-extrabold text-slate-900 dark:text-white uppercase tracking-wider mb-2">Published Side Quizzes</h4>
-                <div id="sideQuizCatalogList" class="space-y-2 max-h-48 overflow-y-auto pr-1">
-                  <!-- Catalog rendered dynamically -->
+              <!-- Published Side Quizzes List -->
+              <div class="space-y-2">
+                <span class="text-xs font-extrabold text-slate-700 dark:text-gray-300 uppercase tracking-wider block px-1">Published Side Quizzes</span>
+                <div id="sideQuizCatalogList" class="space-y-2 max-h-56 overflow-y-auto pr-1">
+                  <!-- Catalog items rendered via JS -->
                 </div>
               </div>
+
             </div>
 
-            <!-- Right Side: Interactive Checklist Grid -->
+            <!-- Right Panel: Global Question Selection Cards -->
             <div class="lg:col-span-7 space-y-3">
-              <div class="flex items-center justify-between">
-                <h4 class="text-sm font-extrabold text-slate-900 dark:text-white uppercase tracking-wider text-amber-600 dark:text-amber-400">2. Select Questions from Global Deck</h4>
-                <div class="flex items-center space-x-2 text-xs">
-                  <button onclick="selectAllGlobalQuestions(true)" class="text-amber-600 dark:text-amber-400 font-bold hover:underline">Select All</button>
+              <div class="flex items-center justify-between px-1">
+                <span class="text-[11px] font-extrabold text-amber-600 dark:text-amber-400 uppercase tracking-wider">2. Select Questions from Global Deck</span>
+                <div class="flex items-center space-x-2 text-xs font-bold">
+                  <button onclick="selectAllGlobalQuestions(true)" class="text-amber-600 dark:text-amber-400 hover:underline">Select All</button>
                   <span class="text-slate-400">|</span>
-                  <button onclick="selectAllGlobalQuestions(false)" class="text-slate-500 hover:text-slate-700 dark:hover:text-gray-300 font-bold">Clear</button>
+                  <button onclick="selectAllGlobalQuestions(false)" class="text-slate-500 hover:text-slate-700 dark:hover:text-gray-300">Clear</button>
                 </div>
               </div>
 
-              <div id="globalQuestionsChecklist" class="space-y-2 max-h-[460px] overflow-y-auto pr-2">
-                <!-- Rendered dynamically -->
+              <div id="globalQuestionsChecklist" class="space-y-2 max-h-[480px] overflow-y-auto pr-2">
+                <!-- Selectable Question Cards rendered via JS -->
               </div>
             </div>
 
@@ -535,7 +540,7 @@
       <!-- SUB-TAB 3: Q&A CONTROLS -->
       <div id="presenterQuestionsPane" class="hidden space-y-4">
         <div class="flex items-center justify-between">
-          <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white">Q&A Moderation Queue</h3>
+          <h3 class="text-base font-bold text-slate-900 dark:text-white">Q&A Moderation Queue</h3>
           <button onclick="clearAllQuestions()" class="text-xs font-bold text-red-700 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-500/10 border border-red-300 dark:border-red-500/30 px-2.5 py-1 rounded-lg">
             Clear Queue
           </button>
@@ -548,13 +553,13 @@
 
       <!-- SUB-TAB 4: PRESENTER LEADERBOARD -->
       <div id="presenterLeaderboardPane" class="hidden space-y-6">
-        <div class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-2xl p-5 sm:p-8 space-y-4 shadow-sm">
+        <div class="bg-white dark:bg-[#0D121F] border border-slate-200 dark:border-gray-800 rounded-2xl p-6 space-y-4 shadow-sm">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-gray-800 pb-3">
-            <h2 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+            <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center space-x-2">
               <i data-lucide="trophy" class="w-5 h-5 text-amber-500"></i>
               <span>Session Leaderboard Management</span>
             </h2>
-            <button onclick="resetCurrentEventLeaderboard()" class="self-end sm:self-auto px-2.5 py-1 bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800/40 text-[11px] font-bold rounded-lg flex items-center gap-1 transition shrink-0">
+            <button onclick="resetCurrentEventLeaderboard()" class="self-end sm:self-auto px-2.5 py-1 bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-900/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800/40 text-xs font-bold rounded-lg flex items-center gap-1 transition shrink-0">
               <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
               <span>Clear Leaderboard</span>
             </button>
@@ -571,7 +576,7 @@
   </main>
 
   <!-- Sticky Mobile Navigation Bar -->
-  <nav class="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-[#0B0F17]/95 backdrop-blur-md border-t border-slate-200 dark:border-gray-800 px-4 py-2 flex items-center justify-around shadow-lg">
+  <nav class="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-[#0D121F]/95 backdrop-blur-md border-t border-slate-200 dark:border-gray-800 px-4 py-2 flex items-center justify-around shadow-lg">
     <button onclick="switchAudienceTab('qa')" id="mobileNavQA" class="flex flex-col items-center space-y-1 text-amber-600 dark:text-amber-400 font-bold text-[10px]">
       <i data-lucide="message-square" class="w-5 h-5"></i>
       <span>Live Q&A</span>
@@ -1443,16 +1448,16 @@
         presView.classList.add('hidden');
         presView.classList.remove('flex');
 
-        audBtn.className = "flex-1 sm:flex-none px-3 py-2 rounded-lg text-xs sm:text-sm font-extrabold transition flex items-center justify-center space-x-1.5 bg-amber-500 text-slate-950 shadow";
-        presBtn.className = "flex-1 sm:flex-none px-3 py-2 rounded-lg text-xs sm:text-sm font-extrabold text-slate-700 dark:text-gray-400 hover:text-slate-950 dark:hover:text-white transition flex items-center justify-center space-x-1.5";
+        audBtn.className = "px-3 py-1.5 rounded-lg text-xs font-extrabold transition flex items-center space-x-1.5 bg-amber-500 text-slate-950 shadow";
+        presBtn.className = "px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition flex items-center space-x-1.5";
       } else {
         presView.classList.remove('hidden');
         presView.classList.add('flex');
         audView.classList.add('hidden');
         audView.classList.remove('flex');
 
-        presBtn.className = "flex-1 sm:flex-none px-3 py-2 rounded-lg text-xs sm:text-sm font-extrabold transition flex items-center justify-center space-x-1.5 bg-amber-500 text-slate-950 shadow";
-        audBtn.className = "flex-1 sm:flex-none px-3 py-2 rounded-lg text-xs sm:text-sm font-extrabold text-slate-700 dark:text-gray-400 hover:text-slate-950 dark:hover:text-white transition flex items-center justify-center space-x-1.5";
+        presBtn.className = "px-3 py-1.5 rounded-lg text-xs font-extrabold transition flex items-center space-x-1.5 bg-amber-500 text-slate-950 shadow";
+        audBtn.className = "px-3 py-1.5 rounded-lg text-xs font-extrabold text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition flex items-center space-x-1.5";
         renderQRCode();
       }
       lucide.createIcons();
@@ -1475,16 +1480,20 @@
       const allQuestions = getAllSeriesQuestions();
 
       if (allQuestions.length === 0) {
-        checklistContainer.innerHTML = `<p class="text-xs text-slate-500 dark:text-gray-400 py-4 text-center col-span-full">Global deck is empty. Create questions in Quiz Builder first!</p>`;
+        checklistContainer.innerHTML = `<p class="text-xs text-slate-400 dark:text-gray-500 py-6 text-center">No questions found in Global Deck.</p>`;
       } else {
         checklistContainer.innerHTML = allQuestions.map((q, idx) => {
           const qId = q.id || q.title || q.question || `q_${idx}`;
           const title = q.title || q.question || 'Untitled Question';
-          const sessionTag = q.sourceSession ? `[${q.sourceSession}]` : '';
+          const sessionTag = q.sourceSession ? q.sourceSession.replace('TWGC', '') : 'SERIES';
+          
           return `
-            <label class="flex items-start space-x-2.5 text-xs text-slate-800 dark:text-gray-200 cursor-pointer bg-white dark:bg-gray-900 p-3 rounded-xl border border-slate-200 dark:border-gray-800 hover:border-amber-500/50 transition">
+            <label class="q-select-card flex items-start space-x-3 text-xs text-slate-800 dark:text-gray-200 cursor-pointer bg-slate-50 dark:bg-gray-900/60 p-3 rounded-xl border border-slate-200 dark:border-gray-800/80 hover:border-amber-500/40 transition shadow-sm">
               <input type="checkbox" value="${qId}" onchange="updateSideQuizChecklistCount()" class="global-q-checkbox mt-0.5 accent-amber-500 shrink-0 w-4 h-4 rounded">
-              <span class="leading-snug"><strong>${sessionTag}</strong> ${title}</span>
+              <div class="space-y-1 min-w-0 flex-1">
+                <span class="inline-block bg-amber-100 dark:bg-amber-500/10 text-amber-800 dark:text-amber-400 font-mono font-bold text-[9px] px-1.5 py-0.5 rounded border border-amber-300 dark:border-amber-500/20">${sessionTag}</span>
+                <p class="font-medium text-slate-900 dark:text-gray-100 leading-snug">${title}</p>
+              </div>
             </label>
           `;
         }).join('');
@@ -1496,7 +1505,7 @@
       const keys = Object.keys(state.sideQuizCatalog);
 
       if (keys.length === 0) {
-        catalogContainer.innerHTML = `<p class="text-xs text-slate-500 dark:text-gray-400 text-center py-2">No side quizzes created yet.</p>`;
+        catalogContainer.innerHTML = `<p class="text-xs text-slate-400 dark:text-gray-500 text-center py-2 italic">No published side quizzes yet.</p>`;
         return;
       }
 
@@ -1505,12 +1514,12 @@
         return `
           <div class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-xl p-3 flex items-center justify-between text-xs shadow-sm">
             <div class="truncate pr-2">
-              <span class="font-mono font-bold text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-500/10 px-1.5 py-0.5 rounded">${sq.code}</span>
+              <span class="font-mono font-extrabold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-1.5 py-0.5 rounded text-[10px]">${sq.code}</span>
               <span class="font-bold text-slate-900 dark:text-white ml-1.5 truncate">${sq.title}</span>
-              <span class="text-slate-500 dark:text-gray-400 block text-[10px] mt-0.5">${sq.questions.length} questions</span>
+              <span class="text-slate-400 dark:text-gray-500 block text-[10px] mt-0.5">${sq.questions.length} Questions</span>
             </div>
             <button onclick="deleteSideQuiz('${sq.code}')" class="text-slate-400 hover:text-red-500 p-1 transition shrink-0">
-              <i data-lucide="trash-2" class="w-4 h-4"></i>
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
             </button>
           </div>
         `;
@@ -1604,7 +1613,7 @@
           <div class="border-b border-slate-200 dark:border-gray-800 pb-3">
             <h3 class="text-lg font-bold text-slate-900 dark:text-white flex items-center space-x-2">
               <i data-lucide="layers" class="w-5 h-5 text-amber-500"></i>
-              <span>Available Side Quizzes (Cloud Synced)</span>
+              <span>Available Side Quizzes</span>
             </h3>
             <p class="text-xs text-slate-500 dark:text-gray-400">Select any quiz to play at your own pace. All points count towards the Global Series Leaderboard.</p>
           </div>
@@ -1659,10 +1668,10 @@
       if (sidePane) sidePane.classList.toggle('hidden', tab !== 'sidequizzes');
       ldrPane.classList.toggle('hidden', tab !== 'leaderboard');
 
-      if (qaBtn) qaBtn.className = tab === 'qa' ? "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow" : "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800";
-      if (quizBtn) quizBtn.className = tab === 'quiz' ? "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow" : "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800";
-      if (sideBtn) sideBtn.className = tab === 'sidequizzes' ? "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow" : "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800";
-      if (ldrBtn) ldrBtn.className = tab === 'leaderboard' ? "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow" : "px-5 py-2 rounded-xl font-bold text-sm sm:text-base transition flex items-center space-x-2 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800";
+      if (qaBtn) qaBtn.className = tab === 'qa' ? "px-4 py-2 rounded-xl font-bold text-sm transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow" : "px-4 py-2 rounded-xl font-bold text-sm transition flex items-center space-x-2 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800";
+      if (quizBtn) quizBtn.className = tab === 'quiz' ? "px-4 py-2 rounded-xl font-bold text-sm transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow" : "px-4 py-2 rounded-xl font-bold text-sm transition flex items-center space-x-2 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800";
+      if (sideBtn) sideBtn.className = tab === 'sidequizzes' ? "px-4 py-2 rounded-xl font-bold text-sm transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow" : "px-4 py-2 rounded-xl font-bold text-sm transition flex items-center space-x-2 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800";
+      if (ldrBtn) ldrBtn.className = tab === 'leaderboard' ? "px-4 py-2 rounded-xl font-bold text-sm transition flex items-center space-x-2 bg-amber-500 text-slate-950 shadow" : "px-4 py-2 rounded-xl font-bold text-sm transition flex items-center space-x-2 text-slate-700 dark:text-gray-300 hover:bg-slate-100 dark:hover:bg-gray-800";
 
       if (mobileQA) mobileQA.className = tab === 'qa' ? "flex flex-col items-center space-y-1 text-amber-600 dark:text-amber-400 font-bold text-[10px]" : "flex flex-col items-center space-y-1 text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white font-bold text-[10px]";
       if (mobileQuiz) mobileQuiz.className = tab === 'quiz' ? "flex flex-col items-center space-y-1 text-amber-600 dark:text-amber-400 font-bold text-[10px]" : "flex flex-col items-center space-y-1 text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white font-bold text-[10px]";
@@ -1677,8 +1686,8 @@
     function switchPresenterSubTab(subTab) {
       state.presenterSubTab = subTab;
 
-      const activeClass = "p-nav-btn rounded-xl font-bold text-xs sm:text-sm bg-amber-500 text-slate-950 shadow transition shrink-0";
-      const inactiveClass = "p-nav-btn rounded-xl font-bold text-xs sm:text-sm bg-slate-200 dark:bg-gray-800 text-slate-800 dark:text-gray-300 hover:text-slate-950 dark:hover:text-white transition shrink-0";
+      const activeClass = "p-nav-btn bg-amber-500 text-slate-950 shadow";
+      const inactiveClass = "p-nav-btn bg-slate-100 dark:bg-gray-800/60 text-slate-700 dark:text-gray-300 hover:text-slate-950 dark:hover:text-white";
 
       document.getElementById('subTabSpotlight').className = subTab === 'spotlight' ? activeClass : inactiveClass;
       document.getElementById('subTabManager').className = subTab === 'manager' ? activeClass : inactiveClass;
@@ -1841,7 +1850,7 @@
       document.getElementById('newQuizTimer').value = quiz.timeLimit !== undefined ? quiz.timeLimit : 30;
       document.getElementById('newQuizPoints').value = quiz.points || 100;
 
-      document.getElementById('quizFormHeading').innerHTML = `<i data-lucide="edit-3" class="w-5 h-5 text-amber-500"></i><span>Edit Quiz Question</span>`;
+      document.getElementById('quizFormHeading').innerHTML = `<i data-lucide="edit-3" class="w-4 h-4 text-amber-500"></i><span>Edit Quiz Question</span>`;
       document.getElementById('btnSaveQuiz').textContent = "Update Quiz Deck";
       document.getElementById('btnCancelEdit').classList.remove('hidden');
 
@@ -1862,8 +1871,8 @@
       document.getElementById('newQuizTimer').value = "30";
       document.getElementById('newQuizPoints').value = "100";
 
-      document.getElementById('quizFormHeading').innerHTML = `<i data-lucide="plus-circle" class="w-5 h-5 text-amber-500"></i><span>Create Quiz Question</span>`;
-      document.getElementById('btnSaveQuiz').textContent = "Save to Pulse DB Deck";
+      document.getElementById('quizFormHeading').innerHTML = `<i data-lucide="plus-circle" class="w-4 h-4 text-amber-500"></i><span>Create Quiz Question</span>`;
+      document.getElementById('btnSaveQuiz').textContent = "Save to Quiz Deck";
       document.getElementById('btnCancelEdit').classList.add('hidden');
 
       lucide.createIcons();
@@ -2043,26 +2052,26 @@
       if (qaBadge) qaBadge.textContent = state.questions.length;
 
       if (state.questions.length === 0) {
-        if (listContainer) listContainer.innerHTML = `<div class="p-6 text-center text-xs sm:text-sm text-slate-500 dark:text-gray-500 bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-gray-800">No questions submitted yet. Be the first!</div>`;
-        if (presListContainer) presListContainer.innerHTML = `<div class="p-6 text-center text-xs sm:text-sm text-slate-500 dark:text-gray-500 bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-gray-800">No questions in Q&A queue.</div>`;
+        if (listContainer) listContainer.innerHTML = `<div class="p-6 text-center text-xs text-slate-500 dark:text-gray-500 bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-gray-800">No questions submitted yet. Be the first!</div>`;
+        if (presListContainer) presListContainer.innerHTML = `<div class="p-6 text-center text-xs text-slate-500 dark:text-gray-500 bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-gray-800">No questions in Q&A queue.</div>`;
         return;
       }
 
       if (listContainer) {
         listContainer.innerHTML = state.questions.map(q => `
-          <div class="bg-white dark:bg-gray-900 border ${q.answered ? 'border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/10' : 'border-slate-200 dark:border-gray-800'} rounded-xl p-3.5 sm:p-5 flex items-start justify-between gap-3 transition shadow-sm">
+          <div class="bg-white dark:bg-gray-900 border ${q.answered ? 'border-emerald-500/30 bg-emerald-50 dark:bg-emerald-950/10' : 'border-slate-200 dark:border-gray-800'} rounded-xl p-4 flex items-start justify-between gap-3 transition shadow-sm">
             <div class="space-y-1.5 flex-1">
               <div class="flex items-center space-x-2 text-xs text-slate-500 dark:text-gray-400">
                 <span class="font-bold text-amber-700 dark:text-amber-400">${q.author}</span>
                 <span>• ${q.timestamp}</span>
                 ${q.answered ? '<span class="bg-emerald-100 text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-400 text-[10px] px-2 py-0.5 rounded-full font-bold">Answered</span>' : ''}
               </div>
-              <p class="text-sm sm:text-base font-bold text-slate-900 dark:text-gray-100 leading-snug">${q.text}</p>
+              <p class="text-sm font-bold text-slate-900 dark:text-gray-100 leading-snug">${q.text}</p>
             </div>
 
             <button onclick="toggleUpvote(${q.id})" class="flex flex-col items-center justify-center px-3 py-2 rounded-xl border ${q.voted ? 'bg-amber-500 text-slate-950 border-amber-400 font-bold' : 'bg-slate-100 dark:bg-gray-950 border-slate-300 dark:border-gray-800 text-slate-700 dark:text-gray-300'} transition shrink-0">
               <i data-lucide="thumbs-up" class="w-4 h-4"></i>
-              <span class="text-xs sm:text-sm font-bold mt-0.5">${q.upvotes}</span>
+              <span class="text-xs font-bold mt-0.5">${q.upvotes}</span>
             </button>
           </div>
         `).join('');
@@ -2102,8 +2111,8 @@
     
         if (!state.quizDeck || state.quizDeck.length === 0) {
           container.innerHTML = `
-            <div class="text-center py-8 text-slate-500 dark:text-gray-500 text-xs sm:text-sm">
-              No questions in quiz deck. Create one using the form on the left.
+            <div class="text-center py-8 text-slate-500 dark:text-gray-500 text-xs">
+              No questions in quiz deck.
             </div>
           `;
           return;
@@ -2118,33 +2127,33 @@
           const qId = q.id || `q_${index}`;
     
           return `
-            <div class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-xl p-4 flex items-center justify-between mb-3 shadow-sm hover:border-amber-500/50 transition">
+            <div class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-xl p-3.5 flex items-center justify-between mb-2 shadow-sm hover:border-amber-500/40 transition">
               <div class="flex items-center space-x-3 pr-2">
-                <div class="flex flex-col space-y-1">
+                <div class="flex flex-col space-y-0.5">
                   <button onclick="moveQuizQuestion(${index}, -1)" ${index === 0 ? 'disabled' : ''} class="text-slate-400 hover:text-amber-500 disabled:opacity-20 p-0.5" title="Move Up">
-                    <i data-lucide="chevron-up" class="w-4 h-4"></i>
+                    <i data-lucide="chevron-up" class="w-3.5 h-3.5"></i>
                   </button>
                   <button onclick="moveQuizQuestion(${index}, 1)" ${index === state.quizDeck.length - 1 ? 'disabled' : ''} class="text-slate-400 hover:text-amber-500 disabled:opacity-20 p-0.5" title="Move Down">
-                    <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                    <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
                   </button>
                 </div>
-                <div class="space-y-1 pr-2">
+                <div class="space-y-1">
                   <div class="flex items-center space-x-2">
-                    <span class="bg-amber-100 text-amber-800 dark:bg-amber-500/10 dark:text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded">Q${index + 1}</span>
-                    <span class="text-slate-500 dark:text-gray-400 text-[10px] font-medium">${timerStr} • Max ${points} pts</span>
+                    <span class="bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded border border-amber-500/20">Q${index + 1}</span>
+                    <span class="text-slate-400 text-[10px] font-medium">${timerStr} • ${points} pts</span>
                   </div>
-                  <h4 class="text-sm font-semibold text-slate-900 dark:text-white leading-tight">${title}</h4>
+                  <h4 class="text-xs font-bold text-slate-900 dark:text-white leading-tight">${title}</h4>
                 </div>
               </div>
-              <div class="flex items-center space-x-2 shrink-0">
-                <button onclick="editQuizQuestion('${qId}')" class="bg-slate-200 dark:bg-gray-800 hover:bg-slate-300 dark:hover:bg-gray-700 text-slate-700 dark:text-gray-300 font-bold text-xs px-2.5 py-1.5 rounded-lg transition">
+              <div class="flex items-center space-x-1.5 shrink-0">
+                <button onclick="editQuizQuestion('${qId}')" class="bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 text-slate-700 dark:text-gray-300 font-bold text-xs px-2.5 py-1 rounded-lg transition">
                   Edit
                 </button>
-                <button onclick="releaseQuizQuestion('${qId}')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs px-3 py-1.5 rounded-lg transition flex items-center space-x-1">
+                <button onclick="releaseQuizQuestion('${qId}')" class="bg-amber-500 text-slate-950 font-bold text-xs px-3 py-1 rounded-lg transition flex items-center space-x-1 shadow">
                   <span>Release</span>
                 </button>
-                <button onclick="deleteQuizQuestion('${qId}')" class="text-slate-400 hover:text-red-500 p-1.5 transition">
-                  <span>Delete</span>
+                <button onclick="deleteQuizQuestion('${qId}')" class="text-slate-400 hover:text-red-500 p-1 transition">
+                  <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                 </button>
               </div>
             </div>
@@ -2183,15 +2192,15 @@
             <div class="w-16 h-16 rounded-full gold-gradient-bg text-slate-950 flex items-center justify-center mx-auto shadow-lg animate-bounce">
               <i data-lucide="trophy" class="w-8 h-8"></i>
             </div>
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white">Thank you for completing this quiz!</h2>
-            <p class="text-slate-500 dark:text-gray-400 max-w-md mx-auto text-sm font-medium">Your score has been submitted directly to the Global Series Leaderboard.</p>
+            <h2 class="text-2xl font-extrabold text-slate-900 dark:text-white">Quiz Completed!</h2>
+            <p class="text-slate-500 dark:text-gray-400 max-w-md mx-auto text-xs font-medium">Your score has been submitted directly to the Global Series Leaderboard.</p>
             
-            <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
-              <button onclick="switchAudienceTab('leaderboard')" class="w-full sm:w-auto px-6 py-2.5 rounded-xl gold-gradient-bg text-slate-950 font-bold text-sm hover:brightness-110 transition shadow">
+            <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+              <button onclick="switchAudienceTab('leaderboard')" class="w-full sm:w-auto px-5 py-2 rounded-xl gold-gradient-bg text-slate-950 font-bold text-xs hover:brightness-110 transition shadow">
                 View Global Leaderboard
               </button>
-              <button onclick="initSideQuizMode(state.eventCode); state.sideQuizCompleted = false;" class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-slate-200 dark:bg-gray-800 text-slate-800 dark:text-gray-200 font-bold text-sm hover:bg-slate-300 dark:hover:bg-gray-700 transition">
-                Retake Side Quiz
+              <button onclick="initSideQuizMode(state.eventCode); state.sideQuizCompleted = false;" class="w-full sm:w-auto px-5 py-2 rounded-xl bg-slate-100 dark:bg-gray-800 text-slate-800 dark:text-gray-200 font-bold text-xs transition">
+                Retake Quiz
               </button>
             </div>
           </div>
@@ -2205,16 +2214,16 @@
       if (!activeQ) {
         container.innerHTML = `
           <div class="py-8 space-y-3">
-            <div class="inline-flex items-center space-x-2 bg-amber-100 text-amber-800 dark:bg-amber-500/10 dark:text-amber-400 border border-amber-300 dark:border-amber-500/30 px-3 py-1 rounded-full text-xs font-bold">
+            <div class="inline-flex items-center space-x-2 bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full text-xs font-bold text-amber-600 dark:text-amber-400">
               <i data-lucide="user" class="w-3.5 h-3.5"></i>
-              <span>Playing as: <strong>${state.userName || 'Anonymous'}</strong></span>
-              <button onclick="changePlayerNamePrompt()" class="underline ml-1 hover:text-amber-600">Edit</button>
+              <span>Player: <strong>${state.userName || 'Anonymous'}</strong></span>
+              <button onclick="changePlayerNamePrompt()" class="underline ml-1 hover:text-amber-500">Edit</button>
             </div>
-            <div class="w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center mx-auto border border-amber-300 dark:border-amber-500/20 animate-pulse">
-              <i data-lucide="clock" class="w-6 h-6 text-amber-500"></i>
+            <div class="w-12 h-12 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center mx-auto border border-amber-500/20 animate-pulse">
+              <i data-lucide="clock" class="w-6 h-6"></i>
             </div>
-            <h2 class="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">Waiting for Presenter...</h2>
-            <p class="text-slate-500 dark:text-gray-400 max-w-md mx-auto text-xs sm:text-sm">When a live quiz question is released, it will appear here instantly! Or select a side quiz from the <strong>Side Quizzes</strong> tab.</p>
+            <h2 class="text-lg font-bold text-slate-900 dark:text-white">Waiting for Presenter...</h2>
+            <p class="text-slate-500 dark:text-gray-400 max-w-md mx-auto text-xs">When a live quiz question is released, it will appear here instantly! Or select a side quiz from the <strong>Side Quizzes</strong> tab.</p>
           </div>
         `;
         return;
@@ -2246,26 +2255,26 @@
           <div class="flex items-center justify-between border-b border-slate-200 dark:border-gray-800 pb-3">
             <div>
               <span class="text-[10px] uppercase font-bold text-amber-600 dark:text-amber-400 tracking-wider">${state.sideQuizActive ? `SIDE QUIZ (${state.eventCode}) - Q${state.sideQuizIndex + 1}/${state.sideQuizQuestions.length}` : (isUnlimited ? 'UNLIMITED TIMER MODE' : 'QUIZ ROUND')}</span>
-              <h3 class="text-base sm:text-xl font-bold text-slate-900 dark:text-white mt-0.5">${activeQ.title || activeQ.question || 'Live Question'}</h3>
+              <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white mt-0.5">${activeQ.title || activeQ.question || 'Live Question'}</h3>
             </div>
             
             ${!state.sideQuizActive ? `
-              <div class="text-center bg-slate-100 dark:bg-gray-950 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-gray-800">
+              <div class="text-center bg-slate-100 dark:bg-gray-950 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-gray-800">
                 <span class="block text-[9px] font-bold text-slate-500 dark:text-gray-400">${isUnlimited ? 'ELAPSED' : 'TIMER'}</span>
-                <span class="text-lg sm:text-2xl font-mono font-bold ${!isUnlimited && state.quizTimeRemaining < 10 ? 'text-red-500 animate-ping' : 'text-amber-600 dark:text-amber-400'}">${timerDisplayStr}</span>
+                <span class="text-lg font-mono font-bold ${!isUnlimited && state.quizTimeRemaining < 10 ? 'text-red-500 animate-ping' : 'text-amber-600 dark:text-amber-400'}">${timerDisplayStr}</span>
               </div>
             ` : ''}
           </div>
 
           ${state.hasSubmittedAnswer && !showAnswerAndVotes && !state.sideQuizActive ? `
-            <div class="p-3 bg-amber-100 dark:bg-amber-500/10 border border-amber-300 dark:border-amber-500/30 rounded-xl text-center text-xs text-amber-800 dark:text-amber-400 font-bold animate-pulse">
-              ✓ Locked In! Waiting for presenter to stop question and reveal results...
+            <div class="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-center text-xs text-amber-600 dark:text-amber-400 font-bold animate-pulse">
+              ✓ Answer locked! Waiting for presenter to stop question...
             </div>
           ` : ''}
 
           ${state.sideQuizActive && state.hasSubmittedAnswer ? `
-            <div class="p-3 bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-300 dark:border-emerald-500/30 rounded-xl text-center text-xs text-emerald-800 dark:text-emerald-400 font-bold">
-              ✓ Answer locked. Click 'Next Question' below to proceed.
+            <div class="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-center text-xs text-emerald-600 dark:text-emerald-400 font-bold">
+              ✓ Answer locked. Click 'Next Question' to proceed.
             </div>
           ` : ''}
 
@@ -2293,7 +2302,7 @@
                 <button onclick="submitAudienceAnswer(${idx})" ${state.hasSubmittedAnswer || showAnswerAndVotes ? 'disabled' : ''} class="w-full p-5 sm:p-6 rounded-2xl text-left font-extrabold text-base sm:text-lg transition transform active:scale-95 flex flex-col justify-between ${btnStyle}">
                   <div class="flex items-center justify-between w-full">
                     <span>${style.symbol} ${opt}</span>
-                    ${showAnswerAndVotes && isCorrect ? '<span class="bg-black/40 text-emerald-300 px-2.5 py-0.5 rounded-full text-xs font-bold border border-emerald-400">CORRECT</span>' : ''}
+                    ${showAnswerAndVotes && isCorrect ? '<span class="bg-black/40 text-emerald-300 px-2 py-0.5 rounded-full text-xs font-bold border border-emerald-400">CORRECT</span>' : ''}
                   </div>
                   ${showAnswerAndVotes && !state.sideQuizActive ? `
                     <div class="mt-4 pt-2 border-t border-white/20 text-xs font-mono font-bold flex justify-between text-white/90">
@@ -2308,12 +2317,12 @@
 
           ${state.sideQuizActive ? `
             <div class="pt-4 flex items-center justify-between border-t border-slate-200 dark:border-gray-800">
-              <button onclick="prevSideQuizQuestion()" ${state.sideQuizIndex === 0 ? 'disabled' : ''} class="px-4 py-2 rounded-xl bg-slate-200 dark:bg-gray-800 text-slate-800 dark:text-gray-200 font-bold text-xs sm:text-sm hover:bg-slate-300 dark:hover:bg-gray-700 disabled:opacity-30 transition flex items-center space-x-1">
+              <button onclick="prevSideQuizQuestion()" ${state.sideQuizIndex === 0 ? 'disabled' : ''} class="px-4 py-2 rounded-xl bg-slate-100 dark:bg-gray-800 text-slate-800 dark:text-gray-200 font-bold text-xs disabled:opacity-30 transition flex items-center space-x-1">
                 <i data-lucide="chevron-left" class="w-4 h-4"></i>
                 <span>Previous</span>
               </button>
 
-              <button onclick="nextSideQuizQuestion()" class="px-5 py-2 rounded-xl gold-gradient-bg text-slate-950 font-extrabold text-xs sm:text-sm hover:brightness-110 transition flex items-center space-x-1 shadow">
+              <button onclick="nextSideQuizQuestion()" class="px-5 py-2 rounded-xl gold-gradient-bg text-slate-950 font-extrabold text-xs hover:brightness-110 transition flex items-center space-x-1 shadow">
                 <span>${state.sideQuizIndex === state.sideQuizQuestions.length - 1 ? 'Finish & Submit' : 'Next Question'}</span>
                 <i data-lucide="chevron-right" class="w-4 h-4"></i>
               </button>
@@ -2336,8 +2345,8 @@
         displayArea.innerHTML = `
           <div class="space-y-3 py-4">
             <i data-lucide="presentation" class="w-12 h-12 text-slate-300 dark:text-gray-700 mx-auto"></i>
-            <h2 class="text-xl sm:text-2xl font-bold text-slate-600 dark:text-gray-300">No Item Spotlighted</h2>
-            <p class="text-xs sm:text-sm text-slate-400 dark:text-gray-500 font-medium max-w-xl mx-auto">Select a question or release a live quiz to present on the main screen.</p>
+            <h2 class="text-xl font-bold text-slate-600 dark:text-gray-300">No Item Spotlighted</h2>
+            <p class="text-xs text-slate-400 dark:text-gray-500 font-medium max-w-xl mx-auto">Select a question or release a live quiz to present on the main screen.</p>
           </div>
         `;
         if (clearBtnContainer) clearBtnContainer.classList.add('hidden');
@@ -2350,8 +2359,8 @@
         const q = item.data;
         displayArea.innerHTML = `
           <div class="space-y-3 text-left max-w-3xl mx-auto py-2">
-            <div class="flex items-center space-x-2 text-xs font-bold text-amber-700 dark:text-amber-400">
-              <span class="bg-amber-100 dark:bg-amber-500/20 px-2 py-0.5 rounded border border-amber-300 dark:border-amber-500/30">SPOTLIGHT</span>
+            <div class="flex items-center space-x-2 text-xs font-bold text-amber-600 dark:text-amber-400">
+              <span class="bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 uppercase font-mono">SPOTLIGHT</span>
               <span>• Asked by ${q.author} (${q.upvotes} Votes)</span>
             </div>
             <h2 class="text-xl sm:text-3xl font-bold text-slate-900 dark:text-white leading-tight">
@@ -2383,7 +2392,7 @@
             <div class="flex items-center justify-between flex-wrap gap-2">
               <div class="flex items-center space-x-2">
                 <span class="bg-amber-500 text-slate-950 px-2.5 py-1 rounded-lg font-bold text-xs">${isUnlimited ? 'UNLIMITED LIVE QUESTION' : 'LIVE QUIZ QUESTION'}</span>
-                <span class="text-xs text-slate-500 dark:text-gray-400 font-bold">Total Responses: ${state.totalResponses}</span>
+                <span class="text-xs text-slate-400 font-bold">Total Responses: ${state.totalResponses}</span>
               </div>
               
               <div class="flex items-center space-x-3">
@@ -2453,11 +2462,11 @@
               Series Global (${seriesName})
             </button>
           </div>
-          <span class="text-[10px] text-slate-500 dark:text-gray-500 font-mono hidden sm:inline px-2">Mode: ${isSeries ? 'Lecture Series Aggregated' : 'Single Session'}</span>
+          <span class="text-[10px] text-slate-500 font-mono hidden sm:inline px-2">Mode: ${isSeries ? 'Series Aggregated' : 'Single Session'}</span>
         </div>
       `;
 
-      const emptyHtml = toggleHtml + `<div class="col-span-full text-center text-xs text-slate-500 dark:text-gray-500 py-6">No scores recorded for ${isSeries ? 'series ' + seriesName : 'session ' + state.eventCode} yet.</div>`;
+      const emptyHtml = toggleHtml + `<div class="col-span-full text-center text-xs text-slate-400 dark:text-gray-500 py-6">No scores recorded yet.</div>`;
 
       if (leaderboardData.length === 0) {
         if (presList) presList.innerHTML = emptyHtml;
@@ -2470,9 +2479,9 @@
         <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-gray-950 border ${item.name === state.userName ? 'border-amber-500/50 bg-amber-50/50 dark:bg-amber-500/5' : 'border-slate-200 dark:border-gray-800'} text-xs sm:text-sm shadow-sm">
           <div class="flex items-center space-x-2.5 truncate">
             <span class="w-6 h-6 rounded-full ${idx === 0 ? 'bg-amber-500 text-slate-950 font-bold' : idx === 1 ? 'bg-gray-300 text-slate-950 font-bold' : idx === 2 ? 'bg-amber-700 text-white font-bold' : 'bg-slate-200 dark:bg-gray-800 text-slate-700 dark:text-gray-300'} flex items-center justify-center text-xs shrink-0">${idx + 1}</span>
-            <span class="font-bold text-slate-900 dark:text-white truncate text-xs sm:text-sm">${item.name} ${item.name === state.userName ? '<span class="text-[10px] text-amber-700 dark:text-amber-400 font-bold">(You)</span>' : ''}</span>
+            <span class="font-bold text-slate-900 dark:text-white truncate text-xs sm:text-sm">${item.name} ${item.name === state.userName ? '<span class="text-[10px] text-amber-600 dark:text-amber-400 font-bold">(You)</span>' : ''}</span>
           </div>
-          <span class="font-mono font-bold text-amber-700 dark:text-amber-400 text-sm shrink-0 ml-2">${item.score} pts</span>
+          <span class="font-mono font-bold text-amber-600 dark:text-amber-400 text-sm shrink-0 ml-2">${item.score} pts</span>
         </div>
       `).join('');
 
