@@ -38,7 +38,6 @@
     .gold-gradient-bg { background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); }
     #qrcode canvas, #qrcode img { margin: 0 auto; border-radius: 8px; padding: 4px; background: white; }
     
-    /* Clean Custom Scrollbars */
     ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.2); border-radius: 10px; }
@@ -248,7 +247,7 @@
               <span>Projector Screen Focus</span>
             </div>
 
-            <!-- Page-Level Timer Toggle (Persists across questions & can be toggled per release) -->
+            <!-- Page-Level Timer Toggle -->
             <div class="flex items-center space-x-2 bg-slate-100 dark:bg-gray-950 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-gray-800">
               <span class="text-[11px] font-extrabold text-slate-600 dark:text-gray-300">Release Timer Mode:</span>
               <button id="pageTimerToggleBtn" onclick="togglePresenterTimerMode()" class="px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center space-x-1 bg-amber-500 text-slate-950 shadow">
@@ -580,8 +579,11 @@
       sessionStorage.setItem('pulse_session_id', sessionId);
     }
     
+    // Robust URL parameter parser handling full codes like TWGCSESSION4
     const urlParams = new URLSearchParams(window.location.search);
-    const initialCodeParam = urlParams.get('code') || urlParams.get('eventCode');
+    const rawCodeParam = urlParams.get('code') || urlParams.get('eventCode') || '';
+    const initialCodeParam = rawCodeParam ? rawCodeParam.replace(/^#/, '').trim().toUpperCase() : '';
+
     const persistedView = sessionStorage.getItem('pulse_current_view') || 'audience';
     
     const processedPulseIds = new Set();
@@ -589,12 +591,12 @@
     let audienceLeaderboardTimeout = null;
 
     let state = {
-      eventCode: initialCodeParam ? initialCodeParam.replace(/^#/, '').trim().toUpperCase() : DEFAULT_EVENT_CODE,
+      eventCode: initialCodeParam || DEFAULT_EVENT_CODE,
       userName: localStorage.getItem('pulse_participant_name') || '',
       view: (persistedView === 'presenter' && isPresenterAuthenticated) ? 'presenter' : 'audience',
       audienceTab: 'qa',
       presenterSubTab: 'spotlight',
-      presenterTimerMode: sessionStorage.getItem('pulse_timer_mode') !== 'unlimited', // true = Timer Enforced, false = Unlimited / Manual Close
+      presenterTimerMode: sessionStorage.getItem('pulse_timer_mode') !== 'unlimited',
       questions: [],
       quizDeck: [],
       activeQuizQuestion: null,
@@ -928,7 +930,6 @@
       state.sessionLeaderboard = allLeaderboards[clean] || {};
 
       processedPulseIds.clear();
-      handledQuizReleases.clear();
 
       try {
         if (window.location.protocol.startsWith('http')) {
@@ -1668,7 +1669,6 @@
       const quiz = state.quizDeck.find(q => String(q.id || q.title || q.question) === String(quizId));
       if (!quiz) return;
 
-      // Apply Page-Level Timer Mode Toggle (if Timer Mode is disabled, force timeLimit to 0 for unlimited)
       const effectiveTimeLimit = state.presenterTimerMode ? (quiz.timeLimit !== undefined ? Number(quiz.timeLimit) : 30) : 0;
       const releasedQuiz = { ...quiz, timeLimit: effectiveTimeLimit };
 
