@@ -1159,6 +1159,10 @@
               if (meta && meta.quiz) {
                 const q = meta.quiz;
                 const startedAt = meta.startedAt || Date.now();
+                
+                // Ignore if this release is older than our last clear action
+                if (startedAt <= state.lastQuizClearedAt) return;
+
                 if (state.activeQuizQuestionId !== q.id || !state.activeQuizQuestion) {
                   state.activeQuizQuestion = q;
                   state.activeQuizQuestionId = q.id;
