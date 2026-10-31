@@ -386,7 +386,7 @@
                 <i data-lucide="layers" class="w-5 h-5 text-amber-500"></i>
                 <span>Side Quiz Assembly Manager</span>
               </h3>
-              <p class="text-xs text-slate-500 dark:text-gray-400 mt-0.5">Bundle and reorder questions from your Global Deck into untimed self-paced side quizzes.</p>
+              <p class="text-xs text-slate-500 dark:text-gray-400 mt-0.5">Bundle and reorder questions from your Global Deck into untimed self-paced side quizzes, or bulk inject via JSON.</p>
             </div>
             <div class="flex items-center space-x-2">
               <button id="btnCancelEditSideQuiz" onclick="cancelEditSideQuiz()" class="hidden text-xs bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 text-slate-700 dark:text-gray-300 px-3 py-1.5 rounded-xl font-bold">Cancel Edit</button>
@@ -416,6 +416,40 @@
                 <button id="btnSaveSideQuiz" onclick="saveSideQuiz()" class="w-full py-2.5 rounded-xl gold-gradient-bg text-slate-950 font-bold text-sm hover:brightness-110 transition shadow flex items-center justify-center space-x-2">
                   <i data-lucide="cloud-upload" class="w-4 h-4"></i>
                   <span>Save & Publish Side Quiz</span>
+                </button>
+              </div>
+
+              <!-- NEW: Bulk JSON Code Injection Panel -->
+              <div class="bg-slate-50 dark:bg-[#080D17] border border-slate-200 dark:border-gray-800/80 rounded-2xl p-4 space-y-3 shadow-inner">
+                <div class="flex items-center justify-between">
+                  <span class="text-[11px] font-extrabold text-amber-600 dark:text-amber-400 uppercase tracking-wider block">Bulk JSON Code Injection</span>
+                  <button onclick="toggleBulkJsonHelp()" class="text-[11px] text-amber-500 underline font-bold hover:text-amber-400">Format Guide</button>
+                </div>
+
+                <!-- Format Guide Instructions Box -->
+                <div id="bulkJsonHelpBox" class="hidden bg-slate-900 text-slate-200 p-3 rounded-xl font-mono text-[10px] space-y-1 overflow-x-auto border border-amber-500/30">
+                  <p class="text-amber-400 font-bold">// Paste conforming to this JSON format:</p>
+                  <p>{</p>
+                  <p>&nbsp;&nbsp;"code": "TWGCQUIZ2",</p>
+                  <p>&nbsp;&nbsp;"title": "Quiz Title Here",</p>
+                  <p>&nbsp;&nbsp;"questions": [</p>
+                  <p>&nbsp;&nbsp;&nbsp;&nbsp;{</p>
+                  <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"title": "Question text?",</p>
+                  <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"options": ["Option A", "Option B", "Option C", "Option D"],</p>
+                  <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"correct": 0,</p>
+                  <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"timeLimit": 30,</p>
+                  <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"points": 100,</p>
+                  <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"imageUrl": "https://... (optional)"</p>
+                  <p>&nbsp;&nbsp;&nbsp;&nbsp;}</p>
+                  <p>&nbsp;&nbsp;]</p>
+                  <p>}</p>
+                </div>
+
+                <textarea id="bulkJsonInput" rows="4" placeholder='Paste complete JSON side quiz payload here...' class="w-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-xl p-3 text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-amber-500 resize-none"></textarea>
+
+                <button onclick="importBulkSideQuiz()" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold text-xs transition shadow flex items-center justify-center space-x-1.5 border border-amber-500/30">
+                  <i data-lucide="code" class="w-4 h-4"></i>
+                  <span>Import & Publish Bulk Quiz</span>
                 </button>
               </div>
 
@@ -543,7 +577,6 @@
 
     initTheme();
 
-    // Audio Engine & Persistent Mute Controller
     let isAudioMuted = localStorage.getItem('pulse_audio_muted') === 'true';
     const audioCtx = (typeof window !== 'undefined' && (window.AudioContext || window.webkitAudioContext)) ? new (window.AudioContext || window.webkitAudioContext)() : null;
 
@@ -653,7 +686,6 @@
       state.presenterTimerMode = !state.presenterTimerMode;
       sessionStorage.setItem('pulse_timer_mode', state.presenterTimerMode ? 'enforced' : 'unlimited');
 
-      // Dynamic real-time override on active live question
       if (state.activeQuizQuestion) {
         state.activeQuizQuestion.timeLimit = state.presenterTimerMode ? 30 : 0;
         if (state.spotlightedItem && state.spotlightedItem.type === 'quiz') {
@@ -1393,6 +1425,45 @@
       renderSideQuizBuilder();
       await sendPulse('side_quiz_save', state.sideQuizCatalog[codeInput]);
       alert(`Side Quiz ${codeInput} saved & published successfully!`);
+    }
+
+    function toggleBulkJsonHelp() {
+      const box = document.getElementById('bulkJsonHelpBox');
+      if (box) box.classList.toggle('hidden');
+    }
+
+    async function importBulkSideQuiz() {
+      const rawText = document.getElementById('bulkJsonInput').value.trim();
+      if (!rawText) { alert("Please paste a JSON payload first."); return; }
+
+      try {
+        const parsed = JSON.parse(rawText);
+        if (!parsed.code || !parsed.questions || !Array.isArray(parsed.questions)) {
+          throw new Error("Invalid JSON structure. Must include 'code' (string) and 'questions' (array).");
+        }
+
+        const codeInput = parsed.code.trim().toUpperCase();
+        const titleInput = parsed.title ? parsed.title.trim() : `Side Quiz ${codeInput}`;
+        const questions = parsed.questions;
+
+        const series = getLectureSeries(state.eventCode);
+        state.sideQuizCatalog[codeInput] = {
+          code: codeInput,
+          title: titleInput,
+          questions: questions
+        };
+
+        try {
+          localStorage.setItem(`pulse_side_catalog_${series}`, JSON.stringify(state.sideQuizCatalog));
+        } catch(e) {}
+
+        document.getElementById('bulkJsonInput').value = "";
+        renderSideQuizBuilder();
+        await sendPulse('side_quiz_save', state.sideQuizCatalog[codeInput]);
+        alert(`Side Quiz ${codeInput} successfully imported and published via bulk injection!`);
+      } catch (err) {
+        alert("Bulk Import Error: " + err.message);
+      }
     }
 
     function editSideQuiz(code) {
