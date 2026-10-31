@@ -1131,8 +1131,11 @@
           } catch(e) {}
 
           sortedPulses.forEach(p => {
-            if (p.event_type === 'reaction' && !handledReactionIds.has(p.id)) {
-              handledReactionIds.add(p.id);
+            // FIX: Prevent re-processing the same pulse ID across poll ticks
+            if (processedPulseIds.has(p.id)) return;
+            processedPulseIds.add(p.id);
+
+            if (p.event_type === 'reaction') {
               if (state.view === 'presenter' && state.presenterSubTab === 'spotlight') {
                 let meta = p.metadata;
                 try { while (typeof meta === 'string') meta = JSON.parse(meta); } catch(e) {}
