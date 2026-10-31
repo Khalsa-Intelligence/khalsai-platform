@@ -127,7 +127,7 @@
           <i data-lucide="copy" class="w-4 h-4"></i>
         </button>
         <!-- Restored Feedback Link Button -->
-        <a href="feedback.html" target="_blank" class="hidden sm:flex items-center space-x-1 text-xs font-bold bg-slate-200 dark:bg-gray-800 text-slate-700 dark:text-gray-300 px-3 py-1 rounded-lg hover:bg-amber-500 hover:text-slate-950 transition ml-2">
+        <a href="feedback.html" target="_blank" class="flex items-center space-x-1 text-xs font-bold bg-slate-200 dark:bg-gray-800 text-slate-700 dark:text-gray-300 px-3 py-1 rounded-lg hover:bg-amber-500 hover:text-slate-950 transition ml-2">
           <i data-lucide="message-square-plus" class="w-3.5 h-3.5"></i>
           <span>Feedback</span>
         </a>
@@ -1137,7 +1137,6 @@
           } catch(e) {}
 
           sortedPulses.forEach(p => {
-            // Prevent re-processing the same pulse ID across poll ticks
             if (processedPulseIds.has(p.id)) return;
             processedPulseIds.add(p.id);
 
@@ -1219,7 +1218,6 @@
                 const q = meta.quiz;
                 const startedAt = meta.startedAt || Date.now();
                 
-                // Ignore if this release is older than our last clear action
                 if (startedAt <= state.lastQuizClearedAt) return;
 
                 if (state.activeQuizQuestionId !== q.id || !state.activeQuizQuestion) {
@@ -1959,13 +1957,15 @@
 
       let pointsEarned = 0;
       if (isCorrect) {
-        const maxPoints = state.activeQuizQuestion.points || 100;
-        const totalTime = Number(state.activeQuizQuestion.timeLimit) || 30;
-        let speedRatio = 1.0;
-        if (totalTime > 0) {
+        const maxPoints = Number(state.activeQuizQuestion.points) || 100; // Honors exact points set in builder
+        const totalTime = Number(state.activeQuizQuestion.timeLimit) || 0;
+        
+        let speedRatio = 1.0; // Safe full points for unlimited mode without compounding
+        if (totalTime > 0 && state.presenterTimerMode) {
           const timeRemaining = Math.max(0, totalTime - state.quizElapsedTime);
           speedRatio = timeRemaining / totalTime;
         }
+        
         pointsEarned = Math.round(maxPoints * (0.5 + (0.5 * speedRatio)));
       }
 
