@@ -1110,7 +1110,7 @@
                 const scoreKey = `${meta.userName}_${meta.quizId}`;
                 if (!userScoredQuestions.has(scoreKey)) {
                   userScoredQuestions.add(scoreKey);
-                  const points = Math.min(100, Math.max(0, Number(meta.pointsEarned) || 0));
+                  const points = Math.max(0, Number(meta.pointsEarned) || 0);
                   userScores[meta.userName] = (userScores[meta.userName] || 0) + points;
                 }
               }
@@ -1288,7 +1288,7 @@
       renderPresenterTimerToggleUI();
       renderAudioToggleUI();
       initPresenterApp();
-      sendPulse('page_view', { page: 'pulse_index' });
+      // DISABLED PAGE_VIEW LOGGING TO PROTECT DB WRITE LIMITS
     };
 
     function switchView(viewMode, skipPrompt = false) {
@@ -1921,9 +1921,12 @@
         state.totalResponses++;
       }
 
+      // 3. EXACT BUILDER POINTS: Dynamically read state.activeQuizQuestion.points
       let pointsEarned = 0;
       if (isCorrect) {
-        const maxPoints = Number(state.activeQuizQuestion.points) || 100;
+        const maxPoints = (state.activeQuizQuestion && state.activeQuizQuestion.points !== undefined) 
+          ? Number(state.activeQuizQuestion.points) 
+          : 100;
         const totalTime = Number(state.activeQuizQuestion.timeLimit) || 0;
         
         let speedRatio = 1.0;
@@ -1932,6 +1935,7 @@
           speedRatio = timeRemaining / totalTime;
         }
         
+        // Speed ratio formula safely bounded under maxPoints
         pointsEarned = Math.round(maxPoints * (0.5 + (0.5 * speedRatio)));
       }
 
@@ -1940,7 +1944,7 @@
 
       if (state.sideQuizActive) {
         state.sideQuizAnswers[questionId] = selectedIndex;
-        recordSessionScore(state.userName, pointsEarned, questionId);
+        await sendPulse('quiz_answer', { quizId: questionId, selectedIndex, isCorrect, userName: state.userName, pointsEarned });
       } else {
         await sendPulse('quiz_answer', { quizId: questionId, selectedIndex, isCorrect, userName: state.userName, pointsEarned });
       }
@@ -2030,7 +2034,7 @@
         container.innerHTML = state.quizDeck.map((rawItem, index) => {
           const q = (rawItem && rawItem.quiz) ? rawItem.quiz : (rawItem || {});
           const title = q.title || q.question || 'Untitled Question';
-          const points = q.points || 100;
+          const points = q.points !== undefined ? q.points : 100;
           const timerVal = q.timeLimit !== undefined ? Number(q.timeLimit) : 30;
           const timerStr = timerVal === 0 ? 'Unlimited' : `${timerVal}s`;
           const qId = q.id || `q_${index}`;
