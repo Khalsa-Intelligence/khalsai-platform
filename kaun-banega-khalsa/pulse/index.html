@@ -52,19 +52,6 @@
       animation: pulse-border 1s infinite ease-in-out;
       border-width: 4px !important;
     }
-    .p-nav-btn {
-      height: 36px;
-      padding: 0 12px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      white-space: nowrap;
-      border-radius: 10px;
-      font-weight: 700;
-      font-size: 12px;
-      transition: all 0.2s ease;
-      flex-shrink: 0;
-    }
     .kahoot-btn-red { background-color: #E21B3C !important; color: white !important; }
     .kahoot-btn-blue { background-color: #1368CE !important; color: white !important; }
     .kahoot-btn-gold { background-color: #D89E00 !important; color: white !important; }
@@ -83,11 +70,11 @@
 <body class="h-full flex flex-col bg-slate-50 text-slate-900 dark:bg-[#090D16] dark:text-gray-100 antialiased selection:bg-amber-500 selection:text-black">
 
   <!-- Unified Top Navigation Header -->
-  <header class="sticky top-0 z-40 border-b border-slate-200 dark:border-gray-800/80 bg-white/95 dark:bg-[#0D121F]/95 backdrop-blur-md px-3 sm:px-6 py-2 transition-all">
-    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
+  <header class="sticky top-0 z-40 border-b border-slate-200 dark:border-gray-800/80 bg-white/95 dark:bg-[#0D121F]/95 backdrop-blur-md px-3 sm:px-6 py-2.5 transition-all">
+    <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
       
       <!-- Brand & Title -->
-      <div class="flex items-center space-x-2 min-w-0 shrink-0">
+      <div class="flex items-center space-x-2 min-w-0 shrink">
         <div class="w-8 h-8 rounded-xl gold-gradient-bg flex items-center justify-center text-slate-950 shadow-md shadow-amber-500/20 font-black text-sm shrink-0">
           <i data-lucide="zap" class="w-4 h-4 stroke-[2.5]"></i>
         </div>
@@ -99,8 +86,8 @@
         </div>
       </div>
 
-      <!-- Center Event Code Box -->
-      <div class="flex items-center space-x-1.5 bg-slate-100 dark:bg-gray-900/80 px-2.5 py-1 rounded-xl border border-slate-200 dark:border-gray-800">
+      <!-- Center Event Code Box (Audience View Only) -->
+      <div id="headerCodeContainer" class="flex items-center space-x-1.5 bg-slate-100 dark:bg-gray-900/80 px-2.5 py-1 rounded-xl border border-slate-200 dark:border-gray-800">
         <span class="text-[10px] uppercase tracking-wider font-extrabold text-slate-500 dark:text-gray-400 hidden sm:inline">CODE:</span>
         <input type="text" id="headerAudienceCodeInput" value="" class="bg-white dark:bg-gray-950 px-2 py-0.5 rounded-lg border border-slate-300 dark:border-gray-700 font-mono font-bold text-amber-600 dark:text-amber-400 text-xs focus:outline-none focus:border-amber-500 w-24 sm:w-28 uppercase text-center">
         <button onclick="changeAudienceEventCode()" class="bg-amber-500 text-slate-950 font-extrabold text-[11px] px-2 py-0.5 rounded hover:brightness-110 transition shadow">
@@ -138,7 +125,7 @@
   </header>
 
   <!-- Main View Container -->
-  <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 flex flex-col pb-20 sm:pb-8">
+  <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 flex flex-col pb-24 sm:pb-12">
     
     <!-- AUDIENCE VIEW CONTAINER -->
     <div id="audienceView" class="flex-1 flex flex-col space-y-4 sm:space-y-6">
@@ -247,48 +234,6 @@
     <!-- PRESENTER VIEW CONTAINER -->
     <div id="presenterView" class="hidden flex-1 flex-col space-y-5">
       
-      <!-- Streamlined Presenter Top Navigation Strip -->
-      <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between bg-white dark:bg-[#0D121F] border border-slate-200 dark:border-gray-800/80 p-2.5 sm:p-3 rounded-2xl shadow-sm gap-2">
-        
-        <div class="flex items-center justify-between sm:justify-start space-x-3">
-          <span class="bg-amber-500/10 text-amber-600 dark:text-amber-400 font-black px-2.5 py-1 rounded-xl border border-amber-500/20 text-xs flex items-center space-x-1.5 shrink-0">
-            <i data-lucide="tv" class="w-3.5 h-3.5"></i>
-            <span>PRESENTER STUDIO</span>
-          </span>
-
-          <div class="flex items-center space-x-2 bg-slate-100 dark:bg-gray-950 px-2.5 py-1 rounded-xl border border-slate-200 dark:border-gray-800">
-            <span class="text-[10px] font-bold text-slate-400 uppercase">SESSION:</span>
-            <input type="text" id="eventCodeInput" value="" class="bg-transparent font-mono font-black text-amber-600 dark:text-amber-400 text-xs focus:outline-none w-24 uppercase">
-            <button onclick="updateEventCode()" class="bg-amber-500 text-slate-950 font-extrabold text-[10px] px-2 py-0.5 rounded hover:brightness-110 transition">Set</button>
-          </div>
-        </div>
-
-        <!-- Presenter Section Switcher Tabs -->
-        <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none w-full sm:w-auto">
-          <button onclick="switchPresenterSubTab('spotlight')" id="subTabSpotlight" class="p-nav-btn bg-amber-500 text-slate-950 shadow">
-            <i data-lucide="sparkles" class="w-3.5 h-3.5 mr-1"></i>
-            <span>Spotlight</span>
-          </button>
-          <button onclick="switchPresenterSubTab('manager')" id="subTabManager" class="p-nav-btn bg-slate-100 dark:bg-gray-800/60 text-slate-700 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white">
-            <i data-lucide="plus-circle" class="w-3.5 h-3.5 mr-1"></i>
-            <span>Quiz Builder</span>
-          </button>
-          <button onclick="switchPresenterSubTab('sidebuilder')" id="subTabSideBuilder" class="p-nav-btn bg-slate-100 dark:bg-gray-800/60 text-slate-700 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white">
-            <i data-lucide="layers" class="w-3.5 h-3.5 mr-1"></i>
-            <span>Side Quiz Builder</span>
-          </button>
-          <button onclick="switchPresenterSubTab('questions')" id="subTabQuestions" class="p-nav-btn bg-slate-100 dark:bg-gray-800/60 text-slate-700 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white">
-            <i data-lucide="message-square" class="w-3.5 h-3.5 mr-1"></i>
-            <span>Q&A Control</span>
-          </button>
-          <button onclick="switchPresenterSubTab('leaderboard')" id="subTabPresenterLeaderboard" class="p-nav-btn bg-slate-100 dark:bg-gray-800/60 text-slate-700 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white">
-            <i data-lucide="trophy" class="w-3.5 h-3.5 mr-1"></i>
-            <span>Leaderboard</span>
-          </button>
-        </div>
-
-      </div>
-
       <!-- SUB-TAB 1: SPOTLIGHT & QR CODE -->
       <div id="presenterSpotlightPane" class="space-y-5">
         <div class="bg-white dark:bg-[#0D121F] border border-slate-200 dark:border-gray-800 rounded-2xl p-5 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
@@ -552,7 +497,7 @@
 
   </main>
 
-  <!-- Sticky Audience Bottom Navigation Bar (Hidden in Presenter Mode) -->
+  <!-- Sticky Audience Bottom Navigation Bar -->
   <nav id="audienceBottomNav" class="fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-[#0D121F]/95 backdrop-blur-md border-t border-slate-200 dark:border-gray-800 px-3 py-2 flex items-center justify-around shadow-lg">
     <button onclick="switchAudienceTab('qa')" id="mobileNavQA" class="flex flex-col items-center space-y-1 text-amber-600 dark:text-amber-400 font-bold text-[10px]">
       <i data-lucide="message-square" class="w-5 h-5"></i>
@@ -567,6 +512,30 @@
       <span>Side Quizzes</span>
     </button>
     <button onclick="switchAudienceTab('leaderboard')" id="mobileNavLeaderboard" class="flex flex-col items-center space-y-1 text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white font-bold text-[10px]">
+      <i data-lucide="trophy" class="w-5 h-5"></i>
+      <span>Leaderboard</span>
+    </button>
+  </nav>
+
+  <!-- Sticky Presenter Bottom Navigation Bar -->
+  <nav id="presenterBottomNav" class="hidden fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-[#0D121F]/95 backdrop-blur-md border-t border-slate-200 dark:border-gray-800 px-2 py-2 flex items-center justify-around shadow-lg">
+    <button onclick="switchPresenterSubTab('spotlight')" id="presNavSpotlight" class="flex flex-col items-center space-y-1 text-amber-600 dark:text-amber-400 font-bold text-[10px]">
+      <i data-lucide="sparkles" class="w-5 h-5"></i>
+      <span>Spotlight</span>
+    </button>
+    <button onclick="switchPresenterSubTab('manager')" id="presNavManager" class="flex flex-col items-center space-y-1 text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white font-bold text-[10px]">
+      <i data-lucide="plus-circle" class="w-5 h-5"></i>
+      <span>Quiz Builder</span>
+    </button>
+    <button onclick="switchPresenterSubTab('sidebuilder')" id="presNavSideBuilder" class="flex flex-col items-center space-y-1 text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white font-bold text-[10px]">
+      <i data-lucide="layers" class="w-5 h-5"></i>
+      <span>Side Builder</span>
+    </button>
+    <button onclick="switchPresenterSubTab('questions')" id="presNavQuestions" class="flex flex-col items-center space-y-1 text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white font-bold text-[10px]">
+      <i data-lucide="message-square" class="w-5 h-5"></i>
+      <span>Q&A Control</span>
+    </button>
+    <button onclick="switchPresenterSubTab('leaderboard')" id="presNavLeaderboard" class="flex flex-col items-center space-y-1 text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white font-bold text-[10px]">
       <i data-lucide="trophy" class="w-5 h-5"></i>
       <span>Leaderboard</span>
     </button>
@@ -1040,10 +1009,8 @@
       const audCodeDisp = document.getElementById('audienceLeaderboardCode');
       if (audCodeDisp) audCodeDisp.textContent = clean;
 
-      ['eventCodeInput', 'headerAudienceCodeInput'].forEach(id => {
-        const input = document.getElementById(id);
-        if (input) input.value = clean;
-      });
+      const input = document.getElementById('headerAudienceCodeInput');
+      if (input) input.value = clean;
 
       if (isSideQuizCode(clean)) {
         initSideQuizMode(clean);
@@ -1059,14 +1026,6 @@
     function changeAudienceEventCode() {
       const input = document.getElementById('headerAudienceCodeInput');
       if (input && input.value.trim()) setEventCode(input.value.trim());
-    }
-
-    function updateEventCode() {
-      const input = document.getElementById('eventCodeInput');
-      if (input && input.value.trim()) {
-        setEventCode(input.value.trim());
-        sendPulse('event_code_update', { eventCode: state.eventCode });
-      }
     }
 
     function startQuizTimer(questionId, durationSeconds, startedAtMs = Date.now()) {
@@ -1325,6 +1284,11 @@
       const audView = document.getElementById('audienceView');
       const presView = document.getElementById('presenterView');
       const bottomNav = document.getElementById('audienceBottomNav');
+      const presenterBottomNav = document.getElementById('presenterBottomNav');
+      const headerCodeContainer = document.getElementById('headerCodeContainer');
+
+      const activeClass = "px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition flex items-center space-x-1 bg-amber-500 text-slate-950 shadow";
+      const inactiveClass = "px-2.5 py-1 rounded-lg text-[11px] font-extrabold text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition flex items-center space-x-1";
 
       if (viewMode === 'audience') {
         checkParticipantName();
@@ -1334,9 +1298,8 @@
         presView.classList.remove('flex');
 
         if (bottomNav) bottomNav.classList.remove('hidden');
-
-        const activeClass = "px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition flex items-center space-x-1 bg-amber-500 text-slate-950 shadow";
-        const inactiveClass = "px-2.5 py-1 rounded-lg text-[11px] font-extrabold text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition flex items-center space-x-1";
+        if (presenterBottomNav) presenterBottomNav.classList.add('hidden');
+        if (headerCodeContainer) headerCodeContainer.classList.remove('hidden');
 
         if (audBtn) audBtn.className = activeClass;
         if (presBtn) presBtn.className = inactiveClass;
@@ -1347,9 +1310,8 @@
         audView.classList.remove('flex');
 
         if (bottomNav) bottomNav.classList.add('hidden');
-
-        const activeClass = "px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition flex items-center space-x-1 bg-amber-500 text-slate-950 shadow";
-        const inactiveClass = "px-2.5 py-1 rounded-lg text-[11px] font-extrabold text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition flex items-center space-x-1";
+        if (presenterBottomNav) presenterBottomNav.classList.remove('hidden');
+        if (headerCodeContainer) headerCodeContainer.classList.add('hidden');
 
         if (presBtn) presBtn.className = activeClass;
         if (audBtn) audBtn.className = inactiveClass;
@@ -1672,15 +1634,14 @@
     function switchPresenterSubTab(subTab) {
       state.presenterSubTab = subTab;
 
-      const activeClass = "p-nav-btn bg-amber-500 text-slate-950 shadow";
-      const inactiveClass = "p-nav-btn bg-slate-100 dark:bg-gray-800/60 text-slate-700 dark:text-gray-300 hover:text-slate-950 dark:hover:text-white";
+      const activeClass = "flex flex-col items-center space-y-1 text-amber-600 dark:text-amber-400 font-bold text-[10px]";
+      const inactiveClass = "flex flex-col items-center space-y-1 text-slate-500 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white font-bold text-[10px]";
 
-      document.getElementById('subTabSpotlight').className = subTab === 'spotlight' ? activeClass : inactiveClass;
-      document.getElementById('subTabManager').className = subTab === 'manager' ? activeClass : inactiveClass;
-      const subSide = document.getElementById('subTabSideBuilder');
-      if (subSide) subSide.className = subTab === 'sidebuilder' ? activeClass : inactiveClass;
-      document.getElementById('subTabQuestions').className = subTab === 'questions' ? activeClass : inactiveClass;
-      document.getElementById('subTabPresenterLeaderboard').className = subTab === 'leaderboard' ? activeClass : inactiveClass;
+      document.getElementById('presNavSpotlight').className = subTab === 'spotlight' ? activeClass : inactiveClass;
+      document.getElementById('presNavManager').className = subTab === 'manager' ? activeClass : inactiveClass;
+      document.getElementById('presNavSideBuilder').className = subTab === 'sidebuilder' ? activeClass : inactiveClass;
+      document.getElementById('presNavQuestions').className = subTab === 'questions' ? activeClass : inactiveClass;
+      document.getElementById('presNavLeaderboard').className = subTab === 'leaderboard' ? activeClass : inactiveClass;
 
       document.getElementById('presenterSpotlightPane').classList.toggle('hidden', subTab !== 'spotlight');
       document.getElementById('presenterManagerPane').classList.toggle('hidden', subTab !== 'manager');
