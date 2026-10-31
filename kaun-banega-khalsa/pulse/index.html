@@ -652,7 +652,6 @@
     const persistedView = sessionStorage.getItem('pulse_current_view') || 'audience';
     
     const processedPulseIds = new Set();
-    const handledReactionIds = new Set();
     let audienceLeaderboardTimeout = null;
 
     let state = {
@@ -857,33 +856,10 @@
     function getEventLeaderboard() {
       const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
       const cleanKey = (state.eventCode || '').replace(/^#/, '').trim().toUpperCase();
-      const sessionData = allLeaderboards[cleanKey] || {};
+      const sessionData = allLeaderboards[cleanKey] || state.sessionLeaderboard || {};
       return Object.keys(sessionData)
         .map(name => ({ name, score: sessionData[name] }))
         .sort((a, b) => b.score - a.score);
-    }
-
-    function recordSessionScore(userName, pointsEarned, quizId) {
-      if (!state.eventCode || !userName) return;
-      const cleanKey = isSideQuizCode(state.eventCode) ? getLectureSeries(state.eventCode) : (state.eventCode || '').replace(/^#/, '').trim().toUpperCase();
-      const scoredQuizzesKey = `pulse_scored_${cleanKey}_${userName}`;
-      let scoredQuizzes = [];
-      try { scoredQuizzes = JSON.parse(localStorage.getItem(scoredQuizzesKey) || '[]'); } catch (e) {}
-
-      if (quizId && scoredQuizzes.includes(quizId)) return;
-      if (quizId) {
-        scoredQuizzes.push(quizId);
-        try { localStorage.setItem(scoredQuizzesKey, JSON.stringify(scoredQuizzes)); } catch (e) {}
-      }
-
-      const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
-      const currentBoard = allLeaderboards[cleanKey] || {};
-      currentBoard[userName] = (currentBoard[userName] || 0) + pointsEarned;
-      allLeaderboards[cleanKey] = currentBoard;
-      
-      localStorage.setItem('pulse_leaderboards', JSON.stringify(allLeaderboards));
-      state.sessionLeaderboard = currentBoard;
-      renderLeaderboard();
     }
 
     async function resetCurrentEventLeaderboard() {
@@ -912,14 +888,6 @@
         }
 
         localStorage.setItem('pulse_leaderboards', JSON.stringify(allLeaderboards));
-        Object.keys(localStorage).forEach(k => {
-          if (isSeriesMode) {
-            if (k.startsWith('pulse_scored_')) localStorage.removeItem(k);
-          } else {
-            if (k.startsWith(`pulse_scored_${cleanKey}_`)) localStorage.removeItem(k);
-          }
-        });
-
         renderLeaderboard();
         await sendPulse('leaderboard_reset', { eventCode: isSeriesMode ? seriesName : cleanKey, resetAt: resetTime });
       }
@@ -1129,13 +1097,34 @@
           const sortedPulses = [...data.recent_pulses].sort((a, b) => a.id - b.id);
           const deckMap = new Map();
 
-          try {
-            const localSaved = JSON.parse(localStorage.getItem(`pulse_deck_${cleanCode}`) || '[]');
-            localSaved.forEach(q => {
-              if (q && (q.id || q.title || q.question)) deckMap.set(q.id || q.title || q.question, q);
-            });
-          } catch(e) {}
+          // 1. DYNAMICALLY REBUILD LEADERBOARD FROM UNIQUE QUIZ ANSWERS ONLY (DEDUPLICATED)
+          const userScores = {};
+          const userScoredQuestions = new Set();
 
+          sortedPulses.forEach(p => {
+            if (p.event_type === 'quiz_answer' && p.metadata) {
+              let meta = p.metadata;
+              try { while (typeof meta === 'string') meta = JSON.parse(meta); } catch(e) {}
+
+              if (meta && meta.userName && meta.pointsEarned !== undefined && meta.quizId) {
+                const scoreKey = `${meta.userName}_${meta.quizId}`;
+                if (!userScoredQuestions.has(scoreKey)) {
+                  userScoredQuestions.add(scoreKey);
+                  const points = Math.min(100, Math.max(0, Number(meta.pointsEarned) || 0));
+                  userScores[meta.userName] = (userScores[meta.userName] || 0) + points;
+                }
+              }
+            }
+          });
+
+          if (Object.keys(userScores).length > 0) {
+            state.sessionLeaderboard = userScores;
+            const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
+            allLeaderboards[cleanCode] = userScores;
+            localStorage.setItem('pulse_leaderboards', JSON.stringify(allLeaderboards));
+          }
+
+          // 2. PROCESS OTHER PULSE LOGS & STATE
           sortedPulses.forEach(p => {
             if (processedPulseIds.has(p.id)) return;
             processedPulseIds.add(p.id);
@@ -1158,30 +1147,6 @@
                     setTimeout(() => rEl.remove(), 1000);
                   }
                 }
-              }
-            }
-
-            if (p.event_type === 'quiz_answer' && p.metadata) {
-              let meta = p.metadata;
-              try { while (typeof meta === 'string') meta = JSON.parse(meta); } catch(e) {}
-              
-              if (meta && String(meta.quizId) === String(state.activeQuizQuestionId)) {
-                const idx = Number(meta.selectedIndex);
-                if (!isNaN(idx) && idx >= 0 && idx < 4) {
-                  state.responseCounts[idx] = (state.responseCounts[idx] || 0) + 1;
-                  state.totalResponses++;
-                }
-              }
-              
-              if (meta && meta.userName && meta.pointsEarned !== undefined) {
-                const cleanKey = (state.eventCode || '').replace(/^#/, '').trim().toUpperCase();
-                const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
-                const currentBoard = allLeaderboards[cleanKey] || {};
-                currentBoard[meta.userName] = (currentBoard[meta.userName] || 0) + Number(meta.pointsEarned);
-                allLeaderboards[cleanKey] = currentBoard;
-                localStorage.setItem('pulse_leaderboards', JSON.stringify(allLeaderboards));
-                state.sessionLeaderboard = currentBoard;
-                renderLeaderboard();
               }
             }
 
@@ -1305,6 +1270,7 @@
           renderQuestions();
           renderAudienceQuizPane();
           renderSpotlight();
+          renderLeaderboard();
         }
       } catch (err) { console.error('Failed to fetch pulse logs:', err); }
     }
@@ -1957,10 +1923,10 @@
 
       let pointsEarned = 0;
       if (isCorrect) {
-        const maxPoints = Number(state.activeQuizQuestion.points) || 100; // Honors exact points set in builder
+        const maxPoints = Number(state.activeQuizQuestion.points) || 100;
         const totalTime = Number(state.activeQuizQuestion.timeLimit) || 0;
         
-        let speedRatio = 1.0; // Safe full points for unlimited mode without compounding
+        let speedRatio = 1.0;
         if (totalTime > 0 && state.presenterTimerMode) {
           const timeRemaining = Math.max(0, totalTime - state.quizElapsedTime);
           speedRatio = timeRemaining / totalTime;
@@ -1976,7 +1942,7 @@
         state.sideQuizAnswers[questionId] = selectedIndex;
         recordSessionScore(state.userName, pointsEarned, questionId);
       } else {
-        await sendPulse('quiz_answer', { quizId: state.activeQuizQuestion.id, selectedIndex, isCorrect, userName: state.userName, pointsEarned });
+        await sendPulse('quiz_answer', { quizId: questionId, selectedIndex, isCorrect, userName: state.userName, pointsEarned });
       }
     }
 
