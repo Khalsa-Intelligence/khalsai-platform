@@ -56,9 +56,7 @@
     .kahoot-btn-gold { background-color: #D89E00 !important; color: white !important; }
     .kahoot-btn-green { background-color: #26890C !important; color: white !important; }
 
-    .q-select-card {
-      transition: all 0.15s ease-in-out;
-    }
+    .q-select-card { transition: all 0.15s ease-in-out; }
     .q-select-card:has(input:checked) {
       border-color: #f59e0b !important;
       background-color: rgba(245, 158, 11, 0.05) !important;
@@ -98,6 +96,13 @@
           </button>
         </div>
 
+        <!-- Audio On/Off Toggle Button -->
+        <button id="btnAudioToggle" onclick="toggleAudioMute()" class="p-1.5 rounded-xl bg-slate-100 dark:bg-gray-900 border border-slate-200 dark:border-gray-800 text-slate-700 dark:text-gray-300 transition shrink-0 hover:text-amber-500" title="Toggle Sound FX">
+          <i data-lucide="volume-2" id="iconAudioOn" class="w-4 h-4 block text-amber-500"></i>
+          <i data-lucide="volume-x" id="iconAudioOff" class="w-4 h-4 hidden text-slate-400"></i>
+        </button>
+
+        <!-- Theme Toggle -->
         <button onclick="toggleTheme()" class="p-1.5 rounded-xl bg-slate-100 dark:bg-gray-900 border border-slate-200 dark:border-gray-800 text-slate-700 dark:text-gray-300 transition shrink-0" title="Toggle Theme">
           <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
           <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
@@ -239,7 +244,7 @@
           </div>
         </div>
 
-        <!-- Projector Screen Focus & Page-Level Timer Mode Toggle -->
+        <!-- Projector Screen Focus & Dynamic Timer Mode Toggle -->
         <div id="spotlightContent" class="bg-white dark:bg-[#0D121F] border border-slate-200 dark:border-gray-800 rounded-2xl p-6 sm:p-8 text-center min-h-[280px] flex flex-col shadow-sm relative overflow-hidden">
           <div class="flex flex-col sm:flex-row items-center justify-between gap-3 border-b border-slate-100 dark:border-gray-800/60 pb-3 mb-3">
             <div class="flex items-center space-x-1.5 text-slate-400 dark:text-gray-500 uppercase font-bold text-xs tracking-wider">
@@ -247,7 +252,7 @@
               <span>Projector Screen Focus</span>
             </div>
 
-            <!-- Page-Level Timer Toggle -->
+            <!-- Page-Level Timer Toggle with Immediate Dynamic Override -->
             <div class="flex items-center space-x-2 bg-slate-100 dark:bg-gray-950 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-gray-800">
               <span class="text-[11px] font-extrabold text-slate-600 dark:text-gray-300">Release Timer Mode:</span>
               <button id="pageTimerToggleBtn" onclick="togglePresenterTimerMode()" class="px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center space-x-1 bg-amber-500 text-slate-950 shadow">
@@ -538,10 +543,32 @@
 
     initTheme();
 
+    // Audio Engine & Persistent Mute Controller
+    let isAudioMuted = localStorage.getItem('pulse_audio_muted') === 'true';
     const audioCtx = (typeof window !== 'undefined' && (window.AudioContext || window.webkitAudioContext)) ? new (window.AudioContext || window.webkitAudioContext)() : null;
 
+    function renderAudioToggleUI() {
+      const iconOn = document.getElementById('iconAudioOn');
+      const iconOff = document.getElementById('iconAudioOff');
+      if (!iconOn || !iconOff) return;
+      if (isAudioMuted) {
+        iconOn.classList.add('hidden'); iconOn.classList.remove('block');
+        iconOff.classList.remove('hidden'); iconOff.classList.add('block');
+      } else {
+        iconOff.classList.add('hidden'); iconOff.classList.remove('block');
+        iconOn.classList.remove('hidden'); iconOn.classList.add('block');
+      }
+    }
+
+    function toggleAudioMute() {
+      isAudioMuted = !isAudioMuted;
+      localStorage.setItem('pulse_audio_muted', isAudioMuted ? 'true' : 'false');
+      renderAudioToggleUI();
+      if (!isAudioMuted) playSound('success');
+    }
+
     function playSound(type) {
-      if (!audioCtx) return;
+      if (isAudioMuted || !audioCtx) return;
       if (audioCtx.state === 'suspended') { audioCtx.resume(); }
 
       const osc = audioCtx.createOscillator();
@@ -579,7 +606,6 @@
       sessionStorage.setItem('pulse_session_id', sessionId);
     }
     
-    // Robust URL parameter parser handling full codes like TWGCSESSION4
     const urlParams = new URLSearchParams(window.location.search);
     const rawCodeParam = urlParams.get('code') || urlParams.get('eventCode') || '';
     const initialCodeParam = rawCodeParam ? rawCodeParam.replace(/^#/, '').trim().toUpperCase() : '';
@@ -626,7 +652,19 @@
     function togglePresenterTimerMode() {
       state.presenterTimerMode = !state.presenterTimerMode;
       sessionStorage.setItem('pulse_timer_mode', state.presenterTimerMode ? 'enforced' : 'unlimited');
+
+      // Dynamic real-time override on active live question
+      if (state.activeQuizQuestion) {
+        state.activeQuizQuestion.timeLimit = state.presenterTimerMode ? 30 : 0;
+        if (state.spotlightedItem && state.spotlightedItem.type === 'quiz') {
+          state.spotlightedItem.data.timeLimit = state.presenterTimerMode ? 30 : 0;
+        }
+        startQuizTimer(state.activeQuizQuestion.id, state.activeQuizQuestion.timeLimit, state.activeQuizQuestionStartedAt || Date.now());
+      }
+
       renderPresenterTimerToggleUI();
+      renderSpotlight();
+      renderAudienceQuizPane();
     }
 
     function renderPresenterTimerToggleUI() {
@@ -1158,6 +1196,7 @@
       lucide.createIcons();
       renderAll();
       renderPresenterTimerToggleUI();
+      renderAudioToggleUI();
       initPresenterApp();
       sendPulse('page_view', { page: 'pulse_index' });
     };
@@ -1792,6 +1831,7 @@
       renderLeaderboard();
       renderQRCode();
       renderPresenterTimerToggleUI();
+      renderAudioToggleUI();
       lucide.createIcons();
     }
 
@@ -1944,7 +1984,7 @@
         return;
       }
 
-      const isUnlimited = Number(activeQ.timeLimit) === 0 && !state.sideQuizActive;
+      const isUnlimited = (Number(activeQ.timeLimit) === 0 || !state.presenterTimerMode) && !state.sideQuizActive;
       const showAnswerAndVotes = state.sideQuizActive 
         ? state.hasSubmittedAnswer 
         : (isUnlimited ? (activeQ.stoppedAt || (state.quizTimeRemaining === 0 && state.activeQuizTimer === null)) : (state.quizTimeRemaining <= 0));
@@ -2074,7 +2114,7 @@
         `;
       } else if (item.type === 'quiz') {
         const q = item.data;
-        const isUnlimited = Number(q.timeLimit) === 0;
+        const isUnlimited = Number(q.timeLimit) === 0 || !state.presenterTimerMode;
         const showAnswer = isUnlimited ? (q.stoppedAt || (state.quizTimeRemaining === 0 && state.activeQuizTimer === null)) : (state.quizTimeRemaining <= 0);
 
         const kahootStyles = [
