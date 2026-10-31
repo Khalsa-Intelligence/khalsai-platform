@@ -69,8 +69,8 @@
 </head>
 <body class="h-full flex flex-col bg-slate-50 text-slate-900 dark:bg-[#090D16] dark:text-gray-100 antialiased selection:bg-amber-500 selection:text-black">
 
-  <!-- Unified Top Navigation Header -->
-  <header class="sticky top-0 z-40 border-b border-slate-200 dark:border-gray-800/80 bg-white/95 dark:bg-[#0D121F]/95 backdrop-blur-md px-3 sm:px-6 py-2.5 transition-all">
+  <!-- Unified Top Navigation Header (Inspired by Presenter layout structure) -->
+  <header class="sticky top-0 z-40 border-b border-slate-200 dark:border-gray-800/80 bg-white/95 dark:bg-[#0D121F]/95 backdrop-blur-md px-3 sm:px-6 py-2.5 transition-all space-y-2">
     <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
       
       <!-- Brand & Title -->
@@ -86,20 +86,8 @@
         </div>
       </div>
 
-      <!-- Center Event Code Box (Audience View Only) -->
-      <div id="headerCodeContainer" class="flex items-center space-x-1.5 bg-slate-100 dark:bg-gray-900/80 px-2.5 py-1 rounded-xl border border-slate-200 dark:border-gray-800">
-        <span class="text-[10px] uppercase tracking-wider font-extrabold text-slate-500 dark:text-gray-400 hidden sm:inline">CODE:</span>
-        <input type="text" id="headerAudienceCodeInput" value="" class="bg-white dark:bg-gray-950 px-2 py-0.5 rounded-lg border border-slate-300 dark:border-gray-700 font-mono font-bold text-amber-600 dark:text-amber-400 text-xs focus:outline-none focus:border-amber-500 w-24 sm:w-28 uppercase text-center">
-        <button onclick="changeAudienceEventCode()" class="bg-amber-500 text-slate-950 font-extrabold text-[11px] px-2 py-0.5 rounded hover:brightness-110 transition shadow">
-          Join
-        </button>
-        <button onclick="copyEventCode()" class="text-slate-500 dark:text-gray-400 hover:text-amber-500 transition ml-0.5" title="Copy Session Link">
-          <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-        </button>
-      </div>
-
       <!-- Right Controls: Audience/Presenter Switcher & Theme Toggle -->
-      <div class="flex items-center space-x-1.5 shrink-0">
+      <div class="flex items-center space-x-2 shrink-0">
         
         <!-- Mode Switcher -->
         <div class="bg-slate-200 dark:bg-gray-950 p-0.5 rounded-xl border border-slate-300 dark:border-gray-800 flex items-center gap-0.5">
@@ -121,6 +109,23 @@
 
       </div>
 
+    </div>
+
+    <!-- Secondary Header Bar for Audience Code (Styled like Presenter Session Toolbar) -->
+    <div id="headerCodeContainer" class="max-w-7xl mx-auto flex items-center justify-between bg-slate-100 dark:bg-gray-900/80 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-gray-800">
+      <div class="flex items-center space-x-2">
+        <i data-lucide="radio" class="w-4 h-4 text-amber-500 animate-pulse"></i>
+        <span class="text-xs font-extrabold uppercase tracking-wider text-slate-700 dark:text-gray-300">Session Join</span>
+      </div>
+      <div class="flex items-center space-x-2">
+        <input type="text" id="headerAudienceCodeInput" value="" class="bg-white dark:bg-gray-950 px-2.5 py-1 rounded-lg border border-slate-300 dark:border-gray-700 font-mono font-bold text-amber-600 dark:text-amber-400 text-xs focus:outline-none focus:border-amber-500 w-32 sm:w-36 uppercase text-center">
+        <button onclick="changeAudienceEventCode()" class="bg-amber-500 text-slate-950 font-extrabold text-xs px-3 py-1 rounded-lg hover:brightness-110 transition shadow">
+          Join
+        </button>
+        <button onclick="copyEventCode()" class="text-slate-500 dark:text-gray-400 hover:text-amber-500 transition p-1" title="Copy Session Link">
+          <i data-lucide="copy" class="w-4 h-4"></i>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -1285,7 +1290,6 @@
       const presView = document.getElementById('presenterView');
       const bottomNav = document.getElementById('audienceBottomNav');
       const presenterBottomNav = document.getElementById('presenterBottomNav');
-      const headerCodeContainer = document.getElementById('headerCodeContainer');
 
       const activeClass = "px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition flex items-center space-x-1 bg-amber-500 text-slate-950 shadow";
       const inactiveClass = "px-2.5 py-1 rounded-lg text-[11px] font-extrabold text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition flex items-center space-x-1";
@@ -1299,7 +1303,6 @@
 
         if (bottomNav) bottomNav.classList.remove('hidden');
         if (presenterBottomNav) presenterBottomNav.classList.add('hidden');
-        if (headerCodeContainer) headerCodeContainer.classList.remove('hidden');
 
         if (audBtn) audBtn.className = activeClass;
         if (presBtn) presBtn.className = inactiveClass;
@@ -1311,7 +1314,6 @@
 
         if (bottomNav) bottomNav.classList.add('hidden');
         if (presenterBottomNav) presenterBottomNav.classList.remove('hidden');
-        if (headerCodeContainer) headerCodeContainer.classList.add('hidden');
 
         if (presBtn) presBtn.className = activeClass;
         if (audBtn) audBtn.className = inactiveClass;
