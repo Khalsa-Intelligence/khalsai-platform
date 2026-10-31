@@ -53,15 +53,15 @@
       border-width: 4px !important;
     }
     .p-nav-btn {
-      height: 38px;
-      padding: 0 14px;
+      height: 36px;
+      padding: 0 12px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       white-space: nowrap;
       border-radius: 10px;
       font-weight: 700;
-      font-size: 13px;
+      font-size: 12px;
       transition: all 0.2s ease;
       flex-shrink: 0;
     }
@@ -70,7 +70,6 @@
     .kahoot-btn-gold { background-color: #D89E00 !important; color: white !important; }
     .kahoot-btn-green { background-color: #26890C !important; color: white !important; }
 
-    /* Interactive Question Card Styling */
     .q-select-card {
       transition: all 0.15s ease-in-out;
     }
@@ -83,52 +82,52 @@
 </head>
 <body class="h-full flex flex-col bg-slate-50 text-slate-900 dark:bg-[#090D16] dark:text-gray-100 antialiased selection:bg-amber-500 selection:text-black">
 
-  <!-- Top Navigation Header with Unified Controls -->
+  <!-- Unified Top Navigation Header -->
   <header class="sticky top-0 z-40 border-b border-slate-200 dark:border-gray-800/80 bg-white/95 dark:bg-[#0D121F]/95 backdrop-blur-md px-3 sm:px-6 py-2 transition-all">
-    <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
       
       <!-- Brand & Title -->
-      <div class="flex items-center space-x-2 min-w-0 shrink">
-        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl gold-gradient-bg flex items-center justify-center text-slate-950 shadow-md shadow-amber-500/20 font-black text-base shrink-0">
-          <i data-lucide="zap" class="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]"></i>
+      <div class="flex items-center space-x-2 min-w-0 shrink-0">
+        <div class="w-8 h-8 rounded-xl gold-gradient-bg flex items-center justify-center text-slate-950 shadow-md shadow-amber-500/20 font-black text-sm shrink-0">
+          <i data-lucide="zap" class="w-4 h-4 stroke-[2.5]"></i>
         </div>
         <div class="min-w-0">
           <div class="flex items-center space-x-1.5">
-            <span class="text-xs sm:text-base font-black tracking-tight text-slate-900 dark:text-white uppercase truncate">Khalsai Pulse</span>
+            <span class="text-sm sm:text-base font-black tracking-tight text-slate-900 dark:text-white uppercase truncate">Khalsai Pulse</span>
             <span class="bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-400 text-[9px] px-1.5 py-0.5 rounded-full font-bold border border-amber-300 dark:border-amber-500/30 shrink-0">KI</span>
           </div>
         </div>
       </div>
 
-      <!-- Center Event Code Pill (Desktop & Tablet) -->
-      <div class="hidden lg:flex items-center space-x-2 bg-slate-100 dark:bg-gray-900/80 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-gray-800">
-        <span class="text-[11px] uppercase tracking-wider font-extrabold text-slate-500 dark:text-gray-400">SESSION CODE:</span>
-        <input type="text" id="headerAudienceCodeInput" value="" class="bg-white dark:bg-gray-950 px-2 py-0.5 rounded-lg border border-slate-300 dark:border-gray-700 font-mono font-bold text-amber-600 dark:text-amber-400 text-xs focus:outline-none focus:border-amber-500 w-32 uppercase text-center">
-        <button onclick="changeAudienceEventCode()" class="bg-amber-500 text-slate-950 font-extrabold text-xs px-2.5 py-1 rounded-lg hover:brightness-110 transition shadow">
+      <!-- Center Event Code Box -->
+      <div class="flex items-center space-x-1.5 bg-slate-100 dark:bg-gray-900/80 px-2.5 py-1 rounded-xl border border-slate-200 dark:border-gray-800">
+        <span class="text-[10px] uppercase tracking-wider font-extrabold text-slate-500 dark:text-gray-400 hidden sm:inline">CODE:</span>
+        <input type="text" id="headerAudienceCodeInput" value="" class="bg-white dark:bg-gray-950 px-2 py-0.5 rounded-lg border border-slate-300 dark:border-gray-700 font-mono font-bold text-amber-600 dark:text-amber-400 text-xs focus:outline-none focus:border-amber-500 w-24 sm:w-28 uppercase text-center">
+        <button onclick="changeAudienceEventCode()" class="bg-amber-500 text-slate-950 font-extrabold text-[11px] px-2 py-0.5 rounded hover:brightness-110 transition shadow">
           Join
         </button>
-        <button onclick="copyEventCode()" class="text-slate-500 dark:text-gray-400 hover:text-amber-500 transition ml-1" title="Copy Event Code">
-          <i data-lucide="copy" class="w-4 h-4"></i>
+        <button onclick="copyEventCode()" class="text-slate-500 dark:text-gray-400 hover:text-amber-500 transition ml-0.5" title="Copy Session Link">
+          <i data-lucide="copy" class="w-3.5 h-3.5"></i>
         </button>
       </div>
 
       <!-- Right Controls: Audience/Presenter Switcher & Theme Toggle -->
       <div class="flex items-center space-x-1.5 shrink-0">
         
-        <!-- View Switcher -->
-        <div class="bg-slate-200 dark:bg-gray-950 p-0.5 sm:p-1 rounded-xl border border-slate-300 dark:border-gray-800 flex items-center gap-0.5 sm:gap-1">
-          <button id="btnAudienceView" onclick="switchView('audience')" class="px-2 sm:px-3 py-1 rounded-lg text-[10px] sm:text-xs font-extrabold transition flex items-center space-x-1 bg-amber-500 text-slate-950 shadow">
+        <!-- Mode Switcher -->
+        <div class="bg-slate-200 dark:bg-gray-950 p-0.5 rounded-xl border border-slate-300 dark:border-gray-800 flex items-center gap-0.5">
+          <button id="btnAudienceView" onclick="switchView('audience')" class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition flex items-center space-x-1 bg-amber-500 text-slate-950 shadow">
             <i data-lucide="users" class="w-3 h-3"></i>
             <span>Audience</span>
           </button>
-          <button id="btnPresenterView" onclick="switchView('presenter')" class="px-2 sm:px-3 py-1 rounded-lg text-[10px] sm:text-xs font-extrabold text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition flex items-center space-x-1">
+          <button id="btnPresenterView" onclick="switchView('presenter')" class="px-2.5 py-1 rounded-lg text-[11px] font-extrabold text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition flex items-center space-x-1">
             <i data-lucide="presentation" class="w-3 h-3"></i>
             <span>Presenter</span>
           </button>
         </div>
 
         <!-- Theme Toggle Button -->
-        <button onclick="toggleTheme()" class="p-1.5 sm:p-2 rounded-xl bg-slate-100 dark:bg-gray-900 border border-slate-200 dark:border-gray-800 text-slate-700 dark:text-gray-300 transition shrink-0" title="Toggle Theme">
+        <button onclick="toggleTheme()" class="p-1.5 rounded-xl bg-slate-100 dark:bg-gray-900 border border-slate-200 dark:border-gray-800 text-slate-700 dark:text-gray-300 transition shrink-0" title="Toggle Theme">
           <i data-lucide="sun" class="w-4 h-4 hidden dark:block"></i>
           <i data-lucide="moon" class="w-4 h-4 block dark:hidden"></i>
         </button>
@@ -138,21 +137,8 @@
     </div>
   </header>
 
-  <!-- Mobile Session Code Bar -->
-  <div class="lg:hidden bg-slate-200 dark:bg-gray-950 border-b border-slate-300 dark:border-gray-800 px-3 py-1.5 flex items-center justify-between text-xs gap-2">
-    <div class="flex items-center space-x-1.5 font-mono">
-      <span class="text-slate-500 dark:text-gray-400 font-sans uppercase font-extrabold text-[10px]">CODE:</span>
-      <input type="text" id="mobileAudienceCodeInput" value="" class="bg-white dark:bg-gray-900 px-2 py-0.5 rounded border border-slate-300 dark:border-gray-700 font-mono font-bold text-amber-600 dark:text-amber-400 text-xs w-28 uppercase">
-      <button onclick="changeMobileAudienceCode()" class="bg-amber-500 text-slate-950 font-bold text-[10px] px-2 py-0.5 rounded">Join</button>
-    </div>
-    <button onclick="copyEventCode()" class="text-amber-600 dark:text-amber-400 font-bold flex items-center space-x-1 text-xs shrink-0">
-      <i data-lucide="copy" class="w-3.5 h-3.5"></i>
-      <span>Copy Link</span>
-    </button>
-  </div>
-
   <!-- Main View Container -->
-  <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 lg:p-8 flex flex-col pb-20 sm:pb-8">
+  <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 flex flex-col pb-20 sm:pb-8">
     
     <!-- AUDIENCE VIEW CONTAINER -->
     <div id="audienceView" class="flex-1 flex flex-col space-y-4 sm:space-y-6">
@@ -214,7 +200,7 @@
           </div>
         </div>
 
-        <!-- Slido Floating Reaction Bar -->
+        <!-- Floating Reaction Bar -->
         <div class="flex items-center justify-center gap-2 bg-white/80 dark:bg-gray-900/80 backdrop-blur border border-slate-200 dark:border-gray-800 p-2.5 rounded-2xl shadow-sm">
           <span class="text-xs font-bold text-slate-500 dark:text-gray-400 mr-2">Live Reaction:</span>
           <button onclick="sendReaction('🔥')" class="px-3 py-1.5 bg-slate-100 dark:bg-gray-800 hover:scale-110 transition rounded-xl text-sm shadow-sm">🔥</button>
@@ -280,23 +266,23 @@
         <!-- Presenter Section Switcher Tabs -->
         <div class="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 scrollbar-none w-full sm:w-auto">
           <button onclick="switchPresenterSubTab('spotlight')" id="subTabSpotlight" class="p-nav-btn bg-amber-500 text-slate-950 shadow">
-            <i data-lucide="sparkles" class="w-3.5 h-3.5 mr-1.5"></i>
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 mr-1"></i>
             <span>Spotlight</span>
           </button>
           <button onclick="switchPresenterSubTab('manager')" id="subTabManager" class="p-nav-btn bg-slate-100 dark:bg-gray-800/60 text-slate-700 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white">
-            <i data-lucide="plus-circle" class="w-3.5 h-3.5 mr-1.5"></i>
+            <i data-lucide="plus-circle" class="w-3.5 h-3.5 mr-1"></i>
             <span>Quiz Builder</span>
           </button>
           <button onclick="switchPresenterSubTab('sidebuilder')" id="subTabSideBuilder" class="p-nav-btn bg-slate-100 dark:bg-gray-800/60 text-slate-700 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white">
-            <i data-lucide="layers" class="w-3.5 h-3.5 mr-1.5"></i>
+            <i data-lucide="layers" class="w-3.5 h-3.5 mr-1"></i>
             <span>Side Quiz Builder</span>
           </button>
           <button onclick="switchPresenterSubTab('questions')" id="subTabQuestions" class="p-nav-btn bg-slate-100 dark:bg-gray-800/60 text-slate-700 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white">
-            <i data-lucide="message-square" class="w-3.5 h-3.5 mr-1.5"></i>
+            <i data-lucide="message-square" class="w-3.5 h-3.5 mr-1"></i>
             <span>Q&A Control</span>
           </button>
           <button onclick="switchPresenterSubTab('leaderboard')" id="subTabPresenterLeaderboard" class="p-nav-btn bg-slate-100 dark:bg-gray-800/60 text-slate-700 dark:text-gray-300 hover:text-slate-900 dark:hover:text-white">
-            <i data-lucide="trophy" class="w-3.5 h-3.5 mr-1.5"></i>
+            <i data-lucide="trophy" class="w-3.5 h-3.5 mr-1"></i>
             <span>Leaderboard</span>
           </button>
         </div>
@@ -566,8 +552,8 @@
 
   </main>
 
-  <!-- Sticky Unified Bottom Navigation Bar -->
-  <nav class="fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-[#0D121F]/95 backdrop-blur-md border-t border-slate-200 dark:border-gray-800 px-3 py-2 flex items-center justify-around shadow-lg">
+  <!-- Sticky Audience Bottom Navigation Bar (Hidden in Presenter Mode) -->
+  <nav id="audienceBottomNav" class="fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-[#0D121F]/95 backdrop-blur-md border-t border-slate-200 dark:border-gray-800 px-3 py-2 flex items-center justify-around shadow-lg">
     <button onclick="switchAudienceTab('qa')" id="mobileNavQA" class="flex flex-col items-center space-y-1 text-amber-600 dark:text-amber-400 font-bold text-[10px]">
       <i data-lucide="message-square" class="w-5 h-5"></i>
       <span>Live Q&A</span>
@@ -1054,7 +1040,7 @@
       const audCodeDisp = document.getElementById('audienceLeaderboardCode');
       if (audCodeDisp) audCodeDisp.textContent = clean;
 
-      ['eventCodeInput', 'headerAudienceCodeInput', 'mobileAudienceCodeInput'].forEach(id => {
+      ['eventCodeInput', 'headerAudienceCodeInput'].forEach(id => {
         const input = document.getElementById(id);
         if (input) input.value = clean;
       });
@@ -1072,11 +1058,6 @@
 
     function changeAudienceEventCode() {
       const input = document.getElementById('headerAudienceCodeInput');
-      if (input && input.value.trim()) setEventCode(input.value.trim());
-    }
-
-    function changeMobileAudienceCode() {
-      const input = document.getElementById('mobileAudienceCodeInput');
       if (input && input.value.trim()) setEventCode(input.value.trim());
     }
 
@@ -1343,6 +1324,7 @@
       const presBtn = document.getElementById('btnPresenterView');
       const audView = document.getElementById('audienceView');
       const presView = document.getElementById('presenterView');
+      const bottomNav = document.getElementById('audienceBottomNav');
 
       if (viewMode === 'audience') {
         checkParticipantName();
@@ -1351,8 +1333,10 @@
         presView.classList.add('hidden');
         presView.classList.remove('flex');
 
-        const activeClass = "px-2 sm:px-3 py-1 rounded-lg text-[10px] sm:text-xs font-extrabold transition flex items-center space-x-1 bg-amber-500 text-slate-950 shadow";
-        const inactiveClass = "px-2 sm:px-3 py-1 rounded-lg text-[10px] sm:text-xs font-extrabold text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition flex items-center space-x-1";
+        if (bottomNav) bottomNav.classList.remove('hidden');
+
+        const activeClass = "px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition flex items-center space-x-1 bg-amber-500 text-slate-950 shadow";
+        const inactiveClass = "px-2.5 py-1 rounded-lg text-[11px] font-extrabold text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition flex items-center space-x-1";
 
         if (audBtn) audBtn.className = activeClass;
         if (presBtn) presBtn.className = inactiveClass;
@@ -1362,8 +1346,10 @@
         audView.classList.add('hidden');
         audView.classList.remove('flex');
 
-        const activeClass = "px-2 sm:px-3 py-1 rounded-lg text-[10px] sm:text-xs font-extrabold transition flex items-center space-x-1 bg-amber-500 text-slate-950 shadow";
-        const inactiveClass = "px-2 sm:px-3 py-1 rounded-lg text-[10px] sm:text-xs font-extrabold text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition flex items-center space-x-1";
+        if (bottomNav) bottomNav.classList.add('hidden');
+
+        const activeClass = "px-2.5 py-1 rounded-lg text-[11px] font-extrabold transition flex items-center space-x-1 bg-amber-500 text-slate-950 shadow";
+        const inactiveClass = "px-2.5 py-1 rounded-lg text-[11px] font-extrabold text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition flex items-center space-x-1";
 
         if (presBtn) presBtn.className = activeClass;
         if (audBtn) audBtn.className = inactiveClass;
