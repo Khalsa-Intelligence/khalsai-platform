@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en" class="dark h-full">
 <head>
@@ -43,14 +44,23 @@
     ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.2); border-radius: 10px; }
     ::-webkit-scrollbar-thumb:hover { background: rgba(156, 163, 175, 0.4); }
 
+    @keyframes persistent-pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(0.95); }
+    }
+    .persistent-pulse {
+      animation: persistent-pulse 2s infinite ease-in-out;
+    }
+
     @keyframes pulse-border {
-      0%, 100% { border-color: #22c55e; box-shadow: 0 0 15px rgba(34, 197, 94, 0.6); }
-      50% { border-color: #86efac; box-shadow: 0 0 5px rgba(34, 197, 94, 0.2); }
+      0%, 100% { border-color: #22c55e; box-shadow: 0 0 18px rgba(34, 197, 94, 0.7); }
+      50% { border-color: #86efac; box-shadow: 0 0 6px rgba(34, 197, 94, 0.3); }
     }
     .correct-flash-border {
-      animation: pulse-border 1s infinite ease-in-out;
+      animation: pulse-border 1.2s infinite ease-in-out;
       border-width: 4px !important;
     }
+
     .kahoot-btn-red { background-color: #E21B3C !important; color: white !important; }
     .kahoot-btn-blue { background-color: #1368CE !important; color: white !important; }
     .kahoot-btn-gold { background-color: #D89E00 !important; color: white !important; }
@@ -126,7 +136,7 @@
         <button onclick="copyEventCode()" class="text-slate-500 dark:text-gray-400 hover:text-amber-500 transition p-1" title="Copy Session Link">
           <i data-lucide="copy" class="w-4 h-4"></i>
         </button>
-        <!-- Updated Feedback Link Button -->
+        <!-- Feedback Link Button -->
         <a href="https://khalsai.com/why-guru-feedback/" target="_blank" class="flex items-center space-x-1 text-xs font-bold bg-slate-200 dark:bg-gray-800 text-slate-700 dark:text-gray-300 px-3 py-1 rounded-lg hover:bg-amber-500 hover:text-slate-950 transition shrink-0">
           <i data-lucide="message-square-plus" class="w-3.5 h-3.5"></i>
           <span>Feedback</span>
@@ -258,7 +268,7 @@
               <span>Projector Screen Focus</span>
             </div>
 
-            <!-- Page-Level Timer Toggle with Immediate Dynamic Override -->
+            <!-- Page-Level Timer Toggle -->
             <div class="flex items-center space-x-2 bg-slate-100 dark:bg-gray-950 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-gray-800">
               <span class="text-[11px] font-extrabold text-slate-600 dark:text-gray-300">Release Timer Mode:</span>
               <button id="pageTimerToggleBtn" onclick="togglePresenterTimerMode()" class="px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center space-x-1 bg-amber-500 text-slate-950 shadow">
@@ -1097,7 +1107,7 @@
           const sortedPulses = [...data.recent_pulses].sort((a, b) => a.id - b.id);
           const deckMap = new Map();
 
-          // 1. DYNAMICALLY REBUILD LEADERBOARD FROM UNIQUE QUIZ ANSWERS ONLY (DEDUPLICATED)
+          // 1. REBUILD LEADERBOARD FROM UNIQUE QUIZ ANSWERS (DEDUPLICATED)
           const userScores = {};
           const userScoredQuestions = new Set();
 
@@ -1288,7 +1298,6 @@
       renderPresenterTimerToggleUI();
       renderAudioToggleUI();
       initPresenterApp();
-      // DISABLED PAGE_VIEW LOGGING TO PROTECT DB WRITE LIMITS
     };
 
     function switchView(viewMode, skipPrompt = false) {
@@ -1921,7 +1930,6 @@
         state.totalResponses++;
       }
 
-      // EXACT BUILDER POINTS: Dynamically read state.activeQuizQuestion.points
       let pointsEarned = 0;
       if (isCorrect) {
         const maxPoints = (state.activeQuizQuestion && state.activeQuizQuestion.points !== undefined) 
@@ -1935,7 +1943,6 @@
           speedRatio = timeRemaining / totalTime;
         }
         
-        // Speed ratio formula safely bounded under maxPoints
         pointsEarned = Math.round(maxPoints * (0.5 + (0.5 * speedRatio)));
       }
 
@@ -2111,7 +2118,7 @@
               <span>Player: <strong>${state.userName || 'Anonymous'}</strong></span>
               <button onclick="changePlayerNamePrompt()" class="underline ml-1 hover:text-amber-500">Edit</button>
             </div>
-            <div class="w-12 h-12 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center mx-auto border border-amber-500/20 animate-pulse">
+            <div class="w-12 h-12 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center mx-auto border border-amber-500/20 persistent-pulse">
               <i data-lucide="clock" class="w-6 h-6"></i>
             </div>
             <h2 class="text-lg font-bold text-slate-900 dark:text-white">Waiting for Presenter...</h2>
@@ -2185,8 +2192,11 @@
               
               let btnStyle = `${style.class} shadow-md`;
               if (showAnswerAndVotes) {
-                if (isCorrect) btnStyle = `${style.class} correct-flash-border`;
-                else btnStyle = "bg-slate-200 dark:bg-gray-900 border border-slate-300 dark:border-gray-800 text-slate-400 opacity-40";
+                if (isCorrect) {
+                  btnStyle = `${style.class} correct-flash-border`;
+                } else {
+                  btnStyle = "bg-slate-300/40 dark:bg-gray-900/40 border border-slate-300 dark:border-gray-800 text-slate-400 dark:text-gray-600 opacity-30 grayscale-[30%] shadow-none";
+                }
               } else if (isSelected) {
                 btnStyle = `${style.class} ring-4 ring-white dark:ring-slate-900 font-black scale-[1.02]`;
               }
@@ -2385,3 +2395,4 @@
   </script>
 </body>
 </html>
+```
