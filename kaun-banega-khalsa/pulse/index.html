@@ -111,14 +111,14 @@
 
     </div>
 
-    <!-- Secondary Header Bar for Audience Code & Restored Feedback Button -->
-    <div id="headerCodeContainer" class="max-w-7xl mx-auto flex items-center justify-between bg-slate-100 dark:bg-gray-900/80 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-gray-800">
-      <div class="flex items-center space-x-2">
+    <!-- Secondary Header Bar for Audience Code & Fixed Feedback Layout -->
+    <div id="headerCodeContainer" class="max-w-7xl mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 bg-slate-100 dark:bg-gray-900/80 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-gray-800">
+      <div class="flex items-center space-x-2 shrink-0">
         <i data-lucide="radio" class="w-4 h-4 text-amber-500 animate-pulse"></i>
-        <span class="text-xs font-extrabold uppercase tracking-wider text-slate-700 dark:text-gray-300">Session Join</span>
+        <span class="text-xs font-extrabold uppercase tracking-wider text-slate-700 dark:text-gray-300">Session</span>
       </div>
       
-      <div class="flex items-center space-x-2">
+      <div class="flex items-center space-x-2 flex-wrap sm:flex-nowrap justify-end w-full sm:w-auto">
         <input type="text" id="headerAudienceCodeInput" value="" class="bg-white dark:bg-gray-950 px-2.5 py-1 rounded-lg border border-slate-300 dark:border-gray-700 font-mono font-bold text-amber-600 dark:text-amber-400 text-xs focus:outline-none focus:border-amber-500 w-28 sm:w-36 uppercase text-center">
         <button onclick="changeAudienceEventCode()" class="bg-amber-500 text-slate-950 font-extrabold text-xs px-3 py-1 rounded-lg hover:brightness-110 transition shadow">
           Join
@@ -126,8 +126,8 @@
         <button onclick="copyEventCode()" class="text-slate-500 dark:text-gray-400 hover:text-amber-500 transition p-1" title="Copy Session Link">
           <i data-lucide="copy" class="w-4 h-4"></i>
         </button>
-        <!-- Restored Feedback Link Button -->
-        <a href="feedback.html" target="_blank" class="flex items-center space-x-1 text-xs font-bold bg-slate-200 dark:bg-gray-800 text-slate-700 dark:text-gray-300 px-3 py-1 rounded-lg hover:bg-amber-500 hover:text-slate-950 transition ml-2">
+        <!-- Updated Feedback Link Button -->
+        <a href="https://khalsai.com/why-guru-feedback/" target="_blank" class="flex items-center space-x-1 text-xs font-bold bg-slate-200 dark:bg-gray-800 text-slate-700 dark:text-gray-300 px-3 py-1 rounded-lg hover:bg-amber-500 hover:text-slate-950 transition shrink-0">
           <i data-lucide="message-square-plus" class="w-3.5 h-3.5"></i>
           <span>Feedback</span>
         </a>
@@ -1921,7 +1921,7 @@
         state.totalResponses++;
       }
 
-      // 3. EXACT BUILDER POINTS: Dynamically read state.activeQuizQuestion.points
+      // EXACT BUILDER POINTS: Dynamically read state.activeQuizQuestion.points
       let pointsEarned = 0;
       if (isCorrect) {
         const maxPoints = (state.activeQuizQuestion && state.activeQuizQuestion.points !== undefined) 
