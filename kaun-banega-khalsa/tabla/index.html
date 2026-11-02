@@ -16,9 +16,28 @@
     --sam-bg: #FEE2E2;
     --tali-bg: #FEF3C7;
     --khali-bg: #F1F5F9;
+    --table-head: #334155;
+    --badge-bg: #E0F2FE;
+    --badge-text: #0369A1;
   }
 
-  * { box-sizing: border-box; scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; }
+  [data-theme="dark"] {
+    --primary: #38BDF8;
+    --accent: #F87171;
+    --gold: #FBBF24;
+    --bg-main: #0F172A;
+    --card-bg: #1E293B;
+    --text: #F1F5F9;
+    --border: #334155;
+    --sam-bg: #450A0A;
+    --tali-bg: #422006;
+    --khali-bg: #1E293B;
+    --table-head: #0F172A;
+    --badge-bg: #0C4A6E;
+    --badge-text: #38BDF8;
+  }
+
+  * { box-sizing: border-box; scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; transition: background-color 0.2s, color 0.2s, border-color 0.2s; }
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -26,7 +45,7 @@
     color: var(--text);
     margin: 0;
     padding: 12px;
-    line-height: 1.4;
+    line-height: 1.5;
   }
 
   .workbook-container {
@@ -39,7 +58,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background: #FFFFFF;
+    background: var(--card-bg);
     border: 1px solid var(--border);
     padding: 12px 16px;
     border-radius: 8px;
@@ -55,27 +74,37 @@
     letter-spacing: 0.5px;
   }
 
-  .print-btn {
+  .toolbar-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .theme-toggle-btn, .print-btn {
     background-color: var(--primary);
     color: #FFFFFF;
     border: none;
-    padding: 10px 16px;
-    font-size: 9.5pt;
+    padding: 10px 14px;
+    font-size: 9pt;
     font-weight: bold;
     border-radius: 6px;
     cursor: pointer;
-    min-height: 44px;
+    min-height: 40px;
     display: flex;
     align-items: center;
     gap: 6px;
-    transition: background 0.2s, transform 0.1s;
+    transition: opacity 0.2s, transform 0.1s;
   }
 
-  .print-btn:active { transform: scale(0.98); }
+  [data-theme="dark"] .theme-toggle-btn, [data-theme="dark"] .print-btn {
+    color: #0F172A;
+  }
+
+  .theme-toggle-btn:active, .print-btn:active { transform: scale(0.98); }
 
   /* Interactive Metronome Widget */
   .metronome-card {
-    background: #FFFFFF;
+    background: var(--card-bg);
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 14px 18px;
@@ -107,7 +136,6 @@
     cursor: pointer;
     min-height: 44px;
     min-width: 90px;
-    transition: background 0.2s;
   }
 
   .metro-btn.playing { background-color: #10B981; }
@@ -124,7 +152,7 @@
     justify-content: space-between;
     font-size: 8.5pt;
     font-weight: bold;
-    color: var(--primary);
+    color: var(--text);
   }
 
   .metro-slider {
@@ -137,70 +165,14 @@
   .beat-indicator {
     width: 24px;
     height: 24px;
-    background-color: #E2D8CE;
+    background-color: var(--border);
     border-radius: 50%;
     transition: background-color 0.1s ease;
   }
 
   .beat-indicator.active {
     background-color: var(--gold);
-    box-shadow: 0 0 8px var(--gold);
-  }
-
-  /* Drum Visualizer Grids */
-  .visual-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 12px;
-    margin-bottom: 14px;
-  }
-
-  @media (min-width: 600px) {
-    .visual-grid { grid-template-columns: 1fr 1fr; }
-  }
-
-  .visual-box {
-    background: #FFFFFF;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 14px;
-    text-align: center;
-  }
-
-  .drum-diagram {
-    width: 110px;
-    height: 110px;
-    margin: 0 auto 10px auto;
-    border-radius: 50%;
-    position: relative;
-    border: 2px solid #555;
-  }
-
-  .dayan-bg { background: #EAD0B3; }
-  .bayan-bg { background: #D1D5DB; }
-
-  .zone-syahi {
-    width: 45px;
-    height: 45px;
-    background: #1E293B;
-    border-radius: 50%;
-    position: absolute;
-    top: 31px;
-    left: 31px;
-    color: #FFF;
-    font-size: 6.5pt;
-    line-height: 45px;
-    font-weight: bold;
-  }
-
-  .zone-kinar {
-    width: 102px;
-    height: 102px;
-    border: 3px solid #B45309;
-    border-radius: 50%;
-    position: absolute;
-    top: 2px;
-    left: 2px;
+    box-shadow: 0 0 10px var(--gold);
   }
 
   /* Sticky Horizontal Nav Bar */
@@ -208,7 +180,7 @@
     position: sticky;
     top: 8px;
     z-index: 100;
-    background: rgba(255, 255, 255, 0.96);
+    background: var(--card-bg);
     backdrop-filter: blur(6px);
     border: 1px solid var(--border);
     padding: 8px 10px;
@@ -228,15 +200,16 @@
     font-size: 8pt;
     font-weight: bold;
     text-transform: uppercase;
-    color: #7A6F68;
+    color: var(--text);
+    opacity: 0.7;
     align-self: center;
     padding-right: 4px;
   }
 
   .jump-btn {
-    background: #F0F4F8;
-    color: var(--primary);
-    border: 1px solid #CBD5E1;
+    background: var(--khali-bg);
+    color: var(--text);
+    border: 1px solid var(--border);
     padding: 8px 12px;
     border-radius: 6px;
     font-size: 8.5pt;
@@ -248,7 +221,7 @@
     flex-shrink: 0;
   }
 
-  .jump-btn:active { background: var(--primary); color: #FFFFFF; }
+  .jump-btn:active { background: var(--primary); color: #FFF; }
 
   /* Sheet Modules */
   .sheet-container {
@@ -269,6 +242,8 @@
     border-bottom: 4px solid var(--accent);
   }
 
+  [data-theme="dark"] .header { color: #0F172A; }
+
   .header-title {
     font-size: 16pt;
     font-weight: 700;
@@ -278,7 +253,7 @@
 
   .header-subtitle {
     font-size: 8.5pt;
-    color: #E0E6ED;
+    opacity: 0.9;
     margin-top: 3px;
     text-transform: uppercase;
     letter-spacing: 0.8px;
@@ -287,7 +262,7 @@
   .section-title {
     font-size: 9.5pt;
     font-weight: bold;
-    color: var(--primary);
+    color: var(--text);
     border-left: 4px solid var(--gold);
     padding-left: 8px;
     margin: 16px 0 8px 0;
@@ -303,33 +278,45 @@
     border-radius: 4px;
     font-weight: bold;
     text-transform: uppercase;
+    background: var(--badge-bg);
+    color: var(--badge-text);
   }
-  .badge-beginner { background: #E0F2FE; color: #0369A1; }
-  .badge-intermediate { background: #FEF3C7; color: #92400E; }
-  .badge-advanced { background: #FEE2E2; color: #991B1B; }
 
   .info-box {
-    background-color: #F0F4F8;
+    background-color: var(--khali-bg);
     border-left: 4px solid var(--primary);
     padding: 10px 12px;
     border-radius: 0 6px 6px 0;
     margin-bottom: 12px;
     font-size: 8.5pt;
-    color: #334155;
   }
 
-  .card {
-    background-color: #FFFFFF;
+  /* Bol Dictionary Grid */
+  .bol-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  @media(min-width: 600px) {
+    .bol-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  .bol-card {
+    background: var(--khali-bg);
     border: 1px solid var(--border);
+    padding: 10px 12px;
     border-radius: 6px;
-    padding: 12px;
-    margin-bottom: 12px;
     font-size: 8.5pt;
   }
 
-  .card-title { font-weight: bold; color: #8C2F00; margin-bottom: 6px; font-size: 9pt; }
-  ul.tip-list { margin: 0; padding-left: 14px; }
-  ul.tip-list li { margin-bottom: 3px; }
+  .bol-name {
+    font-weight: bold;
+    color: var(--accent);
+    font-size: 9.5pt;
+    margin-bottom: 2px;
+  }
 
   /* Equal Column Spacing Taal Tables */
   .taal-table-wrapper {
@@ -343,8 +330,8 @@
     width: 100%;
     table-layout: fixed;
     border-collapse: collapse;
-    background-color: #FFFFFF;
-    border: 1px solid #D1C5B8;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
   }
 
   .taal-table th, .taal-table td {
@@ -353,10 +340,11 @@
     text-align: center;
     font-size: 8.5pt;
     word-break: break-word;
+    color: var(--text);
   }
 
   .taal-table th {
-    background-color: #334155;
+    background-color: var(--table-head);
     color: #FFFFFF;
     font-weight: bold;
     font-size: 7.5pt;
@@ -365,18 +353,16 @@
   .taal-table tr.bol-row td {
     font-size: 10pt;
     font-weight: bold;
-    color: #0F172A;
   }
 
   .taal-table tr.finger-row td {
     font-size: 7pt;
-    color: #64748B;
-    background-color: #FAF8F5;
+    opacity: 0.8;
   }
 
-  .sam-cell { background-color: var(--sam-bg); color: #991B1B; font-weight: bold; }
-  .tali-cell { background-color: var(--tali-bg); color: #92400E; }
-  .khali-cell { background-color: var(--khali-bg); color: #475569; }
+  .sam-cell { background-color: var(--sam-bg) !important; font-weight: bold; }
+  .tali-cell { background-color: var(--tali-bg) !important; }
+  .khali-cell { background-color: var(--khali-bg) !important; }
 
   .meta-grid {
     display: grid;
@@ -386,17 +372,17 @@
   }
 
   .meta-cell {
-    background: #FFFFFF;
+    background: var(--khali-bg);
     border: 1px solid var(--border);
     padding: 6px;
     border-radius: 6px;
     text-align: center;
   }
 
-  .meta-label { font-size: 6pt; text-transform: uppercase; color: #7A6F68; font-weight: bold; }
-  .meta-value { font-size: 9.5pt; font-weight: bold; color: var(--primary); }
+  .meta-label { font-size: 6pt; text-transform: uppercase; opacity: 0.7; font-weight: bold; }
+  .meta-value { font-size: 9.5pt; font-weight: bold; color: var(--text); }
 
-  /* Mobile Touch-Friendly 100-Day Tracker Grid */
+  /* Tracker Grid */
   .tracker-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -405,14 +391,13 @@
   }
 
   .tracker-box {
-    background: #FFFFFF;
+    background: var(--khali-bg);
     border: 1px solid var(--border);
     border-radius: 6px;
     padding: 10px 2px;
     text-align: center;
     font-size: 8pt;
     font-weight: bold;
-    color: #475569;
     cursor: pointer;
     min-height: 54px;
     display: flex;
@@ -431,12 +416,11 @@
   }
 
   .tracker-box.checked {
-    background-color: #ECFDF5;
+    background-color: #064E3B !important;
     border-color: #10B981;
-    color: #065F46;
+    color: #34D399;
   }
 
-  /* MEDIA QUERIES & PRINT STYLES */
   @media (min-width: 600px) {
     body { padding: 20px; }
     .sheet-container { padding: 24px; }
@@ -444,8 +428,8 @@
   }
 
   @media print {
-    @page { size: A4 portrait; margin: 10mm; }
-    body { background-color: #FFFFFF; padding: 0; }
+    :root { --bg-main: #FFF; --card-bg: #FFF; --text: #000; --border: #999; }
+    body { background-color: #FFFFFF; padding: 0; color: #000; }
     .web-toolbar, .jump-nav, .metronome-card { display: none; }
     .sheet-container {
       page-break-after: always;
@@ -455,20 +439,20 @@
       margin-bottom: 0;
     }
     .sheet-container:last-child { page-break-after: avoid; }
-    .taal-table-wrapper { overflow: visible; }
   }
 </style>
 </head>
-<body>
+<body data-theme="light">
 
 <div class="workbook-container">
 
   <!-- Web Toolbar -->
   <div class="web-toolbar">
     <div class="brand-tag">🪘 Khalsai - Tabla App</div>
-    <button class="print-btn" onclick="window.print()">
-      🖨️ Print / Save PDF
-    </button>
+    <div class="toolbar-actions">
+      <button class="theme-toggle-btn" onclick="toggleTheme()" id="themeToggleBtn">🌙 Dark</button>
+      <button class="print-btn" onclick="window.print()">🖨️ PDF</button>
+    </div>
   </div>
 
   <!-- Interactive Web Metronome -->
@@ -489,7 +473,7 @@
   <!-- Sticky Quick Jump Carousel Nav -->
   <nav class="jump-nav">
     <span class="jump-label">Jump:</span>
-    <a href="#basics" class="jump-btn">Anatomy</a>
+    <a href="#bols" class="jump-btn">Bol Masterclass</a>
     <a href="#keherwa" class="jump-btn">Keherwa (8)</a>
     <a href="#dadra" class="jump-btn">Dadra (6)</a>
     <a href="#teental" class="jump-btn">Teental (16)</a>
@@ -499,40 +483,46 @@
     <a href="#tracker" class="jump-btn">Tracker</a>
   </nav>
 
-  <!-- BASICS / DRUM ANATOMY GUIDE -->
-  <div id="basics" class="sheet-container">
+  <!-- COMPREHENSIVE BOL MASTERCLASS & ACOUSTICS -->
+  <div id="bols" class="sheet-container">
     <div class="header">
-      <div class="header-title">Tabla Master Reference</div>
-      <div class="header-subtitle">Khalsai - Tabla App • Stroke & Drum Anatomy</div>
+      <div class="header-title">Tabla Bol Masterclass</div>
+      <div class="header-subtitle">Khalsai - Tabla App • Acoustic Guide & Stroke Dictionary</div>
     </div>
     <div class="info-box">
-      <strong>How to Use This Guide:</strong> Master these target zones and stroke mechanics. Proper drum surface isolation ensures clarity, resonance, and projection during Kirtan accompaniment.
+      <strong>Deep-Dive: The Acoustics of Na vs. Ta & All Core Bols:</strong> Understanding the exact physical hand placement and sonic contrast is essential for expressive Shabad Kirtan accompaniment.
     </div>
-    
-    <div class="visual-grid">
-      <div class="visual-box">
-        <div style="font-weight:bold; color:#1C3144; margin-bottom:6px; font-size:9pt;">DAYAN (Treble Drum - Right)</div>
-        <div class="drum-diagram dayan-bg">
-          <div class="zone-kinar"></div>
-          <div class="zone-syahi">SYAHI</div>
-        </div>
-        <div style="font-size:7.5pt; text-align:left;">
-          • <strong style="color:#B45309;">Kinar (Outer Rim):</strong> Crisp non-resonant pings (<em>Ta / Na</em>)<br>
-          • <strong>Maidan (Middle Leather):</strong> Resonant sweet tones (<em>Tin</em>)<br>
-          • <strong style="color:#1E293B;">Syahi (Black Center):</strong> Fast muted strikes (<em>Titkit</em>)
-        </div>
-      </div>
 
-      <div class="visual-box">
-        <div style="font-weight:bold; color:#1C3144; margin-bottom:6px; font-size:9pt;">BAYAN (Bass Drum - Left)</div>
-        <div class="drum-diagram bayan-bg">
-          <div class="zone-syahi" style="top:32.5px; left:32.5px;">SYAHI</div>
-        </div>
-        <div style="font-size:7.5pt; text-align:left;">
-          • <strong>Open Bass (Ge/Ghe):</strong> Strike open surface with Middle/Index pads [M/I]. Allow bass to ring.<br>
-          • <strong>Wrist Modulation:</strong> Slide wrist-heel forward across skin to bend pitch.<br>
-          • <strong>Muted Bass (Ke/Kat):</strong> Flat cupped hand slap [X].
-        </div>
+    <div class="section-title"><span>Acoustic Physics: Why Na vs. Ta?</span></div>
+    <div class="info-box" style="border-left-color: var(--accent);">
+      <p style="margin: 0 0 8px 0;">To the casual listener, <strong>Na</strong> and <strong>Ta</strong> sound almost identical because both are high-pitched rim strikes on the Dayan (treble drum). However, their acoustic function differs entirely:</p>
+      <ul style="margin: 0; padding-left: 16px;">
+        <li><strong>Na (Open Resonant Rim Stroke):</strong> Played on the outer rim (<em>Kinar</em>) with fingers bouncing off instantly. The drumhead vibrates freely, creating a ringing, sustained metallic echo. Acts like an open musical vowel or comma.</li>
+        <li><strong>Ta (Muted / Choked Rim Stroke):</strong> Played on the same rim, but the palm or heel dampens the drumhead immediately upon contact. Produces a dry, crisp, punchy "clack" with zero sustain. Acts like a hard musical period or exclamation point, providing vital contrast during quiet waves (<em>Khali</em>).</li>
+      </ul>
+    </div>
+
+    <div class="section-title"><span>Complete Tabla Stroke Dictionary</span></div>
+    <div class="bol-grid">
+      <div class="bol-card">
+        <div class="bol-name">Dha (Compound Master Stroke)</div>
+        <div>Combination of open bass <strong>Ge</strong> on Bayan + open treble <strong>Na</strong> on Dayan. The foundational starting beat (Sam) of almost all major taals.</div>
+      </div>
+      <div class="bol-card">
+        <div class="bol-name">Dhin / Tin (Resonant Maidan Tones)</div>
+        <div>Played on the middle leather (<em>Maidan</em>) of the Dayan using the index finger while allowing the sound to resonate openly. Warm and melodious.</div>
+      </div>
+      <div class="bol-card">
+        <div class="bol-name">Ge / Ghe (Open Bass)</div>
+        <div>Played on the Bayan bass drum using flat middle/index finger pads. Wrist heel slides forward to create a booming, echoing resonance.</div>
+      </div>
+      <div class="bol-card">
+        <div class="bol-name">Tit / Titkit (Muted Center Speed Notes)</div>
+        <div>Fast, crisp double or triple strikes executed lightly across the black center (<em>Syahi</em>) using the middle and ring fingers together.</div>
+      </div>
+      <div class="bol-card">
+        <div class="bol-name">Ke / Kat (Muted Bass Slap)</div>
+        <div>A sharp, dampened slap on the Bayan bass drum using a flat, cupped hand that chokes all ring instantly.</div>
       </div>
     </div>
   </div>
@@ -551,7 +541,7 @@
     </div>
     <div class="info-box"><strong>Kirtan Use:</strong> Standard Shabads & Simran. Tempo: 70–100 BPM.</div>
 
-    <div class="section-title"><span>1. Beginner Theka</span><span class="level-badge badge-beginner">Beginner</span></div>
+    <div class="section-title"><span>1. Beginner Theka</span><span class="level-badge">Beginner</span></div>
     <div class="taal-table-wrapper">
       <table class="taal-table">
         <thead><tr><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th></tr></thead>
@@ -563,7 +553,7 @@
       </table>
     </div>
 
-    <div class="section-title"><span>2. Intermediate Palta (Dhumali Style)</span><span class="level-badge badge-intermediate">Intermediate</span></div>
+    <div class="section-title"><span>2. Intermediate Palta (Dhumali Style)</span><span class="level-badge">Intermediate</span></div>
     <div class="taal-table-wrapper">
       <table class="taal-table">
         <thead><tr><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th></tr></thead>
@@ -589,7 +579,7 @@
     </div>
     <div class="info-box"><strong>Kirtan Use:</strong> Upbeat, light Shabads. Tempo: 90–130 BPM.</div>
 
-    <div class="section-title"><span>1. Beginner Theka (Taught Version)</span><span class="level-badge badge-beginner">Beginner</span></div>
+    <div class="section-title"><span>1. Beginner Theka (Taught Version)</span><span class="level-badge">Beginner</span></div>
     <div class="taal-table-wrapper">
       <table class="taal-table">
         <thead><tr><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr></thead>
@@ -601,7 +591,7 @@
       </table>
     </div>
 
-    <div class="section-title"><span>2. Classical Standard Dadra</span><span class="level-badge badge-intermediate">Intermediate</span></div>
+    <div class="section-title"><span>2. Classical Standard Dadra</span><span class="level-badge">Intermediate</span></div>
     <div class="taal-table-wrapper">
       <table class="taal-table">
         <thead><tr><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr></thead>
@@ -627,7 +617,7 @@
     </div>
     <div class="info-box"><strong>Kirtan Use:</strong> Classical compositions & slow contemplative shabads. Tempo: 50–90 BPM.</div>
 
-    <div class="section-title"><span>1. Beginner Theka (Part 1: Beats 1–8)</span><span class="level-badge badge-beginner">Beginner</span></div>
+    <div class="section-title"><span>1. Beginner Theka (Part 1: Beats 1–8)</span><span class="level-badge">Beginner</span></div>
     <div class="taal-table-wrapper">
       <table class="taal-table">
         <thead><tr><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th></tr></thead>
@@ -641,7 +631,7 @@
       </table>
     </div>
 
-    <div class="section-title"><span>1. Beginner Theka (Part 2: Beats 9–16)</span><span class="level-badge badge-beginner">Beginner</span></div>
+    <div class="section-title"><span>1. Beginner Theka (Part 2: Beats 9–16)</span><span class="level-badge">Beginner</span></div>
     <div class="taal-table-wrapper">
       <table class="taal-table">
         <thead><tr><th>9</th><th>10</th><th>11</th><th>12</th><th>13</th><th>14</th><th>15</th><th>16</th></tr></thead>
@@ -656,7 +646,7 @@
     </div>
   </div>
 
-  <!-- DEEPCHANDI TAAL (14 BEATS - SPLIT INTO TWO LINES) -->
+  <!-- DEEPCHANDI TAAL (14 BEATS - SPLIT) -->
   <div id="deepchandi" class="sheet-container">
     <div class="header">
       <div class="header-title">Deepchandi Taal (14 Beats)</div>
@@ -670,7 +660,7 @@
     </div>
     <div class="info-box"><strong>Kirtan Use:</strong> Semi-classical, emotional, slow-paced compositions. Tempo: 60–80 BPM.</div>
 
-    <div class="section-title"><span>1. Deepchandi Theka (Part 1: Beats 1–7)</span><span class="level-badge badge-beginner">Beginner</span></div>
+    <div class="section-title"><span>1. Deepchandi Theka (Part 1: Beats 1–7)</span><span class="level-badge">Beginner</span></div>
     <div class="taal-table-wrapper">
       <table class="taal-table">
         <thead><tr><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th></tr></thead>
@@ -684,7 +674,7 @@
       </table>
     </div>
 
-    <div class="section-title"><span>1. Deepchandi Theka (Part 2: Beats 8–14)</span><span class="level-badge badge-beginner">Beginner</span></div>
+    <div class="section-title"><span>1. Deepchandi Theka (Part 2: Beats 8–14)</span><span class="level-badge">Beginner</span></div>
     <div class="taal-table-wrapper">
       <table class="taal-table">
         <thead><tr><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th><th>13</th><th>14</th></tr></thead>
@@ -699,7 +689,7 @@
     </div>
   </div>
 
-  <!-- JAPTAAL (10 BEATS - SPLIT INTO TWO LINES) -->
+  <!-- JAPTAAL (10 BEATS - SPLIT) -->
   <div id="japtaal" class="sheet-container">
     <div class="header">
       <div class="header-title">Japtaal (10 Beats)</div>
@@ -713,7 +703,7 @@
     </div>
     <div class="info-box"><strong>Kirtan Use:</strong> Symmetrical 10-beat cycle. Tempo: 70–100 BPM.</div>
 
-    <div class="section-title"><span>1. Japtaal Theka (Part 1: Beats 1–5)</span><span class="level-badge badge-intermediate">Intermediate</span></div>
+    <div class="section-title"><span>1. Japtaal Theka (Part 1: Beats 1–5)</span><span class="level-badge">Intermediate</span></div>
     <div class="taal-table-wrapper">
       <table class="taal-table">
         <thead><tr><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
@@ -727,7 +717,7 @@
       </table>
     </div>
 
-    <div class="section-title"><span>1. Japtaal Theka (Part 2: Beats 6–10)</span><span class="level-badge badge-intermediate">Intermediate</span></div>
+    <div class="section-title"><span>1. Japtaal Theka (Part 2: Beats 6–10)</span><span class="level-badge">Intermediate</span></div>
     <div class="taal-table-wrapper">
       <table class="taal-table">
         <thead><tr><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th></tr></thead>
@@ -742,7 +732,7 @@
     </div>
   </div>
 
-  <!-- SULFAAG / SOOLFAAG (10 BEATS - SPLIT INTO TWO LINES) -->
+  <!-- SULFAAG / SOOLFAAG (10 BEATS - SPLIT) -->
   <div id="sulfaag" class="sheet-container">
     <div class="header">
       <div class="header-title">Sulfaag (Soolfaag) (10 Beats)</div>
@@ -756,7 +746,7 @@
     </div>
     <div class="info-box"><strong>Kirtan Use:</strong> Dhrupad-style cycle in Gurmat Sangeet granths. Tempo: 60–90 BPM.</div>
 
-    <div class="section-title"><span>1. Sulfaag Theka (Part 1: Beats 1–5)</span><span class="level-badge badge-advanced">Advanced</span></div>
+    <div class="section-title"><span>1. Sulfaag Theka (Part 1: Beats 1–5)</span><span class="level-badge">Advanced</span></div>
     <div class="taal-table-wrapper">
       <table class="taal-table">
         <thead><tr><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
@@ -771,7 +761,7 @@
       </table>
     </div>
 
-    <div class="section-title"><span>1. Sulfaag Theka (Part 2: Beats 6–10)</span><span class="level-badge badge-advanced">Advanced</span></div>
+    <div class="section-title"><span>1. Sulfaag Theka (Part 2: Beats 6–10)</span><span class="level-badge">Advanced</span></div>
     <div class="taal-table-wrapper">
       <table class="taal-table">
         <thead><tr><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th></tr></thead>
@@ -806,6 +796,21 @@
 </div>
 
 <script>
+  // --- Dark / Light Theme Toggle ---
+  function toggleTheme() {
+    const body = document.body;
+    const currentTheme = body.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    body.setAttribute('data-theme', newTheme);
+    localStorage.setItem('khalsai-tabla-theme', newTheme);
+    document.getElementById('themeToggleBtn').innerText = newTheme === 'dark' ? '☀️ Light' : '🌙 Dark';
+  }
+
+  // Load saved theme preference
+  const savedTheme = localStorage.getItem('khalsai-tabla-theme') || 'light';
+  document.body.setAttribute('data-theme', savedTheme);
+  document.getElementById('themeToggleBtn').innerText = savedTheme === 'dark' ? '☀️ Light' : '🌙 Dark';
+
   // --- Metronome Engine (Web Audio API) ---
   let audioCtx = null;
   let isPlaying = false;
