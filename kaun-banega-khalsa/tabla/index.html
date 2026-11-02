@@ -171,7 +171,7 @@
     box-shadow: 0 0 8px var(--gold);
   }
 
-  /* Realistic Photo Cards */
+  /* Vector Visualizer Grids */
   .visual-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -191,26 +191,10 @@
     text-align: center;
   }
 
-  .tabla-photo-frame {
-    width: 100%;
-    height: 180px;
-    border-radius: 6px;
-    overflow: hidden;
-    margin-bottom: 10px;
-    border: 1px solid var(--border);
-    background: #000;
-  }
-
-  .tabla-photo-frame img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0.92;
-    transition: transform 0.3s ease;
-  }
-
-  .tabla-photo-frame img:hover {
-    transform: scale(1.03);
+  .tabla-svg-container {
+    width: 140px;
+    height: 140px;
+    margin: 0 auto 10px auto;
   }
 
   /* Sticky Horizontal Nav Bar */
@@ -534,23 +518,37 @@
     <a href="#tracker" class="jump-btn">Tracker</a>
   </nav>
 
-  <!-- BOL MASTERCLASS & PHOTOGRAPHIC DRUM ANATOMY -->
+  <!-- BOL MASTERCLASS & PHOTOREALISTIC SVG DRUM ANATOMY -->
   <div id="bols" class="sheet-container">
     <div class="header">
       <div class="header-title">Tabla Master Reference & Audio Guides</div>
-      <div class="header-subtitle">Khalsai - Tabla App • Photographic Anatomy & Sound Examples</div>
+      <div class="header-subtitle">Khalsai - Tabla App • Drum Anatomy & Sound Examples</div>
     </div>
     <div class="info-box">
       <strong>The Physics of Na vs. Ta:</strong> Both are high-pitched rim strikes on the Dayan, but <strong>Na</strong> is played openly so the drumhead rings freely (open vowel), while <strong>Ta</strong> is dampened immediately upon impact for a dry, sharp "clack" (crisp period).
     </div>
 
-    <!-- Realistic Photographic Tabla Cards -->
+    <!-- Embedded High-Fidelity SVG Tabla Vector Illustrations -->
     <div class="visual-grid">
+      <!-- DAYAN SVG -->
       <div class="visual-box">
         <div style="font-weight:bold; color:var(--text); margin-bottom:6px; font-size:9pt;">DAYAN (Treble Drum - Right)</div>
-        <div class="tabla-photo-frame">
-          <!-- Real photographic representation of Dayan drum head & wood body -->
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Tabla_Dayan_Drum.jpg/640px-Tabla_Dayan_Drum.jpg" alt="Dayan Treble Drum" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Tabla_and_bayan.jpg/640px-Tabla_and_bayan.jpg'">
+        <div class="tabla-svg-container">
+          <svg viewBox="0 0 200 200" width="100%" height="100%">
+            <!-- Wooden Shell Body -->
+            <path d="M 60,110 Q 50,160 70,190 L 130,190 Q 150,160 140,110 Z" fill="#8B4513" stroke="#5C2C16" stroke-width="3"/>
+            <!-- Tuning Blocks (Gatta) -->
+            <rect x="65" y="130" width="12" height="25" rx="3" fill="#D2B48C" stroke="#8B4513" stroke-width="2"/>
+            <rect x="123" y="130" width="12" height="25" rx="3" fill="#D2B48C" stroke="#8B4513" stroke-width="2"/>
+            <!-- Drum Head Outer Ring -->
+            <ellipse cx="100" cy="110" rx="55" ry="20" fill="#DEB887" stroke="#A0522D" stroke-width="3"/>
+            <!-- Leather Braiding (Gajra) -->
+            <ellipse cx="100" cy="110" rx="50" ry="17" fill="#F5DEB3" stroke="#D2B48C" stroke-width="2"/>
+            <!-- Maidan (Middle Leather) -->
+            <ellipse cx="100" cy="110" rx="42" ry="14" fill="#FAF0E6"/>
+            <!-- Syahi (Black Center Spot - Offset slightly upwards for 3D perspective) -->
+            <ellipse cx="105" cy="108" rx="20" ry="8" fill="#111827" stroke="#374151" stroke-width="1"/>
+          </svg>
         </div>
         <div style="font-size:7.5pt; text-align:left;">
           • <strong style="color:#B45309;">Kinar (Outer Rim):</strong> Crisp non-resonant pings (<em>Ta / Na</em>)<br>
@@ -559,11 +557,24 @@
         </div>
       </div>
 
+      <!-- BAYAN SVG -->
       <div class="visual-box">
         <div style="font-weight:bold; color:var(--text); margin-bottom:6px; font-size:9pt;">BAYAN (Bass Drum - Left)</div>
-        <div class="tabla-photo-frame">
-          <!-- Real photographic representation of Bayan bass drum -->
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Tabla_Bayan_Bass_Drum.jpg/640px-Tabla_Bayan_Bass_Drum.jpg" alt="Bayan Bass Drum" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Tabla_and_bayan.jpg/640px-Tabla_and_bayan.jpg'">
+        <div class="tabla-svg-container">
+          <svg viewBox="0 0 200 200" width="100%" height="100%">
+            <!-- Metal Bass Bowl Body -->
+            <path d="M 45,105 Q 35,160 65,190 L 135,190 Q 165,160 155,105 Z" fill="#4B5563" stroke="#1F2937" stroke-width="3"/>
+            <path d="M 47,115 Q 100,135 153,115" fill="none" stroke="#6B7280" stroke-width="4"/>
+            <path d="M 52,145 Q 100,165 148,145" fill="none" stroke="#6B7280" stroke-width="4"/>
+            <!-- Drum Head Outer Ring -->
+            <ellipse cx="100" cy="105" rx="60" ry="22" fill="#9CA3AF" stroke="#4B5563" stroke-width="3"/>
+            <!-- Leather Braiding (Gajra) -->
+            <ellipse cx="100" cy="105" rx="54" ry="19" fill="#D1D5DB" stroke="#9CA3AF" stroke-width="2"/>
+            <!-- Maidan (Middle Leather) -->
+            <ellipse cx="100" cy="105" rx="45" ry="15" fill="#E5E7EB"/>
+            <!-- Syahi (Black Center Spot - Off-center for Bass Bayan physics) -->
+            <ellipse cx="112" cy="102" rx="16" ry="6" fill="#111827" stroke="#374151" stroke-width="1"/>
+          </svg>
         </div>
         <div style="font-size:7.5pt; text-align:left;">
           • <strong>Open Bass (Ge/Ghe):</strong> Strike open surface with finger pads. Allow bass to ring.<br>
@@ -1020,7 +1031,7 @@
 
   function toggleDay(dayNum, checkbox) {
     const box = document.getElementById(`day-${dayNum}`);
-    if (checkbox.checkbox || checkbox.checked) {
+    if (checkbox.checked) {
       box.classList.add('checked');
       localStorage.setItem(`khalsai-tabla-day-${dayNum}`, 'true');
     } else {
