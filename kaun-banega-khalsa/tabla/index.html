@@ -18,7 +18,7 @@
     --khali-bg: #F1F5F9;
   }
 
-  * { box-sizing: border-box; }
+  * { box-sizing: border-box; scroll-behavior: smooth; }
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -34,7 +34,7 @@
     margin: 0 auto;
   }
 
-  /* Top Actions Bar for Web */
+  /* Top Toolbar & Quick Nav Buttons */
   .web-toolbar {
     display: flex;
     justify-content: space-between;
@@ -43,7 +43,7 @@
     border: 1px solid var(--border);
     padding: 12px 18px;
     border-radius: 8px;
-    margin-bottom: 20px;
+    margin-bottom: 14px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.02);
   }
 
@@ -70,8 +70,50 @@
     transition: background 0.2s;
   }
 
-  .print-btn:hover {
-    background-color: #2D4A68;
+  .print-btn:hover { background-color: #2D4A68; }
+
+  /* Sticky Jump Nav Bar */
+  .jump-nav {
+    position: sticky;
+    top: 10px;
+    z-index: 100;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(5px);
+    border: 1px solid var(--border);
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+
+  .jump-label {
+    font-size: 8pt;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: #7A6F68;
+    margin-right: 4px;
+  }
+
+  .jump-btn {
+    background: #F0F4F8;
+    color: var(--primary);
+    border: 1px solid #CBD5E1;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 8.5pt;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .jump-btn:hover {
+    background: var(--primary);
+    color: #FFFFFF;
+    border-color: var(--primary);
   }
 
   /* Sheet Pages */
@@ -110,14 +152,28 @@
   }
 
   .section-title {
-    font-size: 10.5pt;
+    font-size: 10pt;
     font-weight: bold;
     color: var(--primary);
     border-left: 4px solid var(--gold);
     padding-left: 8px;
-    margin: 18px 0 10px 0;
+    margin: 18px 0 8px 0;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .level-badge {
+    font-size: 7pt;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-weight: bold;
     text-transform: uppercase;
   }
+  .badge-beginner { background: #E0F2FE; color: #0369A1; }
+  .badge-intermediate { background: #FEF3C7; color: #92400E; }
+  .badge-advanced { background: #FEE2E2; color: #991B1B; }
 
   .info-box {
     background-color: #F0F4F8;
@@ -129,11 +185,11 @@
     color: #334155;
   }
 
-  /* CRITICAL: Equal Spacing Taal Tables */
+  /* Equal Spacing Taal Tables */
   .taal-table-wrapper {
     width: 100%;
     overflow-x: auto;
-    margin-bottom: 14px;
+    margin-bottom: 10px;
   }
 
   .taal-table {
@@ -177,7 +233,6 @@
   .tali-cell { background-color: var(--tali-bg); color: #92400E; }
   .khali-cell { background-color: var(--khali-bg); color: #475569; }
 
-  /* Cards & Metadata Grids */
   .meta-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -206,7 +261,7 @@
 
   .card-title { font-weight: bold; color: #8C2F00; margin-bottom: 6px; font-size: 9.5pt; }
 
-  /* 100-Day Tracker Web Table */
+  /* 100-Day Tracker Grid */
   .tracker-grid {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
@@ -230,21 +285,14 @@
     gap: 4px;
   }
 
-  .tracker-box input[type="checkbox"] {
-    cursor: pointer;
-  }
-
-  .tracker-box.checked {
-    background-color: #ECFDF5;
-    border-color: #10B981;
-    color: #065F46;
-  }
+  .tracker-box input[type="checkbox"] { cursor: pointer; }
+  .tracker-box.checked { background-color: #ECFDF5; border-color: #10B981; color: #065F46; }
 
   /* PRINT / PDF PORTRAIT OPTIMIZATION */
   @media print {
     @page { size: A4 portrait; margin: 10mm; }
     body { background-color: #FFFFFF; padding: 0; }
-    .web-toolbar { display: none; }
+    .web-toolbar, .jump-nav { display: none; }
     .sheet-container {
       page-break-after: always;
       border: none;
@@ -268,7 +316,7 @@
 
 <div class="workbook-container">
 
-  <!-- Web Toolbar for khalsai.com -->
+  <!-- Web Toolbar -->
   <div class="web-toolbar">
     <div class="brand-tag">🏛️ Khalsai Pulse — Student Tabla Reference</div>
     <button class="print-btn" onclick="window.print()">
@@ -276,8 +324,17 @@
     </button>
   </div>
 
+  <!-- Sticky Quick Jump Navigation Bar -->
+  <nav class="jump-nav">
+    <span class="jump-label">Jump to:</span>
+    <a href="#keherwa" class="jump-btn">Keherwa (8)</a>
+    <a href="#dadra" class="jump-btn">Dadra (6)</a>
+    <a href="#teental" class="jump-btn">Teental (16)</a>
+    <a href="#tracker" class="jump-btn">100-Day Tracker</a>
+  </nav>
+
   <!-- PAGE 1: KEHERWA TAAL -->
-  <div class="sheet-container">
+  <div id="keherwa" class="sheet-container">
     <div class="header">
       <div class="header-title">Keherwa Taal Module (8 Beats)</div>
       <div class="header-subtitle">Khalsai Pulse Student Handbook • Lesson 1</div>
@@ -291,10 +348,13 @@
     </div>
 
     <div class="info-box">
-      <strong>Kirtan Application:</strong> Primary rhythm for standard Shabads, Simran chanting, and Vyakhya[span_0](start_span)[span_0](end_span)[span_1](start_span)[span_1](end_span). Recommended Tempo: <strong>70–100 BPM</strong>.
+      <strong>Kirtan Application:</strong> Primary rhythm for standard Shabads and Simran. Tempo: <strong>70–100 BPM</strong>.
     </div>
 
-    <div class="section-title">1. Basic Steady Theka</div>
+    <div class="section-title">
+      <span>1. Beginner Theka (Basic Foundation)</span>
+      <span class="level-badge badge-beginner">Beginner</span>
+    </div>
     <div class="taal-table-wrapper">
       <table class="taal-table">
         <thead>
@@ -308,7 +368,27 @@
       </table>
     </div>
 
-    <div class="section-title">2. Fast Kirtan Laggi</div>
+    <div class="section-title">
+      <span>2. Intermediate Variation (Palta)</span>
+      <span class="level-badge badge-intermediate">Intermediate</span>
+    </div>
+    <div class="taal-table-wrapper">
+      <table class="taal-table">
+        <thead>
+          <tr><th>Beat 1</th><th>Beat 2</th><th>Beat 3</th><th>Beat 4</th><th>Beat 5</th><th>Beat 6</th><th>Beat 7</th><th>Beat 8</th></tr>
+        </thead>
+        <tbody>
+          <tr class="bol-row"><td>Dha</td><td>Ge</td><td>Tin</td><td>Tin</td><td>Ta</td><td>Ge</td><td>Dhin</td><td>Dhin</td></tr>
+          <tr class="finger-row"><td>[I]+[O]</td><td>[O]</td><td>[I]</td><td>[I]</td><td>[I]</td><td>[O]</td><td>[I]+[O]</td><td>[I]+[O]</td></tr>
+          <tr class="struct-row"><td class="sam-cell">Tali (X)</td><td></td><td></td><td></td><td class="khali-cell">Khali (0)</td><td></td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-title">
+      <span>3. Advanced Fast Laggi & Tihai</span>
+      <span class="level-badge badge-advanced">Advanced</span>
+    </div>
     <div class="taal-table-wrapper">
       <table class="taal-table">
         <thead>
@@ -321,16 +401,10 @@
         </tbody>
       </table>
     </div>
-
-    <div class="section-title">Essential Ending Tihai</div>
-    <div class="card">
-      <div class="card-title">1-Cycle Tihai (Repeat Pattern 3 Times to Land on Sam)</div>
-      <div style="font-size:9pt; font-weight:bold; color:#0F172A;">Dha Titkit Dha (pause) | Dha Titkit Dha (pause) | Dha Titkit Dha $\rightarrow$ SAM</div>
-    </div>
   </div>
 
   <!-- PAGE 2: DADRA TAAL -->
-  <div class="sheet-container">
+  <div id="dadra" class="sheet-container">
     <div class="header">
       <div class="header-title">Dadra Taal Module (6 Beats)</div>
       <div class="header-subtitle">Khalsai Pulse Student Handbook • Lesson 2</div>
@@ -344,10 +418,13 @@
     </div>
 
     <div class="info-box">
-      <strong>Kirtan Application:</strong> Ideal for lighter, faster-paced compositions and upbeat Shabads. Recommended Tempo: <strong>90–130 BPM</strong>.
+      <strong>Kirtan Application:</strong> Ideal for lighter, faster-paced compositions. Tempo: <strong>90–130 BPM</strong>.
     </div>
 
-    <div class="section-title">1. Standard Dadra Theka</div>
+    <div class="section-title">
+      <span>1. Beginner Theka</span>
+      <span class="level-badge badge-beginner">Beginner</span>
+    </div>
     <div class="taal-table-wrapper">
       <table class="taal-table">
         <thead>
@@ -361,30 +438,94 @@
       </table>
     </div>
 
-    <div class="section-title">2. Fast Kirtan Laggi Dadra</div>
+    <div class="section-title">
+      <span>2. Intermediate Variation</span>
+      <span class="level-badge badge-intermediate">Intermediate</span>
+    </div>
     <div class="taal-table-wrapper">
       <table class="taal-table">
         <thead>
           <tr><th>Beat 1</th><th>Beat 2</th><th>Beat 3</th><th>Beat 4</th><th>Beat 5</th><th>Beat 6</th></tr>
         </thead>
         <tbody>
-          <tr class="bol-row"><td>Dha</td><td>Ge</td><td>Tin</td><td>Ta</td><td>Ke</td><td>Dhin</td></tr>
+          <tr class="bol-row"><td>Dha</td><td>Ge</td><td>Tin</td><td>Na</td><td>Ke</td><td>Dhin</td></tr>
           <tr class="finger-row"><td>[I]+[O]</td><td>[O]</td><td>[I]</td><td>[I]</td><td>[X]</td><td>[I]+[O]</td></tr>
+          <tr class="struct-row"><td class="sam-cell">Tali (X)</td><td></td><td></td><td class="khali-cell">Khali (0)</td><td></td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-title">
+      <span>3. Advanced Laggi Speed-Up</span>
+      <span class="level-badge badge-advanced">Advanced</span>
+    </div>
+    <div class="taal-table-wrapper">
+      <table class="taal-table">
+        <thead>
+          <tr><th>Beat 1</th><th>Beat 2</th><th>Beat 3</th><th>Beat 4</th><th>Beat 5</th><th>Beat 6</th></tr>
+        </thead>
+        <tbody>
+          <tr class="bol-row"><td>Dha</td><td>Tit</td><td>Tin</td><td>Ta</td><td>Tit</td><td>Na</td></tr>
+          <tr class="finger-row"><td>[I]+[O]</td><td>[M/R]</td><td>[I]</td><td>[I]</td><td>[M/R]</td><td>[I]</td></tr>
           <tr class="struct-row"><td class="sam-cell">Tali (X)</td><td></td><td></td><td class="khali-cell">Khali (0)</td><td></td><td></td></tr>
         </tbody>
       </table>
     </div>
   </div>
 
-  <!-- PAGE 3: 100-DAY TRACKER WORKBOOK -->
-  <div class="sheet-container">
+  <!-- PAGE 3: TEENTAL (16 BEATS) -->
+  <div id="teental" class="sheet-container">
+    <div class="header">
+      <div class="header-title">Teental Module (16 Beats)</div>
+      <div class="header-subtitle">Khalsai Pulse Student Handbook • Lesson 3</div>
+    </div>
+
+    <div class="meta-grid">
+      <div class="meta-cell"><div class="meta-label">Matra (Beats)</div><div class="meta-value">16</div></div>
+      <div class="meta-cell"><div class="meta-label">Vibhag</div><div class="meta-value">4 (4+4+4+4)</div></div>
+      <div class="meta-cell"><div class="meta-label">Tali (Clap)</div><div class="meta-value">1, 5, 13 (X, 2, 3)</div></div>
+      <div class="meta-cell"><div class="meta-label">Khali (Wave)</div><div class="meta-value">Beat 9 (0)</div></div>
+    </div>
+
+    <div class="info-box">
+      <strong>Kirtan Application:</strong> Used for classical compositions, slow meditative Shabads, and intricate improvisations. Tempo: <strong>50–90 BPM</strong>.
+    </div>
+
+    <div class="section-title">
+      <span>1. Beginner Theka</span>
+      <span class="level-badge badge-beginner">Beginner</span>
+    </div>
+    <div class="taal-table-wrapper">
+      <table class="taal-table">
+        <thead>
+          <tr><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th><th>13</th><th>14</th><th>15</th><th>16</th></tr>
+        </thead>
+        <tbody>
+          <tr class="bol-row"><td>Dha</td><td>Dhin</td><td>Dhin</td><td>Dha</td><td>Dha</td><td>Dhin</td><td>Dhin</td><td>Dha</td><td>Na</td><td>Tin</td><td>Tin</td><td>Ta</td><td>Ta</td><td>Dhin</td><td>Dhin</td><td>Dha</td></tr>
+          <tr class="finger-row">
+            <td>[I]+[O]</td><td>[I]+[O]</td><td>[I]+[O]</td><td>[I]+[O]</td><td>[I]+[O]</td><td>[I]+[O]</td><td>[I]+[O]</td><td>[I]+[O]</td>
+            <td>[I]</td><td>[I]</td><td>[I]</td><td>[I]</td><td>[I]</td><td>[I]+[O]</td><td>[I]+[O]</td><td>[I]+[O]</td>
+          </tr>
+          <tr class="struct-row">
+            <td colspan="4" class="sam-cell">Tali 1 (X)</td>
+            <td colspan="4" class="tali-cell">Tali 2 (2)</td>
+            <td colspan="4" class="khali-cell">Khali (0)</td>
+            <td colspan="4" class="tali-cell">Tali 3 (3)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PAGE 4: 100-DAY TRACKER WORKBOOK -->
+  <div id="tracker" class="sheet-container">
     <div class="header">
       <div class="header-title">100-Day Kirtan Practice Tracker</div>
       <div class="header-subtitle">Khalsai Pulse • Daily Discipline Workbook</div>
     </div>
 
     <div class="info-box">
-      <strong>Interactive Tracker:</strong> Check off your daily practice slots below. Your progress is saved automatically in your browser's local storage so you can track your 100-day journey directly on `khalsai.com`.
+      <strong>Interactive Tracker:</strong> Check off your daily practice slots below. Your progress is saved automatically in your browser's local storage.
     </div>
 
     <div class="tracker-grid" id="trackerGrid">
@@ -395,9 +536,9 @@
 </div>
 
 <script>
-  // Generate 100-day interactive tracker with localStorage state persistence
+  // Generate 30-day interactive tracker with localStorage state persistence
   const grid = document.getElementById('trackerGrid');
-  const totalDays = 30; // Extendable up to 100 as needed
+  const totalDays = 30; // Can be expanded up to 100
 
   for (let i = 1; i <= totalDays; i++) {
     const box = document.createElement('div');
