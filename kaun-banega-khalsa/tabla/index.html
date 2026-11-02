@@ -6,38 +6,38 @@
 <title>Khalsai - Tabla App</title>
 <style>
   :root {
-    --primary: #1C3144;
-    --accent: #D00000;
-    --gold: #F0A500;
+    --primary: #1E3A8A;
+    --accent: #B91C1C;
+    --gold: #B45309;
     --bg-main: #FAF8F5;
     --card-bg: #FFFFFF;
-    --text: #2D2621;
-    --border: #E2D8CE;
+    --text: #1F2937;
+    --border: #D1D5DB;
     --sam-bg: #FEE2E2;
     --tali-bg: #FEF3C7;
-    --khali-bg: #F1F5F9;
-    --table-head: #334155;
+    --khali-bg: #F3F4F6;
+    --table-head: #374151;
     --badge-bg: #E0F2FE;
     --badge-text: #0369A1;
   }
 
   [data-theme="dark"] {
-    --primary: #38BDF8;
+    --primary: #60A5FA;
     --accent: #F87171;
-    --gold: #FBBF24;
-    --bg-main: #0F172A;
-    --card-bg: #1E293B;
-    --text: #F1F5F9;
-    --border: #334155;
+    --gold: #F59E0B;
+    --bg-main: #111827;
+    --card-bg: #1F2937;
+    --text: #F3F4F6;
+    --border: #374151;
     --sam-bg: #450A0A;
     --tali-bg: #422006;
-    --khali-bg: #1E293B;
-    --table-head: #0F172A;
-    --badge-bg: #0C4A6E;
-    --badge-text: #38BDF8;
+    --khali-bg: #111827;
+    --table-head: #111827;
+    --badge-bg: #1E3A8A;
+    --badge-text: #93C5FD;
   }
 
-  * { box-sizing: border-box; scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; transition: background-color 0.2s, color 0.2s, border-color 0.2s; }
+  * { box-sizing: border-box; scroll-behavior: smooth; -webkit-tap-highlight-color: transparent; transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease; }
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -63,13 +63,13 @@
     padding: 12px 16px;
     border-radius: 8px;
     margin-bottom: 12px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   }
 
   .brand-tag {
     font-size: 11pt;
     font-weight: 800;
-    color: var(--primary);
+    color: var(--text);
     text-transform: uppercase;
     letter-spacing: 0.5px;
   }
@@ -81,23 +81,22 @@
   }
 
   .theme-toggle-btn, .print-btn {
-    background-color: var(--primary);
-    color: #FFFFFF;
-    border: none;
-    padding: 10px 14px;
+    background-color: var(--card-bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 8px 12px;
     font-size: 9pt;
     font-weight: bold;
     border-radius: 6px;
     cursor: pointer;
-    min-height: 40px;
+    min-height: 38px;
     display: flex;
     align-items: center;
     gap: 6px;
-    transition: opacity 0.2s, transform 0.1s;
   }
 
-  [data-theme="dark"] .theme-toggle-btn, [data-theme="dark"] .print-btn {
-    color: #0F172A;
+  .theme-toggle-btn:hover, .print-btn:hover {
+    background-color: var(--khali-bg);
   }
 
   .theme-toggle-btn:active, .print-btn:active { transform: scale(0.98); }
@@ -109,7 +108,7 @@
     border-radius: 8px;
     padding: 14px 18px;
     margin-bottom: 16px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -134,11 +133,11 @@
     font-weight: bold;
     border-radius: 6px;
     cursor: pointer;
-    min-height: 44px;
+    min-height: 40px;
     min-width: 90px;
   }
 
-  .metro-btn.playing { background-color: #10B981; }
+  .metro-btn.playing { background-color: #059669; }
 
   .metro-slider-group {
     display: flex;
@@ -157,14 +156,14 @@
 
   .metro-slider {
     width: 100%;
-    accent-color: var(--primary);
+    accent-color: var(--gold);
     cursor: pointer;
     height: 6px;
   }
 
   .beat-indicator {
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     background-color: var(--border);
     border-radius: 50%;
     transition: background-color 0.1s ease;
@@ -172,7 +171,7 @@
 
   .beat-indicator.active {
     background-color: var(--gold);
-    box-shadow: 0 0 10px var(--gold);
+    box-shadow: 0 0 8px var(--gold);
   }
 
   /* Sticky Horizontal Nav Bar */
@@ -191,7 +190,7 @@
     overflow-x: auto;
     white-space: nowrap;
     -webkit-overflow-scrolling: touch;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
   }
 
   .jump-nav::-webkit-scrollbar { display: none; }
@@ -210,18 +209,18 @@
     background: var(--khali-bg);
     color: var(--text);
     border: 1px solid var(--border);
-    padding: 8px 12px;
+    padding: 6px 10px;
     border-radius: 6px;
     font-size: 8.5pt;
     font-weight: bold;
     text-decoration: none;
-    min-height: 38px;
+    min-height: 34px;
     display: inline-flex;
     align-items: center;
     flex-shrink: 0;
   }
 
-  .jump-btn:active { background: var(--primary); color: #FFF; }
+  .jump-btn:active { background: var(--gold); color: #FFF; }
 
   /* Sheet Modules */
   .sheet-container {
@@ -230,37 +229,35 @@
     border-radius: 8px;
     padding: 18px;
     margin-bottom: 20px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
   }
 
   .header {
-    background-color: var(--primary);
+    background-color: var(--table-head);
     color: #FFFFFF;
     padding: 14px 16px;
     border-radius: 6px;
     margin-bottom: 14px;
-    border-bottom: 4px solid var(--accent);
+    border-bottom: 4px solid var(--gold);
   }
 
-  [data-theme="dark"] .header { color: #0F172A; }
-
   .header-title {
-    font-size: 16pt;
+    font-size: 15pt;
     font-weight: 700;
-    color: var(--gold);
+    color: #FBBF24;
     margin: 0;
   }
 
   .header-subtitle {
-    font-size: 8.5pt;
-    opacity: 0.9;
+    font-size: 8pt;
+    opacity: 0.85;
     margin-top: 3px;
     text-transform: uppercase;
     letter-spacing: 0.8px;
   }
 
   .section-title {
-    font-size: 9.5pt;
+    font-size: 9pt;
     font-weight: bold;
     color: var(--text);
     border-left: 4px solid var(--gold);
@@ -274,7 +271,7 @@
 
   .level-badge {
     font-size: 7pt;
-    padding: 3px 6px;
+    padding: 2px 6px;
     border-radius: 4px;
     font-weight: bold;
     text-transform: uppercase;
@@ -284,15 +281,15 @@
 
   .info-box {
     background-color: var(--khali-bg);
-    border-left: 4px solid var(--primary);
+    border-left: 4px solid var(--gold);
     padding: 10px 12px;
     border-radius: 0 6px 6px 0;
     margin-bottom: 12px;
     font-size: 8.5pt;
   }
 
-  /* Bol Dictionary Grid */
-  .bol-grid {
+  /* Grid Layouts */
+  .grid-2 {
     display: grid;
     grid-template-columns: 1fr;
     gap: 10px;
@@ -300,10 +297,10 @@
   }
 
   @media(min-width: 600px) {
-    .bol-grid { grid-template-columns: 1fr 1fr; }
+    .grid-2 { grid-template-columns: 1fr 1fr; }
   }
 
-  .bol-card {
+  .card-item {
     background: var(--khali-bg);
     border: 1px solid var(--border);
     padding: 10px 12px;
@@ -311,11 +308,11 @@
     font-size: 8.5pt;
   }
 
-  .bol-name {
+  .card-title {
     font-weight: bold;
-    color: var(--accent);
-    font-size: 9.5pt;
-    margin-bottom: 2px;
+    color: var(--gold);
+    font-size: 9pt;
+    margin-bottom: 4px;
   }
 
   /* Equal Column Spacing Taal Tables */
@@ -357,7 +354,7 @@
 
   .taal-table tr.finger-row td {
     font-size: 7pt;
-    opacity: 0.8;
+    opacity: 0.75;
   }
 
   .sam-cell { background-color: var(--sam-bg) !important; font-weight: bold; }
@@ -412,12 +409,12 @@
     width: 18px;
     height: 18px;
     cursor: pointer;
-    accent-color: #10B981;
+    accent-color: #059669;
   }
 
   .tracker-box.checked {
     background-color: #064E3B !important;
-    border-color: #10B981;
+    border-color: #059669;
     color: #34D399;
   }
 
@@ -450,7 +447,7 @@
   <div class="web-toolbar">
     <div class="brand-tag">🪘 Khalsai - Tabla App</div>
     <div class="toolbar-actions">
-      <button class="theme-toggle-btn" onclick="toggleTheme()" id="themeToggleBtn">🌙 Dark</button>
+      <button class="theme-toggle-btn" onclick="toggleTheme()" id="themeToggleBtn">🌙 Dark Mode</button>
       <button class="print-btn" onclick="window.print()">🖨️ PDF</button>
     </div>
   </div>
@@ -473,56 +470,67 @@
   <!-- Sticky Quick Jump Carousel Nav -->
   <nav class="jump-nav">
     <span class="jump-label">Jump:</span>
-    <a href="#bols" class="jump-btn">Bol Masterclass</a>
+    <a href="#bols" class="jump-btn">Bols & Acoustics</a>
+    <a href="#improvisation" class="jump-btn">Kayda & Rela</a>
     <a href="#keherwa" class="jump-btn">Keherwa (8)</a>
     <a href="#dadra" class="jump-btn">Dadra (6)</a>
+    <a href="#roopak" class="jump-btn">Roopak (7)</a>
     <a href="#teental" class="jump-btn">Teental (16)</a>
     <a href="#deepchandi" class="jump-btn">Deepchandi (14)</a>
     <a href="#japtaal" class="jump-btn">Japtaal (10)</a>
+    <a href="#ektaal" class="jump-btn">Ektaal (12)</a>
     <a href="#sulfaag" class="jump-btn">Sulfaag (10)</a>
     <a href="#tracker" class="jump-btn">Tracker</a>
   </nav>
 
-  <!-- COMPREHENSIVE BOL MASTERCLASS & ACOUSTICS -->
+  <!-- BOL MASTERCLASS & ACOUSTICS -->
   <div id="bols" class="sheet-container">
     <div class="header">
       <div class="header-title">Tabla Bol Masterclass</div>
       <div class="header-subtitle">Khalsai - Tabla App • Acoustic Guide & Stroke Dictionary</div>
     </div>
     <div class="info-box">
-      <strong>Deep-Dive: The Acoustics of Na vs. Ta & All Core Bols:</strong> Understanding the exact physical hand placement and sonic contrast is essential for expressive Shabad Kirtan accompaniment.
+      <strong>The Physics of Na vs. Ta:</strong> Both are high-pitched rim strikes on the Dayan (treble drum), but their acoustic roles differ entirely. <strong>Na</strong> is played openly so the drumhead rings freely (like an open musical vowel). <strong>Ta</strong> is dampened immediately upon impact by the hand, yielding a dry, sharp "clack" (acting as a crisp musical period during silent wave sections).
     </div>
 
-    <div class="section-title"><span>Acoustic Physics: Why Na vs. Ta?</span></div>
-    <div class="info-box" style="border-left-color: var(--accent);">
-      <p style="margin: 0 0 8px 0;">To the casual listener, <strong>Na</strong> and <strong>Ta</strong> sound almost identical because both are high-pitched rim strikes on the Dayan (treble drum). However, their acoustic function differs entirely:</p>
-      <ul style="margin: 0; padding-left: 16px;">
-        <li><strong>Na (Open Resonant Rim Stroke):</strong> Played on the outer rim (<em>Kinar</em>) with fingers bouncing off instantly. The drumhead vibrates freely, creating a ringing, sustained metallic echo. Acts like an open musical vowel or comma.</li>
-        <li><strong>Ta (Muted / Choked Rim Stroke):</strong> Played on the same rim, but the palm or heel dampens the drumhead immediately upon contact. Produces a dry, crisp, punchy "clack" with zero sustain. Acts like a hard musical period or exclamation point, providing vital contrast during quiet waves (<em>Khali</em>).</li>
-      </ul>
+    <div class="section-title"><span>Essential Stroke Dictionary</span></div>
+    <div class="grid-2">
+      <div class="card-item">
+        <div class="card-title">Dha</div>
+        <div>Compound master stroke: open bass <strong>Ge</strong> on Bayan + open treble <strong>Na</strong> on Dayan. The foundational start (Sam).</div>
+      </div>
+      <div class="card-item">
+        <div class="card-title">Dhin / Tin</div>
+        <div>Resonant middle leather (<em>Maidan</em>) tones on the Dayan played with the index finger. Warm and sustained.</div>
+      </div>
+      <div class="card-item">
+        <div class="card-title">Ge / Ghe</div>
+        <div>Open bass stroke on the Bayan using flat finger pads with sliding wrist heel modulation.</div>
+      </div>
+      <div class="card-item">
+        <div class="card-title">Tit / Titkit</div>
+        <div>Fast, crisp double/triple strokes across the black center (<em>Syahi</em>) using middle and ring fingers.</div>
+      </div>
     </div>
+  </div>
 
-    <div class="section-title"><span>Complete Tabla Stroke Dictionary</span></div>
-    <div class="bol-grid">
-      <div class="bol-card">
-        <div class="bol-name">Dha (Compound Master Stroke)</div>
-        <div>Combination of open bass <strong>Ge</strong> on Bayan + open treble <strong>Na</strong> on Dayan. The foundational starting beat (Sam) of almost all major taals.</div>
+  <!-- KAYDA & RELA FOUNDATIONS -->
+  <div id="improvisation" class="sheet-container">
+    <div class="header">
+      <div class="header-title">Improvisation: Kayda & Rela</div>
+      <div class="header-subtitle">Khalsai - Tabla App • Student Guide to Solo Playing</div>
+    </div>
+    <div class="info-box">
+      Beyond playing background rhythmic cycles (Thekas), learning student <strong>Kaydas</strong> and <strong>Relas</strong> builds finger dexterity, speed, and structural discipline.
+    </div>
+    <div class="grid-2">
+      <div class="card-item">
+        <div class="card-title">What is a Kayda?</div>
+        <div>A <em>Kayda</em> ("rule" or "system") is a structured theme composed entirely of primary bols (like <em>Dha, Dhin, Tit, Na</em>). Students expand it using systematic variations called <em>Paltas</em> and finish with a <em>Tihai</em>.</div>
       </div>
-      <div class="bol-card">
-        <div class="bol-name">Dhin / Tin (Resonant Maidan Tones)</div>
-        <div>Played on the middle leather (<em>Maidan</em>) of the Dayan using the index finger while allowing the sound to resonate openly. Warm and melodious.</div>
-      </div>
-      <div class="bol-card">
-        <div class="bol-name">Ge / Ghe (Open Bass)</div>
-        <div>Played on the Bayan bass drum using flat middle/index finger pads. Wrist heel slides forward to create a booming, echoing resonance.</div>
-      </div>
-      <div class="bol-card">
-        <div class="bol-name">Tit / Titkit (Muted Center Speed Notes)</div>
-        <div>Fast, crisp double or triple strikes executed lightly across the black center (<em>Syahi</em>) using the middle and ring fingers together.</div>
-      </div>
-      <div class="bol-card">
-        <div class="bol-name">Ke / Kat (Muted Bass Slap)</div>
-        <div>A sharp, dampened slap on the Bayan bass drum using a flat, cupped hand that chokes all ring instantly.</div>
+      <div class="card-item">
+        <div class="card-title">What is a Rela?</div>
+        <div>A <em>Rela</em> is a rapid-fire, tightly woven composition featuring rolling phrases (like <em>terekete</em>). Played at high velocity, it sounds like a cascading stream of rhythm.</div>
       </div>
     </div>
   </div>
@@ -585,7 +593,6 @@
         <thead><tr><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr></thead>
         <tbody>
           <tr class="bol-row"><td>Dha</td><td>Tin</td><td>Tin</td><td>Tage</td><td>Dhin</td><td>Dhin</td></tr>
-          <tr class="finger-row"><td>[I]+[O]</td><td>[I]</td><td>[I]</td><td>[O]</td><td>[I]+[O]</td><td>[I]+[O]</td></tr>
           <tr class="struct-row"><td colspan="3" class="sam-cell">Tali (X)</td><td colspan="3" class="khali-cell">Khali (0)</td></tr>
         </tbody>
       </table>
@@ -603,11 +610,41 @@
     </div>
   </div>
 
-  <!-- TEENTAL (16 BEATS - SPLIT INTO TWO 8-BEAT LINES) -->
+  <!-- ROOPAK TAAL (7 BEATS) -->
+  <div id="roopak" class="sheet-container">
+    <div class="header">
+      <div class="header-title">Roopak Taal (7 Beats)</div>
+      <div class="header-subtitle">Khalsai - Tabla App • Lesson 3</div>
+    </div>
+    <div class="meta-grid">
+      <div class="meta-cell"><div class="meta-label">Matra</div><div class="meta-value">7</div></div>
+      <div class="meta-cell"><div class="meta-label">Vibhag</div><div class="meta-value">3 (3+2+2)</div></div>
+      <div class="meta-cell"><div class="meta-label">Tali</div><div class="meta-value">Beat 4, 6 (2, 3)</div></div>
+      <div class="meta-cell"><div class="meta-label">Khali</div><div class="meta-value">Beat 1 (0)</div></div>
+    </div>
+    <div class="info-box"><strong>Unique Feature:</strong> The only major classical taal whose first beat (Sam) falls on a silent wave (<em>Khali</em>). Tempo: 70–110 BPM.</div>
+
+    <div class="section-title"><span>1. Standard Roopak Theka</span><span class="level-badge">Intermediate</span></div>
+    <div class="taal-table-wrapper">
+      <table class="taal-table">
+        <thead><tr><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th></tr></thead>
+        <tbody>
+          <tr class="bol-row"><td>Tin</td><td>Tin</td><td>Na</td><td>Dhin</td><td>Na</td><td>Dhin</td><td>Na</td></tr>
+          <tr class="struct-row">
+            <td colspan="3" class="khali-cell">1 (0 - Khali)</td>
+            <td colspan="2" class="tali-cell">4 (2)</td>
+            <td colspan="2" class="tali-cell">6 (3)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- TEENTAL (16 BEATS - SPLIT) -->
   <div id="teental" class="sheet-container">
     <div class="header">
       <div class="header-title">Teental (16 Beats)</div>
-      <div class="header-subtitle">Khalsai - Tabla App • Lesson 3</div>
+      <div class="header-subtitle">Khalsai - Tabla App • Lesson 4</div>
     </div>
     <div class="meta-grid">
       <div class="meta-cell"><div class="meta-label">Matra</div><div class="meta-value">16</div></div>
@@ -617,30 +654,24 @@
     </div>
     <div class="info-box"><strong>Kirtan Use:</strong> Classical compositions & slow contemplative shabads. Tempo: 50–90 BPM.</div>
 
-    <div class="section-title"><span>1. Beginner Theka (Part 1: Beats 1–8)</span><span class="level-badge">Beginner</span></div>
+    <div class="section-title"><span>Teental Theka (Part 1: Beats 1–8)</span><span class="level-badge">Beginner</span></div>
     <div class="taal-table-wrapper">
       <table class="taal-table">
         <thead><tr><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th></tr></thead>
         <tbody>
           <tr class="bol-row"><td>Dha</td><td>Dhin</td><td>Dhin</td><td>Dha</td><td>Dha</td><td>Dhin</td><td>Dhin</td><td>Dha</td></tr>
-          <tr class="struct-row">
-            <td colspan="4" class="sam-cell">1 (X - Sam)</td>
-            <td colspan="4" class="tali-cell">5 (2nd Tali)</td>
-          </tr>
+          <tr class="struct-row"><td colspan="4" class="sam-cell">1 (X - Sam)</td><td colspan="4" class="tali-cell">5 (2nd Tali)</td></tr>
         </tbody>
       </table>
     </div>
 
-    <div class="section-title"><span>1. Beginner Theka (Part 2: Beats 9–16)</span><span class="level-badge">Beginner</span></div>
+    <div class="section-title"><span>Teental Theka (Part 2: Beats 9–16)</span><span class="level-badge">Beginner</span></div>
     <div class="taal-table-wrapper">
       <table class="taal-table">
         <thead><tr><th>9</th><th>10</th><th>11</th><th>12</th><th>13</th><th>14</th><th>15</th><th>16</th></tr></thead>
         <tbody>
           <tr class="bol-row"><td>Na</td><td>Tin</td><td>Tin</td><td>Ta</td><td>Ta</td><td>Dhin</td><td>Dhin</td><td>Dha</td></tr>
-          <tr class="struct-row">
-            <td colspan="4" class="khali-cell">9 (Khali / Wave)</td>
-            <td colspan="4" class="tali-cell">13 (3rd Tali)</td>
-          </tr>
+          <tr class="struct-row"><td colspan="4" class="khali-cell">9 (Khali)</td><td colspan="4" class="tali-cell">13 (3rd Tali)</td></tr>
         </tbody>
       </table>
     </div>
@@ -650,7 +681,7 @@
   <div id="deepchandi" class="sheet-container">
     <div class="header">
       <div class="header-title">Deepchandi Taal (14 Beats)</div>
-      <div class="header-subtitle">Khalsai - Tabla App • Lesson 4</div>
+      <div class="header-subtitle">Khalsai - Tabla App • Lesson 5</div>
     </div>
     <div class="meta-grid">
       <div class="meta-cell"><div class="meta-label">Matra</div><div class="meta-value">14</div></div>
@@ -660,30 +691,24 @@
     </div>
     <div class="info-box"><strong>Kirtan Use:</strong> Semi-classical, emotional, slow-paced compositions. Tempo: 60–80 BPM.</div>
 
-    <div class="section-title"><span>1. Deepchandi Theka (Part 1: Beats 1–7)</span><span class="level-badge">Beginner</span></div>
+    <div class="section-title"><span>Deepchandi Theka (Part 1: Beats 1–7)</span><span class="level-badge">Intermediate</span></div>
     <div class="taal-table-wrapper">
       <table class="taal-table">
         <thead><tr><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th></tr></thead>
         <tbody>
           <tr class="bol-row"><td>Dha</td><td>Dhin</td><td>Ge</td><td>Na</td><td>Dha</td><td>Tin</td><td>Ge</td></tr>
-          <tr class="struct-row">
-            <td colspan="3" class="sam-cell">1 (X)</td>
-            <td colspan="4" class="tali-cell">4 (2)</td>
-          </tr>
+          <tr class="struct-row"><td colspan="3" class="sam-cell">1 (X)</td><td colspan="4" class="tali-cell">4 (2)</td></tr>
         </tbody>
       </table>
     </div>
 
-    <div class="section-title"><span>1. Deepchandi Theka (Part 2: Beats 8–14)</span><span class="level-badge">Beginner</span></div>
+    <div class="section-title"><span>Deepchandi Theka (Part 2: Beats 8–14)</span><span class="level-badge">Intermediate</span></div>
     <div class="taal-table-wrapper">
       <table class="taal-table">
         <thead><tr><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th><th>13</th><th>14</th></tr></thead>
         <tbody>
           <tr class="bol-row"><td>Na</td><td>Ta</td><td>Dhin</td><td>Ge</td><td>Na</td><td>Dha</td><td>Ge</td></tr>
-          <tr class="struct-row">
-            <td colspan="3" class="khali-cell">8 (0)</td>
-            <td colspan="4" class="tali-cell">11 (3)</td>
-          </tr>
+          <tr class="struct-row"><td colspan="3" class="khali-cell">8 (0)</td><td colspan="4" class="tali-cell">11 (3)</td></tr>
         </tbody>
       </table>
     </div>
@@ -693,7 +718,7 @@
   <div id="japtaal" class="sheet-container">
     <div class="header">
       <div class="header-title">Japtaal (10 Beats)</div>
-      <div class="header-subtitle">Khalsai - Tabla App • Lesson 5</div>
+      <div class="header-subtitle">Khalsai - Tabla App • Lesson 6</div>
     </div>
     <div class="meta-grid">
       <div class="meta-cell"><div class="meta-label">Matra</div><div class="meta-value">10</div></div>
@@ -701,32 +726,63 @@
       <div class="meta-cell"><div class="meta-label">Tali</div><div class="meta-value">1, 3, 8</div></div>
       <div class="meta-cell"><div class="meta-label">Khali</div><div class="meta-value">6 (0)</div></div>
     </div>
-    <div class="info-box"><strong>Kirtan Use:</strong> Symmetrical 10-beat cycle. Tempo: 70–100 BPM.</div>
+    <div class="info-box"><strong>Kirtan Use:</strong> Asymmetrical 10-beat cycle (2-3-2-3). Tempo: 70–100 BPM.</div>
 
-    <div class="section-title"><span>1. Japtaal Theka (Part 1: Beats 1–5)</span><span class="level-badge">Intermediate</span></div>
+    <div class="section-title"><span>Japtaal Theka (Part 1: Beats 1–5)</span><span class="level-badge">Intermediate</span></div>
     <div class="taal-table-wrapper">
       <table class="taal-table">
         <thead><tr><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
         <tbody>
           <tr class="bol-row"><td>Dhi</td><td>Na</td><td>Dhi</td><td>Dhi</td><td>Na</td></tr>
-          <tr class="struct-row">
-            <td colspan="2" class="sam-cell">1 (X)</td>
-            <td colspan="3" class="tali-cell">3 (2)</td>
-          </tr>
+          <tr class="struct-row"><td colspan="2" class="sam-cell">1 (X)</td><td colspan="3" class="tali-cell">3 (2)</td></tr>
         </tbody>
       </table>
     </div>
 
-    <div class="section-title"><span>1. Japtaal Theka (Part 2: Beats 6–10)</span><span class="level-badge">Intermediate</span></div>
+    <div class="section-title"><span>Japtaal Theka (Part 2: Beats 6–10)</span><span class="level-badge">Intermediate</span></div>
     <div class="taal-table-wrapper">
       <table class="taal-table">
         <thead><tr><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th></tr></thead>
         <tbody>
           <tr class="bol-row"><td>Tin</td><td>Na</td><td>Dhi</td><td>Dhi</td><td>Na</td></tr>
-          <tr class="struct-row">
-            <td colspan="2" class="khali-cell">6 (0)</td>
-            <td colspan="3" class="tali-cell">8 (3)</td>
-          </tr>
+          <tr class="struct-row"><td colspan="2" class="khali-cell">6 (0)</td><td colspan="3" class="tali-cell">8 (3)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- EKTAAL (12 BEATS - SPLIT) -->
+  <div id="ektaal" class="sheet-container">
+    <div class="header">
+      <div class="header-title">Ektaal (12 Beats)</div>
+      <div class="header-subtitle">Khalsai - Tabla App • Lesson 7</div>
+    </div>
+    <div class="meta-grid">
+      <div class="meta-cell"><div class="meta-label">Matra</div><div class="meta-value">12</div></div>
+      <div class="meta-cell"><div class="meta-label">Vibhag</div><div class="meta-value">6 (2+2+2+2+2+2)</div></div>
+      <div class="meta-cell"><div class="meta-label">Tali</div><div class="meta-value">1, 5, 9, 11</div></div>
+      <div class="meta-cell"><div class="meta-label">Khali</div><div class="meta-value">3, 7 (0)</div></div>
+    </div>
+    <div class="info-box"><strong>Kirtan Use:</strong> Classical Khayal and serious instrumental compositions. Tempo: 60–120 BPM.</div>
+
+    <div class="section-title"><span>Ektaal Theka (Part 1: Beats 1–6)</span><span class="level-badge">Advanced</span></div>
+    <div class="taal-table-wrapper">
+      <table class="taal-table">
+        <thead><tr><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr></thead>
+        <tbody>
+          <tr class="bol-row"><td>Dhin</td><td>Dhin</td><td>Dha</td><td>Dha</td><td>Tu</td><td>Na</td></tr>
+          <tr class="struct-row"><td colspan="2" class="sam-cell">1 (X)</td><td colspan="2" class="khali-cell">3 (0)</td><td colspan="2" class="tali-cell">5 (2)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section-title"><span>Ektaal Theka (Part 2: Beats 7–12)</span><span class="level-badge">Advanced</span></div>
+    <div class="taal-table-wrapper">
+      <table class="taal-table">
+        <thead><tr><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th></tr></thead>
+        <tbody>
+          <tr class="bol-row"><td>Kat</td><td>Ta</td><td>Dha</td><td>Ge</td><td>Titet</td><td>Dhin</td></tr>
+          <tr class="struct-row"><td colspan="2" class="khali-cell">7 (0)</td><td colspan="2" class="tali-cell">9 (3)</td><td colspan="2" class="tali-cell">11 (4)</td></tr>
         </tbody>
       </table>
     </div>
@@ -736,7 +792,7 @@
   <div id="sulfaag" class="sheet-container">
     <div class="header">
       <div class="header-title">Sulfaag (Soolfaag) (10 Beats)</div>
-      <div class="header-subtitle">Khalsai - Tabla App • Lesson 6</div>
+      <div class="header-subtitle">Khalsai - Tabla App • Lesson 8</div>
     </div>
     <div class="meta-grid">
       <div class="meta-cell"><div class="meta-label">Matra</div><div class="meta-value">10</div></div>
@@ -746,32 +802,24 @@
     </div>
     <div class="info-box"><strong>Kirtan Use:</strong> Dhrupad-style cycle in Gurmat Sangeet granths. Tempo: 60–90 BPM.</div>
 
-    <div class="section-title"><span>1. Sulfaag Theka (Part 1: Beats 1–5)</span><span class="level-badge">Advanced</span></div>
+    <div class="section-title"><span>Sulfaag Theka (Part 1: Beats 1–5)</span><span class="level-badge">Advanced</span></div>
     <div class="taal-table-wrapper">
       <table class="taal-table">
         <thead><tr><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th></tr></thead>
         <tbody>
           <tr class="bol-row"><td>Dha</td><td>Dha</td><td>Din</td><td>Ta</td><td>Ki</td></tr>
-          <tr class="struct-row">
-            <td colspan="2" class="sam-cell">1 (X)</td>
-            <td colspan="2" class="tali-cell">3 (2)</td>
-            <td colspan="1" class="khali-cell">5 (0)</td>
-          </tr>
+          <tr class="struct-row"><td colspan="2" class="sam-cell">1 (X)</td><td colspan="2" class="tali-cell">3 (2)</td><td colspan="1" class="khali-cell">5 (0)</td></tr>
         </tbody>
       </table>
     </div>
 
-    <div class="section-title"><span>1. Sulfaag Theka (Part 2: Beats 6–10)</span><span class="level-badge">Advanced</span></div>
+    <div class="section-title"><span>Sulfaag Theka (Part 2: Beats 6–10)</span><span class="level-badge">Advanced</span></div>
     <div class="taal-table-wrapper">
       <table class="taal-table">
         <thead><tr><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th></tr></thead>
         <tbody>
           <tr class="bol-row"><td>Ta</td><td>Dha</td><td>Tin</td><td>Tita</td><td>Gadi</td></tr>
-          <tr class="struct-row">
-            <td colspan="2" class="tali-cell">7 (3)</td>
-            <td colspan="2" class="khali-cell">9 (0)</td>
-            <td colspan="1"></td>
-          </tr>
+          <tr class="struct-row"><td colspan="2" class="tali-cell">7 (3)</td><td colspan="2" class="khali-cell">9 (0)</td><td colspan="1"></td></tr>
         </tbody>
       </table>
     </div>
@@ -803,13 +851,13 @@
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
     body.setAttribute('data-theme', newTheme);
     localStorage.setItem('khalsai-tabla-theme', newTheme);
-    document.getElementById('themeToggleBtn').innerText = newTheme === 'dark' ? '☀️ Light' : '🌙 Dark';
+    document.getElementById('themeToggleBtn').innerText = newTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
   }
 
   // Load saved theme preference
   const savedTheme = localStorage.getItem('khalsai-tabla-theme') || 'light';
   document.body.setAttribute('data-theme', savedTheme);
-  document.getElementById('themeToggleBtn').innerText = savedTheme === 'dark' ? '☀️ Light' : '🌙 Dark';
+  document.getElementById('themeToggleBtn').innerText = savedTheme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode';
 
   // --- Metronome Engine (Web Audio API) ---
   let audioCtx = null;
