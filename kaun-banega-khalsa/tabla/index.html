@@ -73,6 +73,82 @@
 
   .print-btn:active { transform: scale(0.98); }
 
+  /* Interactive Metronome Widget */
+  .metronome-card {
+    background: #FFFFFF;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .metronome-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+    min-width: 250px;
+  }
+
+  .metro-btn {
+    background-color: var(--accent);
+    color: #FFFFFF;
+    border: none;
+    padding: 10px 20px;
+    font-size: 9.5pt;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    min-height: 44px;
+    min-width: 90px;
+    transition: background 0.2s;
+  }
+
+  .metro-btn.playing {
+    background-color: #10B981;
+  }
+
+  .metro-slider-group {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 4px;
+  }
+
+  .metro-slider-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 8.5pt;
+    font-weight: bold;
+    color: var(--primary);
+  }
+
+  .metro-slider {
+    width: 100%;
+    accent-color: var(--primary);
+    cursor: pointer;
+    height: 6px;
+  }
+
+  .beat-indicator {
+    width: 24px;
+    height: 24px;
+    background-color: #E2D8CE;
+    border-radius: 50%;
+    transition: background-color 0.1s ease;
+  }
+
+  .beat-indicator.active {
+    background-color: var(--gold);
+    box-shadow: 0 0 8px var(--gold);
+  }
+
   /* Sticky Horizontal Nav Bar (Mobile Optimized Carousel) */
   .jump-nav {
     position: sticky;
@@ -303,7 +379,7 @@
   @media print {
     @page { size: A4 portrait; margin: 10mm; }
     body { background-color: #FFFFFF; padding: 0; }
-    .web-toolbar, .jump-nav { display: none; }
+    .web-toolbar, .jump-nav, .metronome-card { display: none; }
     .sheet-container {
       page-break-after: always;
       border: none;
@@ -326,6 +402,21 @@
     <button class="print-btn" onclick="window.print()">
       🖨️ Print / Save PDF
     </button>
+  </div>
+
+  <!-- Interactive Web Metronome -->
+  <div class="metronome-card">
+    <div class="metronome-controls">
+      <button id="playMetroBtn" class="metro-btn" onclick="toggleMetronome()">▶ Start</button>
+      <div class="metro-slider-group">
+        <div class="metro-slider-header">
+          <span>Practice Metronome</span>
+          <span id="bpmDisplay">80 BPM</span>
+        </div>
+        <input type="range" id="bpmSlider" class="metro-slider" min="40" max="180" value="80" oninput="updateBPM(this.value)">
+      </div>
+    </div>
+    <div id="beatPulse" class="beat-indicator" title="Beat Indicator"></div>
   </div>
 
   <!-- Sticky Quick Jump Carousel Nav -->
@@ -550,7 +641,77 @@
 </div>
 
 <script>
-  // Generate 30-day interactive tracker with localStorage state persistence
+  // --- Metronome Engine (Web Audio API) ---
+  let audioCtx = null;
+  let isPlaying = false;
+  let bpm = 80;
+  let timerId = null;
+
+  function updateBPM(val) {
+    bpm = val;
+    document.getElementById('bpmDisplay').innerText = `${bpm} BPM`;
+    if (isPlaying) {
+      clearInterval(timerId);
+      startTimer();
+    }
+  }
+
+  function toggleMetronome() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === 'suspended') {
+      audioCtx.resume();
+    }
+
+    isPlaying = !isPlaying;
+    const btn = document.getElementById('playMetroBtn');
+    
+    if (isPlaying) {
+      btn.innerText = "⏸ Stop";
+      btn.classList.add('playing');
+      startTimer();
+    } else {
+      btn.innerText = "▶ Start";
+      btn.classList.remove('playing');
+      clearInterval(timerId);
+      document.getElementById('beatPulse').classList.remove('active');
+    }
+  }
+
+  function startTimer() {
+    const interval = (60 / bpm) * 1000;
+    timerId = setInterval(() => {
+      playClick();
+      triggerPulse();
+    }, interval);
+  }
+
+  function playClick() {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const envelope = audioCtx.createGain();
+    
+    osc.frequency.value = 800; // Pitch of metronome click
+    envelope.gain.setValueAtTime(1, audioCtx.currentTime);
+    envelope.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
+
+    osc.connect(envelope);
+    envelope.connect(audioCtx.destination);
+
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.05);
+  }
+
+  function triggerPulse() {
+    const pulse = document.getElementById('beatPulse');
+    pulse.classList.add('active');
+    setTimeout(() => {
+      pulse.classList.remove('active');
+    }, 100);
+  }
+
+  // --- 100-Day Tracker Persistence ---
   const grid = document.getElementById('trackerGrid');
   const totalDays = 30;
 
