@@ -110,9 +110,7 @@
     transition: background 0.2s;
   }
 
-  .metro-btn.playing {
-    background-color: #10B981;
-  }
+  .metro-btn.playing { background-color: #10B981; }
 
   .metro-slider-group {
     display: flex;
@@ -149,7 +147,63 @@
     box-shadow: 0 0 8px var(--gold);
   }
 
-  /* Sticky Horizontal Nav Bar (Mobile Optimized Carousel) */
+  /* Drum Visualizer Grids */
+  .visual-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  @media (min-width: 600px) {
+    .visual-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  .visual-box {
+    background: #FFFFFF;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+  }
+
+  .drum-diagram {
+    width: 110px;
+    height: 110px;
+    margin: 0 auto 10px auto;
+    border-radius: 50%;
+    position: relative;
+    border: 2px solid #555;
+  }
+
+  .dayan-bg { background: #EAD0B3; }
+  .bayan-bg { background: #D1D5DB; }
+
+  .zone-syahi {
+    width: 45px;
+    height: 45px;
+    background: #1E293B;
+    border-radius: 50%;
+    position: absolute;
+    top: 31px;
+    left: 31px;
+    color: #FFF;
+    font-size: 6.5pt;
+    line-height: 45px;
+    font-weight: bold;
+  }
+
+  .zone-kinar {
+    width: 102px;
+    height: 102px;
+    border: 3px solid #B45309;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+  }
+
+  /* Sticky Horizontal Nav Bar */
   .jump-nav {
     position: sticky;
     top: 8px;
@@ -263,6 +317,19 @@
     font-size: 8.5pt;
     color: #334155;
   }
+
+  .card {
+    background-color: #FFFFFF;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 12px;
+    font-size: 8.5pt;
+  }
+
+  .card-title { font-weight: bold; color: #8C2F00; margin-bottom: 6px; font-size: 9pt; }
+  ul.tip-list { margin: 0; padding-left: 14px; }
+  ul.tip-list li { margin-bottom: 3px; }
 
   /* Equal Column Spacing Taal Tables */
   .taal-table-wrapper {
@@ -421,7 +488,8 @@
 
   <!-- Sticky Quick Jump Carousel Nav -->
   <nav class="jump-nav">
-    <span class="jump-label">Taals:</span>
+    <span class="jump-label">Jump:</span>
+    <a href="#basics" class="jump-btn">Anatomy</a>
     <a href="#keherwa" class="jump-btn">Keherwa (8)</a>
     <a href="#dadra" class="jump-btn">Dadra (6)</a>
     <a href="#teental" class="jump-btn">Teental (16)</a>
@@ -430,6 +498,55 @@
     <a href="#sulfaag" class="jump-btn">Sulfaag (10)</a>
     <a href="#tracker" class="jump-btn">Tracker</a>
   </nav>
+
+  <!-- BASICS / DRUM ANATOMY GUIDE -->
+  <div id="basics" class="sheet-container">
+    <div class="header">
+      <div class="header-title">Tabla Master Reference</div>
+      <div class="header-subtitle">Khalsai - Tabla App • Stroke & Drum Anatomy</div>
+    </div>
+    <div class="info-box">
+      <strong>How to Use This Guide:</strong> Master these target zones and stroke mechanics. Proper drum surface isolation ensures clarity, resonance, and projection during Kirtan accompaniment.
+    </div>
+    
+    <div class="visual-grid">
+      <div class="visual-box">
+        <div style="font-weight:bold; color:#1C3144; margin-bottom:6px; font-size:9pt;">DAYAN (Treble Drum - Right)</div>
+        <div class="drum-diagram dayan-bg">
+          <div class="zone-kinar"></div>
+          <div class="zone-syahi">SYAHI</div>
+        </div>
+        <div style="font-size:7.5pt; text-align:left;">
+          • <strong style="color:#B45309;">Kinar (Outer Rim):</strong> Crisp non-resonant pings (<em>Ta / Na</em>)<br>
+          • <strong>Maidan (Middle Leather):</strong> Resonant sweet tones (<em>Tin</em>)<br>
+          • <strong style="color:#1E293B;">Syahi (Black Center):</strong> Fast muted strikes (<em>Titkit</em>)
+        </div>
+      </div>
+
+      <div class="visual-box">
+        <div style="font-weight:bold; color:#1C3144; margin-bottom:6px; font-size:9pt;">BAYAN (Bass Drum - Left)</div>
+        <div class="drum-diagram bayan-bg">
+          <div class="zone-syahi" style="top:32.5px; left:32.5px;">SYAHI</div>
+        </div>
+        <div style="font-size:7.5pt; text-align:left;">
+          • <strong>Open Bass (Ge/Ghe):</strong> Strike open surface with Middle/Index pads `[M/I]`. Allow bass to ring.<br>
+          • <strong>Wrist Modulation:</strong> Slide wrist-heel forward across skin to bend pitch.<br>
+          • <strong>Muted Bass (Ke/Kat):</strong> Flat cupped hand slap `[X]`.
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Color-Coded Finger System & Notation Legend</div>
+      <ul class="tip-list">
+        <li><strong style="color:#D00000;">[I] Index Finger:</strong> Primary driver for <em>Na, Ta, Tin</em> on Dayan rim/maidan.</li>
+        <li><strong style="color:#0284C7;">[M/I] Middle/Index Pads:</strong> Open bass strokes (<em>Ge / Ghe</em>) on Bayan.</li>
+        <li><strong style="color:#16A34A;">[R] Ring Finger:</strong> Anchors lightly on Dayan outer Syahi border for stability.</li>
+        <li><strong style="color:#D97706;">[M/R] Middle + Ring Together:</strong> Flat muted dead-center strike for <em>Tit</em> in <em>Titkit</em>.</li>
+        <li><strong>[O] Open Bass:</strong> Resonant Bayan sound. | <strong>[X] Muted Bass:</strong> Flat dampened sound.</li>
+      </ul>
+    </div>
+  </div>
 
   <!-- KEHERWA TAAL (8 BEATS) -->
   <div id="keherwa" class="sheet-container">
@@ -692,7 +809,7 @@
     const osc = audioCtx.createOscillator();
     const envelope = audioCtx.createGain();
     
-    osc.frequency.value = 800; // Pitch of metronome click
+    osc.frequency.value = 800; 
     envelope.gain.setValueAtTime(1, audioCtx.currentTime);
     envelope.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.05);
 
