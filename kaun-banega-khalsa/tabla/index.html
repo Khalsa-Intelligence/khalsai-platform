@@ -95,10 +95,7 @@
     gap: 6px;
   }
 
-  .theme-toggle-btn:hover, .print-btn:hover {
-    background-color: var(--khali-bg);
-  }
-
+  .theme-toggle-btn:hover, .print-btn:hover { background-color: var(--khali-bg); }
   .theme-toggle-btn:active, .print-btn:active { transform: scale(0.98); }
 
   /* Interactive Metronome Widget */
@@ -172,6 +169,62 @@
   .beat-indicator.active {
     background-color: var(--gold);
     box-shadow: 0 0 8px var(--gold);
+  }
+
+  /* Drum Visualizer Grids */
+  .visual-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  @media (min-width: 600px) {
+    .visual-grid { grid-template-columns: 1fr 1fr; }
+  }
+
+  .visual-box {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px;
+    text-align: center;
+  }
+
+  .drum-diagram {
+    width: 110px;
+    height: 110px;
+    margin: 0 auto 10px auto;
+    border-radius: 50%;
+    position: relative;
+    border: 2px solid var(--border);
+  }
+
+  .dayan-bg { background: #EAD0B3; }
+  .bayan-bg { background: #9CA3AF; }
+
+  .zone-syahi {
+    width: 45px;
+    height: 45px;
+    background: #1F2937;
+    border-radius: 50%;
+    position: absolute;
+    top: 31px;
+    left: 31px;
+    color: #FFF;
+    font-size: 6.5pt;
+    line-height: 45px;
+    font-weight: bold;
+  }
+
+  .zone-kinar {
+    width: 102px;
+    height: 102px;
+    border: 3px solid #B45309;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    left: 2px;
   }
 
   /* Sticky Horizontal Nav Bar */
@@ -313,6 +366,31 @@
     color: var(--gold);
     font-size: 9pt;
     margin-bottom: 4px;
+  }
+
+  /* Resource Link List */
+  .resource-list {
+    margin: 8px 0 0 0;
+    padding-left: 16px;
+    font-size: 8.5pt;
+  }
+
+  .resource-list li {
+    margin-bottom: 4px;
+  }
+
+  .resource-list a {
+    color: var(--primary);
+    font-weight: bold;
+    text-decoration: none;
+  }
+
+  [data-theme="dark"] .resource-list a {
+    color: #60A5FA;
+  }
+
+  .resource-list a:hover {
+    text-decoration: underline;
   }
 
   /* Equal Column Spacing Taal Tables */
@@ -470,7 +548,7 @@
   <!-- Sticky Quick Jump Carousel Nav -->
   <nav class="jump-nav">
     <span class="jump-label">Jump:</span>
-    <a href="#bols" class="jump-btn">Bols & Acoustics</a>
+    <a href="#bols" class="jump-btn">Anatomy & Audio</a>
     <a href="#improvisation" class="jump-btn">Kayda & Rela</a>
     <a href="#keherwa" class="jump-btn">Keherwa (8)</a>
     <a href="#dadra" class="jump-btn">Dadra (6)</a>
@@ -483,34 +561,52 @@
     <a href="#tracker" class="jump-btn">Tracker</a>
   </nav>
 
-  <!-- BOL MASTERCLASS & ACOUSTICS -->
+  <!-- BOL MASTERCLASS & DRUM ANATOMY -->
   <div id="bols" class="sheet-container">
     <div class="header">
-      <div class="header-title">Tabla Bol Masterclass</div>
-      <div class="header-subtitle">Khalsai - Tabla App • Acoustic Guide & Stroke Dictionary</div>
+      <div class="header-title">Tabla Master Reference & Audio Guides</div>
+      <div class="header-subtitle">Khalsai - Tabla App • Drum Anatomy & Online Sound Examples</div>
     </div>
     <div class="info-box">
-      <strong>The Physics of Na vs. Ta:</strong> Both are high-pitched rim strikes on the Dayan (treble drum), but their acoustic roles differ entirely. <strong>Na</strong> is played openly so the drumhead rings freely (like an open musical vowel). <strong>Ta</strong> is dampened immediately upon impact by the hand, yielding a dry, sharp "clack" (acting as a crisp musical period during silent wave sections).
+      <strong>The Physics of Na vs. Ta:</strong> Both are high-pitched rim strikes on the Dayan, but <strong>Na</strong> is played openly so the drumhead rings freely (open vowel), while <strong>Ta</strong> is dampened immediately upon impact for a dry, sharp "clack" (crisp period).
     </div>
 
-    <div class="section-title"><span>Essential Stroke Dictionary</span></div>
-    <div class="grid-2">
-      <div class="card-item">
-        <div class="card-title">Dha</div>
-        <div>Compound master stroke: open bass <strong>Ge</strong> on Bayan + open treble <strong>Na</strong> on Dayan. The foundational start (Sam).</div>
+    <!-- Dayan & Bayan Diagrams Reinserted -->
+    <div class="visual-grid">
+      <div class="visual-box">
+        <div style="font-weight:bold; color:var(--text); margin-bottom:6px; font-size:9pt;">DAYAN (Treble Drum - Right)</div>
+        <div class="drum-diagram dayan-bg">
+          <div class="zone-kinar"></div>
+          <div class="zone-syahi">SYAHI</div>
+        </div>
+        <div style="font-size:7.5pt; text-align:left;">
+          • <strong style="color:#B45309;">Kinar (Outer Rim):</strong> Crisp non-resonant pings (<em>Ta / Na</em>)<br>
+          • <strong>Maidan (Middle Leather):</strong> Resonant sweet tones (<em>Tin</em>)<br>
+          • <strong style="color:#1F2937;">Syahi (Black Center):</strong> Fast muted strikes (<em>Titkit</em>)
+        </div>
       </div>
-      <div class="card-item">
-        <div class="card-title">Dhin / Tin</div>
-        <div>Resonant middle leather (<em>Maidan</em>) tones on the Dayan played with the index finger. Warm and sustained.</div>
+
+      <div class="visual-box">
+        <div style="font-weight:bold; color:var(--text); margin-bottom:6px; font-size:9pt;">BAYAN (Bass Drum - Left)</div>
+        <div class="drum-diagram bayan-bg">
+          <div class="zone-syahi" style="top:32.5px; left:32.5px;">SYAHI</div>
+        </div>
+        <div style="font-size:7.5pt; text-align:left;">
+          • <strong>Open Bass (Ge/Ghe):</strong> Strike open surface with finger pads. Allow bass to ring.<br>
+          • <strong>Wrist Modulation:</strong> Slide wrist forward across skin to bend pitch.<br>
+          • <strong>Muted Bass (Ke/Kat):</strong> Flat cupped hand slap.
+        </div>
       </div>
-      <div class="card-item">
-        <div class="card-title">Ge / Ghe</div>
-        <div>Open bass stroke on the Bayan using flat finger pads with sliding wrist heel modulation.</div>
-      </div>
-      <div class="card-item">
-        <div class="card-title">Tit / Titkit</div>
-        <div>Fast, crisp double/triple strokes across the black center (<em>Syahi</em>) using middle and ring fingers.</div>
-      </div>
+    </div>
+
+    <div class="section-title"><span>Listen & Learn: External Audio & Video Examples</span></div>
+    <div class="info-box">
+      To hear exact audio examples of these strokes and taals played by master percussionists, explore these trusted online resources:
+      <ul class="resource-list">
+        <li><a href="https://chandrakantha.com/tabla_strokes/" target="_blank" rel="noopener">Chandrakantha Tabla Stroke Audio Library</a> — Detailed audio breakdowns of individual bols (Na, Ta, Dha, Ge, etc.).</li>
+        <li><a href="https://www.youtube.com/results?search_query=tabla+bols+sound+tutorial" target="_blank" rel="noopener">YouTube Tabla Stroke Tutorials</a> — Video demonstrations illustrating finger positioning and resonance.</li>
+        <li><a href="https://chandrakantha.com/tals/" target="_blank" rel="noopener">Chandrakantha Taal Reference & Beat Structures</a> — Comprehensive archive of classical rhythmic cycles.</li>
+      </ul>
     </div>
   </div>
 
