@@ -387,6 +387,37 @@
                 Save to Quiz Deck
               </button>
             </div>
+
+            </div>
+
+            <!-- Bulk JSON Deck Injection Panel -->
+            <div class="bg-slate-50 dark:bg-[#080D17] border border-slate-200 dark:border-gray-800/80 rounded-2xl p-4 space-y-3 shadow-inner mt-4">
+              <div class="flex items-center justify-between">
+                <span class="text-[11px] font-extrabold text-amber-600 dark:text-amber-400 uppercase tracking-wider block">Bulk JSON Deck Import (D1 Synced)</span>
+                <button onclick="toggleBulkGlobalHelp()" class="text-[11px] text-amber-500 underline font-bold hover:text-amber-400">Format Guide</button>
+              </div>
+
+              <div id="bulkGlobalHelpBox" class="hidden bg-slate-900 text-slate-200 p-3 rounded-xl font-mono text-[10px] space-y-1 overflow-x-auto border border-amber-500/30">
+                <p class="text-amber-400 font-bold">// Paste array of questions or full object:</p>
+                <p>[</p>
+                <p>&nbsp;&nbsp;{</p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;"title": "Question text?",</p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;"options": ["Option A", "Option B", "Option C", "Option D"],</p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;"correct": 0,</p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;"timeLimit": 30,</p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;"points": 100,</p>
+                <p>&nbsp;&nbsp;&nbsp;&nbsp;"imageUrl": null</p>
+                <p>&nbsp;&nbsp;}</p>
+                <p>]</p>
+              </div>
+
+              <textarea id="bulkGlobalJsonInput" rows="4" placeholder='Paste JSON array of questions to sync directly to D1 database...' class="w-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-xl p-3 text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-amber-500 resize-none"></textarea>
+
+              <button onclick="importBulkGlobalDeck()" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold text-xs transition shadow flex items-center justify-center space-x-1.5 border border-amber-500/30">
+                <i data-lucide="cloud-upload" class="w-4 h-4"></i>
+                <span>Import & Save to Deck (D1 Server)</span>
+              </button>
+            </div>
           </div>
 
         </div>
@@ -1493,6 +1524,52 @@
       alert(`Side Quiz ${codeInput} saved & published successfully!`);
     }
 
+
+    function toggleBulkGlobalHelp() {
+      const box = document.getElementById('bulkGlobalHelpBox');
+      if (box) box.classList.toggle('hidden');
+    }
+
+    async function importBulkGlobalDeck() {
+      const rawText = document.getElementById('bulkGlobalJsonInput').value.trim();
+      if (!rawText) { alert("Please paste a JSON payload first."); return; }
+
+      try {
+        let questionsToSave = [];
+        const parsed = JSON.parse(rawText);
+
+        if (Array.isArray(parsed)) {
+          questionsToSave = parsed;
+        } else if (parsed.questions && Array.isArray(parsed.questions)) {
+          questionsToSave = parsed.questions;
+        } else {
+          throw new Error("JSON must be an array of questions or an object with a 'questions' array.");
+        }
+
+        let count = 0;
+        for (const q of questionsToSave) {
+          const quizItem = {
+            id: q.id || ("q_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4)),
+            title: q.title || q.question || "Untitled Question",
+            imageUrl: q.imageUrl || null,
+            options: q.options || ["Option A", "Option B", "Option C", "Option D"],
+            correct: q.correct !== undefined ? parseInt(q.correct) : 0,
+            timeLimit: q.timeLimit !== undefined ? parseInt(q.timeLimit) : 30,
+            points: q.points !== undefined ? parseInt(q.points) : 100
+          };
+          
+          await sendPulse('quiz_save', { quiz: quizItem });
+          count++;
+        }
+
+        document.getElementById('bulkGlobalJsonInput').value = "";
+        await fetchPulseDatabase();
+        alert(`Successfully imported and synced ${count} question(s) to D1 database for session ${state.eventCode}!`);
+      } catch (err) {
+        alert("Bulk Global Deck Import Error: " + err.message);
+      }
+    }
+
     function toggleBulkJsonHelp() {
       const box = document.getElementById('bulkJsonHelpBox');
       if (box) box.classList.toggle('hidden');
@@ -2394,4 +2471,3 @@
   </script>
 </body>
 </html>
-```
