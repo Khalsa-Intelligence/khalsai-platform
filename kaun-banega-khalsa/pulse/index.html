@@ -1075,14 +1075,7 @@
             clearInterval(state.activeQuizTimer);
             state.activeQuizTimer = null;
 
-            if (state.view === 'audience' && !audienceLeaderboardTimeout) {
-              audienceLeaderboardTimeout = setTimeout(() => {
-                if (state.activeQuizQuestion && state.quizTimeRemaining <= 0) {
-                  switchAudienceTab('leaderboard');
-                }
-                audienceLeaderboardTimeout = null;
-              }, 15000);
-            }
+            // Keep audience on the question screen so the correct answer reveal remains clearly visible
           }
         }
         renderAudienceQuizPane();
@@ -1162,6 +1155,34 @@
             const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
             allLeaderboards[cleanCode] = userScores;
             localStorage.setItem('pulse_leaderboards', JSON.stringify(allLeaderboards));
+          }
+
+          // REBUILD LIVE RESPONSE COUNTS FOR ACTIVE QUESTION FROM PULSES
+          const activeQId = state.activeQuizQuestion ? (state.activeQuizQuestion.id || state.activeQuizQuestion.title) : null;
+          if (activeQId) {
+            const counts = [0, 0, 0, 0];
+            let total = 0;
+            const countedUsers = new Set();
+
+            sortedPulses.forEach(p => {
+              if (p.event_type === 'quiz_answer' && p.metadata) {
+                let meta = p.metadata;
+                try { while (typeof meta === 'string') meta = JSON.parse(meta); } catch(e) {}
+                if (meta && String(meta.quizId) === String(activeQId)) {
+                  const userKey = meta.userName || p.user_id || 'anon';
+                  if (!countedUsers.has(userKey)) {
+                    countedUsers.add(userKey);
+                    const optIdx = Number(meta.selectedIndex);
+                    if (!isNaN(optIdx) && optIdx >= 0 && optIdx < 4) {
+                      counts[optIdx]++;
+                      total++;
+                    }
+                  }
+                }
+              }
+            });
+            state.responseCounts = counts;
+            state.totalResponses = total;
           }
 
           // 2. PROCESS OTHER PULSE LOGS & STATE
@@ -1985,7 +2006,7 @@
       checkParticipantName();
 
       const questionId = state.activeQuizQuestion.id || state.activeQuizQuestion.title;
-      const answeredMap = JSON.parse(sessionStorage.getItem('pulse_answered_quizzes') || '{}');
+      const answeredMap = JSON.parse(localStorage.getItem('pulse_answered_quizzes') || '{}');
 
       if (state.hasSubmittedAnswer || answeredMap[questionId]) {
         alert("You have already submitted an answer for this question.");
@@ -1995,7 +2016,7 @@
       state.hasSubmittedAnswer = true;
       state.userSelectedOption = selectedIndex;
       answeredMap[questionId] = selectedIndex;
-      sessionStorage.setItem('pulse_answered_quizzes', JSON.stringify(answeredMap));
+      localStorage.setItem('pulse_answered_quizzes', JSON.stringify(answeredMap));
 
       const isCorrect = selectedIndex === state.activeQuizQuestion.correct;
       updateUserStreak(state.userName, isCorrect);
@@ -2246,11 +2267,15 @@
             </div>
           ` : ''}
 
-          ${state.hasSubmittedAnswer && !showAnswerAndVotes && !state.sideQuizActive ? `
-            <div class="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-center text-xs text-amber-600 dark:text-amber-400 font-bold animate-pulse">
-              ✓ Answer locked! Waiting for presenter to stop question...
+          ${showAnswerAndVotes && !state.sideQuizActive ? `
+            <div class="p-3.5 rounded-xl text-center text-xs font-extrabold border ${state.userSelectedOption === activeQ.correct ? 'bg-emerald-500/15 border-emerald-500/40 text-emerald-600 dark:text-emerald-400' : 'bg-amber-500/15 border-amber-500/40 text-amber-700 dark:text-amber-300'}">
+              ${state.userSelectedOption === activeQ.correct ? '🎉 Time’s Up! You got it RIGHT!' : (state.userSelectedOption !== null ? '⏱️ Time’s Up! Check the highlighted correct answer below.' : '⏱️ Time’s Up! See the correct answer highlighted below.')}
             </div>
-          ` : ''}
+          ` : (state.hasSubmittedAnswer && !showAnswerAndVotes && !state.sideQuizActive ? `
+            <div class="p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-center text-xs text-amber-600 dark:text-amber-400 font-bold animate-pulse">
+              ✓ Answer locked! Waiting for timer / presenter...
+            </div>
+          ` : '')}
 
           ${state.sideQuizActive && state.hasSubmittedAnswer ? `
             <div class="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-center text-xs text-emerald-600 dark:text-emerald-400 font-bold">
@@ -2365,6 +2390,13 @@
                 <span class="text-2xl font-mono font-bold ${!isUnlimited && state.quizTimeRemaining < 10 ? 'text-red-500 animate-pulse' : 'text-amber-600 dark:text-amber-400'}">${timerDisplayStr}</span>
               </div>
             </div>
+
+            ${showAnswer ? `
+              <div class="p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-700 dark:text-emerald-300 text-xs sm:text-sm font-extrabold flex items-center justify-between">
+                <span>⏱️ Time’s Up — Correct Answer Revealed</span>
+                <span class="font-mono">${state.totalResponses} Total Vote${state.totalResponses === 1 ? '' : 's'}</span>
+              </div>
+            ` : ''}
 
             <h2 class="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">${q.title || q.question || 'Live Question'}</h2>
 
