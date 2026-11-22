@@ -158,17 +158,6 @@
             <i data-lucide="edit-2" class="w-3 h-3"></i>
           </button>
         </div>
-
-        <div class="flex items-center space-x-2">
-          <button id="audienceAutoRefreshBtn" onclick="toggleAutoRefresh()" class="px-2.5 py-1.5 rounded-xl text-xs font-extrabold border transition flex items-center space-x-1.5" title="Auto Refresh turns ON automatically during live quiz rounds">
-            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
-            <span id="audienceAutoRefreshLabel">Auto Refresh: OFF</span>
-          </button>
-          <button onclick="manualRefreshNow()" class="px-2.5 py-1.5 rounded-xl text-xs font-extrabold bg-slate-100 dark:bg-gray-950 hover:bg-slate-200 dark:hover:bg-gray-800 text-slate-700 dark:text-gray-200 border border-slate-200 dark:border-gray-800 transition flex items-center space-x-1" title="Refresh now">
-            <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
-            <span>Refresh</span>
-          </button>
-        </div>
       </div>
 
       <!-- TAB 1: AUDIENCE Q&A -->
@@ -233,12 +222,22 @@
       <!-- TAB 3: AUDIENCE LEADERBOARD -->
       <div id="audienceLeaderboardPane" class="hidden space-y-6">
         <div class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-2xl p-6 space-y-4 shadow-sm">
-          <div class="flex items-center justify-between border-b border-slate-200 dark:border-gray-800 pb-3">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 dark:border-gray-800 pb-3">
             <h2 class="text-lg font-bold text-slate-900 dark:text-white flex items-center space-x-2">
               <i data-lucide="trophy" class="w-5 h-5 text-amber-500"></i>
               <span>Session Leaderboard</span>
             </h2>
-            <span class="text-xs text-slate-500 dark:text-gray-400 font-mono font-bold event-code-display" id="audienceLeaderboardCode"></span>
+            <div class="flex flex-wrap items-center gap-2">
+              <button onclick="toggleAutoRefresh()" class="js-auto-refresh-btn px-2.5 py-1 rounded-lg text-xs font-bold border transition flex items-center space-x-1.5" title="Auto Refresh turns ON automatically during live quiz rounds">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                <span class="js-auto-refresh-label">Auto Refresh: OFF</span>
+              </button>
+              <button onclick="manualRefreshNow()" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 dark:bg-gray-950 hover:bg-slate-200 dark:hover:bg-gray-800 text-slate-700 dark:text-gray-200 border border-slate-200 dark:border-gray-800 transition flex items-center space-x-1" title="Refresh now">
+                <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
+                <span>Refresh</span>
+              </button>
+              <span class="text-xs text-slate-500 dark:text-gray-400 font-mono font-bold event-code-display" id="audienceLeaderboardCode"></span>
+            </div>
           </div>
           <div id="audienceLeaderboardList" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
         </div>
@@ -264,30 +263,20 @@
           </div>
         </div>
 
-        <!-- Projector Screen Focus & Dynamic Timer / Refresh Controls -->
+        <!-- Projector Screen Focus & Dynamic Timer Controls -->
         <div id="spotlightContent" class="bg-white dark:bg-[#0D121F] border border-slate-200 dark:border-gray-800 rounded-2xl p-6 sm:p-8 text-center min-h-[280px] flex flex-col shadow-sm relative overflow-hidden">
-          <div class="flex flex-col lg:flex-row items-center justify-between gap-3 border-b border-slate-100 dark:border-gray-800/60 pb-3 mb-3">
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-2 border-b border-slate-100 dark:border-gray-800/60 pb-3 mb-3">
             <div class="flex items-center space-x-1.5 text-slate-400 dark:text-gray-500 uppercase font-bold text-xs tracking-wider">
               <i data-lucide="sparkles" class="w-4 h-4 text-amber-500 shrink-0"></i>
               <span>Projector Screen Focus</span>
             </div>
 
-            <div class="flex flex-wrap items-center justify-center gap-2">
-              <button id="presenterAutoRefreshBtn" onclick="toggleAutoRefresh()" class="px-2.5 py-1.5 rounded-xl text-xs font-bold border transition flex items-center space-x-1.5" title="Auto Refresh turns ON automatically during live quiz rounds">
-                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
-                <span id="presenterAutoRefreshLabel">Auto Refresh: OFF</span>
+            <div class="flex items-center space-x-2 bg-slate-100 dark:bg-gray-950 px-3 py-1 rounded-xl border border-slate-200 dark:border-gray-800">
+              <span class="text-[11px] font-extrabold text-slate-600 dark:text-gray-300">Release Timer Mode:</span>
+              <button id="pageTimerToggleBtn" onclick="togglePresenterTimerMode()" class="px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center space-x-1 bg-amber-500 text-slate-950 shadow">
+                <i data-lucide="timer" class="w-3.5 h-3.5"></i>
+                <span id="pageTimerToggleLabel">Timer Enforced</span>
               </button>
-              <button onclick="manualRefreshNow()" class="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 dark:bg-gray-950 hover:bg-slate-200 dark:hover:bg-gray-800 text-slate-700 dark:text-gray-200 border border-slate-200 dark:border-gray-800 transition flex items-center space-x-1" title="Refresh now">
-                <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
-                <span>Refresh</span>
-              </button>
-              <div class="flex items-center space-x-2 bg-slate-100 dark:bg-gray-950 px-3 py-1 rounded-xl border border-slate-200 dark:border-gray-800">
-                <span class="text-[11px] font-extrabold text-slate-600 dark:text-gray-300">Release Timer Mode:</span>
-                <button id="pageTimerToggleBtn" onclick="togglePresenterTimerMode()" class="px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center space-x-1 bg-amber-500 text-slate-950 shadow">
-                  <i data-lucide="timer" class="w-3.5 h-3.5"></i>
-                  <span id="pageTimerToggleLabel">Timer Enforced</span>
-                </button>
-              </div>
             </div>
 
             <div id="clearSpotlightBtnContainer" class="hidden shrink-0">
@@ -313,7 +302,15 @@
               <i data-lucide="trophy" class="w-5 h-5 text-amber-500"></i>
               <h3 class="text-lg font-bold text-slate-900 dark:text-white">Live Leaderboard</h3>
             </div>
-            <div class="flex items-center space-x-2">
+            <div class="flex flex-wrap items-center gap-2">
+              <button onclick="toggleAutoRefresh()" class="js-auto-refresh-btn px-2.5 py-1 text-xs font-bold rounded-lg border transition flex items-center space-x-1.5" title="Auto Refresh turns ON automatically during live quiz rounds">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                <span class="js-auto-refresh-label">Auto Refresh: OFF</span>
+              </button>
+              <button onclick="manualRefreshNow()" class="px-2.5 py-1 bg-slate-100 dark:bg-gray-950 hover:bg-slate-200 dark:hover:bg-gray-800 text-slate-700 dark:text-gray-200 border border-slate-200 dark:border-gray-800 text-xs font-bold rounded-lg transition flex items-center space-x-1" title="Refresh now">
+                <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
+                <span>Refresh</span>
+              </button>
               <button onclick="compactCurrentSessionDatabase()" class="px-2.5 py-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30 text-xs font-bold rounded-lg transition" title="Aggregate incremental score rows into 1 record per user and clean ephemeral noise">Compact Scores</button>
               <button onclick="resetCurrentEventLeaderboard()" class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-bold rounded-lg transition">Reset Scores</button>
             </div>
@@ -580,7 +577,15 @@
               <i data-lucide="trophy" class="w-5 h-5 text-amber-500"></i>
               <span>Session Leaderboard Management</span>
             </h2>
-            <div class="flex items-center gap-2 self-end sm:self-auto">
+            <div class="flex flex-wrap items-center gap-2 self-end sm:self-auto">
+              <button onclick="toggleAutoRefresh()" class="js-auto-refresh-btn px-2.5 py-1 text-xs font-bold rounded-lg border transition flex items-center space-x-1.5" title="Auto Refresh turns ON automatically during live quiz rounds">
+                <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                <span class="js-auto-refresh-label">Auto Refresh: OFF</span>
+              </button>
+              <button onclick="manualRefreshNow()" class="px-2.5 py-1 bg-slate-100 dark:bg-gray-950 hover:bg-slate-200 dark:hover:bg-gray-800 text-slate-700 dark:text-gray-200 border border-slate-200 dark:border-gray-800 text-xs font-bold rounded-lg transition flex items-center space-x-1" title="Refresh now">
+                <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
+                <span>Refresh</span>
+              </button>
               <button onclick="compactCurrentSessionDatabase()" class="px-2.5 py-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30 text-xs font-bold rounded-lg flex items-center gap-1 transition shrink-0" title="Aggregate incremental score rows into 1 row per user and prune ephemeral noise">
                 <i data-lucide="archive" class="w-3 h-3"></i>
                 <span>Compact Scores</span>
@@ -773,18 +778,15 @@
     function renderAutoRefreshUI() {
       const active = Boolean(state.autoRefreshEnabled);
       const labelText = active ? 'Auto Refresh: ON' : 'Auto Refresh: OFF';
-      const activeCls = 'px-2.5 py-1.5 rounded-xl text-xs font-extrabold border transition flex items-center space-x-1.5 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/40';
-      const inactiveCls = 'px-2.5 py-1.5 rounded-xl text-xs font-extrabold border transition flex items-center space-x-1.5 bg-slate-100 dark:bg-gray-950 text-slate-600 dark:text-gray-400 border-slate-200 dark:border-gray-800';
+      const activeCls = 'js-auto-refresh-btn px-2.5 py-1 rounded-lg text-xs font-bold border transition flex items-center space-x-1.5 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/40';
+      const inactiveCls = 'js-auto-refresh-btn px-2.5 py-1 rounded-lg text-xs font-bold border transition flex items-center space-x-1.5 bg-slate-100 dark:bg-gray-950 text-slate-600 dark:text-gray-400 border-slate-200 dark:border-gray-800';
 
-      const audBtn = document.getElementById('audienceAutoRefreshBtn');
-      const audLbl = document.getElementById('audienceAutoRefreshLabel');
-      const presBtn = document.getElementById('presenterAutoRefreshBtn');
-      const presLbl = document.getElementById('presenterAutoRefreshLabel');
-
-      if (audBtn) audBtn.className = active ? activeCls : inactiveCls;
-      if (audLbl) audLbl.textContent = labelText;
-      if (presBtn) presBtn.className = active ? activeCls : inactiveCls;
-      if (presLbl) presLbl.textContent = labelText;
+      document.querySelectorAll('.js-auto-refresh-btn').forEach(btn => {
+        btn.className = active ? activeCls : inactiveCls;
+      });
+      document.querySelectorAll('.js-auto-refresh-label').forEach(lbl => {
+        lbl.textContent = labelText;
+      });
     }
 
     function setAutoRefresh(enabled) {
@@ -1137,77 +1139,111 @@
         .sort((a, b) => b.score - a.score);
     }
 
+    function ingestSeriesPulses(pulses) {
+      let changed = false;
+      pulses.sort((a, b) => Number(a.id) - Number(b.id));
+
+      for (const p of pulses) {
+        const pId = Number(p.id) || 0;
+        if (pId > state.lastSeriesPulseId) state.lastSeriesPulseId = pId;
+        if (processedSeriesPulseIds.has(pId)) continue;
+        processedSeriesPulseIds.add(pId);
+
+        const meta = parseMetadata(p.metadata);
+        const pCode = String(p.event_code || '').replace(/^#/, '').trim().toUpperCase();
+
+        if (p.event_type === 'leaderboard_reset') {
+          if (pId > state.lastSeriesResetPulseId) {
+            state.lastSeriesResetPulseId = pId;
+            if (meta && meta.scope === 'series') {
+              state.seriesSnapshotTotalsByUser.clear();
+              state.seriesAwardedByUserQuiz.clear();
+            } else {
+              for (const k of Array.from(state.seriesSnapshotTotalsByUser.keys())) {
+                if (k.startsWith(`${pCode}::`)) state.seriesSnapshotTotalsByUser.delete(k);
+              }
+              for (const k of Array.from(state.seriesAwardedByUserQuiz.keys())) {
+                if (k.startsWith(`${pCode}::`)) state.seriesAwardedByUserQuiz.delete(k);
+              }
+            }
+            changed = true;
+          }
+          continue;
+        }
+
+        if (p.event_type === 'leaderboard_snapshot' && meta) {
+          const user = String(meta.userName || meta.user || p.user_id || '').trim();
+          const pts = Math.max(0, Number(meta.totalScore ?? meta.score) || 0);
+          if (user && pCode) {
+            const snapKey = `${pCode}::${user}`;
+            state.seriesSnapshotTotalsByUser.set(snapKey, (state.seriesSnapshotTotalsByUser.get(snapKey) || 0) + pts);
+            changed = true;
+          }
+          continue;
+        }
+
+        if (p.event_type === 'quiz_answer' && meta) {
+          const user = String(meta.userName || meta.user || p.user_id || '').trim();
+          const quizId = String(meta.quizId ?? meta.questionId ?? 'default').trim();
+          const pts = Math.max(0, Number(meta.pointsEarned ?? meta.points) || 0);
+          if (user && pCode) {
+            const key = `${pCode}::${user}::${quizId}`;
+            if (!state.seriesAwardedByUserQuiz.has(key)) {
+              state.seriesAwardedByUserQuiz.set(key, pts);
+              changed = true;
+            }
+          }
+        }
+      }
+      return changed;
+    }
+
     async function fetchSeriesLeaderboardFromD1() {
       const seriesName = getLectureSeries(state.eventCode);
       if (!seriesName) return;
       try {
         let keepFetching = true;
         let changed = false;
+        let seriesEndpointFailed = false;
 
         while (keepFetching) {
           const afterParam = state.lastSeriesPulseId > 0 ? `&afterId=${encodeURIComponent(state.lastSeriesPulseId)}` : '';
           const res = await fetch(`/api/pulse?seriesPrefix=${encodeURIComponent(seriesName)}${afterParam}`);
-          if (!res.ok) break;
+          if (!res.ok) {
+            seriesEndpointFailed = true;
+            break;
+          }
           const data = await res.json();
           const pulses = Array.isArray(data?.recent_pulses) ? data.recent_pulses : [];
           if (pulses.length === 0) break;
 
-          pulses.sort((a, b) => Number(a.id) - Number(b.id));
+          if (ingestSeriesPulses(pulses)) changed = true;
+          keepFetching = Boolean(data?.has_more);
+        }
 
-          for (const p of pulses) {
-            const pId = Number(p.id) || 0;
-            if (pId > state.lastSeriesPulseId) state.lastSeriesPulseId = pId;
-            if (processedSeriesPulseIds.has(pId)) continue;
-            processedSeriesPulseIds.add(pId);
-
-            const meta = parseMetadata(p.metadata);
-            const pCode = String(p.event_code || '').replace(/^#/, '').trim().toUpperCase();
-
-            if (p.event_type === 'leaderboard_reset') {
-              if (pId > state.lastSeriesResetPulseId) {
-                state.lastSeriesResetPulseId = pId;
-                if (meta && meta.scope === 'series') {
-                  state.seriesSnapshotTotalsByUser.clear();
-                  state.seriesAwardedByUserQuiz.clear();
-                } else {
-                  for (const k of Array.from(state.seriesSnapshotTotalsByUser.keys())) {
-                    if (k.startsWith(`${pCode}::`)) state.seriesSnapshotTotalsByUser.delete(k);
-                  }
-                  for (const k of Array.from(state.seriesAwardedByUserQuiz.keys())) {
-                    if (k.startsWith(`${pCode}::`)) state.seriesAwardedByUserQuiz.delete(k);
-                  }
-                }
-                changed = true;
-              }
-              continue;
-            }
-
-            if (p.event_type === 'leaderboard_snapshot' && meta) {
-              const user = String(meta.userName || meta.user || p.user_id || '').trim();
-              const pts = Math.max(0, Number(meta.totalScore ?? meta.score) || 0);
-              if (user && pCode) {
-                const snapKey = `${pCode}::${user}`;
-                state.seriesSnapshotTotalsByUser.set(snapKey, (state.seriesSnapshotTotalsByUser.get(snapKey) || 0) + pts);
-                changed = true;
-              }
-              continue;
-            }
-
-            if (p.event_type === 'quiz_answer' && meta) {
-              const user = String(meta.userName || meta.user || p.user_id || '').trim();
-              const quizId = String(meta.quizId ?? meta.questionId ?? 'default').trim();
-              const pts = Math.max(0, Number(meta.pointsEarned ?? meta.points) || 0);
-              if (user && pCode) {
-                const key = `${pCode}::${user}::${quizId}`;
-                if (!state.seriesAwardedByUserQuiz.has(key)) {
-                  state.seriesAwardedByUserQuiz.set(key, pts);
-                  changed = true;
-                }
-              }
+        if (seriesEndpointFailed) {
+          const cleanCurrent = state.eventCode.replace(/^#/, '').trim().toUpperCase();
+          const candidateCodes = new Set([cleanCurrent]);
+          const match = cleanCurrent.match(/^(.*?SESSION)(\d+)$/);
+          if (match) {
+            const prefix = match[1];
+            const num = parseInt(match[2], 10);
+            for (let n = 1; n <= Math.max(num, 10); n++) {
+              candidateCodes.add(`${prefix}${n}`);
             }
           }
+          loadSideQuizCatalog();
+          Object.keys(state.sideQuizCatalog).forEach(k => {
+            if (getLectureSeries(k) === seriesName) candidateCodes.add(k);
+          });
 
-          keepFetching = Boolean(data?.has_more);
+          for (const code of candidateCodes) {
+            const r = await fetch(`/api/pulse?eventCode=${encodeURIComponent(code)}`);
+            if (!r.ok) continue;
+            const d = await r.json();
+            const rows = Array.isArray(d?.recent_pulses) ? d.recent_pulses : [];
+            if (ingestSeriesPulses(rows)) changed = true;
+          }
         }
 
         if (changed && state.leaderboardMode === 'series') {
