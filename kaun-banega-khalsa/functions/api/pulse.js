@@ -210,6 +210,19 @@ export async function onRequestGet(context) {
   const afterId = afterIdRaw !== null ? Number(afterIdRaw) : 0;
   const PAGE_LIMIT = 1000;
 
+  if (!eventCode && !seriesPrefix) {
+    return new Response(
+      JSON.stringify({ success: false, error: 'eventCode or seriesPrefix parameter is required' }),
+      {
+        status: 400,
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        },
+      }
+    );
+  }
+
   try {
     let query = `SELECT id, session_id, user_id, event_type, event_code, metadata, created_at
                  FROM pulse_events WHERE 1=1`;
