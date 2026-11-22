@@ -770,6 +770,20 @@
       countedAnswerUsers: new Set()
     };
 
+    function getAwardedMap(cleanCode) {
+      try {
+        return JSON.parse(sessionStorage.getItem(`pulse_awarded_${cleanCode}`) || '{}');
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function saveAwardedMap(cleanCode, mapObj) {
+      try {
+        sessionStorage.setItem(`pulse_awarded_${cleanCode}`, JSON.stringify(mapObj));
+      } catch (e) {}
+    }
+
     function getQuestionKey(q, fallback = '') {
       if (!q) return fallback;
       const rawKey = q.id || q.title || q.question || fallback;
@@ -808,20 +822,6 @@
       try {
         localStorage.setItem(`pulse_course_bank_${seriesName}`, JSON.stringify(state.courseBank));
       } catch (e) {}
-    }
-
-    function upsertCourseBankQuestion(rawQ, sourceSession = '') {
-      const seriesName = getLectureSeries(sourceSession || state.eventCode);
-      const normQ = normalizeQuestionItem(rawQ, sourceSession || state.eventCode);
-      const key = getQuestionKey(normQ);
-      if (!key) return;
-      const existing = state.courseBankMap.get(key);
-      state.courseBankMap.set(key, {
-        ...(existing || {}),
-        ...normQ,
-        sourceSession: normQ.sourceSession || (existing && existing.sourceSession) || sourceSession || state.eventCode
-      });
-      persistCourseBank(seriesName);
     }
 
     function addBankQuestionToSession(questionKey) {
@@ -1185,11 +1185,15 @@
         state.lastLeaderboardResetAt = resetTime;
         state.userScores = {};
         state.scoredKeys.clear();
+        sessionStorage.removeItem(`pulse_awarded_${cleanKey}`);
         const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
 
         if (isSeriesMode) {
           Object.keys(allLeaderboards).forEach(code => {
-            if (getLectureSeries(code) === seriesName) delete allLeaderboards[code];
+            if (getLectureSeries(code) === seriesName) {
+              delete allLeaderboards[code];
+              sessionStorage.removeItem(`pulse_awarded_${code}`);
+            }
           });
           state.sessionLeaderboard = {};
         } else {
@@ -1287,6 +1291,9 @@
       const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
       state.sessionLeaderboard = allLeaderboards[clean] || {};
       state.userScores = { ...state.sessionLeaderboard };
+
+      const existingAwarded = getAwardedMap(clean);
+      Object.keys(existingAwarded).forEach(k => state.scoredKeys.add(k));
 
       processedPulseIds.clear();
 
@@ -1497,12 +1504,21 @@
           }
 
           if (p.event_type === 'quiz_answer' && meta) {
-            if (meta.userName && meta.pointsEarned !== undefined && meta.quizId) {
-              const scoreKey = `${meta.userName}_${meta.quizId}`;
-              if (!state.scoredKeys.has(scoreKey)) {
-                state.scoredKeys.add(scoreKey);
-                const points = Math.max(0, Number(meta.pointsEarned) || 0);
-                state.userScores[meta.userName] = (state.userScores[meta.userName] || 0) + points;
+            const pulseTime = p.created_at ? new Date(p.created_at).getTime() : Date.now();
+            const isAfterReset = !state.lastLeaderboardResetAt || pulseTime >= state.lastLeaderboardResetAt;
+
+            if (isAfterReset && meta.userName && meta.quizId !== undefined && meta.quizId !== null && meta.pointsEarned !== undefined) {
+              const cleanUser = String(meta.userName).trim();
+              const cleanQuizId = String(meta.quizId).trim();
+              const awardKey = `${cleanUser}::${cleanQuizId}`;
+              const awardedMap = getAwardedMap(cleanCode);
+              const points = Math.max(0, Number(meta.pointsEarned) || 0);
+
+              if (cleanUser && cleanQuizId && !(awardKey in awardedMap)) {
+                awardedMap[awardKey] = points;
+                saveAwardedMap(cleanCode, awardedMap);
+                state.scoredKeys.add(awardKey);
+                state.userScores[cleanUser] = (state.userScores[cleanUser] || 0) + points;
                 leaderboardChanged = true;
               }
             }
@@ -1637,6 +1653,7 @@
               state.lastLeaderboardResetAt = resetTime;
               state.userScores = {};
               state.scoredKeys.clear();
+              sessionStorage.removeItem(`pulse_awarded_${cleanCode}`);
               state.sessionLeaderboard = {};
               const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
               delete allLeaderboards[cleanCode];
