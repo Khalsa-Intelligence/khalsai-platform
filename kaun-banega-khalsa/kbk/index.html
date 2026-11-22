@@ -31,7 +31,7 @@
       content: "";
       position: fixed;
       inset: 0;
-      background-image: 
+      background-image:
         radial-gradient(1.5px 1.5px at 20px 30px, #ffffff, rgba(0,0,0,0)),
         radial-gradient(1.5px 1.5px at 70px 120px, rgba(247, 168, 27, 0.8), rgba(0,0,0,0)),
         radial-gradient(2px 2px at 190px 80px, #ffffff, rgba(0,0,0,0)),
@@ -85,6 +85,8 @@
       display: flex;
       gap: 0.75rem;
       align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
     }
 
     .nav-btn {
@@ -97,12 +99,37 @@
       font-size: 0.85rem;
       cursor: pointer;
       text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
       transition: all 0.2s ease;
     }
 
     .nav-btn:hover {
       background: #ffc043;
       box-shadow: 0 0 10px rgba(247, 168, 27, 0.5);
+    }
+
+    .secondary-link-btn {
+      background: rgba(12, 20, 38, 0.9);
+      border: 1px solid rgba(88, 166, 255, 0.45);
+      color: #79c0ff;
+      padding: 0.48rem 1.1rem;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .secondary-link-btn:hover {
+      border-color: #F7A81B;
+      color: #F7A81B;
+      background: rgba(247, 168, 27, 0.12);
     }
 
     .admin-review-btn {
@@ -196,6 +223,19 @@
       box-shadow: 0 0 15px rgba(247, 168, 27, 0.5);
     }
 
+    .modal-leaderboard-link {
+      display: inline-block;
+      margin-top: 1rem;
+      color: #79c0ff;
+      font-size: 0.88rem;
+      text-decoration: none;
+    }
+
+    .modal-leaderboard-link:hover {
+      color: #F7A81B;
+      text-decoration: underline;
+    }
+
     .review-modal-card {
       max-width: 800px;
       max-height: 80vh;
@@ -244,11 +284,31 @@
       justify-content: center;
     }
 
+    .player-status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: rgba(12, 20, 38, 0.75);
+      border: 1px solid rgba(88, 166, 255, 0.25);
+      border-radius: 10px;
+      padding: 0.6rem 1rem;
+      margin-bottom: 1.1rem;
+      font-size: 0.85rem;
+      color: #d1d5db;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .player-status-bar strong {
+      color: #F7A81B;
+    }
+
     .lifelines-container {
       display: flex;
       justify-content: center;
       gap: 1rem;
-      margin-bottom: 2rem;
+      margin-bottom: 1.75rem;
+      flex-wrap: wrap;
     }
 
     .lifeline-btn {
@@ -291,6 +351,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      line-height: 1.45;
     }
 
     .options-grid {
@@ -311,18 +372,25 @@
       transition: all 0.2s ease;
       display: flex;
       align-items: center;
+      line-height: 1.35;
     }
 
     .option-btn .prefix {
       color: #F7A81B;
       font-weight: bold;
       margin-right: 8px;
+      flex-shrink: 0;
     }
 
     .option-btn:hover:not(:disabled) {
       border-color: #F7A81B;
       background: rgba(247, 168, 27, 0.15);
       box-shadow: 0 0 12px rgba(247, 168, 27, 0.3);
+    }
+
+    .option-btn:disabled {
+      cursor: default;
+      opacity: 0.75;
     }
 
     .ladder-section {
@@ -390,11 +458,12 @@
       <div class="subtitle">A Khalsa Intelligence Initiative</div>
     </div>
     <div class="header-actions">
-      <button class="nav-btn" onclick="resetGame()">New Game</button>
-      <button class="admin-review-btn" onclick="openReviewSetModal()">Review Question Set</button>
+      <a id="header-leaderboard-link" class="secondary-link-btn" href="/leaderboard">Leaderboard</a>
+      <button type="button" class="nav-btn" onclick="resetGame()">New Game</button>
+      <button type="button" class="admin-review-btn" onclick="openReviewSetModal()">Review Question Set</button>
     </div>
   </header>
-  
+
   <div id="player-setup-modal" class="overlay-modal">
     <div class="modal-card">
       <div id="gameGroupBanner" style="display: none; background: #21262d; border: 1px solid #30363d; color: #fff; padding: 6px 10px; border-radius: 6px; margin-bottom: 12px; text-align: center; font-size: 0.9rem;">
@@ -402,7 +471,7 @@
       </div>
 
       <h2>Kaun Banega Khalsa</h2>
-      
+
       <form id="player-setup-form" onsubmit="handlePlayerSubmit(event)">
         <div class="input-group">
           <label for="player-name">Player Name</label>
@@ -410,10 +479,12 @@
         </div>
         <div class="input-group">
           <label for="player-age">Age</label>
-          <input type="number" id="player-age" placeholder="Enter your age" required>
+          <input type="number" id="player-age" placeholder="Enter your age" min="1" max="120" required>
         </div>
         <button type="submit" class="start-btn">Start Game</button>
       </form>
+
+      <a id="modal-leaderboard-link" class="modal-leaderboard-link" href="/leaderboard">View Leaderboard &rarr;</a>
     </div>
   </div>
 
@@ -421,16 +492,21 @@
     <div class="modal-card review-modal-card">
       <h2>Question Set Bank (150 Questions)</h2>
       <div id="review-content-area" class="review-content"></div>
-      <button class="start-btn" onclick="closeReviewSetModal()">Close Reviewer</button>
+      <button type="button" class="start-btn" onclick="closeReviewSetModal()">Close Reviewer</button>
     </div>
   </div>
 
   <div class="game-container">
     <div class="question-section">
+      <div class="player-status-bar">
+        <span>Player: <strong id="hud-player-name">-</strong></span>
+        <span>Guaranteed Checkpoint: <strong id="hud-checkpoint">None</strong></span>
+      </div>
+
       <div class="lifelines-container">
-        <button class="lifeline-btn" id="lifeline-5050" onclick="use5050()">50:50</button>
-        <button class="lifeline-btn" id="lifeline-sangat" onclick="useAskSangat()">Ask the Sangat</button>
-        <button class="lifeline-btn" id="lifeline-scholar" onclick="useCallScholar()">Call a Scholar</button>
+        <button type="button" class="lifeline-btn" id="lifeline-5050" onclick="use5050()">50:50</button>
+        <button type="button" class="lifeline-btn" id="lifeline-sangat" onclick="useAskSangat()">Ask the Sangat</button>
+        <button type="button" class="lifeline-btn" id="lifeline-scholar" onclick="useCallScholar()">Call a Scholar</button>
       </div>
 
       <div class="question-box" id="question-text">Loading question...</div>
@@ -463,38 +539,55 @@
   <script>
     // URL Search parameters & group setup
     const urlParams = new URLSearchParams(window.location.search);
-    const activeGroup = urlParams.get('group') || urlParams.get('Group');
+    const rawGroup = urlParams.get('group') || urlParams.get('Group');
+    const cleanGroup = (rawGroup && rawGroup.trim() !== '' && rawGroup.trim().toUpperCase() !== 'GLOBAL')
+      ? rawGroup.trim().toUpperCase()
+      : 'GLOBAL';
 
-    if (activeGroup && activeGroup.trim() !== '' && activeGroup.toUpperCase() !== 'GLOBAL') {
-      const cleanGroup = activeGroup.toUpperCase();
+    if (cleanGroup !== 'GLOBAL') {
       localStorage.setItem('kbk_group_code', cleanGroup);
-      
-      window.addEventListener('DOMContentLoaded', () => {
+    }
+
+    window.getGameGroupCode = () => cleanGroup;
+
+    function getLeaderboardUrl() {
+      const grp = window.getGameGroupCode();
+      return grp && grp !== 'GLOBAL'
+        ? `/leaderboard?group=${encodeURIComponent(grp)}`
+        : '/leaderboard';
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const lbUrl = getLeaderboardUrl();
+      const headerLbLink = document.getElementById('header-leaderboard-link');
+      const modalLbLink = document.getElementById('modal-leaderboard-link');
+      if (headerLbLink) headerLbLink.href = lbUrl;
+      if (modalLbLink) modalLbLink.href = lbUrl;
+
+      if (cleanGroup !== 'GLOBAL') {
         const banner = document.getElementById('gameGroupBanner');
         const nameSpan = document.getElementById('gameGroupName');
         if (banner && nameSpan) {
           nameSpan.textContent = cleanGroup;
           banner.style.display = 'block';
         }
-      });
-      window.getGameGroupCode = () => cleanGroup;
-    } else {
-      window.getGameGroupCode = () => "GLOBAL";
-    }
+      }
+    });
 
-    let playerProfile = { 
-      name: "", 
-      age: 0, 
-      currentLevelIndex: 0, 
+    let playerProfile = {
+      name: "",
+      age: 0,
+      currentLevelIndex: 0,
       guaranteedLevelIndex: -1,
       groupCode: window.getGameGroupCode()
     };
-    
+
     let lifelinesUsed = { '5050': false, 'sangat': false, 'scholar': false };
-    const SAFETY_LEVELS = [5, 10]; 
+    let isSubmittingScore = false;
+    const SAFETY_LEVELS = [5, 10];
     let activeGameQuestions = [];
 
-const questionBankByTier = [
+    const questionBankByTier = [
       // Tier 1
       [
         { q: "Who was the first Guru of Sikhi?", options: ["Sri Guru Angad Dev Ji", "Sri Guru Gobind Singh Ji", "Sri Guru Nanak Dev Ji", "Sri Guru Tegh Bahadur Ji"], correct: 2, prize: "Gyan Novice" },
@@ -701,7 +794,7 @@ const questionBankByTier = [
       while (questionBankByTier.length < 15) {
         let currentTierLevel = questionBankByTier.length + 1;
         let dummySet = [];
-        for(let i = 1; i <= 10; i++) {
+        for (let i = 1; i <= 10; i++) {
           dummySet.push({
             q: `Level ${currentTierLevel} Sample Question #${i}?`,
             options: [`Option A for L${currentTierLevel}`, `Option B for L${currentTierLevel}`, `Option C for L${currentTierLevel}`, `Option D for L${currentTierLevel}`],
@@ -721,21 +814,51 @@ const questionBankByTier = [
       });
     }
 
+    function updateHud() {
+      const nameEl = document.getElementById('hud-player-name');
+      const cpEl = document.getElementById('hud-checkpoint');
+      if (nameEl) {
+        nameEl.textContent = playerProfile.name || '-';
+      }
+      if (cpEl) {
+        if (playerProfile.guaranteedLevelIndex >= 0) {
+          const cpLevel = playerProfile.guaranteedLevelIndex + 1;
+          const cpTitle = activeGameQuestions[playerProfile.guaranteedLevelIndex]?.prize || `Level ${cpLevel}`;
+          cpEl.textContent = `Level ${cpLevel} (${cpTitle})`;
+        } else {
+          cpEl.textContent = 'None';
+        }
+      }
+    }
+
+    function resetLifelinesForNewGame() {
+      lifelinesUsed = { '5050': false, 'sangat': false, 'scholar': false };
+      ['lifeline-5050', 'lifeline-sangat', 'lifeline-scholar'].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) btn.disabled = false;
+      });
+    }
+
     function submitPlayerProfile() {
       const nameInput = document.getElementById('player-name').value.trim();
       const ageInput = document.getElementById('player-age').value.trim();
+      const parsedAge = parseInt(ageInput, 10);
 
-      if (!nameInput || !ageInput) {
-        alert("Please enter both your name and age.");
+      if (!nameInput || !ageInput || Number.isNaN(parsedAge) || parsedAge < 1) {
+        alert("Please enter a valid name and age.");
         return;
       }
 
+      isSubmittingScore = false;
       playerProfile.name = nameInput;
-      playerProfile.age = parseInt(ageInput, 10);
+      playerProfile.age = parsedAge;
       playerProfile.currentLevelIndex = 0;
       playerProfile.guaranteedLevelIndex = -1;
+      playerProfile.groupCode = window.getGameGroupCode();
 
+      resetLifelinesForNewGame();
       selectRandomGameQuestions();
+      updateHud();
 
       document.getElementById('player-setup-modal').style.display = 'none';
       renderQuestion();
@@ -747,23 +870,20 @@ const questionBankByTier = [
 
         if (group && group !== 'GLOBAL') {
           window.location.href = `/kbk?group=${encodeURIComponent(group)}`;
-        return;
+          return;
         }
-  
-        playerProfile = { 
-          name: "", 
-          age: 0, 
-          currentLevelIndex: 0, 
+
+        isSubmittingScore = false;
+        playerProfile = {
+          name: "",
+          age: 0,
+          currentLevelIndex: 0,
           guaranteedLevelIndex: -1,
           groupCode: 'GLOBAL'
         };
-        
-        lifelinesUsed = { '5050': false, 'sangat': false, 'scholar': false };
-        ['lifeline-5050', 'lifeline-sangat', 'lifeline-scholar'].forEach(id => {
-          const btn = document.getElementById(id);
-          if (btn) btn.disabled = false;
-        });
 
+        resetLifelinesForNewGame();
+        updateHud();
         document.getElementById('player-name').value = "";
         document.getElementById('player-age').value = "";
         document.getElementById('player-setup-modal').style.display = 'flex';
@@ -772,8 +892,9 @@ const questionBankByTier = [
 
     function renderQuestion() {
       const currentQ = activeGameQuestions[playerProfile.currentLevelIndex];
-      
-      document.getElementById('question-text').innerText = 
+      if (!currentQ) return;
+
+      document.getElementById('question-text').innerText =
         `Q${playerProfile.currentLevelIndex + 1} (${currentQ.prize}): ${currentQ.q}`;
 
       const container = document.getElementById('options-container');
@@ -782,13 +903,16 @@ const questionBankByTier = [
 
       currentQ.options.forEach((opt, index) => {
         const btn = document.createElement('button');
+        btn.type = 'button';
         btn.className = 'option-btn';
         btn.id = `opt-${index}`;
+        btn.style.visibility = 'visible';
         btn.innerHTML = `<span class="prefix">${letters[index]}:</span> ${opt}`;
         btn.onclick = () => handleAnswerSelect(index);
         container.appendChild(btn);
       });
 
+      updateHud();
       updateLadderUI();
     }
 
@@ -798,7 +922,7 @@ const questionBankByTier = [
         buildFullQuestionSet();
         const area = document.getElementById('review-content-area');
         area.innerHTML = "";
-        
+
         questionBankByTier.forEach((tier, index) => {
           const tierDiv = document.createElement('div');
           tierDiv.className = 'review-tier';
@@ -824,11 +948,11 @@ const questionBankByTier = [
 
     function use5050() {
       if (lifelinesUsed['5050']) return;
-      
+
       const currentQ = activeGameQuestions[playerProfile.currentLevelIndex];
       const correctIdx = currentQ.correct;
       const incorrectIndices = [0, 1, 2, 3].filter(idx => idx !== correctIdx);
-      
+
       incorrectIndices.sort(() => Math.random() - 0.5);
       const toHide = incorrectIndices.slice(0, 2);
 
@@ -891,10 +1015,12 @@ const questionBankByTier = [
 
       if (selectedIndex === currentQ.correct) {
         const currentLevelNumber = playerProfile.currentLevelIndex + 1;
-        
+
         if (SAFETY_LEVELS.includes(currentLevelNumber)) {
           playerProfile.guaranteedLevelIndex = playerProfile.currentLevelIndex;
         }
+
+        updateHud();
 
         if (playerProfile.currentLevelIndex === activeGameQuestions.length - 1) {
           endGame(true, "🎉 Congratulations! You have attained the title of Gursikh!");
@@ -913,9 +1039,9 @@ const questionBankByTier = [
       if (isWin) {
         finalLevelReached = activeGameQuestions.length;
       } else {
-        finalLevelReached = playerProfile.guaranteedLevelIndex >= 0 
-          ? playerProfile.guaranteedLevelIndex + 1 
-          : 1; 
+        finalLevelReached = playerProfile.guaranteedLevelIndex >= 0
+          ? playerProfile.guaranteedLevelIndex + 1
+          : 1;
       }
 
       alert(`${message}\n\nFinal Level Reached: Level ${finalLevelReached}`);
@@ -923,7 +1049,11 @@ const questionBankByTier = [
     }
 
     function submitScoreToLeaderboard(finalLevelReached) {
-      const activeGroup = window.getGameGroupCode();
+      if (isSubmittingScore) return;
+      isSubmittingScore = true;
+
+      const grp = window.getGameGroupCode();
+      const targetUrl = getLeaderboardUrl();
 
       fetch('/api/submit_score', {
         method: 'POST',
@@ -933,16 +1063,16 @@ const questionBankByTier = [
           age: playerProfile.age,
           level: finalLevelReached,
           score: finalLevelReached * 1000,
-          group_code: activeGroup
+          group_code: grp
         })
       })
       .then(res => res.json())
-      .then(data => {
-        window.location.href = "/leaderboard?group=" + encodeURIComponent(activeGroup);
+      .then(() => {
+        window.location.href = targetUrl;
       })
       .catch(err => {
         console.error("Submission error:", err);
-        window.location.href = "/leaderboard?group=" + encodeURIComponent(activeGroup);
+        window.location.href = targetUrl;
       });
     }
 
