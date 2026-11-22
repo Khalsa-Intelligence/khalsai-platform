@@ -745,10 +745,10 @@ const questionBankByTier = [
         const group = window.getGameGroupCode();
 
         if (group && group !== 'GLOBAL') {
-          window.location.href = `/game?group=${encodeURIComponent(group)}`;
-          return;
+          window.location.href = `/kbk?group=${encodeURIComponent(group)}`;
+        return;
         }
-
+  
         playerProfile = { 
           name: "", 
           age: 0, 
