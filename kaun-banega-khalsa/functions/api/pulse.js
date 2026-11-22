@@ -34,7 +34,7 @@ export async function onRequestPost(context) {
       )
       .run();
 
-    return new Response(JSON.stringify({ success: true }), {
+    return new Response(JSON.stringify({ success: true, message: 'Pulse recorded' }), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
@@ -56,6 +56,7 @@ export async function onRequestGet(context) {
   const { request, env } = context;
   const url = new URL(request.url);
   const eventCode = url.searchParams.get('eventCode');
+  const seriesPrefix = url.searchParams.get('seriesPrefix');
   const afterIdRaw = url.searchParams.get('afterId');
   const afterId = afterIdRaw !== null ? Number(afterIdRaw) : 0;
 
@@ -64,7 +65,11 @@ export async function onRequestGet(context) {
                  FROM pulse_events WHERE 1=1`;
     const params = [];
 
-    if (eventCode) {
+    if (seriesPrefix) {
+      const cleanSeries = String(seriesPrefix).replace(/^#/, '').trim().toUpperCase();
+      query += ` AND UPPER(REPLACE(event_code, '#', '')) LIKE ? AND event_type IN ('quiz_answer', 'leaderboard_reset')`;
+      params.push(`${cleanSeries}%`);
+    } else if (eventCode) {
       const cleanCode = String(eventCode).replace(/^#/, '').trim().toUpperCase();
       query += ` AND UPPER(REPLACE(event_code, '#', '')) = ?`;
       params.push(cleanCode);
@@ -75,14 +80,13 @@ export async function onRequestGet(context) {
       params.push(afterId);
     }
 
-    query += ` ORDER BY id ASC LIMIT 250`;
+    query += ` ORDER BY id ASC LIMIT 500`;
 
     const { results } = await env.PULSE_DB.prepare(query).bind(...params).all();
-    const rows = results || [];
 
     return new Response(
       JSON.stringify({
-        recent_pulses: rows,
+        recent_pulses: results || [],
       }),
       {
         status: 200,
