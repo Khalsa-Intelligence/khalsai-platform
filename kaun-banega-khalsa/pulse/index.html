@@ -311,9 +311,13 @@
           
           <!-- Pre-Loaded Deck -->
           <div class="lg:col-span-7 lg:order-2 space-y-4">
-            <div class="flex items-center justify-between">
+            <div class="flex flex-wrap items-center justify-between gap-2">
               <h3 class="text-base font-bold text-slate-900 dark:text-white">Pre-Loaded Deck</h3>
-              <button onclick="resetQuizDeck()" class="text-xs bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 text-slate-700 dark:text-gray-300 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-gray-700 font-bold">Clear Deck</button>
+              <div class="flex items-center space-x-1.5">
+                <button onclick="copyCurrentDeckJson()" class="text-xs bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 text-slate-700 dark:text-gray-300 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-gray-700 font-bold">Copy JSON</button>
+                <button onclick="exportCurrentDeckJson()" class="text-xs bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 px-2.5 py-1 rounded-lg border border-amber-500/30 font-bold">Export JSON</button>
+                <button onclick="resetQuizDeck()" class="text-xs bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 text-slate-700 dark:text-gray-300 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-gray-700 font-bold">Clear Deck</button>
+              </div>
             </div>
             <div id="quizDeckList" class="space-y-3"></div>
           </div>
@@ -386,8 +390,6 @@
               <button id="btnSaveQuiz" onclick="saveQuizQuestion()" class="w-full py-2.5 rounded-xl gold-gradient-bg text-slate-950 font-bold text-sm hover:brightness-110 transition shadow">
                 Save to Quiz Deck
               </button>
-            </div>
-
             </div>
 
             <!-- Bulk JSON Deck Injection Panel -->
@@ -692,6 +694,7 @@
     const persistedView = sessionStorage.getItem('pulse_current_view') || 'audience';
     
     const processedPulseIds = new Set();
+    const loadedStaticBanks = new Set();
     let audienceLeaderboardTimeout = null;
 
     let state = {
@@ -724,7 +727,12 @@
       sideQuizIndex: 0,
       sideQuizAnswers: {},
       sideQuizCompleted: false,
-      sideQuizCatalog: {}
+      sideQuizCatalog: {},
+      lastPulseId: 0,
+      deckMap: new Map(),
+      userScores: {},
+      scoredKeys: new Set(),
+      countedAnswerUsers: new Set()
     };
 
     function togglePresenterTimerMode() {
@@ -778,6 +786,16 @@
       const allQuestions = [];
       const seenIds = new Set();
 
+      if (state.quizDeck && state.quizDeck.length > 0) {
+        state.quizDeck.forEach(q => {
+          const qId = q.id || q.title || q.question;
+          if (qId && !seenIds.has(qId)) {
+            seenIds.add(qId);
+            allQuestions.push({ ...q, sourceSession: state.eventCode });
+          }
+        });
+      }
+
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
         if (key && key.startsWith('pulse_deck_')) {
@@ -798,12 +816,86 @@
         }
       }
 
-      if (allQuestions.length === 0 && state.quizDeck) {
-        state.quizDeck.forEach(q => {
-          allQuestions.push({ ...q, sourceSession: state.eventCode });
-        });
-      }
       return allQuestions;
+    }
+
+    async function loadStaticQuestionBankForSeries(seriesName, cleanCode) {
+      if (!seriesName) return;
+      const bankKey = seriesName.toLowerCase();
+      const bankUrl = `/pulse/banks/${bankKey}.json`;
+
+      try {
+        const res = await fetch(bankUrl, { cache: 'no-cache' });
+        if (!res.ok) return;
+
+        const data = await res.json();
+        const bankQuestions = Array.isArray(data)
+          ? data
+          : (Array.isArray(data?.questions) ? data.questions : []);
+
+        if (bankQuestions.length === 0) return;
+
+        const existingEntries = Array.from(state.deckMap.entries());
+        state.deckMap.clear();
+
+        bankQuestions.forEach((rawQ, idx) => {
+          const q = (rawQ && rawQ.quiz) ? rawQ.quiz : rawQ;
+          const qId = String(q.id || q.title || q.question || `bank_${bankKey}_${idx}`);
+          state.deckMap.set(qId, { ...q, id: q.id || qId });
+        });
+
+        existingEntries.forEach(([k, v]) => {
+          state.deckMap.set(k, v);
+        });
+
+        state.quizDeck = Array.from(state.deckMap.values());
+        try {
+          localStorage.setItem(`pulse_deck_${cleanCode}`, JSON.stringify(state.quizDeck));
+        } catch (e) {}
+
+        renderQuizDeck();
+        if (state.presenterSubTab === 'sidebuilder') {
+          renderSideQuizBuilder();
+        }
+      } catch (err) {
+        // Silent fallback when no static JSON bank exists for a series
+      }
+    }
+
+    function getExportableDeck() {
+      if (state.quizDeck && state.quizDeck.length > 0) {
+        return state.quizDeck;
+      }
+      return Array.from(state.deckMap.values());
+    }
+
+    function exportCurrentDeckJson() {
+      const deckToExport = getExportableDeck();
+      const blob = new Blob([JSON.stringify(deckToExport, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      const series = (getLectureSeries(state.eventCode) || state.eventCode || 'deck').toLowerCase();
+      a.href = url;
+      a.download = `${series}.json`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function copyCurrentDeckJson() {
+      const jsonText = JSON.stringify(getExportableDeck(), null, 2);
+      navigator.clipboard.writeText(jsonText).then(() => {
+        alert("Deck JSON copied to clipboard!");
+      }).catch(() => {
+        const tempInput = document.createElement("textarea");
+        tempInput.value = jsonText;
+        document.body.appendChild(tempInput);
+        tempInput.select();
+        document.execCommand("copy");
+        document.body.removeChild(tempInput);
+        alert("Deck JSON copied to clipboard!");
+      });
     }
 
     function getSeriesLeaderboard() {
@@ -915,6 +1007,8 @@
       if (confirm(confirmMsg)) {
         const resetTime = Date.now();
         state.lastLeaderboardResetAt = resetTime;
+        state.userScores = {};
+        state.scoredKeys.clear();
         const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
 
         if (isSeriesMode) {
@@ -1009,11 +1103,30 @@
       const clean = newCode.replace(/^#/, '').trim().toUpperCase();
       state.eventCode = clean;
       state.quizDeck = [];
+      state.deckMap = new Map();
+      state.userScores = {};
+      state.scoredKeys = new Set();
+      state.countedAnswerUsers = new Set();
+      state.lastPulseId = 0;
       
       const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
       state.sessionLeaderboard = allLeaderboards[clean] || {};
+      state.userScores = { ...state.sessionLeaderboard };
 
       processedPulseIds.clear();
+
+      try {
+        const cachedDeck = JSON.parse(localStorage.getItem(`pulse_deck_${clean}`) || '[]');
+        if (Array.isArray(cachedDeck) && cachedDeck.length > 0) {
+          state.quizDeck = cachedDeck;
+          cachedDeck.forEach((item, idx) => {
+            const q = (item && item.quiz) ? item.quiz : item;
+            if (q && (q.id || q.title || q.question)) {
+              state.deckMap.set(String(q.id || q.title || q.question || `q_${idx}`), q);
+            }
+          });
+        }
+      } catch (e) {}
 
       try {
         if (window.location.protocol.startsWith('http')) {
@@ -1034,7 +1147,14 @@
         state.sideQuizActive = false;
       }
 
+      const seriesName = getLectureSeries(clean);
+      if (seriesName && !loadedStaticBanks.has(`${clean}_${seriesName}`)) {
+        loadedStaticBanks.add(`${clean}_${seriesName}`);
+        loadStaticQuestionBankForSeries(seriesName, clean);
+      }
+
       renderQRCode();
+      renderQuizDeck();
       renderLeaderboard();
       fetchPulseDatabase();
     }
@@ -1084,9 +1204,19 @@
       state.activeQuizTimer = setInterval(updateTimer, 1000);
     }
 
-    async function initPresenterApp() {
-      await fetchPulseDatabase();
-      setInterval(fetchPulseDatabase, 3000);
+    function initPresenterApp() {
+      fetchPulseDatabase();
+      setInterval(() => {
+        if (!document.hidden) {
+          fetchPulseDatabase();
+        }
+      }, 4000);
+
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+          fetchPulseDatabase();
+        }
+      });
     }
     
     async function sendPulse(eventType, metadata = {}, userId = null) {
@@ -1117,215 +1247,242 @@
 
     async function fetchPulseDatabase() {
       try {
-        let cleanCode = (state.eventCode || '').replace(/^#/, '').trim().toUpperCase();
+        const cleanCode = (state.eventCode || '').replace(/^#/, '').trim().toUpperCase();
         if (!cleanCode) return;
 
-        const res = await fetch(`/api/pulse?eventCode=${encodeURIComponent(cleanCode)}`);
+        const afterParam = state.lastPulseId > 0 ? `&afterId=${encodeURIComponent(state.lastPulseId)}` : '';
+        const res = await fetch(`/api/pulse?eventCode=${encodeURIComponent(cleanCode)}${afterParam}`);
         if (!res.ok) return;
         const data = await res.json();
 
-        if (data && data.recent_pulses) {
-          const sortedPulses = [...data.recent_pulses].sort((a, b) => a.id - b.id);
-          const deckMap = new Map();
+        const pulses = Array.isArray(data?.recent_pulses) ? data.recent_pulses : [];
+        if (pulses.length === 0) return;
 
-          const userScores = {};
-          const userScoredQuestions = new Set();
+        const sortedPulses = [...pulses].sort((a, b) => Number(a.id) - Number(b.id));
+        const activeQId = state.activeQuizQuestion ? String(state.activeQuizQuestion.id || state.activeQuizQuestion.title) : null;
 
-          sortedPulses.forEach(p => {
-            if (p.event_type === 'quiz_answer' && p.metadata) {
-              let meta = p.metadata;
-              try { while (typeof meta === 'string') meta = JSON.parse(meta); } catch(e) {}
+        let deckChanged = false;
+        let leaderboardChanged = false;
+        let quizStateChanged = false;
+        let questionsChanged = false;
 
-              if (meta && meta.userName && meta.pointsEarned !== undefined && meta.quizId) {
-                const scoreKey = `${meta.userName}_${meta.quizId}`;
-                if (!userScoredQuestions.has(scoreKey)) {
-                  userScoredQuestions.add(scoreKey);
-                  const points = Math.max(0, Number(meta.pointsEarned) || 0);
-                  userScores[meta.userName] = (userScores[meta.userName] || 0) + points;
+        sortedPulses.forEach(p => {
+          const pulseNumId = Number(p.id);
+          if (!Number.isNaN(pulseNumId) && pulseNumId > state.lastPulseId) {
+            state.lastPulseId = pulseNumId;
+          }
+
+          if (processedPulseIds.has(p.id)) return;
+          processedPulseIds.add(p.id);
+
+          let meta = p.metadata;
+          try {
+            while (typeof meta === 'string') {
+              meta = meta.replace(/[\u2026]/g, '...');
+              meta = JSON.parse(meta);
+            }
+          } catch (e) {}
+
+          if (p.event_type === 'question' && meta) {
+            const qId = meta.id || p.id;
+            if (!state.questions.some(existing => String(existing.id) === String(qId))) {
+              state.questions.unshift({
+                id: qId,
+                author: meta.author || p.session_id || 'Anonymous Participant',
+                text: meta.text || '',
+                upvotes: Number(meta.upvotes) || 1,
+                voted: false,
+                timestamp: meta.timestamp || '',
+                answered: Boolean(meta.answered),
+                eventCode: cleanCode
+              });
+              questionsChanged = true;
+            }
+          }
+
+          if (p.event_type === 'upvote' && meta && meta.questionId !== undefined) {
+            const targetQ = state.questions.find(item => String(item.id) === String(meta.questionId));
+            if (targetQ && typeof meta.newVotes === 'number') {
+              targetQ.upvotes = meta.newVotes;
+              questionsChanged = true;
+            }
+          }
+
+          if (p.event_type === 'question_update' && meta && meta.id !== undefined) {
+            const targetQ = state.questions.find(item => String(item.id) === String(meta.id));
+            if (targetQ) {
+              targetQ.answered = Boolean(meta.answered);
+              questionsChanged = true;
+            }
+          }
+
+          if (p.event_type === 'quiz_answer' && meta) {
+            if (meta.userName && meta.pointsEarned !== undefined && meta.quizId) {
+              const scoreKey = `${meta.userName}_${meta.quizId}`;
+              if (!state.scoredKeys.has(scoreKey)) {
+                state.scoredKeys.add(scoreKey);
+                const points = Math.max(0, Number(meta.pointsEarned) || 0);
+                state.userScores[meta.userName] = (state.userScores[meta.userName] || 0) + points;
+                leaderboardChanged = true;
+              }
+            }
+
+            if (activeQId && String(meta.quizId) === activeQId) {
+              const userKey = meta.userName || p.session_id || `pulse_${p.id}`;
+              if (!state.countedAnswerUsers.has(userKey)) {
+                state.countedAnswerUsers.add(userKey);
+                const optIdx = Number(meta.selectedIndex);
+                if (!Number.isNaN(optIdx) && optIdx >= 0 && optIdx < 4) {
+                  state.responseCounts[optIdx] = (state.responseCounts[optIdx] || 0) + 1;
+                  state.totalResponses = (state.totalResponses || 0) + 1;
+                  quizStateChanged = true;
                 }
               }
             }
-          });
-
-          if (Object.keys(userScores).length > 0) {
-            state.sessionLeaderboard = userScores;
-            const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
-            allLeaderboards[cleanCode] = userScores;
-            localStorage.setItem('pulse_leaderboards', JSON.stringify(allLeaderboards));
           }
 
-          const activeQId = state.activeQuizQuestion ? (state.activeQuizQuestion.id || state.activeQuizQuestion.title) : null;
-          if (activeQId) {
-            const counts = [0, 0, 0, 0];
-            let total = 0;
-            const countedUsers = new Set();
+          if (p.event_type === 'reaction') {
+            if (state.view === 'presenter' && state.presenterSubTab === 'spotlight' && meta && meta.emoji) {
+              const spotCard = document.getElementById('spotlightContent');
+              if (spotCard) {
+                const rEl = document.createElement('div');
+                rEl.textContent = meta.emoji;
+                rEl.className = "absolute bottom-4 right-6 text-4xl animate-bounce z-50 pointer-events-none transition-all duration-1000";
+                spotCard.appendChild(rEl);
+                setTimeout(() => {
+                  rEl.style.transform = `translate(${(Math.random() - 0.5) * 200}px, -220px) scale(1.8)`;
+                  rEl.style.opacity = '0';
+                }, 50);
+                setTimeout(() => rEl.remove(), 1000);
+              }
+            }
+          }
 
-            sortedPulses.forEach(p => {
-              if (p.event_type === 'quiz_answer' && p.metadata) {
-                let meta = p.metadata;
-                try { while (typeof meta === 'string') meta = JSON.parse(meta); } catch(e) {}
-                if (meta && String(meta.quizId) === String(activeQId)) {
-                  const userKey = meta.userName || p.user_id || 'anon';
-                  if (!countedUsers.has(userKey)) {
-                    countedUsers.add(userKey);
-                    const optIdx = Number(meta.selectedIndex);
-                    if (!isNaN(optIdx) && optIdx >= 0 && optIdx < 4) {
-                      counts[optIdx]++;
-                      total++;
-                    }
-                  }
-                }
+          if (p.event_type === 'quiz_clear') {
+            const clearedAt = (meta && meta.clearedAt) ? Number(meta.clearedAt) : (p.created_at ? new Date(p.created_at).getTime() : Date.now());
+            if (clearedAt > state.lastQuizClearedAt) {
+              state.lastQuizClearedAt = clearedAt;
+            }
+            if (!state.activeQuizQuestionStartedAt || clearedAt >= state.activeQuizQuestionStartedAt) {
+              state.activeQuizQuestion = null;
+              state.activeQuizQuestionId = null;
+              state.activeQuizQuestionStartedAt = null;
+              state.spotlightedItem = null;
+              state.hasSubmittedAnswer = false;
+              state.userSelectedOption = null;
+              state.responseCounts = [0, 0, 0, 0];
+              state.totalResponses = 0;
+              state.countedAnswerUsers.clear();
+              if (state.activeQuizTimer) {
+                clearInterval(state.activeQuizTimer);
+                state.activeQuizTimer = null;
+              }
+              quizStateChanged = true;
+            }
+          }
+
+          if (p.event_type === 'quiz_release' && meta && meta.quiz) {
+            const q = meta.quiz;
+            const startedAt = meta.startedAt || Date.now();
+            if (startedAt <= state.lastQuizClearedAt) return;
+
+            if (state.activeQuizQuestionId !== q.id || !state.activeQuizQuestion) {
+              state.activeQuizQuestion = q;
+              state.activeQuizQuestionId = q.id;
+              state.responseCounts = [0, 0, 0, 0];
+              state.totalResponses = 0;
+              state.countedAnswerUsers.clear();
+              state.spotlightedItem = { type: 'quiz', data: q };
+              startQuizTimer(q.id, q.timeLimit !== undefined ? Number(q.timeLimit) : 30, startedAt);
+              quizStateChanged = true;
+            }
+          }
+
+          if (p.event_type === 'quiz_stop' && meta) {
+            if (state.activeQuizQuestion) {
+              state.quizTimeRemaining = 0;
+              state.activeQuizQuestion.stoppedAt = meta.stoppedAt || Date.now();
+              if (state.activeQuizTimer) {
+                clearInterval(state.activeQuizTimer);
+                state.activeQuizTimer = null;
+              }
+              quizStateChanged = true;
+            }
+          }
+
+          if (p.event_type === 'side_quiz_save' && meta && meta.code) {
+            const series = getLectureSeries(state.eventCode);
+            loadSideQuizCatalog();
+            state.sideQuizCatalog[meta.code] = meta;
+            try { localStorage.setItem(`pulse_side_catalog_${series}`, JSON.stringify(state.sideQuizCatalog)); } catch (e) {}
+          }
+
+          if (p.event_type === 'quiz_save' && meta) {
+            const savedQuiz = meta.quiz || meta;
+            if (savedQuiz && (savedQuiz.id || savedQuiz.title || savedQuiz.question)) {
+              const key = String(savedQuiz.id || savedQuiz.title || savedQuiz.question);
+              state.deckMap.set(key, savedQuiz);
+              deckChanged = true;
+            }
+          }
+
+          if (p.event_type === 'quiz_delete' && meta) {
+            const key = String(meta.id || meta.title || '');
+            if (key && state.deckMap.delete(key)) {
+              deckChanged = true;
+            }
+          }
+
+          if (p.event_type === 'quiz_reorder' && meta && Array.isArray(meta.deck)) {
+            state.deckMap.clear();
+            meta.deck.forEach((item, idx) => {
+              const q = (item && item.quiz) ? item.quiz : item;
+              if (q && (q.id || q.title || q.question)) {
+                state.deckMap.set(String(q.id || q.title || q.question || `q_${idx}`), q);
               }
             });
-            state.responseCounts = counts;
-            state.totalResponses = total;
+            state.quizDeck = meta.deck;
+            try { localStorage.setItem(`pulse_deck_${cleanCode}`, JSON.stringify(state.quizDeck)); } catch (e) {}
+            deckChanged = true;
           }
 
-          sortedPulses.forEach(p => {
-            if (processedPulseIds.has(p.id)) return;
-            processedPulseIds.add(p.id);
-
-            if (p.event_type === 'reaction') {
-              if (state.view === 'presenter' && state.presenterSubTab === 'spotlight') {
-                let meta = p.metadata;
-                try { while (typeof meta === 'string') meta = JSON.parse(meta); } catch(e) {}
-                if (meta && meta.emoji) {
-                  const spotCard = document.getElementById('spotlightContent');
-                  if (spotCard) {
-                    const rEl = document.createElement('div');
-                    rEl.textContent = meta.emoji;
-                    rEl.className = "absolute bottom-4 right-6 text-4xl animate-bounce z-50 pointer-events-none transition-all duration-1000";
-                    spotCard.appendChild(rEl);
-                    setTimeout(() => {
-                      rEl.style.transform = `translate(${(Math.random() - 0.5) * 200}px, -220px) scale(1.8)`;
-                      rEl.style.opacity = '0';
-                    }, 50);
-                    setTimeout(() => rEl.remove(), 1000);
-                  }
-                }
-              }
+          if (p.event_type === 'leaderboard_reset') {
+            const resetTime = p.created_at ? new Date(p.created_at).getTime() : Date.now();
+            if (resetTime >= state.lastLeaderboardResetAt) {
+              state.lastLeaderboardResetAt = resetTime;
+              state.userScores = {};
+              state.scoredKeys.clear();
+              state.sessionLeaderboard = {};
+              const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
+              delete allLeaderboards[cleanCode];
+              localStorage.setItem('pulse_leaderboards', JSON.stringify(allLeaderboards));
+              leaderboardChanged = true;
             }
+          }
+        });
 
-            if (p.event_type === 'quiz_clear') {
-              let meta = p.metadata;
-              try { while (typeof meta === 'string') meta = JSON.parse(meta); } catch(e) {}
-              const clearedAt = (meta && meta.clearedAt) ? Number(meta.clearedAt) : (p.created_at ? new Date(p.created_at).getTime() : Date.now());
-
-              if (clearedAt > state.lastQuizClearedAt) {
-                state.lastQuizClearedAt = clearedAt;
-              }
-
-              if (!state.activeQuizQuestionStartedAt || clearedAt >= state.activeQuizQuestionStartedAt) {
-                state.activeQuizQuestion = null;
-                state.activeQuizQuestionId = null;
-                state.activeQuizQuestionStartedAt = null;
-                state.spotlightedItem = null;
-                state.hasSubmittedAnswer = false;
-                state.userSelectedOption = null;
-                state.responseCounts = [0, 0, 0, 0];
-                state.totalResponses = 0;
-                if (state.activeQuizTimer) {
-                  clearInterval(state.activeQuizTimer);
-                  state.activeQuizTimer = null;
-                }
-                renderAll();
-              }
-            }
-
-            if (p.event_type === 'quiz_release' && p.metadata) {
-              let meta = p.metadata;
-              try { while (typeof meta === 'string') meta = JSON.parse(meta); } catch(e) {}
-              if (meta && meta.quiz) {
-                const q = meta.quiz;
-                const startedAt = meta.startedAt || Date.now();
-                
-                if (startedAt <= state.lastQuizClearedAt) return;
-
-                if (state.activeQuizQuestionId !== q.id || !state.activeQuizQuestion) {
-                  state.activeQuizQuestion = q;
-                  state.activeQuizQuestionId = q.id;
-                  state.responseCounts = [0, 0, 0, 0];
-                  state.totalResponses = 0;
-                  state.spotlightedItem = { type: 'quiz', data: q };
-                  startQuizTimer(q.id, q.timeLimit !== undefined ? Number(q.timeLimit) : 30, startedAt);
-                }
-              }
-            }
-
-            if (p.event_type === 'quiz_stop' && p.metadata) {
-              let meta = p.metadata;
-              try { while (typeof meta === 'string') meta = JSON.parse(meta); } catch(e) {}
-              if (meta && state.activeQuizQuestion) {
-                state.quizTimeRemaining = 0;
-                state.activeQuizQuestion.stoppedAt = meta.stoppedAt || Date.now();
-                if (state.activeQuizTimer) {
-                  clearInterval(state.activeQuizTimer);
-                  state.activeQuizTimer = null;
-                }
-                renderAll();
-              }
-            }
-
-            if (p.event_type === 'side_quiz_save' && p.metadata) {
-              let meta = p.metadata;
-              try { while (typeof meta === 'string') meta = JSON.parse(meta); } catch(e) {}
-              if (meta && meta.code) {
-                const series = getLectureSeries(state.eventCode);
-                loadSideQuizCatalog();
-                state.sideQuizCatalog[meta.code] = meta;
-                try { localStorage.setItem(`pulse_side_catalog_${series}`, JSON.stringify(state.sideQuizCatalog)); } catch(e) {}
-              }
-            }
-
-            if (p.event_type === 'quiz_save' && p.metadata) {
-              let savedQuiz = null;
-              try {
-                let meta = p.metadata;
-                while (typeof meta === 'string') {
-                  meta = meta.replace(/[\u2026]/g, '...');
-                  meta = JSON.parse(meta);
-                }
-                savedQuiz = meta ? (meta.quiz || meta) : null;
-                if (typeof savedQuiz === 'string') savedQuiz = JSON.parse(savedQuiz);
-              } catch(e) {}
-
-              if (savedQuiz && (savedQuiz.id || savedQuiz.title || savedQuiz.question)) {
-                deckMap.set(savedQuiz.id || savedQuiz.title || savedQuiz.question, savedQuiz);
-              }
-            }
-
-            if (p.event_type === 'quiz_delete' && p.metadata) {
-              let meta = p.metadata;
-              if (typeof meta === 'string') { try { meta = JSON.parse(meta); } catch(e) {} }
-              if (meta && (meta.id || meta.title)) deckMap.delete(meta.id || meta.title);
-            }
-
-            if (p.event_type === 'quiz_reorder' && p.metadata) {
-              let meta = p.metadata;
-              if (typeof meta === 'string') { try { meta = JSON.parse(meta); } catch(e) {} }
-              if (meta && meta.deck && Array.isArray(meta.deck)) {
-                state.quizDeck = meta.deck;
-                try { localStorage.setItem(`pulse_deck_${cleanCode}`, JSON.stringify(meta.deck)); } catch(e) {}
-              }
-            }
-
-            if (p.event_type === 'leaderboard_reset') {
-              const resetTime = p.created_at ? new Date(p.created_at).getTime() : Date.now();
-              if (resetTime > state.lastLeaderboardResetAt) {
-                state.lastLeaderboardResetAt = resetTime;
-                state.sessionLeaderboard = {};
-              }
-            }
-          });
-
-          const updatedDeck = Array.from(deckMap.values());
-          if (!state.quizDeck || state.quizDeck.length === 0) state.quizDeck = updatedDeck;
-          try { localStorage.setItem(`pulse_deck_${cleanCode}`, JSON.stringify(state.quizDeck)); } catch(e) {}
-
+        if (deckChanged) {
+          state.quizDeck = Array.from(state.deckMap.values());
+          try { localStorage.setItem(`pulse_deck_${cleanCode}`, JSON.stringify(state.quizDeck)); } catch (e) {}
           renderQuizDeck();
-          renderQuestions();
+          if (state.presenterSubTab === 'sidebuilder') {
+            renderSideQuizBuilder();
+          }
+        }
+
+        if (leaderboardChanged && Object.keys(state.userScores).length > 0) {
+          state.sessionLeaderboard = { ...state.userScores };
+          const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
+          allLeaderboards[cleanCode] = state.sessionLeaderboard;
+          localStorage.setItem('pulse_leaderboards', JSON.stringify(allLeaderboards));
+        }
+
+        if (questionsChanged) renderQuestions();
+        if (quizStateChanged) {
           renderAudienceQuizPane();
           renderSpotlight();
+        }
+        if (leaderboardChanged || quizStateChanged) {
           renderLeaderboard();
         }
       } catch (err) { console.error('Failed to fetch pulse logs:', err); }
@@ -1794,10 +1951,6 @@
       qInput.value = "";
       renderQuestions();
 
-      try {
-        await fetch('/api/questions', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(newQ) });
-      } catch (err) { console.error('Failed to persist question:', err); }
-
       await sendPulse('question', newQ, author);
     }
 
@@ -1874,6 +2027,12 @@
         points: points
       };
 
+      state.deckMap.set(String(quizItem.id), quizItem);
+      state.quizDeck = Array.from(state.deckMap.values());
+      const cleanCode = state.eventCode.replace(/^#/, '').trim().toUpperCase();
+      try { localStorage.setItem(`pulse_deck_${cleanCode}`, JSON.stringify(state.quizDeck)); } catch (e) {}
+      renderQuizDeck();
+
       cancelEditQuizQuestion();
       await sendPulse('quiz_save', { quiz: quizItem });
     }
@@ -1924,12 +2083,23 @@
     }
 
     async function deleteQuizQuestion(quizId) {
+      state.deckMap.delete(String(quizId));
+      state.quizDeck = Array.from(state.deckMap.values());
+      const cleanCode = state.eventCode.replace(/^#/, '').trim().toUpperCase();
+      try { localStorage.setItem(`pulse_deck_${cleanCode}`, JSON.stringify(state.quizDeck)); } catch (e) {}
+      renderQuizDeck();
       await sendPulse('quiz_delete', { id: quizId });
     }
     
     function resetQuizDeck() {
       if (confirm("Are you sure you want to clear the entire quiz deck?")) {
-        state.quizDeck.forEach(q => deleteQuizQuestion(q.id));
+        const idsToDelete = state.quizDeck.map(q => q.id).filter(Boolean);
+        state.deckMap.clear();
+        state.quizDeck = [];
+        const cleanCode = state.eventCode.replace(/^#/, '').trim().toUpperCase();
+        try { localStorage.setItem(`pulse_deck_${cleanCode}`, '[]'); } catch (e) {}
+        renderQuizDeck();
+        idsToDelete.forEach(id => sendPulse('quiz_delete', { id }));
       }
     }
 
@@ -1945,6 +2115,7 @@
       state.activeQuizQuestionId = releasedQuiz.id;
       state.responseCounts = [0, 0, 0, 0];
       state.totalResponses = 0;
+      state.countedAnswerUsers.clear();
       state.spotlightedItem = { type: 'quiz', data: releasedQuiz };
       state.confettiFired = false;
 
@@ -1981,6 +2152,7 @@
       state.confettiFired = false;
       state.responseCounts = [0, 0, 0, 0];
       state.totalResponses = 0;
+      state.countedAnswerUsers.clear();
       
       if (state.activeQuizTimer) {
         clearInterval(state.activeQuizTimer);
@@ -2172,6 +2344,14 @@
       state.quizDeck[index] = state.quizDeck[targetIndex];
       state.quizDeck[targetIndex] = temp;
 
+      state.deckMap.clear();
+      state.quizDeck.forEach((item, idx) => {
+        const q = (item && item.quiz) ? item.quiz : item;
+        if (q && (q.id || q.title || q.question)) {
+          state.deckMap.set(String(q.id || q.title || q.question || `q_${idx}`), q);
+        }
+      });
+
       const cleanCode = state.eventCode.replace(/^#/, '').trim().toUpperCase();
       try { localStorage.setItem(`pulse_deck_${cleanCode}`, JSON.stringify(state.quizDeck)); } catch(e) {}
       renderQuizDeck();
@@ -2290,7 +2470,6 @@
                 if (isCorrect) {
                   btnStyle = `${style.class} correct-flash-border`;
                 } else {
-                  // Wash out incorrect/unselected answer cards with opacity-40 grayscale-[30%] brightness-75 scale-95
                   btnStyle = `${style.class} opacity-40 grayscale-[30%] brightness-75 scale-95 shadow-none`;
                 }
               } else if (isSelected) {
