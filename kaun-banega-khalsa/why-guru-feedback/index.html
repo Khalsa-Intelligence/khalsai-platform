@@ -8,12 +8,12 @@
   <link rel="shortcut icon" href="/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root,
     [data-theme="dark"] {
       --bg-gradient: radial-gradient(circle at 30% 10%, rgba(245, 158, 11, 0.16) 0%, #1e1b4b 38%, #0f172a 72%, #050a14 100%);
-      --card-bg: rgba(15, 23, 42, 0.82);
+      --card-bg: rgba(15, 23, 42, 0.84);
       --card-border: rgba(245, 158, 11, 0.28);
       --header-border: rgba(245, 158, 11, 0.22);
       --input-bg: rgba(8, 13, 26, 0.85);
@@ -28,6 +28,11 @@
       --accent-soft-text: #7dd3fc;
       --primary-soft-bg: rgba(245, 158, 11, 0.18);
       --primary-soft-text: #fbbf24;
+      --ki-bg: rgba(245, 158, 11, 0.2);
+      --ki-text: #fbbf24;
+      --ki-border: rgba(245, 158, 11, 0.35);
+      --logo-box-bg: linear-gradient(135deg, #162038 0%, #0B1120 100%);
+      --logo-box-border: rgba(245, 158, 11, 0.4);
       --pill-bg: rgba(255, 255, 255, 0.06);
       --pill-hover: rgba(255, 255, 255, 0.14);
       --modal-bg: #0f172a;
@@ -55,6 +60,11 @@
       --accent-soft-text: #0369a1;
       --primary-soft-bg: rgba(245, 158, 11, 0.18);
       --primary-soft-text: #b45309;
+      --ki-bg: #fef3c7;
+      --ki-text: #92400e;
+      --ki-border: #fcd34d;
+      --logo-box-bg: linear-gradient(135deg, #162038 0%, #0B1120 100%);
+      --logo-box-border: rgba(217, 119, 6, 0.45);
       --pill-bg: rgba(15, 23, 42, 0.05);
       --pill-hover: rgba(15, 23, 42, 0.11);
       --modal-bg: #ffffff;
@@ -101,7 +111,7 @@
       .container { padding: 2rem 2.25rem 2.5rem; }
     }
 
-    /* Universal-style Top Bar */
+    /* Universal Top Bar */
     .top-bar {
       display: flex;
       justify-content: space-between;
@@ -116,42 +126,61 @@
     .brand-link {
       display: inline-flex;
       align-items: center;
-      gap: 0.65rem;
+      gap: 0.6rem;
       text-decoration: none;
       color: var(--text-main);
-      transition: transform 0.15s ease, opacity 0.2s ease;
+      min-width: 0;
+      outline: none;
     }
 
-    .brand-link:hover {
-      opacity: 0.92;
-      transform: translateY(-1px);
-    }
-
-    .khalsai-logo {
-      width: 38px;
-      height: 38px;
+    .logo-frame {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      background: var(--logo-box-bg);
+      border: 1px solid var(--logo-box-border);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
       flex-shrink: 0;
-      filter: drop-shadow(0 4px 10px rgba(245, 158, 11, 0.28));
+      transition: transform 0.2s ease;
     }
 
-    .brand-text-group {
+    .brand-link:hover .logo-frame {
+      transform: scale(1.05);
+    }
+
+    .brand-title-row {
       display: flex;
-      flex-direction: column;
-      line-height: 1.15;
+      align-items: center;
+      gap: 0.4rem;
     }
 
     .brand-name {
-      color: var(--primary);
-      font-weight: 800;
-      font-size: 0.98rem;
+      font-size: 0.95rem;
+      font-weight: 900;
+      letter-spacing: -0.01em;
       text-transform: uppercase;
-      letter-spacing: 0.04em;
+      color: var(--text-main);
+      transition: color 0.2s ease;
+      white-space: nowrap;
     }
 
-    .brand-url {
-      color: var(--text-muted);
-      font-size: 0.72rem;
-      font-weight: 500;
+    .brand-link:hover .brand-name {
+      color: var(--primary);
+    }
+
+    .ki-badge {
+      background: var(--ki-bg);
+      color: var(--ki-text);
+      border: 1px solid var(--ki-border);
+      font-size: 0.6rem;
+      font-weight: 700;
+      padding: 0.1rem 0.38rem;
+      border-radius: 999px;
+      line-height: 1.2;
+      flex-shrink: 0;
     }
 
     .top-actions {
@@ -454,23 +483,51 @@
 
   <div class="container">
     <div class="top-bar">
-      <a href="https://khalsai.com" class="brand-link" title="Go to khalsai.com">
-        <svg class="khalsai-logo" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <defs>
-            <linearGradient id="khalsaiLogoGrad" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#fbbf24"/>
-              <stop offset="100%" stop-color="#d97706"/>
-            </linearGradient>
-          </defs>
-          <rect x="1.5" y="1.5" width="37" height="37" rx="11" fill="url(#khalsaiLogoGrad)"/>
-          <circle cx="20" cy="20" r="12.5" stroke="#090d16" stroke-width="1.5" stroke-opacity="0.28"/>
-          <path d="M14.5 12V28M14.5 20L24.5 12M18.2 17L25.5 28" stroke="#090d16" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="27.5" cy="12.5" r="2.2" fill="#090d16"/>
-        </svg>
-        <span class="brand-text-group">
+      <!-- Brand & Title (Links back to khalsai.com main index) -->
+      <a href="https://khalsai.com/" class="brand-link" title="Back to Khalsai Home">
+        <div class="logo-frame">
+          <svg width="22" height="22" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="pulseKhalisGold" x1="10" y1="10" x2="54" y2="54" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#FDE68A"/>
+                <stop offset="48%" stop-color="#F59E0B"/>
+                <stop offset="100%" stop-color="#D97706"/>
+              </linearGradient>
+              <linearGradient id="pulseKhalisGlass" x1="16" y1="12" x2="48" y2="52" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.30"/>
+                <stop offset="100%" stop-color="#38BDF8" stop-opacity="0.14"/>
+              </linearGradient>
+            </defs>
+            <polygon
+              points="32,6 54,19 54,45 32,58 10,45 10,19"
+              fill="url(#pulseKhalisGlass)"
+              stroke="url(#pulseKhalisGold)"
+              stroke-width="2.5"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M22 18V46"
+              stroke="url(#pulseKhalisGold)"
+              stroke-width="4.2"
+              stroke-linecap="round"
+            />
+            <path
+              d="M42 18L26.5 32L42 46"
+              stroke="url(#pulseKhalisGold)"
+              stroke-width="4.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <polygon
+              points="44,27 49,32 44,37 39,32"
+              fill="#FDE68A"
+            />
+          </svg>
+        </div>
+        <div class="brand-title-row">
           <span class="brand-name">Khalsai</span>
-          <span class="brand-url">khalsai.com &rarr;</span>
-        </span>
+          <span class="ki-badge">KI</span>
+        </div>
       </a>
 
       <div class="top-actions">
