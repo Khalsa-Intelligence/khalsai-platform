@@ -1198,59 +1198,38 @@
       return changed;
     }
 
-    async function fetchSeriesLeaderboardFromD1() {
-      const seriesName = getLectureSeries(state.eventCode);
-      if (!seriesName) return;
-      try {
-        let keepFetching = true;
-        let changed = false;
-        let seriesEndpointFailed = false;
+async function fetchSeriesLeaderboardFromD1() {
+  const seriesName = getLectureSeries(state.eventCode);
+  if (!seriesName) return;
 
-        while (keepFetching) {
-          const afterParam = state.lastSeriesPulseId > 0 ? `&afterId=${encodeURIComponent(state.lastSeriesPulseId)}` : '';
-          const res = await fetch(`/api/pulse?seriesPrefix=${encodeURIComponent(seriesName)}${afterParam}`);
-          if (!res.ok) {
-            seriesEndpointFailed = true;
-            break;
-          }
-          const data = await res.json();
-          const pulses = Array.isArray(data?.recent_pulses) ? data.recent_pulses : [];
-          if (pulses.length === 0) break;
+  try {
+    let keepFetching = true;
+    let changed = false;
 
-          if (ingestSeriesPulses(pulses)) changed = true;
-          keepFetching = Boolean(data?.has_more);
-        }
+    while (keepFetching) {
+      const afterParam = state.lastSeriesPulseId > 0
+        ? `&afterId=${encodeURIComponent(state.lastSeriesPulseId)}`
+        : '';
+      const res = await fetch(
+        `/api/pulse?seriesPrefix=${encodeURIComponent(seriesName)}${afterParam}`
+      );
+      if (!res.ok) break;
 
-        if (seriesEndpointFailed) {
-          const cleanCurrent = state.eventCode.replace(/^#/, '').trim().toUpperCase();
-          const candidateCodes = new Set([cleanCurrent]);
-          const match = cleanCurrent.match(/^(.*?SESSION)(\d+)$/);
-          if (match) {
-            const prefix = match[1];
-            const num = parseInt(match[2], 10);
-            for (let n = 1; n <= Math.max(num, 10); n++) {
-              candidateCodes.add(`${prefix}${n}`);
-            }
-          }
-          loadSideQuizCatalog();
-          Object.keys(state.sideQuizCatalog).forEach(k => {
-            if (getLectureSeries(k) === seriesName) candidateCodes.add(k);
-          });
+      const data = await res.json();
+      const pulses = Array.isArray(data?.recent_pulses) ? data.recent_pulses : [];
+      if (pulses.length === 0) break;
 
-          for (const code of candidateCodes) {
-            const r = await fetch(`/api/pulse?eventCode=${encodeURIComponent(code)}`);
-            if (!r.ok) continue;
-            const d = await r.json();
-            const rows = Array.isArray(d?.recent_pulses) ? d.recent_pulses : [];
-            if (ingestSeriesPulses(rows)) changed = true;
-          }
-        }
-
-        if (changed && state.leaderboardMode === 'series') {
-          renderLeaderboard();
-        }
-      } catch (e) {}
+      if (ingestSeriesPulses(pulses)) changed = true;
+      keepFetching = Boolean(data?.has_more);
     }
+
+    if (changed && state.leaderboardMode === 'series') {
+      renderLeaderboard();
+    }
+  } catch (err) {
+    console.error('Failed to fetch series leaderboard:', err);
+  }
+}
 
     async function setLeaderboardMode(mode) {
       state.leaderboardMode = mode;
