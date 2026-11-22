@@ -309,20 +309,44 @@
       <div id="presenterManagerPane" class="hidden space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
           
-          <!-- Pre-Loaded Deck -->
-          <div class="lg:col-span-7 lg:order-2 space-y-4">
-            <div class="flex flex-wrap items-center justify-between gap-2">
-              <h3 class="text-base font-bold text-slate-900 dark:text-white">Pre-Loaded Deck</h3>
-              <div class="flex items-center space-x-1.5">
-                <button onclick="copyCurrentDeckJson()" class="text-xs bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 text-slate-700 dark:text-gray-300 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-gray-700 font-bold">Copy JSON</button>
-                <button onclick="exportCurrentDeckJson()" class="text-xs bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 px-2.5 py-1 rounded-lg border border-amber-500/30 font-bold">Export JSON</button>
-                <button onclick="resetQuizDeck()" class="text-xs bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 text-slate-700 dark:text-gray-300 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-gray-700 font-bold">Clear Deck</button>
+          <!-- Right Column: Session Pre-Loaded Deck + Course Question Bank -->
+          <div class="lg:col-span-7 lg:order-2 space-y-6">
+            <!-- Session Pre-Loaded Deck -->
+            <div class="space-y-3">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <h3 class="text-base font-bold text-slate-900 dark:text-white">Pre-Loaded Session Deck (<span class="font-mono text-amber-600 dark:text-amber-400 event-code-display"></span>)</h3>
+                  <p class="text-[11px] text-slate-500 dark:text-gray-400">Questions scoped specifically to this active session.</p>
+                </div>
+                <div class="flex items-center space-x-1.5">
+                  <button onclick="copySessionDeckJson()" class="text-xs bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 text-slate-700 dark:text-gray-300 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-gray-700 font-bold">Copy Session JSON</button>
+                  <button onclick="exportSessionDeckJson()" class="text-xs bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 px-2.5 py-1 rounded-lg border border-amber-500/30 font-bold">Export Session JSON</button>
+                  <button onclick="resetQuizDeck()" class="text-xs bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 text-slate-700 dark:text-gray-300 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-gray-700 font-bold">Clear Deck</button>
+                </div>
               </div>
+              <div id="quizDeckList" class="space-y-2.5"></div>
             </div>
-            <div id="quizDeckList" class="space-y-3"></div>
+
+            <!-- Course-Wide Question Bank -->
+            <div class="bg-white dark:bg-[#0D121F] border border-slate-200 dark:border-gray-800 rounded-2xl p-4 space-y-3 shadow-sm">
+              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 dark:border-gray-800 pb-3">
+                <div>
+                  <h3 class="text-sm font-extrabold text-slate-900 dark:text-white flex items-center space-x-1.5">
+                    <i data-lucide="book-open" class="w-4 h-4 text-amber-500"></i>
+                    <span>Course Question Bank (<span id="courseBankSeriesLabel" class="font-mono text-amber-600 dark:text-amber-400"></span>)</span>
+                  </h3>
+                  <p class="text-[11px] text-slate-500 dark:text-gray-400">All questions across this course series &amp; static JSON bank. Add any question into the active session deck.</p>
+                </div>
+                <div class="flex items-center space-x-1.5">
+                  <button onclick="copyCourseBankJson()" class="text-xs bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 text-slate-700 dark:text-gray-300 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-gray-700 font-bold">Copy Bank JSON</button>
+                  <button onclick="exportCourseBankJson()" class="text-xs bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 px-2.5 py-1 rounded-lg border border-amber-500/30 font-bold">Export Bank JSON</button>
+                </div>
+              </div>
+              <div id="courseBankList" class="space-y-2 max-h-[420px] overflow-y-auto pr-1"></div>
+            </div>
           </div>
 
-          <!-- Create / Edit Quiz Form -->
+          <!-- Left Column: Create / Edit Quiz Form + Scoped JSON Import -->
           <div class="lg:col-span-5 lg:order-1 bg-white dark:bg-[#0D121F] border border-slate-200 dark:border-gray-800 rounded-2xl p-5 space-y-4 shadow-sm">
             <div class="border-b border-slate-200 dark:border-gray-800 pb-3 flex items-center justify-between">
               <h3 id="quizFormHeading" class="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
@@ -346,7 +370,7 @@
               </div>
 
               <div class="space-y-2">
-                <label class="block text-xs font-bold text-slate-700 dark:text-gray-300">Options & Correct Selection</label>
+                <label class="block text-xs font-bold text-slate-700 dark:text-gray-300">Options &amp; Correct Selection</label>
                 
                 <div class="flex items-center space-x-2 bg-[#E21B3C]/10 p-1.5 rounded-lg border border-[#E21B3C]/20">
                   <input type="radio" name="correctOption" value="0" checked class="w-4 h-4 accent-[#E21B3C]">
@@ -387,37 +411,46 @@
                 </div>
               </div>
 
+              <label class="flex items-center space-x-2 text-xs font-bold text-slate-700 dark:text-gray-300 cursor-pointer pt-1">
+                <input type="checkbox" id="alsoAddToCourseBank" checked class="w-4 h-4 accent-amber-500 rounded">
+                <span>Also add to Course Question Bank</span>
+              </label>
+
               <button id="btnSaveQuiz" onclick="saveQuizQuestion()" class="w-full py-2.5 rounded-xl gold-gradient-bg text-slate-950 font-bold text-sm hover:brightness-110 transition shadow">
-                Save to Quiz Deck
+                Save to Session Deck
               </button>
             </div>
 
-            <!-- Bulk JSON Deck Injection Panel -->
+            <!-- Bulk JSON Deck / Course Bank Import Panel -->
             <div class="bg-slate-50 dark:bg-[#080D17] border border-slate-200 dark:border-gray-800/80 rounded-2xl p-4 space-y-3 shadow-inner mt-4">
-              <div class="flex items-center justify-between">
-                <span class="text-[11px] font-extrabold text-amber-600 dark:text-amber-400 uppercase tracking-wider block">Bulk JSON Deck Import (D1 Synced)</span>
-                <button onclick="toggleBulkGlobalHelp()" class="text-[11px] text-amber-500 underline font-bold hover:text-amber-400">Format Guide</button>
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-[11px] font-extrabold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Bulk JSON Import (Session or Course)</span>
+                <button onclick="toggleBulkGlobalHelp()" class="text-[11px] text-amber-500 underline font-bold hover:text-amber-400 shrink-0">Format Guide</button>
+              </div>
+
+              <div class="flex items-center justify-between gap-2">
+                <label class="block text-[11px] font-bold text-slate-600 dark:text-gray-400">Import Target Scope:</label>
+                <select id="bulkImportScopeSelect" class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-lg px-2 py-1 text-xs font-bold text-slate-900 dark:text-white focus:outline-none">
+                  <option value="auto" selected>Auto-detect from JSON ("scope")</option>
+                  <option value="session">Session Deck Only</option>
+                  <option value="course">Course Bank Only</option>
+                  <option value="both">Session Deck + Course Bank</option>
+                </select>
               </div>
 
               <div id="bulkGlobalHelpBox" class="hidden bg-slate-900 text-slate-200 p-3 rounded-xl font-mono text-[10px] space-y-1 overflow-x-auto border border-amber-500/30">
-                <p class="text-amber-400 font-bold">// Paste array of questions or full object:</p>
-                <p>[</p>
-                <p>&nbsp;&nbsp;{</p>
-                <p>&nbsp;&nbsp;&nbsp;&nbsp;"title": "Question text?",</p>
-                <p>&nbsp;&nbsp;&nbsp;&nbsp;"options": ["Option A", "Option B", "Option C", "Option D"],</p>
-                <p>&nbsp;&nbsp;&nbsp;&nbsp;"correct": 0,</p>
-                <p>&nbsp;&nbsp;&nbsp;&nbsp;"timeLimit": 30,</p>
-                <p>&nbsp;&nbsp;&nbsp;&nbsp;"points": 100,</p>
-                <p>&nbsp;&nbsp;&nbsp;&nbsp;"imageUrl": null</p>
-                <p>&nbsp;&nbsp;}</p>
-                <p>]</p>
+                <p class="text-amber-400 font-bold">// Session JSON format:</p>
+                <p>{ "scope": "session", "series": "TWGC", "eventCode": "TWGCSESSION5", "questions": [ ... ] }</p>
+                <p class="text-amber-400 font-bold pt-1">// Course Bank JSON format:</p>
+                <p>{ "scope": "course", "series": "TWGC", "questions": [ ... ] }</p>
+                <p class="text-amber-400 font-bold pt-1">// Or a plain [...] array of question objects.</p>
               </div>
 
-              <textarea id="bulkGlobalJsonInput" rows="4" placeholder='Paste JSON array of questions to sync directly to D1 database...' class="w-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-xl p-3 text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-amber-500 resize-none"></textarea>
+              <textarea id="bulkGlobalJsonInput" rows="4" placeholder='Paste Session JSON, Course Bank JSON, or a question array...' class="w-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-xl p-3 text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-amber-500 resize-none"></textarea>
 
               <button onclick="importBulkGlobalDeck()" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold text-xs transition shadow flex items-center justify-center space-x-1.5 border border-amber-500/30">
                 <i data-lucide="cloud-upload" class="w-4 h-4"></i>
-                <span>Import & Save to Deck (D1 Server)</span>
+                <span>Import JSON</span>
               </button>
             </div>
           </div>
@@ -434,7 +467,7 @@
                 <i data-lucide="layers" class="w-5 h-5 text-amber-500"></i>
                 <span>Side Quiz Assembly Manager</span>
               </h3>
-              <p class="text-xs text-slate-500 dark:text-gray-400 mt-0.5">Bundle and reorder questions from your Global Deck into untimed self-paced side quizzes, or bulk inject via JSON.</p>
+              <p class="text-xs text-slate-500 dark:text-gray-400 mt-0.5">Bundle and reorder questions from your Course Bank into untimed self-paced side quizzes, or bulk inject via JSON.</p>
             </div>
             <div class="flex items-center space-x-2">
               <button id="btnCancelEditSideQuiz" onclick="cancelEditSideQuiz()" class="hidden text-xs bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 text-slate-700 dark:text-gray-300 px-3 py-1.5 rounded-xl font-bold">Cancel Edit</button>
@@ -463,7 +496,7 @@
                 </div>
                 <button id="btnSaveSideQuiz" onclick="saveSideQuiz()" class="w-full py-2.5 rounded-xl gold-gradient-bg text-slate-950 font-bold text-sm hover:brightness-110 transition shadow flex items-center justify-center space-x-2">
                   <i data-lucide="cloud-upload" class="w-4 h-4"></i>
-                  <span>Save & Publish Side Quiz</span>
+                  <span>Save &amp; Publish Side Quiz</span>
                 </button>
               </div>
 
@@ -497,24 +530,24 @@
 
                 <button onclick="importBulkSideQuiz()" class="w-full py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold text-xs transition shadow flex items-center justify-center space-x-1.5 border border-amber-500/30">
                   <i data-lucide="code" class="w-4 h-4"></i>
-                  <span>Import & Publish Bulk Quiz</span>
+                  <span>Import &amp; Publish Bulk Quiz</span>
                 </button>
               </div>
 
               <div class="bg-slate-50 dark:bg-[#080D17] border border-slate-200 dark:border-gray-800/80 rounded-2xl p-4 space-y-3">
                 <div class="flex items-center justify-between">
-                  <span class="text-[11px] font-extrabold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Selected Sequence & Order</span>
+                  <span class="text-[11px] font-extrabold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Selected Sequence &amp; Order</span>
                   <span id="sideQuizSequenceCount" class="text-[10px] font-mono text-slate-400">0 items</span>
                 </div>
                 <div id="sideQuizSelectedSequenceList" class="space-y-2 max-h-48 overflow-y-auto pr-1">
-                  <p class="text-[11px] text-slate-400 dark:text-gray-500 text-center py-4 italic">Check questions from the global deck below to sequence them here.</p>
+                  <p class="text-[11px] text-slate-400 dark:text-gray-500 text-center py-4 italic">Check questions from the course bank below to sequence them here.</p>
                 </div>
               </div>
             </div>
 
             <div class="lg:col-span-7 space-y-3">
               <div class="flex items-center justify-between px-1">
-                <span class="text-[11px] font-extrabold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Select Questions from Global Deck</span>
+                <span class="text-[11px] font-extrabold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Select Questions from Course Bank</span>
                 <div class="flex items-center space-x-2 text-xs font-bold">
                   <button onclick="selectAllGlobalQuestions(true)" class="text-amber-600 dark:text-amber-400 hover:underline">Select All</button>
                   <span class="text-slate-400">|</span>
@@ -530,7 +563,7 @@
       <!-- SUB-TAB 3: Q&A CONTROLS -->
       <div id="presenterQuestionsPane" class="hidden space-y-4">
         <div class="flex items-center justify-between">
-          <h3 class="text-base font-bold text-slate-900 dark:text-white">Q&A Moderation Queue</h3>
+          <h3 class="text-base font-bold text-slate-900 dark:text-white">Q&amp;A Moderation Queue</h3>
           <button onclick="clearAllQuestions()" class="text-xs font-bold text-red-700 dark:text-red-400 hover:bg-red-100 border border-red-300 px-2.5 py-1 rounded-lg">Clear Queue</button>
         </div>
         <div id="presenterQuestionsList" class="space-y-3"></div>
@@ -561,7 +594,7 @@
   <nav id="audienceBottomNav" class="fixed bottom-0 left-0 right-0 z-50 bg-white/95 dark:bg-[#0D121F]/95 backdrop-blur-md border-t border-slate-200 dark:border-gray-800 px-3 py-2 flex items-center justify-around shadow-lg">
     <button onclick="switchAudienceTab('qa')" id="mobileNavQA" class="flex flex-col items-center space-y-1 text-amber-600 dark:text-amber-400 font-bold text-[10px]">
       <i data-lucide="message-square" class="w-5 h-5"></i>
-      <span>Live Q&A</span>
+      <span>Live Q&amp;A</span>
     </button>
     <button onclick="switchAudienceTab('quiz')" id="mobileNavQuiz" class="flex flex-col items-center space-y-1 text-slate-500 dark:text-gray-400 font-bold text-[10px]">
       <i data-lucide="award" class="w-5 h-5"></i>
@@ -593,7 +626,7 @@
     </button>
     <button onclick="switchPresenterSubTab('questions')" id="presNavQuestions" class="flex flex-col items-center space-y-1 text-slate-500 dark:text-gray-400 font-bold text-[10px]">
       <i data-lucide="message-square" class="w-5 h-5"></i>
-      <span>Q&A Control</span>
+      <span>Q&amp;A Control</span>
     </button>
     <button onclick="switchPresenterSubTab('leaderboard')" id="presNavLeaderboard" class="flex flex-col items-center space-y-1 text-slate-500 dark:text-gray-400 font-bold text-[10px]">
       <i data-lucide="trophy" class="w-5 h-5"></i>
@@ -706,6 +739,7 @@
       presenterTimerMode: sessionStorage.getItem('pulse_timer_mode') !== 'unlimited',
       questions: [],
       quizDeck: [],
+      courseBank: [],
       activeQuizQuestion: null,
       activeQuizQuestionId: null,
       activeQuizQuestionStartedAt: null,
@@ -730,10 +764,80 @@
       sideQuizCatalog: {},
       lastPulseId: 0,
       deckMap: new Map(),
+      courseBankMap: new Map(),
       userScores: {},
       scoredKeys: new Set(),
       countedAnswerUsers: new Set()
     };
+
+    function getQuestionKey(q, fallback = '') {
+      if (!q) return fallback;
+      const rawKey = q.id || q.title || q.question || fallback;
+      return String(rawKey).trim();
+    }
+
+    function normalizeQuestionItem(rawQ, sourceSession = '', fallbackId = '') {
+      const q = (rawQ && rawQ.quiz) ? rawQ.quiz : (rawQ || {});
+      const id = String(q.id || fallbackId || ('q_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6)));
+      const options = Array.isArray(q.options) && q.options.length > 0
+        ? q.options.slice(0, 4).map((o, i) => o || ['Option A', 'Option B', 'Option C', 'Option D'][i])
+        : ['Option A', 'Option B', 'Option C', 'Option D'];
+
+      return {
+        id,
+        title: q.title || q.question || 'Untitled Question',
+        imageUrl: q.imageUrl || null,
+        options,
+        correct: q.correct !== undefined ? parseInt(q.correct, 10) : 0,
+        timeLimit: q.timeLimit !== undefined ? parseInt(q.timeLimit, 10) : 30,
+        points: q.points !== undefined ? (parseInt(q.points, 10) || 100) : 100,
+        sourceSession: q.sourceSession || sourceSession || state.eventCode
+      };
+    }
+
+    function persistSessionDeck(cleanCode) {
+      state.quizDeck = Array.from(state.deckMap.values());
+      try {
+        localStorage.setItem(`pulse_deck_${cleanCode}`, JSON.stringify(state.quizDeck));
+      } catch (e) {}
+    }
+
+    function persistCourseBank(seriesName) {
+      if (!seriesName) return;
+      state.courseBank = Array.from(state.courseBankMap.values());
+      try {
+        localStorage.setItem(`pulse_course_bank_${seriesName}`, JSON.stringify(state.courseBank));
+      } catch (e) {}
+    }
+
+    function upsertCourseBankQuestion(rawQ, sourceSession = '') {
+      const seriesName = getLectureSeries(sourceSession || state.eventCode);
+      const normQ = normalizeQuestionItem(rawQ, sourceSession || state.eventCode);
+      const key = getQuestionKey(normQ);
+      if (!key) return;
+      const existing = state.courseBankMap.get(key);
+      state.courseBankMap.set(key, {
+        ...(existing || {}),
+        ...normQ,
+        sourceSession: normQ.sourceSession || (existing && existing.sourceSession) || sourceSession || state.eventCode
+      });
+      persistCourseBank(seriesName);
+    }
+
+    function addBankQuestionToSession(questionKey) {
+      const bankItem = state.courseBankMap.get(String(questionKey));
+      if (!bankItem) return;
+      const cleanCode = state.eventCode.replace(/^#/, '').trim().toUpperCase();
+      const sessionItem = { ...bankItem, sourceSession: cleanCode };
+      state.deckMap.set(getQuestionKey(sessionItem), sessionItem);
+      persistSessionDeck(cleanCode);
+      renderQuizDeck();
+      renderCourseBank();
+      if (state.presenterSubTab === 'sidebuilder') {
+        renderSideQuizBuilder();
+      }
+      sendPulse('quiz_save', { quiz: sessionItem });
+    }
 
     function togglePresenterTimerMode() {
       state.presenterTimerMode = !state.presenterTimerMode;
@@ -781,20 +885,22 @@
       return match ? match[1] : clean;
     }
 
-    function getAllSeriesQuestions() {
-      const seriesName = getLectureSeries(state.eventCode);
-      const allQuestions = [];
-      const seenIds = new Set();
-
-      if (state.quizDeck && state.quizDeck.length > 0) {
-        state.quizDeck.forEach(q => {
-          const qId = q.id || q.title || q.question;
-          if (qId && !seenIds.has(qId)) {
-            seenIds.add(qId);
-            allQuestions.push({ ...q, sourceSession: state.eventCode });
-          }
-        });
+    function loadCourseBankFromStorageAndCache(seriesName) {
+      state.courseBankMap.clear();
+      if (!seriesName) {
+        state.courseBank = [];
+        return;
       }
+
+      try {
+        const savedBank = JSON.parse(localStorage.getItem(`pulse_course_bank_${seriesName}`) || '[]');
+        if (Array.isArray(savedBank)) {
+          savedBank.forEach((rawQ, idx) => {
+            const norm = normalizeQuestionItem(rawQ, rawQ.sourceSession || 'BANK', `bank_${idx}`);
+            state.courseBankMap.set(getQuestionKey(norm), norm);
+          });
+        }
+      } catch (e) {}
 
       for (let i = 0; i < localStorage.length; i++) {
         const key = localStorage.key(i);
@@ -803,23 +909,59 @@
           if (getLectureSeries(codePart) === seriesName) {
             try {
               const deck = JSON.parse(localStorage.getItem(key) || '[]');
-              deck.forEach(item => {
-                const q = (item && item.quiz) ? item.quiz : item;
-                const qId = q.id || q.title || q.question;
-                if (qId && !seenIds.has(qId)) {
-                  seenIds.add(qId);
-                  allQuestions.push({ ...q, sourceSession: codePart });
-                }
-              });
-            } catch(e) {}
+              if (Array.isArray(deck)) {
+                deck.forEach((item, idx) => {
+                  const norm = normalizeQuestionItem(item, codePart, `${codePart}_q_${idx}`);
+                  const qKey = getQuestionKey(norm);
+                  if (!state.courseBankMap.has(qKey)) {
+                    state.courseBankMap.set(qKey, norm);
+                  }
+                });
+              }
+            } catch (e) {}
           }
         }
       }
 
-      return allQuestions;
+      state.courseBank = Array.from(state.courseBankMap.values());
     }
 
-    async function loadStaticQuestionBankForSeries(seriesName, cleanCode) {
+    function getAllSeriesQuestions() {
+      const seriesName = getLectureSeries(state.eventCode);
+      const combined = new Map();
+
+      state.courseBankMap.forEach((q, k) => combined.set(k, q));
+      state.deckMap.forEach((q, k) => {
+        if (!combined.has(k)) {
+          combined.set(k, { ...q, sourceSession: q.sourceSession || state.eventCode });
+        }
+      });
+
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('pulse_deck_')) {
+          const codePart = key.replace('pulse_deck_', '');
+          if (getLectureSeries(codePart) === seriesName) {
+            try {
+              const deck = JSON.parse(localStorage.getItem(key) || '[]');
+              if (Array.isArray(deck)) {
+                deck.forEach((item, idx) => {
+                  const norm = normalizeQuestionItem(item, codePart, `${codePart}_q_${idx}`);
+                  const qKey = getQuestionKey(norm);
+                  if (!combined.has(qKey)) {
+                    combined.set(qKey, norm);
+                  }
+                });
+              }
+            } catch (e) {}
+          }
+        }
+      }
+
+      return Array.from(combined.values());
+    }
+
+    async function loadStaticQuestionBankForSeries(seriesName) {
       if (!seriesName) return;
       const bankKey = seriesName.toLowerCase();
       const bankUrl = `/pulse/banks/${bankKey}.json`;
@@ -829,31 +971,26 @@
         if (!res.ok) return;
 
         const data = await res.json();
-        const bankQuestions = Array.isArray(data)
+        const rawQuestions = Array.isArray(data)
           ? data
           : (Array.isArray(data?.questions) ? data.questions : []);
 
-        if (bankQuestions.length === 0) return;
+        if (rawQuestions.length === 0) return;
 
-        const existingEntries = Array.from(state.deckMap.entries());
-        state.deckMap.clear();
-
-        bankQuestions.forEach((rawQ, idx) => {
-          const q = (rawQ && rawQ.quiz) ? rawQ.quiz : rawQ;
-          const qId = String(q.id || q.title || q.question || `bank_${bankKey}_${idx}`);
-          state.deckMap.set(qId, { ...q, id: q.id || qId });
+        const mergedBank = new Map();
+        rawQuestions.forEach((rawQ, idx) => {
+          const norm = normalizeQuestionItem(rawQ, 'BANK', `bank_${bankKey}_${idx}`);
+          mergedBank.set(getQuestionKey(norm), norm);
         });
 
-        existingEntries.forEach(([k, v]) => {
-          state.deckMap.set(k, v);
+        state.courseBankMap.forEach((q, k) => {
+          mergedBank.set(k, q);
         });
 
-        state.quizDeck = Array.from(state.deckMap.values());
-        try {
-          localStorage.setItem(`pulse_deck_${cleanCode}`, JSON.stringify(state.quizDeck));
-        } catch (e) {}
+        state.courseBankMap = mergedBank;
+        persistCourseBank(seriesName);
 
-        renderQuizDeck();
+        renderCourseBank();
         if (state.presenterSubTab === 'sidebuilder') {
           renderSideQuizBuilder();
         }
@@ -862,40 +999,79 @@
       }
     }
 
-    function getExportableDeck() {
-      if (state.quizDeck && state.quizDeck.length > 0) {
-        return state.quizDeck;
-      }
-      return Array.from(state.deckMap.values());
+    function buildSessionJsonPayload() {
+      const cleanCode = state.eventCode.replace(/^#/, '').trim().toUpperCase();
+      const series = getLectureSeries(cleanCode);
+      const questions = (state.quizDeck && state.quizDeck.length > 0)
+        ? state.quizDeck
+        : Array.from(state.deckMap.values());
+
+      return {
+        scope: 'session',
+        series,
+        eventCode: cleanCode,
+        questions
+      };
     }
 
-    function exportCurrentDeckJson() {
-      const deckToExport = getExportableDeck();
-      const blob = new Blob([JSON.stringify(deckToExport, null, 2)], { type: 'application/json' });
+    function buildCourseBankJsonPayload() {
+      const cleanCode = state.eventCode.replace(/^#/, '').trim().toUpperCase();
+      const series = getLectureSeries(cleanCode) || cleanCode;
+      const questions = getAllSeriesQuestions();
+
+      return {
+        scope: 'course',
+        series,
+        questions
+      };
+    }
+
+    function downloadJsonFile(payload, filename) {
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      const series = (getLectureSeries(state.eventCode) || state.eventCode || 'deck').toLowerCase();
       a.href = url;
-      a.download = `${series}.json`;
+      a.download = filename;
       document.body.appendChild(a);
       a.click();
       a.remove();
       URL.revokeObjectURL(url);
     }
 
-    function copyCurrentDeckJson() {
-      const jsonText = JSON.stringify(getExportableDeck(), null, 2);
-      navigator.clipboard.writeText(jsonText).then(() => {
-        alert("Deck JSON copied to clipboard!");
+    function copyTextToClipboard(text, successMsg) {
+      navigator.clipboard.writeText(text).then(() => {
+        alert(successMsg);
       }).catch(() => {
         const tempInput = document.createElement("textarea");
-        tempInput.value = jsonText;
+        tempInput.value = text;
         document.body.appendChild(tempInput);
         tempInput.select();
         document.execCommand("copy");
         document.body.removeChild(tempInput);
-        alert("Deck JSON copied to clipboard!");
+        alert(successMsg);
       });
+    }
+
+    function exportSessionDeckJson() {
+      const payload = buildSessionJsonPayload();
+      const slug = (payload.eventCode || 'session').toLowerCase();
+      downloadJsonFile(payload, `${slug}.json`);
+    }
+
+    function copySessionDeckJson() {
+      const payload = buildSessionJsonPayload();
+      copyTextToClipboard(JSON.stringify(payload, null, 2), `Session JSON (${payload.eventCode}) copied to clipboard!`);
+    }
+
+    function exportCourseBankJson() {
+      const payload = buildCourseBankJsonPayload();
+      const slug = (payload.series || 'course').toLowerCase();
+      downloadJsonFile(payload, `${slug}.json`);
+    }
+
+    function copyCourseBankJson() {
+      const payload = buildCourseBankJsonPayload();
+      copyTextToClipboard(JSON.stringify(payload, null, 2), `Course Bank JSON (${payload.series}) copied to clipboard!`);
     }
 
     function getSeriesLeaderboard() {
@@ -1049,9 +1225,8 @@
       if (sqConfig && sqConfig.questions && sqConfig.questions.length > 0) {
         deck = sqConfig.questions;
       } else {
-        const seriesName = getLectureSeries(cleanCode);
-        const savedGlobalDeck = JSON.parse(localStorage.getItem(`pulse_deck_${seriesName}SESSION1`) || localStorage.getItem(`pulse_deck_${seriesName}`) || '[]');
-        deck = savedGlobalDeck.length > 0 ? savedGlobalDeck : state.quizDeck;
+        const seriesQuestions = getAllSeriesQuestions();
+        deck = seriesQuestions.length > 0 ? seriesQuestions : state.quizDeck;
       }
 
       state.sideQuizActive = true;
@@ -1118,13 +1293,11 @@
       try {
         const cachedDeck = JSON.parse(localStorage.getItem(`pulse_deck_${clean}`) || '[]');
         if (Array.isArray(cachedDeck) && cachedDeck.length > 0) {
-          state.quizDeck = cachedDeck;
           cachedDeck.forEach((item, idx) => {
-            const q = (item && item.quiz) ? item.quiz : item;
-            if (q && (q.id || q.title || q.question)) {
-              state.deckMap.set(String(q.id || q.title || q.question || `q_${idx}`), q);
-            }
+            const norm = normalizeQuestionItem(item, clean, `${clean}_q_${idx}`);
+            state.deckMap.set(getQuestionKey(norm), norm);
           });
+          state.quizDeck = Array.from(state.deckMap.values());
         }
       } catch (e) {}
 
@@ -1141,20 +1314,26 @@
       const input = document.getElementById('headerAudienceCodeInput');
       if (input) input.value = clean;
 
+      const seriesName = getLectureSeries(clean);
+      const seriesLabel = document.getElementById('courseBankSeriesLabel');
+      if (seriesLabel) seriesLabel.textContent = seriesName || clean;
+
+      loadCourseBankFromStorageAndCache(seriesName);
+
       if (isSideQuizCode(clean)) {
         initSideQuizMode(clean);
       } else {
         state.sideQuizActive = false;
       }
 
-      const seriesName = getLectureSeries(clean);
-      if (seriesName && !loadedStaticBanks.has(`${clean}_${seriesName}`)) {
-        loadedStaticBanks.add(`${clean}_${seriesName}`);
-        loadStaticQuestionBankForSeries(seriesName, clean);
+      if (seriesName && !loadedStaticBanks.has(seriesName)) {
+        loadedStaticBanks.add(seriesName);
+        loadStaticQuestionBankForSeries(seriesName);
       }
 
       renderQRCode();
       renderQuizDeck();
+      renderCourseBank();
       renderLeaderboard();
       fetchPulseDatabase();
     }
@@ -1262,6 +1441,7 @@
         const activeQId = state.activeQuizQuestion ? String(state.activeQuizQuestion.id || state.activeQuizQuestion.title) : null;
 
         let deckChanged = false;
+        let bankChanged = false;
         let leaderboardChanged = false;
         let quizStateChanged = false;
         let questionsChanged = false;
@@ -1418,16 +1598,25 @@
           }
 
           if (p.event_type === 'quiz_save' && meta) {
-            const savedQuiz = meta.quiz || meta;
-            if (savedQuiz && (savedQuiz.id || savedQuiz.title || savedQuiz.question)) {
-              const key = String(savedQuiz.id || savedQuiz.title || savedQuiz.question);
-              state.deckMap.set(key, savedQuiz);
+            const rawSaved = meta.quiz || meta;
+            if (rawSaved && (rawSaved.id || rawSaved.title || rawSaved.question)) {
+              const norm = normalizeQuestionItem(rawSaved, cleanCode);
+              const key = getQuestionKey(norm);
+              state.deckMap.set(key, norm);
+              if (meta.addToCourseBank !== false) {
+                state.courseBankMap.set(key, {
+                  ...(state.courseBankMap.get(key) || {}),
+                  ...norm,
+                  sourceSession: (state.courseBankMap.get(key)?.sourceSession) || cleanCode
+                });
+                bankChanged = true;
+              }
               deckChanged = true;
             }
           }
 
           if (p.event_type === 'quiz_delete' && meta) {
-            const key = String(meta.id || meta.title || '');
+            const key = String(meta.id || meta.title || '').trim();
             if (key && state.deckMap.delete(key)) {
               deckChanged = true;
             }
@@ -1436,13 +1625,9 @@
           if (p.event_type === 'quiz_reorder' && meta && Array.isArray(meta.deck)) {
             state.deckMap.clear();
             meta.deck.forEach((item, idx) => {
-              const q = (item && item.quiz) ? item.quiz : item;
-              if (q && (q.id || q.title || q.question)) {
-                state.deckMap.set(String(q.id || q.title || q.question || `q_${idx}`), q);
-              }
+              const norm = normalizeQuestionItem(item, cleanCode, `${cleanCode}_q_${idx}`);
+              state.deckMap.set(getQuestionKey(norm), norm);
             });
-            state.quizDeck = meta.deck;
-            try { localStorage.setItem(`pulse_deck_${cleanCode}`, JSON.stringify(state.quizDeck)); } catch (e) {}
             deckChanged = true;
           }
 
@@ -1462,12 +1647,17 @@
         });
 
         if (deckChanged) {
-          state.quizDeck = Array.from(state.deckMap.values());
-          try { localStorage.setItem(`pulse_deck_${cleanCode}`, JSON.stringify(state.quizDeck)); } catch (e) {}
+          persistSessionDeck(cleanCode);
           renderQuizDeck();
-          if (state.presenterSubTab === 'sidebuilder') {
-            renderSideQuizBuilder();
-          }
+        }
+
+        if (bankChanged) {
+          persistCourseBank(getLectureSeries(cleanCode));
+          renderCourseBank();
+        }
+
+        if ((deckChanged || bankChanged) && state.presenterSubTab === 'sidebuilder') {
+          renderSideQuizBuilder();
         }
 
         if (leaderboardChanged && Object.keys(state.userScores).length > 0) {
@@ -1549,6 +1739,7 @@
         if (audBtn) audBtn.className = inactiveClass;
         renderQRCode();
         renderPresenterTimerToggleUI();
+        renderCourseBank();
       }
       lucide.createIcons();
     }
@@ -1571,12 +1762,12 @@
       const allQuestions = getAllSeriesQuestions();
 
       if (allQuestions.length === 0) {
-        checklistContainer.innerHTML = `<p class="text-xs text-slate-400 dark:text-gray-500 py-6 text-center">No questions found in Global Deck.</p>`;
+        checklistContainer.innerHTML = `<p class="text-xs text-slate-400 dark:text-gray-500 py-6 text-center">No questions found in Course Bank.</p>`;
       } else {
         checklistContainer.innerHTML = allQuestions.map((q, idx) => {
           const qId = q.id || q.title || q.question || `q_${idx}`;
           const title = q.title || q.question || 'Untitled Question';
-          const sessionTag = q.sourceSession ? q.sourceSession.replace('TWGC', '') : 'SERIES';
+          const sessionTag = q.sourceSession ? q.sourceSession.replace('TWGC', '') : 'COURSE';
           const isChecked = sideQuizBuilderQuestions.some(item => String(item.id || item.title || item.question) === String(qId));
           
           return `
@@ -1641,7 +1832,7 @@
       if (sequenceCount) sequenceCount.textContent = `${sideQuizBuilderQuestions.length} items`;
 
       if (sideQuizBuilderQuestions.length === 0) {
-        sequenceContainer.innerHTML = `<p class="text-[11px] text-slate-400 dark:text-gray-500 text-center py-4 italic">Check questions from the global deck below to sequence them here.</p>`;
+        sequenceContainer.innerHTML = `<p class="text-[11px] text-slate-400 dark:text-gray-500 text-center py-4 italic">Check questions from the course bank below to sequence them here.</p>`;
         return;
       }
 
@@ -1707,38 +1898,68 @@
       if (!rawText) { alert("Please paste a JSON payload first."); return; }
 
       try {
-        let questionsToSave = [];
         const parsed = JSON.parse(rawText);
+        let rawQuestions = [];
+        let detectedScope = 'session';
 
         if (Array.isArray(parsed)) {
-          questionsToSave = parsed;
-        } else if (parsed.questions && Array.isArray(parsed.questions)) {
-          questionsToSave = parsed.questions;
+          rawQuestions = parsed;
+          detectedScope = 'session';
+        } else if (parsed && Array.isArray(parsed.questions)) {
+          rawQuestions = parsed.questions;
+          detectedScope = (parsed.scope === 'course') ? 'course' : 'session';
         } else {
           throw new Error("JSON must be an array of questions or an object with a 'questions' array.");
         }
 
+        const selectEl = document.getElementById('bulkImportScopeSelect');
+        const chosenMode = selectEl ? selectEl.value : 'auto';
+        const effectiveMode = chosenMode === 'auto' ? detectedScope : chosenMode;
+
+        const addToSession = (effectiveMode === 'session' || effectiveMode === 'both');
+        const addToCourse = (effectiveMode === 'course' || effectiveMode === 'both');
+
+        const cleanCode = state.eventCode.replace(/^#/, '').trim().toUpperCase();
+        const seriesName = getLectureSeries(cleanCode);
+        const sourceTag = (parsed && parsed.eventCode) ? String(parsed.eventCode).toUpperCase() : (effectiveMode === 'course' ? 'BANK' : cleanCode);
+
         let count = 0;
-        for (const q of questionsToSave) {
-          const quizItem = {
-            id: q.id || ("q_" + Date.now() + "_" + Math.random().toString(36).substr(2, 4)),
-            title: q.title || q.question || "Untitled Question",
-            imageUrl: q.imageUrl || null,
-            options: q.options || ["Option A", "Option B", "Option C", "Option D"],
-            correct: q.correct !== undefined ? parseInt(q.correct) : 0,
-            timeLimit: q.timeLimit !== undefined ? parseInt(q.timeLimit) : 30,
-            points: q.points !== undefined ? parseInt(q.points) : 100
-          };
-          
-          await sendPulse('quiz_save', { quiz: quizItem });
+        for (const rawQ of rawQuestions) {
+          const norm = normalizeQuestionItem(rawQ, sourceTag);
+          const key = getQuestionKey(norm);
+
+          if (addToCourse) {
+            state.courseBankMap.set(key, {
+              ...(state.courseBankMap.get(key) || {}),
+              ...norm,
+              sourceSession: (state.courseBankMap.get(key)?.sourceSession) || sourceTag
+            });
+          }
+
+          if (addToSession) {
+            const sessionQ = { ...norm, sourceSession: cleanCode };
+            state.deckMap.set(key, sessionQ);
+            await sendPulse('quiz_save', { quiz: sessionQ, addToCourseBank: addToCourse });
+          }
           count++;
         }
 
+        if (addToSession) persistSessionDeck(cleanCode);
+        if (addToCourse) persistCourseBank(seriesName);
+
+        renderQuizDeck();
+        renderCourseBank();
+        if (state.presenterSubTab === 'sidebuilder') {
+          renderSideQuizBuilder();
+        }
+
         document.getElementById('bulkGlobalJsonInput').value = "";
-        await fetchPulseDatabase();
-        alert(`Successfully imported and synced ${count} question(s) to D1 database for session ${state.eventCode}!`);
+        const targetLabel = effectiveMode === 'course'
+          ? `Course Bank (${seriesName})`
+          : (effectiveMode === 'both' ? `Session (${cleanCode}) & Course Bank (${seriesName})` : `Session (${cleanCode})`);
+        alert(`Imported ${count} question(s) into ${targetLabel}!`);
       } catch (err) {
-        alert("Bulk Global Deck Import Error: " + err.message);
+        alert("JSON Import Error: " + err.message);
       }
     }
 
@@ -1924,6 +2145,7 @@
       document.getElementById('presenterQuestionsPane').classList.toggle('hidden', subTab !== 'questions');
       document.getElementById('presenterLeaderboardPane').classList.toggle('hidden', subTab !== 'leaderboard');
 
+      if (subTab === 'manager') { renderQuizDeck(); renderCourseBank(); }
       if (subTab === 'sidebuilder') { loadSideQuizCatalog(); renderSideQuizBuilder(); }
       if (subTab === 'spotlight' || subTab === 'leaderboard') {
         if (subTab === 'spotlight') { renderQRCode(); renderPresenterTimerToggleUI(); }
@@ -2010,35 +2232,49 @@
       const o1 = document.getElementById('option1').value.trim();
       const o2 = document.getElementById('option2').value.trim();
       const o3 = document.getElementById('option3').value.trim();
-      const correctIndex = parseInt(document.querySelector('input[name="correctOption"]:checked').value);
-      const timeLimit = parseInt(document.getElementById('newQuizTimer').value);
-      const points = parseInt(document.getElementById('newQuizPoints').value) || 100;
+      const correctIndex = parseInt(document.querySelector('input[name="correctOption"]:checked').value, 10);
+      const timeLimit = parseInt(document.getElementById('newQuizTimer').value, 10);
+      const points = parseInt(document.getElementById('newQuizPoints').value, 10) || 100;
+      const alsoAddToCourse = document.getElementById('alsoAddToCourseBank')?.checked !== false;
 
       if (!title || !o0 || !o1) { alert("Please fill in at least the question title and options A & B."); return; }
 
+      const cleanCode = state.eventCode.replace(/^#/, '').trim().toUpperCase();
+      const seriesName = getLectureSeries(cleanCode);
       const editingId = document.getElementById('editingQuizId').value;
       const quizItem = {
         id: editingId || ("q_" + Date.now()),
-        title: title,
+        title,
         imageUrl: imageUrl || null,
         options: [o0, o1, o2 || "Option C", o3 || "Option D"],
         correct: correctIndex,
-        timeLimit: timeLimit,
-        points: points
+        timeLimit,
+        points,
+        sourceSession: cleanCode
       };
 
-      state.deckMap.set(String(quizItem.id), quizItem);
-      state.quizDeck = Array.from(state.deckMap.values());
-      const cleanCode = state.eventCode.replace(/^#/, '').trim().toUpperCase();
-      try { localStorage.setItem(`pulse_deck_${cleanCode}`, JSON.stringify(state.quizDeck)); } catch (e) {}
+      const key = getQuestionKey(quizItem);
+      state.deckMap.set(key, quizItem);
+      persistSessionDeck(cleanCode);
+
+      if (alsoAddToCourse) {
+        state.courseBankMap.set(key, {
+          ...(state.courseBankMap.get(key) || {}),
+          ...quizItem,
+          sourceSession: (state.courseBankMap.get(key)?.sourceSession) || cleanCode
+        });
+        persistCourseBank(seriesName);
+      }
+
       renderQuizDeck();
+      renderCourseBank();
 
       cancelEditQuizQuestion();
-      await sendPulse('quiz_save', { quiz: quizItem });
+      await sendPulse('quiz_save', { quiz: quizItem, addToCourseBank: alsoAddToCourse });
     }
 
     function editQuizQuestion(quizId) {
-      const quiz = state.quizDeck.find(q => (q.id || q.title) === quizId);
+      const quiz = state.quizDeck.find(q => (q.id || q.title) === quizId) || state.courseBank.find(q => (q.id || q.title) === quizId);
       if (!quiz) return;
 
       document.getElementById('editingQuizId').value = quiz.id;
@@ -2056,7 +2292,7 @@
       document.getElementById('newQuizPoints').value = quiz.points || 100;
 
       document.getElementById('quizFormHeading').innerHTML = `<i data-lucide="edit-3" class="w-4 h-4 text-amber-500"></i><span>Edit Quiz Question</span>`;
-      document.getElementById('btnSaveQuiz').textContent = "Update Quiz Deck";
+      document.getElementById('btnSaveQuiz').textContent = "Update Session Deck";
       document.getElementById('btnCancelEdit').classList.remove('hidden');
       lucide.createIcons();
     }
@@ -2077,28 +2313,28 @@
       document.getElementById('newQuizPoints').value = "100";
 
       document.getElementById('quizFormHeading').innerHTML = `<i data-lucide="plus-circle" class="w-4 h-4 text-amber-500"></i><span>Create Quiz Question</span>`;
-      document.getElementById('btnSaveQuiz').textContent = "Save to Quiz Deck";
+      document.getElementById('btnSaveQuiz').textContent = "Save to Session Deck";
       document.getElementById('btnCancelEdit').classList.add('hidden');
       lucide.createIcons();
     }
 
     async function deleteQuizQuestion(quizId) {
-      state.deckMap.delete(String(quizId));
-      state.quizDeck = Array.from(state.deckMap.values());
+      state.deckMap.delete(String(quizId).trim());
       const cleanCode = state.eventCode.replace(/^#/, '').trim().toUpperCase();
-      try { localStorage.setItem(`pulse_deck_${cleanCode}`, JSON.stringify(state.quizDeck)); } catch (e) {}
+      persistSessionDeck(cleanCode);
       renderQuizDeck();
+      renderCourseBank();
       await sendPulse('quiz_delete', { id: quizId });
     }
     
     function resetQuizDeck() {
-      if (confirm("Are you sure you want to clear the entire quiz deck?")) {
+      if (confirm("Are you sure you want to clear this session's quiz deck?")) {
         const idsToDelete = state.quizDeck.map(q => q.id).filter(Boolean);
         state.deckMap.clear();
-        state.quizDeck = [];
         const cleanCode = state.eventCode.replace(/^#/, '').trim().toUpperCase();
-        try { localStorage.setItem(`pulse_deck_${cleanCode}`, '[]'); } catch (e) {}
+        persistSessionDeck(cleanCode);
         renderQuizDeck();
+        renderCourseBank();
         idsToDelete.forEach(id => sendPulse('quiz_delete', { id }));
       }
     }
@@ -2233,6 +2469,7 @@
     function renderAll() {
       renderQuestions();
       renderQuizDeck();
+      renderCourseBank();
       renderAudienceQuizPane();
       renderSpotlight();
       renderLeaderboard();
@@ -2248,7 +2485,7 @@
 
       if (state.questions.length === 0) {
         if (listContainer) listContainer.innerHTML = `<div class="p-6 text-center text-xs text-slate-500 bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-gray-800">No questions submitted yet. Be the first!</div>`;
-        if (presListContainer) presListContainer.innerHTML = `<div class="p-6 text-center text-xs text-slate-500 bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-gray-800">No questions in Q&A queue.</div>`;
+        if (presListContainer) presListContainer.innerHTML = `<div class="p-6 text-center text-xs text-slate-500 bg-white dark:bg-gray-900 rounded-2xl border border-slate-200 dark:border-gray-800">No questions in Q&amp;A queue.</div>`;
         return;
       }
 
@@ -2297,7 +2534,7 @@
         if (!container) return;
     
         if (!state.quizDeck || state.quizDeck.length === 0) {
-          container.innerHTML = `<div class="text-center py-8 text-slate-500 dark:text-gray-500 text-xs">No questions in quiz deck.</div>`;
+          container.innerHTML = `<div class="text-center py-6 text-slate-500 dark:text-gray-500 text-xs bg-white dark:bg-gray-900/60 rounded-xl border border-slate-200 dark:border-gray-800">No questions added to this session's deck yet. Create one or add from the Course Bank below.</div>`;
           return;
         }
     
@@ -2337,6 +2574,39 @@
       } catch (err) { console.error('Error inside renderQuizDeck:', err); }
     }
 
+    function renderCourseBank() {
+      const container = document.getElementById('courseBankList');
+      if (!container) return;
+
+      const bankItems = getAllSeriesQuestions();
+      if (bankItems.length === 0) {
+        container.innerHTML = `<div class="text-center py-6 text-slate-500 dark:text-gray-500 text-xs">No questions in this course bank yet.</div>`;
+        return;
+      }
+
+      container.innerHTML = bankItems.map((q, idx) => {
+        const qKey = getQuestionKey(q, `bank_${idx}`);
+        const inSession = state.deckMap.has(qKey);
+        const tag = q.sourceSession ? q.sourceSession.replace(/^TWGC/, '') : 'COURSE';
+
+        return `
+          <div class="bg-slate-50 dark:bg-[#080D17] border border-slate-200 dark:border-gray-800/80 rounded-xl p-3 flex items-center justify-between gap-2 text-xs">
+            <div class="min-w-0 flex-1 space-y-1">
+              <div class="flex items-center space-x-2">
+                <span class="font-mono font-extrabold text-[10px] px-1.5 py-0.5 rounded bg-slate-200 dark:bg-gray-800 text-slate-700 dark:text-gray-300">${tag}</span>
+                <span class="text-[10px] text-slate-400">${q.points || 100} pts</span>
+              </div>
+              <p class="font-bold text-slate-900 dark:text-gray-100 truncate">${q.title || q.question || 'Untitled Question'}</p>
+            </div>
+            <button onclick="addBankQuestionToSession('${qKey.replace(/'/g, "\\'")}')" ${inSession ? 'disabled' : ''} class="px-2.5 py-1 rounded-lg font-bold text-[11px] shrink-0 transition ${inSession ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 cursor-default' : 'bg-amber-500 text-slate-950 hover:brightness-110 shadow'}">
+              ${inSession ? 'In Session' : '+ Add to Session'}
+            </button>
+          </div>
+        `;
+      }).join('');
+      lucide.createIcons();
+    }
+
     async function moveQuizQuestion(index, direction) {
       const targetIndex = index + direction;
       if (targetIndex < 0 || targetIndex >= state.quizDeck.length) return;
@@ -2346,14 +2616,12 @@
 
       state.deckMap.clear();
       state.quizDeck.forEach((item, idx) => {
-        const q = (item && item.quiz) ? item.quiz : item;
-        if (q && (q.id || q.title || q.question)) {
-          state.deckMap.set(String(q.id || q.title || q.question || `q_${idx}`), q);
-        }
+        const norm = normalizeQuestionItem(item, state.eventCode, `${state.eventCode}_q_${idx}`);
+        state.deckMap.set(getQuestionKey(norm), norm);
       });
 
       const cleanCode = state.eventCode.replace(/^#/, '').trim().toUpperCase();
-      try { localStorage.setItem(`pulse_deck_${cleanCode}`, JSON.stringify(state.quizDeck)); } catch(e) {}
+      persistSessionDeck(cleanCode);
       renderQuizDeck();
       await sendPulse('quiz_reorder', { deck: state.quizDeck });
     }
@@ -2557,7 +2825,7 @@
               </div>
               <div class="flex items-center space-x-3">
                 ${isUnlimited && !showAnswer ? `
-                  <button onclick="manualStopQuiz()" class="px-3 py-1 bg-red-600 hover:bg-red-500 text-white font-bold text-xs rounded-lg shadow transition flex items-center space-x-1"><i data-lucide="stop-circle" class="w-3.5 h-3.5"></i><span>Stop Question & Reveal</span></button>
+                  <button onclick="manualStopQuiz()" class="px-3 py-1 bg-red-600 hover:bg-red-500 text-white font-bold text-xs rounded-lg shadow transition flex items-center space-x-1"><i data-lucide="stop-circle" class="w-3.5 h-3.5"></i><span>Stop Question &amp; Reveal</span></button>
                 ` : ''}
                 <span class="text-2xl font-mono font-bold ${!isUnlimited && state.quizTimeRemaining < 10 ? 'text-red-500 animate-pulse' : 'text-amber-600 dark:text-amber-400'}">${timerDisplayStr}</span>
               </div>
