@@ -35,23 +35,45 @@ class Default(WorkerEntrypoint):
                             headers={"Content-Type": "application/json"}
                         )
 
-                    event_code = event_code_list[0].strip()
+                    event_code = event_code_list[0].strip().upper()
                     if not event_code.startswith("#"):
                         event_code = "#" + event_code
-                    event_code = event_code.upper()
 
-                    stmt = db.prepare(
-                        "SELECT id, session_id, event_code, event_type, metadata, created_at "
-                        "FROM pulse_events "
-                        "WHERE UPPER(REPLACE(event_code, '#', '')) = UPPER(?) "
-                        "ORDER BY id ASC"
+                    after_id_raw = (
+                        query_params.get("afterId")
+                        or query_params.get("after_id")
+                        or query_params.get("sinceId")
                     )
-                    res = await stmt.bind(event_code.replace('#', '')).all()
+
+                    after_id = None
+                    if after_id_raw and after_id_raw[0].strip().isdigit():
+                        after_id = int(after_id_raw[0].strip())
+
+                    if after_id is not None and after_id > 0:
+                        stmt = db.prepare(
+                            "SELECT id, session_id, event_code, event_type, metadata, created_at "
+                            "FROM pulse_events "
+                            "WHERE event_code = ? AND id > ? "
+                            "ORDER BY id ASC"
+                        )
+                        res = await stmt.bind(event_code, after_id).all()
+                    else:
+                        stmt = db.prepare(
+                            "SELECT id, session_id, event_code, event_type, metadata, created_at "
+                            "FROM pulse_events "
+                            "WHERE event_code = ? "
+                            "ORDER BY id ASC"
+                        )
+                        res = await stmt.bind(event_code).all()
+
                     rows = res.results.to_py() if hasattr(res.results, "to_py") else list(res.results)
 
                     return Response(
                         json.dumps({"success": True, "recent_pulses": rows}),
-                        headers={"Content-Type": "application/json"}
+                        headers={
+                            "Content-Type": "application/json",
+                            "Cache-Control": "private, max-age=1"
+                        }
                     )
                 except Exception as e:
                     return Response(
@@ -78,9 +100,9 @@ class Default(WorkerEntrypoint):
                             headers={"Content-Type": "application/json"}
                         )
 
+                    event_code = str(event_code).strip().upper()
                     if not event_code.startswith("#"):
                         event_code = "#" + event_code
-                    event_code = event_code.upper()
 
                     metadata_str = json.dumps(metadata) if isinstance(metadata, (dict, list)) else str(metadata)
 
