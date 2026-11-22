@@ -10,6 +10,16 @@ def _normalize_code(raw_val):
     return str(raw_val).lstrip("#").strip().upper()
 
 
+def _parse_metadata(raw_meta):
+    meta = raw_meta
+    try:
+        while isinstance(meta, str):
+            meta = json.loads(meta.replace("\u2026", "..."))
+    except Exception:
+        return None
+    return meta if isinstance(meta, dict) else None
+
+
 class Default(WorkerEntrypoint):
     async def fetch(self, request):
         url_str = request.url
@@ -37,8 +47,16 @@ class Default(WorkerEntrypoint):
                     event_code_list = query_params.get("eventCode") or query_params.get("event_code")
                     series_prefix_list = query_params.get("seriesPrefix") or query_params.get("series_prefix")
 
-                    raw_event_code = _normalize_code(event_code_list[0]) if event_code_list and event_code_list[0].strip() else ""
-                    raw_series_prefix = _normalize_code(series_prefix_list[0]) if series_prefix_list and series_prefix_list[0].strip() else ""
+                    raw_event_code = (
+                        _normalize_code(event_code_list[0])
+                        if event_code_list and event_code_list[0].strip()
+                        else ""
+                    )
+                    raw_series_prefix = (
+                        _normalize_code(series_prefix_list[0])
+                        if series_prefix_list and series_prefix_list[0].strip()
+                        else ""
+                    )
 
                     if not raw_event_code and not raw_series_prefix:
                         return Response(
@@ -80,7 +98,7 @@ class Default(WorkerEntrypoint):
                         params.append(after_id)
 
                     sql = (
-                        "SELECT id, session_id, user_id, event_code, event_type, metadata, created_at "
+                        "SELECT id, session_id, event_code, event_type, metadata, created_at "
                         "FROM pulse_events "
                         f"WHERE {' AND '.join(where_clauses)} "
                         f"ORDER BY id ASC LIMIT {page_limit}"
@@ -107,33 +125,145 @@ class Default(WorkerEntrypoint):
                         headers={"Content-Type": "application/json"}
                     )
 
-            # POST: Save pre-loaded quiz questions, live releases, or responses
+            # POST: Save pre-loaded quiz questions, live releases, responses, or compact_session
             if method == "POST":
                 try:
                     body_text = await request.text()
                     data = json.loads(body_text) if body_text else {}
 
                     session_id = data.get("sessionId") or data.get("session_id") or "anon"
-                    user_id = data.get("userId") or data.get("user_id")
                     event_code_raw = data.get("eventCode") or data.get("event_code")
-                    event_type = data.get("eventType") or data.get("event_type")
+                    event_type = data.get("eventType") or data.get("event_type") or "ping"
                     metadata = data.get("metadata", {})
+                    clean_code = _normalize_code(event_code_raw)
 
-                    if not event_code_raw or not event_type:
+                    if event_type == "compact_session":
+                        if not clean_code:
+                            return Response(
+                                json.dumps({"success": False, "error": "eventCode is required for compaction"}),
+                                status=400,
+                                headers={"Content-Type": "application/json"}
+                            )
+
+                        stmt = db.prepare(
+                            "SELECT id, session_id, event_code, event_type, metadata "
+                            "FROM pulse_events "
+                            "WHERE TRIM(UPPER(REPLACE(COALESCE(event_code, ''), '#', ''))) = ? "
+                            "AND event_type IN ('quiz_answer', 'leaderboard_snapshot', 'leaderboard_reset') "
+                            "ORDER BY id ASC"
+                        )
+                        res = await stmt.bind(clean_code).all()
+                        rows = res.results.to_py() if hasattr(res.results, "to_py") else list(res.results)
+
+                        last_reset_id = 0
+                        snapshot_totals = {}
+                        awarded_by_user_quiz = {}
+                        ids_to_delete = []
+
+                        for r in rows:
+                            r_id = int(r.get("id") or 0)
+                            r_type = r.get("event_type")
+                            meta = _parse_metadata(r.get("metadata"))
+
+                            if r_type == "leaderboard_reset":
+                                last_reset_id = r_id
+                                snapshot_totals = {}
+                                awarded_by_user_quiz = {}
+                                continue
+
+                            if r_id <= last_reset_id or not meta:
+                                if r_type in ("quiz_answer", "leaderboard_snapshot"):
+                                    ids_to_delete.append(r_id)
+                                continue
+
+                            if r_type == "leaderboard_snapshot":
+                                user = str(meta.get("userName") or meta.get("user") or r.get("session_id") or "").strip()
+                                pts = max(0.0, float(meta.get("totalScore") if meta.get("totalScore") is not None else (meta.get("score") or 0)))
+                                if user:
+                                    snapshot_totals[user] = snapshot_totals.get(user, 0.0) + pts
+                                ids_to_delete.append(r_id)
+
+                            elif r_type == "quiz_answer":
+                                user = str(meta.get("userName") or meta.get("user") or r.get("session_id") or "").strip()
+                                quiz_id = str(meta.get("quizId") if meta.get("quizId") is not None else (meta.get("questionId") or "default")).strip()
+                                pts = max(0.0, float(meta.get("pointsEarned") if meta.get("pointsEarned") is not None else (meta.get("points") or 0)))
+                                if user:
+                                    key = f"{user}::{quiz_id}"
+                                    if key not in awarded_by_user_quiz:
+                                        awarded_by_user_quiz[key] = pts
+                                ids_to_delete.append(r_id)
+
+                        final_totals = dict(snapshot_totals)
+                        for key, pts in awarded_by_user_quiz.items():
+                            if "::" in key:
+                                user = key.split("::", 1)[0]
+                                final_totals[user] = final_totals.get(user, 0.0) + pts
+
+                        statements = []
+
+                        for user, total_score in final_totals.items():
+                            if total_score > 0:
+                                normalized_score = int(total_score) if total_score.is_integer() else total_score
+                                statements.append(
+                                    db.prepare(
+                                        "INSERT INTO pulse_events (session_id, event_code, event_type, metadata) "
+                                        "VALUES (?, ?, 'leaderboard_snapshot', ?)"
+                                    ).bind(
+                                        session_id,
+                                        clean_code,
+                                        json.dumps({
+                                            "userName": user,
+                                            "totalScore": normalized_score,
+                                            "eventCode": clean_code,
+                                            "compactedAt": int(time.time() * 1000),
+                                        })
+                                    )
+                                )
+
+                        chunk_size = 80
+                        for i in range(0, len(ids_to_delete), chunk_size):
+                            chunk = ids_to_delete[i:i + chunk_size]
+                            placeholders = ",".join("?" for _ in chunk)
+                            statements.append(
+                                db.prepare(f"DELETE FROM pulse_events WHERE id IN ({placeholders})").bind(*chunk)
+                            )
+
+                        statements.append(
+                            db.prepare(
+                                "DELETE FROM pulse_events "
+                                "WHERE TRIM(UPPER(REPLACE(COALESCE(event_code, ''), '#', ''))) = ? "
+                                "AND event_type IN ('ping', 'reaction', 'quiz_release', 'quiz_clear', 'quiz_stop', 'spotlight_question')"
+                            ).bind(clean_code)
+                        )
+
+                        if statements:
+                            await db.batch(statements)
+
+                        return Response(
+                            json.dumps({
+                                "success": True,
+                                "message": "Session compacted safely",
+                                "usersCompacted": len(final_totals),
+                                "rowsRemoved": len(ids_to_delete),
+                            }),
+                            status=200,
+                            headers={"Content-Type": "application/json"}
+                        )
+
+                    if not clean_code or not event_type:
                         return Response(
                             json.dumps({"success": False, "error": "eventCode and eventType are required"}),
                             status=400,
                             headers={"Content-Type": "application/json"}
                         )
 
-                    clean_code = _normalize_code(event_code_raw)
                     metadata_str = json.dumps(metadata) if isinstance(metadata, (dict, list)) else str(metadata)
 
                     query = (
-                        "INSERT INTO pulse_events (session_id, user_id, event_code, event_type, metadata) "
-                        "VALUES (?, ?, ?, ?, ?)"
+                        "INSERT INTO pulse_events (session_id, event_code, event_type, metadata) "
+                        "VALUES (?, ?, ?, ?)"
                     )
-                    await db.prepare(query).bind(session_id, user_id, clean_code, event_type, metadata_str).run()
+                    await db.prepare(query).bind(session_id, clean_code, event_type, metadata_str).run()
 
                     return Response(
                         json.dumps({"success": True}),
