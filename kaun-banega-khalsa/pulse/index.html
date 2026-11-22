@@ -34,9 +34,10 @@
     }
   </script>
   <style>
+    html { scroll-behavior: smooth; }
     body { font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.3s, color 0.3s; }
     .gold-gradient-bg { background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); }
-    #qrcode canvas, #qrcode img { margin: 0 auto; border-radius: 8px; padding: 4px; background: white; }
+    #qrcode canvas, #qrcode img { margin: 0 auto; border-radius: 12px; padding: 8px; background: white; display: block; max-width: 100%; height: auto; }
 
     ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -250,40 +251,62 @@
 
       <!-- SUB-TAB 1: SPOTLIGHT & QR CODE -->
       <div id="presenterSpotlightPane" class="space-y-5">
-        <div class="bg-white dark:bg-[#0D121F] border border-slate-200 dark:border-gray-800 rounded-2xl p-5 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
-          <div class="text-center md:text-left space-y-1">
-            <p class="text-amber-600 dark:text-amber-400 text-xs font-bold tracking-widest uppercase">SCAN QR CODE TO JOIN LIVE SESSION</p>
-            <h1 class="text-3xl sm:text-5xl font-mono font-black text-amber-500 dark:text-amber-400 tracking-wider event-code-display" id="projectorEventCode"></h1>
-            <p class="text-slate-500 dark:text-gray-400 text-xs">Scan with mobile camera to participate instantly</p>
+        <div id="qrJoinSection" class="bg-white dark:bg-[#0D121F] border border-slate-200 dark:border-gray-800 rounded-2xl p-5 sm:p-6 flex flex-col lg:flex-row items-center justify-between gap-6 shadow-sm scroll-mt-24">
+          <div class="text-center lg:text-left space-y-2 flex-1 min-w-0">
+            <p class="text-amber-600 dark:text-amber-400 text-xs sm:text-sm font-bold tracking-widest uppercase">SCAN QR CODE TO JOIN LIVE SESSION</p>
+            <h1 class="text-3xl sm:text-5xl font-mono font-black text-amber-500 dark:text-amber-400 tracking-wider event-code-display break-all" id="projectorEventCode"></h1>
+            <p class="text-slate-500 dark:text-gray-400 text-xs sm:text-sm">Scan with mobile camera to participate instantly</p>
+            <div class="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-2">
+              <button onclick="scrollToSection('spotlightContent')" class="px-3 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 border border-amber-500/30 font-extrabold text-xs flex items-center space-x-1.5 transition">
+                <i data-lucide="arrow-down-to-line" class="w-3.5 h-3.5"></i>
+                <span>Jump to Spotlight</span>
+              </button>
+              <button onclick="scrollToSection('presenterLeaderboardCard')" class="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-gray-900 hover:bg-slate-200 dark:hover:bg-gray-800 text-slate-700 dark:text-gray-200 border border-slate-200 dark:border-gray-800 font-bold text-xs flex items-center space-x-1.5 transition">
+                <i data-lucide="trophy" class="w-3.5 h-3.5 text-amber-500"></i>
+                <span>Jump to Leaderboard</span>
+              </button>
+            </div>
           </div>
 
-          <div class="flex flex-col items-center bg-slate-50 dark:bg-[#080D17] p-3 rounded-xl border border-slate-200 dark:border-gray-800 shrink-0">
-            <div id="qrcode"></div>
-            <span class="text-[9px] font-mono font-bold text-amber-600 dark:text-amber-400 mt-1.5 tracking-wider uppercase">Auto-Join QR Code</span>
+          <div id="qrCardContainer" class="w-full lg:w-1/2 flex flex-col items-center justify-center bg-slate-50 dark:bg-[#080D17] p-4 sm:p-6 rounded-2xl border border-slate-200 dark:border-gray-800 shrink-0">
+            <div id="qrcode" class="flex items-center justify-center w-full"></div>
+            <span class="text-[10px] sm:text-xs font-mono font-bold text-amber-600 dark:text-amber-400 mt-2 tracking-wider uppercase">Auto-Join QR Code</span>
           </div>
         </div>
 
         <!-- Projector Screen Focus & Dynamic Timer Controls -->
-        <div id="spotlightContent" class="bg-white dark:bg-[#0D121F] border border-slate-200 dark:border-gray-800 rounded-2xl p-6 sm:p-8 text-center min-h-[280px] flex flex-col shadow-sm relative overflow-hidden">
-          <div class="flex flex-col sm:flex-row items-center justify-between gap-2 border-b border-slate-100 dark:border-gray-800/60 pb-3 mb-3">
+        <div id="spotlightContent" class="bg-white dark:bg-[#0D121F] border border-slate-200 dark:border-gray-800 rounded-2xl p-6 sm:p-8 text-center min-h-[280px] flex flex-col shadow-sm relative overflow-hidden scroll-mt-24">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 dark:border-gray-800/60 pb-3 mb-3">
             <div class="flex items-center space-x-1.5 text-slate-400 dark:text-gray-500 uppercase font-bold text-xs tracking-wider">
               <i data-lucide="sparkles" class="w-4 h-4 text-amber-500 shrink-0"></i>
               <span>Projector Screen Focus</span>
             </div>
 
-            <div class="flex items-center space-x-2 bg-slate-100 dark:bg-gray-950 px-3 py-1 rounded-xl border border-slate-200 dark:border-gray-800">
-              <span class="text-[11px] font-extrabold text-slate-600 dark:text-gray-300">Release Timer Mode:</span>
-              <button id="pageTimerToggleBtn" onclick="togglePresenterTimerMode()" class="px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center space-x-1 bg-amber-500 text-slate-950 shadow">
-                <i data-lucide="timer" class="w-3.5 h-3.5"></i>
-                <span id="pageTimerToggleLabel">Timer Enforced</span>
+            <div class="flex flex-wrap items-center gap-2">
+              <button onclick="scrollToSection('qrJoinSection')" class="hidden md:inline-flex px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-gray-950 hover:bg-slate-200 dark:hover:bg-gray-800 text-slate-700 dark:text-gray-200 border border-slate-200 dark:border-gray-800 font-bold text-xs items-center space-x-1 transition" title="Scroll back up to QR Code">
+                <i data-lucide="qr-code" class="w-3.5 h-3.5 text-amber-500"></i>
+                <span>Back to QR</span>
               </button>
-            </div>
 
-            <div id="clearSpotlightBtnContainer" class="hidden shrink-0">
-              <button onclick="clearActivePollAndReturnWaiting()" class="px-2.5 py-1 rounded-lg bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 hover:bg-red-100 border border-red-200 dark:border-red-800/40 font-bold text-xs flex items-center space-x-1 transition">
-                <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
-                <span>Return to Waiting</span>
+              <button onclick="scrollToSection('presenterLeaderboardCard')" class="px-2.5 py-1 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 border border-amber-500/30 font-extrabold text-xs inline-flex items-center space-x-1 transition" title="Scroll straight to Leaderboard">
+                <i data-lucide="trophy" class="w-3.5 h-3.5"></i>
+                <span>Go to Leaderboard</span>
               </button>
+
+              <div class="flex items-center space-x-2 bg-slate-100 dark:bg-gray-950 px-3 py-1 rounded-xl border border-slate-200 dark:border-gray-800">
+                <span class="text-[11px] font-extrabold text-slate-600 dark:text-gray-300">Release Timer Mode:</span>
+                <button id="pageTimerToggleBtn" onclick="togglePresenterTimerMode()" class="px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center space-x-1 bg-amber-500 text-slate-950 shadow">
+                  <i data-lucide="timer" class="w-3.5 h-3.5"></i>
+                  <span id="pageTimerToggleLabel">Timer Enforced</span>
+                </button>
+              </div>
+
+              <div id="clearSpotlightBtnContainer" class="hidden shrink-0">
+                <button onclick="clearActivePollAndReturnWaiting()" class="px-2.5 py-1 rounded-lg bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 hover:bg-red-100 border border-red-200 dark:border-red-800/40 font-bold text-xs flex items-center space-x-1 transition">
+                  <i data-lucide="x-circle" class="w-3.5 h-3.5"></i>
+                  <span>Return to Waiting</span>
+                </button>
+              </div>
             </div>
           </div>
 
@@ -296,13 +319,21 @@
           </div>
         </div>
 
-        <div id="presenterLeaderboardCard" class="bg-white dark:bg-[#0D121F] border border-slate-200 dark:border-gray-800 rounded-2xl p-5 space-y-4 shadow-sm">
+        <div id="presenterLeaderboardCard" class="bg-white dark:bg-[#0D121F] border border-slate-200 dark:border-gray-800 rounded-2xl p-5 space-y-4 shadow-sm scroll-mt-24">
           <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 dark:border-gray-800 pb-3">
             <div class="flex items-center space-x-2">
               <i data-lucide="trophy" class="w-5 h-5 text-amber-500"></i>
               <h3 class="text-lg font-bold text-slate-900 dark:text-white">Live Leaderboard</h3>
             </div>
             <div class="flex flex-wrap items-center gap-2">
+              <button onclick="scrollToSection('qrJoinSection')" class="hidden md:inline-flex px-2.5 py-1 bg-slate-100 dark:bg-gray-950 hover:bg-slate-200 dark:hover:bg-gray-800 text-slate-700 dark:text-gray-200 border border-slate-200 dark:border-gray-800 text-xs font-bold rounded-lg transition items-center space-x-1" title="Scroll back up to QR Code">
+                <i data-lucide="qr-code" class="w-3.5 h-3.5 text-amber-500"></i>
+                <span>Back to QR</span>
+              </button>
+              <button onclick="scrollToSection('spotlightContent')" class="hidden md:inline-flex px-2.5 py-1 bg-slate-100 dark:bg-gray-950 hover:bg-slate-200 dark:hover:bg-gray-800 text-slate-700 dark:text-gray-200 border border-slate-200 dark:border-gray-800 text-xs font-bold rounded-lg transition items-center space-x-1" title="Scroll back up to Spotlighted Question">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-500"></i>
+                <span>Back to Spotlight</span>
+              </button>
               <button onclick="toggleAutoRefresh()" class="js-auto-refresh-btn px-2.5 py-1 text-xs font-bold rounded-lg border transition flex items-center space-x-1.5" title="Auto Refresh turns ON automatically during live quiz rounds">
                 <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
                 <span class="js-auto-refresh-label">Auto Refresh: OFF</span>
@@ -774,6 +805,34 @@
       courseBankMap: new Map(),
       countedAnswerUsers: new Set()
     };
+
+    let lastRenderedQrSize = 0;
+
+    function scrollToSection(elementId) {
+      if (state.view !== 'presenter') {
+        switchView('presenter');
+      }
+      if (state.presenterSubTab !== 'spotlight') {
+        switchPresenterSubTab('spotlight');
+      }
+      setTimeout(() => {
+        const target = document.getElementById(elementId);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+        if (elementId === 'qrJoinSection') {
+          renderQRCode(true);
+        }
+      }, 40);
+    }
+
+    function computeHalfWidthQrSize() {
+      const card = document.getElementById('qrCardContainer');
+      const cardInnerWidth = card ? Math.max(120, card.clientWidth - 48) : window.innerWidth * 0.45;
+      const halfViewportWidth = window.innerWidth * 0.5;
+      const targetSize = Math.min(cardInnerWidth, halfViewportWidth);
+      return Math.max(140, Math.floor(targetSize));
+    }
 
     function isQuizRoundCurrentlyOpen(quizObj, startedAtMs, isStopped = false) {
       if (!quizObj || isStopped) return false;
@@ -1422,16 +1481,28 @@
       }
     }
 
-    function renderQRCode() {
+    function renderQRCode(force = false) {
       const qrContainer = document.getElementById('qrcode');
       if (!qrContainer) return;
+
+      const size = computeHalfWidthQrSize();
+      if (!force && lastRenderedQrSize === size && qrContainer.childElementCount > 0) {
+        return;
+      }
+      lastRenderedQrSize = size;
+
       qrContainer.innerHTML = '';
       const cleanCode = state.eventCode.replace(/^#/, '').trim().toUpperCase();
       const joinUrl = `${window.location.origin}${window.location.pathname}?code=${encodeURIComponent(cleanCode)}`;
 
       try {
         new QRCode(qrContainer, {
-          text: joinUrl, width: 100, height: 100, colorDark: "#0B0F17", colorLight: "#FFFFFF", correctLevel: QRCode.CorrectLevel.H
+          text: joinUrl,
+          width: size,
+          height: size,
+          colorDark: "#0B0F17",
+          colorLight: "#FFFFFF",
+          correctLevel: QRCode.CorrectLevel.H
         });
       } catch (e) {}
     }
@@ -1562,7 +1633,7 @@
         loadStaticQuestionBankForSeries(nextSeries);
       }
 
-      renderQRCode();
+      renderQRCode(true);
       renderQuizDeck();
       renderCourseBank();
       renderLeaderboard();
@@ -1627,6 +1698,18 @@
           }
         }
       });
+
+      window.addEventListener('resize', () => {
+        renderQRCode(false);
+      });
+
+      const qrCard = document.getElementById('qrCardContainer');
+      if (qrCard && typeof ResizeObserver !== 'undefined') {
+        const ro = new ResizeObserver(() => {
+          renderQRCode(false);
+        });
+        ro.observe(qrCard);
+      }
     }
 
     async function sendPulse(eventType, metadata = {}, userId = null) {
@@ -1990,7 +2073,7 @@
         if (presenterBottomNav) presenterBottomNav.classList.remove('hidden');
         if (presBtn) presBtn.className = activeClass;
         if (audBtn) audBtn.className = inactiveClass;
-        renderQRCode();
+        setTimeout(() => renderQRCode(true), 20);
         renderPresenterTimerToggleUI();
         renderCourseBank();
       }
@@ -2389,7 +2472,7 @@
       if (subTab === 'manager') { renderQuizDeck(); renderCourseBank(); }
       if (subTab === 'sidebuilder') { loadSideQuizCatalog(); renderSideQuizBuilder(); }
       if (subTab === 'spotlight' || subTab === 'leaderboard') {
-        if (subTab === 'spotlight') { renderQRCode(); renderPresenterTimerToggleUI(); }
+        if (subTab === 'spotlight') { setTimeout(() => renderQRCode(true), 20); renderPresenterTimerToggleUI(); }
         renderLeaderboard();
       }
       renderAutoRefreshUI();
@@ -2447,6 +2530,7 @@
       switchView('presenter');
       switchPresenterSubTab('spotlight');
       renderSpotlight();
+      scrollToSection('spotlightContent');
       sendPulse('spotlight_question', { id: q.id });
     }
 
@@ -2601,6 +2685,7 @@
       startQuizTimer(releasedQuiz.id, effectiveTimeLimit, startedAt);
       switchPresenterSubTab('spotlight');
       renderAll();
+      scrollToSection('spotlightContent');
       await sendPulse('quiz_release', { quiz: releasedQuiz, startedAt });
     }
 
@@ -2703,7 +2788,7 @@
       renderAudienceQuizPane();
       renderSpotlight();
       renderLeaderboard();
-      renderQRCode();
+      renderQRCode(false);
       renderAutoRefreshUI();
       renderPresenterTimerToggleUI();
       renderAudioToggleUI();
@@ -3022,9 +3107,12 @@
         const q = item.data;
         displayArea.innerHTML = `
           <div class="space-y-3 text-left max-w-3xl mx-auto py-2">
-            <div class="flex items-center space-x-2 text-xs font-bold text-amber-600 dark:text-amber-400">
-              <span class="bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 uppercase font-mono">SPOTLIGHT</span>
-              <span>• Asked by ${q.author} (${q.upvotes} Votes)</span>
+            <div class="flex items-center justify-between flex-wrap gap-2 text-xs font-bold text-amber-600 dark:text-amber-400">
+              <div class="flex items-center space-x-2">
+                <span class="bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 uppercase font-mono">SPOTLIGHT</span>
+                <span>• Asked by ${q.author} (${q.upvotes} Votes)</span>
+              </div>
+              <button onclick="scrollToSection('presenterLeaderboardCard')" class="px-3 py-1 rounded-lg bg-amber-500 text-slate-950 font-extrabold text-xs hover:brightness-110 transition shadow">See Leaderboard →</button>
             </div>
             <h2 class="text-xl sm:text-3xl font-bold text-slate-900 dark:text-white leading-tight">"${q.text}"</h2>
           </div>
@@ -3056,14 +3144,18 @@
                 ${isUnlimited && !showAnswer ? `
                   <button onclick="manualStopQuiz()" class="px-3 py-1 bg-red-600 hover:bg-red-500 text-white font-bold text-xs rounded-lg shadow transition flex items-center space-x-1"><i data-lucide="stop-circle" class="w-3.5 h-3.5"></i><span>Stop Question &amp; Reveal</span></button>
                 ` : ''}
+                <button onclick="scrollToSection('presenterLeaderboardCard')" class="px-3 py-1 bg-amber-500 hover:brightness-110 text-slate-950 font-extrabold text-xs rounded-lg shadow transition flex items-center space-x-1"><i data-lucide="trophy" class="w-3.5 h-3.5"></i><span>Leaderboard</span></button>
                 <span class="text-2xl font-mono font-bold ${!isUnlimited && state.quizTimeRemaining < 10 ? 'text-red-500 animate-pulse' : 'text-amber-600 dark:text-amber-400'}">${timerDisplayStr}</span>
               </div>
             </div>
 
             ${showAnswer ? `
-              <div class="p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-700 dark:text-emerald-300 text-xs sm:text-sm font-extrabold flex items-center justify-between">
+              <div class="p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-700 dark:text-emerald-300 text-xs sm:text-sm font-extrabold flex items-center justify-between gap-2">
                 <span>⏱️ Time’s Up — Correct Answer Revealed</span>
-                <span class="font-mono">${state.totalResponses} Total Vote${state.totalResponses === 1 ? '' : 's'}</span>
+                <div class="flex items-center gap-2">
+                  <span class="font-mono">${state.totalResponses} Total Vote${state.totalResponses === 1 ? '' : 's'}</span>
+                  <button onclick="scrollToSection('presenterLeaderboardCard')" class="px-3 py-1 rounded-lg bg-emerald-500 text-slate-950 font-extrabold text-xs hover:brightness-110 transition">View Updated Leaderboard →</button>
+                </div>
               </div>
             ` : ''}
 
