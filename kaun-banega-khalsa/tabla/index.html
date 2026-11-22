@@ -65,13 +65,15 @@
     background-color: var(--bg-main);
     color: var(--text);
     margin: 0;
-    padding: 12px;
+    padding: 10px;
     line-height: 1.55;
+    overflow-x: hidden;
   }
 
   .workbook-container {
     max-width: 1000px;
     margin: 0 auto;
+    min-width: 0;
   }
 
   /* Unified Top Header with Clickable Khalsai Logo */
@@ -83,9 +85,9 @@
     gap: 12px;
     background: var(--card-bg);
     border: 1px solid var(--border);
-    padding: 12px 18px;
+    padding: 12px 16px;
     border-radius: 14px;
-    margin-bottom: 14px;
+    margin-bottom: 12px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   }
 
@@ -95,6 +97,7 @@
     gap: 12px;
     text-decoration: none;
     color: var(--text);
+    min-width: 0;
   }
 
   .brand-link:hover .brand-title {
@@ -149,19 +152,21 @@
     flex-wrap: wrap;
   }
 
-  .theme-toggle-btn, .print-btn, .action-chip-btn {
+  .theme-toggle-btn, .print-btn, .action-chip-btn, .inline-pause-btn {
     background-color: var(--card-bg);
     color: var(--text);
     border: 1px solid var(--border);
-    padding: 8px 13px;
-    font-size: 0.85rem;
+    padding: 8px 12px;
+    font-size: 0.84rem;
     font-weight: 600;
     border-radius: 9px;
     cursor: pointer;
     min-height: 38px;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 6px;
+    white-space: nowrap;
   }
 
   .theme-toggle-btn:hover, .print-btn:hover, .action-chip-btn:hover {
@@ -169,40 +174,55 @@
     border-color: var(--gold);
   }
 
-  /* Interactive Metronome + Focus Timer Strip */
+  .inline-pause-btn {
+    background-color: var(--sam-bg);
+    border-color: var(--accent);
+    color: var(--text);
+    font-weight: 700;
+  }
+
+  .inline-pause-btn.paused {
+    background-color: var(--khali-bg);
+    border-color: var(--border);
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  /* Interactive Metronome + 5-Minute Focus Timer */
   .metronome-card {
     background: var(--card-bg);
     border: 1px solid var(--border);
     border-radius: 14px;
-    padding: 14px 18px;
-    margin-bottom: 14px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 14px;
+    gap: 12px;
   }
 
   .metronome-controls {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 12px;
     flex: 1;
-    min-width: 250px;
+    min-width: 220px;
   }
 
   .metro-btn {
     background-color: var(--accent);
     color: #FFFFFF;
     border: none;
-    padding: 10px 18px;
+    padding: 10px 16px;
     font-size: 0.9rem;
     font-weight: 700;
     border-radius: 10px;
     cursor: pointer;
     min-height: 42px;
-    min-width: 94px;
+    min-width: 92px;
+    flex-shrink: 0;
   }
 
   .metro-btn.playing {
@@ -213,14 +233,16 @@
     display: flex;
     flex-direction: column;
     flex: 1;
+    min-width: 120px;
     gap: 6px;
   }
 
   .metro-slider-header {
     display: flex;
     justify-content: space-between;
-    font-size: 0.88rem;
+    font-size: 0.86rem;
     font-weight: 600;
+    gap: 8px;
   }
 
   .metro-slider {
@@ -234,20 +256,21 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
   }
 
   .beat-counter-badge {
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 0.85rem;
+    font-size: 0.84rem;
     font-weight: 700;
-    padding: 7px 12px;
+    padding: 7px 11px;
     border-radius: 9px;
     background: var(--khali-bg);
     border: 1px solid var(--border);
     min-height: 36px;
     display: inline-flex;
     align-items: center;
+    white-space: nowrap;
   }
 
   .beat-indicator {
@@ -255,6 +278,7 @@
     height: 22px;
     background-color: var(--border);
     border-radius: 50%;
+    flex-shrink: 0;
   }
 
   .beat-indicator.active {
@@ -269,28 +293,30 @@
     transform: scale(1.2);
   }
 
-  /* Larger, Easier-to-Tap Taal Switcher */
+  /* Taal Switcher */
   .app-switcher {
     background: var(--card-bg);
     border: 1px solid var(--border);
     border-radius: 14px;
-    padding: 12px;
-    margin-bottom: 16px;
+    padding: 10px;
+    margin-bottom: 14px;
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     gap: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   }
 
-  @media (max-width: 639px) {
+  .app-switcher::-webkit-scrollbar {
+    display: none;
+  }
+
+  @media (min-width: 640px) {
     .app-switcher {
-      flex-wrap: nowrap;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      padding: 10px;
-    }
-    .app-switcher::-webkit-scrollbar {
-      display: none;
+      flex-wrap: wrap;
+      overflow-x: visible;
+      padding: 12px;
     }
   }
 
@@ -298,10 +324,10 @@
     background: var(--khali-bg);
     color: var(--text);
     border: 1px solid var(--border);
-    padding: 10px 15px;
-    min-height: 44px;
+    padding: 9px 13px;
+    min-height: 42px;
     border-radius: 10px;
-    font-size: 0.9rem;
+    font-size: 0.86rem;
     font-weight: 600;
     cursor: pointer;
     white-space: nowrap;
@@ -328,27 +354,28 @@
     background: var(--card-bg);
     border: 1px solid var(--border);
     border-radius: 14px;
-    padding: 20px;
-    margin-bottom: 20px;
+    padding: 14px;
+    margin-bottom: 18px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+    min-width: 0;
   }
 
   .header {
     background-color: var(--table-head);
     color: #FFFFFF;
-    padding: 16px 18px;
+    padding: 14px 16px;
     border-radius: 10px;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
     border-bottom: 4px solid var(--gold);
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
   }
 
   .header-title {
-    font-size: 1.45rem;
+    font-size: 1.3rem;
     font-weight: 800;
     letter-spacing: -0.015em;
     color: var(--gold-light);
@@ -356,10 +383,10 @@
   }
 
   .header-subtitle {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     opacity: 0.85;
-    margin-top: 4px;
-    letter-spacing: 0.04em;
+    margin-top: 3px;
+    letter-spacing: 0.03em;
     text-transform: uppercase;
   }
 
@@ -369,28 +396,28 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    gap: 10px;
     background: var(--khali-bg);
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 12px;
-    margin-bottom: 16px;
+    padding: 10px;
+    margin-bottom: 14px;
   }
 
   .tier-pills {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
   }
 
   .tier-btn {
-    padding: 8px 14px;
-    min-height: 40px;
+    padding: 7px 12px;
+    min-height: 38px;
     border-radius: 9px;
     border: 1px solid var(--border);
     background: var(--card-bg);
     color: var(--text);
-    font-size: 0.85rem;
+    font-size: 0.84rem;
     font-weight: 700;
     cursor: pointer;
   }
@@ -402,12 +429,12 @@
   }
 
   .section-title {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 700;
     color: var(--text);
     border-left: 4px solid var(--gold);
     padding-left: 10px;
-    margin: 20px 0 12px 0;
+    margin: 18px 0 10px 0;
     letter-spacing: 0.02em;
     text-transform: uppercase;
     display: flex;
@@ -418,7 +445,7 @@
   }
 
   .level-badge {
-    font-size: 0.78rem;
+    font-size: 0.75rem;
     padding: 4px 10px;
     border-radius: 999px;
     font-weight: 700;
@@ -433,15 +460,16 @@
     padding: 12px 14px;
     border-radius: 0 10px 10px 0;
     margin-bottom: 14px;
-    font-size: 0.92rem;
+    font-size: 0.9rem;
   }
 
   .variation-card {
     background: var(--khali-bg);
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 14px;
-    margin-bottom: 16px;
+    padding: 12px;
+    margin-bottom: 14px;
+    min-width: 0;
   }
 
   .variation-top {
@@ -454,7 +482,7 @@
   }
 
   .variation-title {
-    font-size: 1rem;
+    font-size: 0.98rem;
     font-weight: 700;
     color: var(--text);
   }
@@ -463,23 +491,30 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 10px;
-    font-size: 0.82rem;
+    gap: 8px;
+    font-size: 0.8rem;
     font-weight: 500;
     color: var(--muted);
     margin-top: 3px;
   }
 
+  .variation-actions {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
   .ladder-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
     margin-top: 10px;
     align-items: center;
   }
 
   .ladder-chip {
-    padding: 6px 11px;
+    padding: 6px 10px;
     min-height: 36px;
     border-radius: 8px;
     border: 1px solid var(--border);
@@ -490,6 +525,7 @@
     cursor: pointer;
     display: inline-flex;
     align-items: center;
+    white-space: nowrap;
   }
 
   .ladder-chip.cleared {
@@ -499,15 +535,16 @@
   }
 
   .master-check-btn {
-    padding: 7px 12px;
+    padding: 7px 11px;
     min-height: 36px;
     border-radius: 8px;
     border: 1px solid var(--border);
     background: var(--card-bg);
     color: var(--text);
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     font-weight: 700;
     cursor: pointer;
+    white-space: nowrap;
   }
 
   .master-check-btn.done {
@@ -521,7 +558,7 @@
     background: var(--khali-bg);
     border: 1px solid var(--border);
     border-radius: 12px;
-    padding: 16px;
+    padding: 14px;
     margin-top: 10px;
   }
 
@@ -616,7 +653,7 @@
     border: 1px solid var(--border);
     border-radius: 8px;
     padding: 6px 10px;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     font-weight: 700;
   }
 
@@ -641,10 +678,11 @@
     text-decoration: underline;
   }
 
-  /* Equal Column Spacing Taal Tables */
+  /* Responsive Taal Tables (Desktop full row, Mobile chunked into 4s or 6s) */
   .taal-table-wrapper {
     width: 100%;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
     margin-bottom: 8px;
     border-radius: 10px;
   }
@@ -659,10 +697,10 @@
 
   .taal-table th, .taal-table td {
     border: 1px solid var(--border);
-    padding: 10px 4px;
+    padding: 9px 4px;
     text-align: center;
-    font-size: 0.88rem;
-    word-break: break-word;
+    font-size: 0.86rem;
+    white-space: nowrap;
     color: var(--text);
   }
 
@@ -670,7 +708,7 @@
     background-color: var(--table-head);
     color: #FFFFFF;
     font-weight: 700;
-    font-size: 0.82rem;
+    font-size: 0.8rem;
   }
 
   .taal-table th.live-beat {
@@ -679,18 +717,50 @@
   }
 
   .taal-table tr.bol-row td {
-    font-size: 1.05rem;
+    font-size: 1rem;
     font-weight: 700;
   }
 
   .taal-table tr.struct-row td {
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     font-weight: 600;
   }
 
   .taal-table tr.bol-row td.live-beat {
     outline: 3px solid var(--gold);
     outline-offset: -3px;
+  }
+
+  .desktop-only-table {
+    display: none;
+  }
+
+  .mobile-chunked-tables {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  @media (min-width: 640px) {
+    .desktop-only-table {
+      display: block;
+    }
+    .mobile-chunked-tables {
+      display: none;
+    }
+    .taal-table.wide-taal-table {
+      min-width: 780px;
+    }
+  }
+
+  @media (max-width: 639px) {
+    .taal-table th, .taal-table td {
+      padding: 9px 6px;
+      font-size: 0.84rem;
+    }
+    .taal-table tr.bol-row td {
+      font-size: 0.96rem;
+    }
   }
 
   .sam-cell {
@@ -709,26 +779,27 @@
   .meta-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    gap: 8px;
     margin-bottom: 14px;
   }
 
   @media (min-width: 600px) {
     .meta-grid {
       grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
     }
   }
 
   .meta-cell {
     background: var(--khali-bg);
     border: 1px solid var(--border);
-    padding: 10px 8px;
+    padding: 9px 8px;
     border-radius: 10px;
     text-align: center;
   }
 
   .meta-label {
-    font-size: 0.72rem;
+    font-size: 0.7rem;
     letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--muted);
@@ -736,7 +807,7 @@
   }
 
   .meta-value {
-    font-size: 1rem;
+    font-size: 0.96rem;
     font-weight: 700;
     color: var(--text);
     margin-top: 2px;
@@ -788,14 +859,17 @@
   @media (min-width: 640px) {
     body { padding: 20px; }
     .sheet-container { padding: 24px; }
+    .header-title { font-size: 1.45rem; }
     .tracker-grid { grid-template-columns: repeat(10, 1fr); }
   }
 
   @media print {
     :root { --bg-main: #FFF; --card-bg: #FFF; --text: #000; --border: #999; }
     body { background-color: #FFFFFF; padding: 0; color: #000; }
-    .web-toolbar, .metronome-card, .app-switcher, .tier-bar { display: none; }
+    .web-toolbar, .metronome-card, .app-switcher, .tier-bar, .inline-pause-btn { display: none; }
     .hidden { display: block !important; }
+    .desktop-only-table { display: block !important; }
+    .mobile-chunked-tables { display: none !important; }
     .sheet-container {
       page-break-after: always;
       border: none;
@@ -1627,8 +1701,14 @@
     renderActiveStage();
   }
 
+  function selectBpmAndPlay(bpmValue) {
+    setBPM(bpmValue);
+    startMetronome();
+  }
+
   function toggleTempoQuest(questKey, bpmValue) {
     setBPM(bpmValue);
+    startMetronome();
     clearedQuests[questKey] = !clearedQuests[questKey];
     localStorage.setItem("khalsai-cleared-quests", JSON.stringify(clearedQuests));
     updateXPBadge();
@@ -1738,13 +1818,22 @@
     return `<tr class="struct-row">${divisions.map(d => `<td colspan="${d.span}" class="${d.cls}">${d.label}</td>`).join("")}</tr>`;
   }
 
+  function getMobileChunkSize(totalBeats) {
+    if (totalBeats > 0 && totalBeats % 6 === 0) return 6;
+    if (totalBeats > 0 && totalBeats % 4 === 0) return 4;
+    return 4;
+  }
+
   function renderVariationTable(bols, divisions, isSingleRow = true) {
+    const wideClass = bols.length >= 12 ? "wide-taal-table" : "";
+    let desktopHtml = "";
+
     if (isSingleRow) {
       const headers = bols.map((_, i) => `<th data-beat-col="${i}">${i + 1}</th>`).join("");
       const cells = bols.map((bol, i) => `<td data-beat-cell="${i}">${bol}</td>`).join("");
-      return `
+      desktopHtml = `
         <div class="taal-table-wrapper">
-          <table class="taal-table">
+          <table class="taal-table ${wideClass}">
             <thead><tr>${headers}</tr></thead>
             <tbody>
               <tr class="bol-row">${cells}</tr>
@@ -1753,32 +1842,65 @@
           </table>
         </div>
       `;
+    } else {
+      const half = Math.ceil(bols.length / 2);
+      const firstHalf = bols.slice(0, half);
+      const secondHalf = bols.slice(half);
+
+      const h1 = firstHalf.map((_, i) => `<th data-beat-col="${i}">${i + 1}</th>`).join("");
+      const c1 = firstHalf.map((bol, i) => `<td data-beat-cell="${i}">${bol}</td>`).join("");
+
+      const h2 = secondHalf.map((_, i) => `<th data-beat-col="${half + i}">${half + i + 1}</th>`).join("");
+      const c2 = secondHalf.map((bol, i) => `<td data-beat-cell="${half + i}">${bol}</td>`).join("");
+
+      desktopHtml = `
+        <div class="taal-table-wrapper">
+          <table class="taal-table ${wideClass}">
+            <thead><tr>${h1}</tr></thead>
+            <tbody><tr class="bol-row">${c1}</tr></tbody>
+          </table>
+        </div>
+        <div class="taal-table-wrapper">
+          <table class="taal-table ${wideClass}">
+            <thead><tr>${h2}</tr></thead>
+            <tbody><tr class="bol-row">${c2}</tr></tbody>
+          </table>
+        </div>
+      `;
     }
 
-    const half = Math.ceil(bols.length / 2);
-    const firstHalf = bols.slice(0, half);
-    const secondHalf = bols.slice(half);
+    const chunkSize = getMobileChunkSize(bols.length);
+    const mobileChunks = [];
+    for (let start = 0; start < bols.length; start += chunkSize) {
+      const slice = bols.slice(start, start + chunkSize);
+      const mHeaders = slice.map((_, idx) => {
+        const beatIdx = start + idx;
+        return `<th data-beat-col="${beatIdx}">${beatIdx + 1}</th>`;
+      }).join("");
+      const mCells = slice.map((bol, idx) => {
+        const beatIdx = start + idx;
+        return `<td data-beat-cell="${beatIdx}">${bol}</td>`;
+      }).join("");
 
-    const h1 = firstHalf.map((_, i) => `<th data-beat-col="${i}">${i + 1}</th>`).join("");
-    const c1 = firstHalf.map((bol, i) => `<td data-beat-cell="${i}">${bol}</td>`).join("");
-
-    const h2 = secondHalf.map((_, i) => `<th data-beat-col="${half + i}">${half + i + 1}</th>`).join("");
-    const c2 = secondHalf.map((bol, i) => `<td data-beat-cell="${half + i}">${bol}</td>`).join("");
+      mobileChunks.push(`
+        <div class="taal-table-wrapper">
+          <table class="taal-table">
+            <thead><tr>${mHeaders}</tr></thead>
+            <tbody><tr class="bol-row">${mCells}</tr></tbody>
+          </table>
+        </div>
+      `);
+    }
 
     return `
-      <div class="taal-table-wrapper">
-        <table class="taal-table">
-          <thead><tr>${h1}</tr></thead>
-          <tbody><tr class="bol-row">${c1}</tr></tbody>
-        </table>
-      </div>
-      <div class="taal-table-wrapper">
-        <table class="taal-table">
-          <thead><tr>${h2}</tr></thead>
-          <tbody><tr class="bol-row">${c2}</tr></tbody>
-        </table>
-      </div>
+      <div class="desktop-only-table">${desktopHtml}</div>
+      <div class="mobile-chunked-tables">${mobileChunks.join("")}</div>
     `;
+  }
+
+  function renderInlinePauseButton() {
+    const pauseClass = isPlaying ? "inline-pause-btn" : "inline-pause-btn paused";
+    return `<button type="button" class="${pauseClass}" onclick="pauseMetronome()">⏸ Pause</button>`;
   }
 
   function renderActiveStage() {
@@ -1794,8 +1916,8 @@
         const qKey = `${item.id}_${stepBpm}`;
         const cleared = Boolean(clearedQuests[qKey]);
         return `
-          <button class="ladder-chip ${cleared ? "cleared" : ""}" onclick="toggleTempoQuest('${qKey}', ${stepBpm})">
-            ${cleared ? "✓" : "⚡"} ${stepBpm} BPM ${cleared ? "" : "(+15 XP)"}
+          <button type="button" class="ladder-chip ${cleared ? "cleared" : ""}" onclick="toggleTempoQuest('${qKey}', ${stepBpm})">
+            ${cleared ? "✓" : "▶"} ${stepBpm} BPM ${cleared ? "" : "(+15 XP)"}
           </button>
         `;
       }).join("");
@@ -1811,17 +1933,19 @@
                 <span>📚 ${item.source}</span>
               </div>
             </div>
-            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-              <button class="action-chip-btn" onclick="setBPM(${item.targetBpm})">Set ${item.targetBpm} BPM</button>
-              <button class="master-check-btn ${done ? "done" : ""}" onclick="toggleDrillMastered('${item.id}')">
+            <div class="variation-actions">
+              <button type="button" class="action-chip-btn" onclick="selectBpmAndPlay(${item.targetBpm})">▶ ${item.targetBpm} BPM</button>
+              ${renderInlinePauseButton()}
+              <button type="button" class="master-check-btn ${done ? "done" : ""}" onclick="toggleDrillMastered('${item.id}')">
                 ${done ? "✓ Mastered" : "Mark Mastered"}
               </button>
             </div>
           </div>
           ${renderVariationTable(item.bols, taal.divisions, !useSplitTables)}
           <div class="ladder-row">
-            <span style="font-size:0.82rem; font-weight:700; color:var(--muted);">Speed Ladder:</span>
+            <span style="font-size:0.8rem; font-weight:700; color:var(--muted);">Speed Ladder:</span>
             ${ladderHtml}
+            ${renderInlinePauseButton()}
           </div>
         </div>
       `;
@@ -1869,13 +1993,13 @@
 
         <div class="tier-bar">
           <div class="tier-pills">
-            <button class="tier-btn ${currentTier === "basic" ? "active" : ""}" onclick="setTier('basic')">Basic</button>
-            <button class="tier-btn ${currentTier === "intermediate" ? "active" : ""}" onclick="setTier('intermediate')">Intermediate</button>
-            <button class="tier-btn ${currentTier === "advanced" ? "active" : ""}" onclick="setTier('advanced')">Advanced</button>
+            <button type="button" class="tier-btn ${currentTier === "basic" ? "active" : ""}" onclick="setTier('basic')">Basic</button>
+            <button type="button" class="tier-btn ${currentTier === "intermediate" ? "active" : ""}" onclick="setTier('intermediate')">Intermediate</button>
+            <button type="button" class="tier-btn ${currentTier === "advanced" ? "active" : ""}" onclick="setTier('advanced')">Advanced</button>
           </div>
           <div class="tier-pills">
-            <button class="tier-btn ${currentSubSection === "all" ? "active" : ""}" onclick="setSubSection('all')">Theka &amp; Variations</button>
-            <button class="tier-btn ${currentSubSection === "kaida" ? "active" : ""}" onclick="setSubSection('kaida')">Kaida &amp; Rela Only</button>
+            <button type="button" class="tier-btn ${currentSubSection === "all" ? "active" : ""}" onclick="setSubSection('all')">Theka &amp; Variations</button>
+            <button type="button" class="tier-btn ${currentSubSection === "kaida" ? "active" : ""}" onclick="setSubSection('kaida')">Kaida &amp; Rela Only</button>
           </div>
         </div>
 
@@ -1903,7 +2027,7 @@
           <div style="font-weight:700; font-size:0.98rem;">${ch.prompt}</div>
           <div class="game-options">
             ${ch.options.map((opt, idx) => `
-              <button class="game-opt-btn" onclick="answerChallenge('${taal.id}', ${idx})">${opt}</button>
+              <button type="button" class="game-opt-btn" onclick="answerChallenge('${taal.id}', ${idx})">${opt}</button>
             `).join("")}
           </div>
           ${feedbackHtml}
@@ -1921,6 +2045,48 @@
   let timerId = null;
   let currentBeatIndex = 0;
 
+  function ensureAudioContext() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state === "suspended") {
+      audioCtx.resume();
+    }
+  }
+
+  function syncMetronomeButtonsUI() {
+    const btn = document.getElementById("playMetroBtn");
+    if (btn) {
+      btn.innerText = isPlaying ? "⏸ Pause" : "▶ Start";
+      btn.classList.toggle("playing", isPlaying);
+    }
+    document.querySelectorAll(".inline-pause-btn").forEach(pauseBtn => {
+      pauseBtn.classList.toggle("paused", !isPlaying);
+    });
+  }
+
+  function startMetronome() {
+    ensureAudioContext();
+    clearInterval(timerId);
+    isPlaying = true;
+    syncMetronomeButtonsUI();
+    currentBeatIndex = 0;
+    tickBeat();
+    startTimer();
+  }
+
+  function pauseMetronome() {
+    isPlaying = false;
+    clearInterval(timerId);
+    timerId = null;
+    syncMetronomeButtonsUI();
+    const pulse = document.getElementById("beatPulse");
+    if (pulse) pulse.classList.remove("active", "sam-pulse");
+    const counter = document.getElementById("beatCounterLabel");
+    if (counter) counter.innerText = "Beat: —";
+    clearLiveBeatHighlights();
+  }
+
   function setBPM(val) {
     bpm = Number(val);
     const slider = document.getElementById("bpmSlider");
@@ -1937,29 +2103,10 @@
   }
 
   function toggleMetronome() {
-    if (!audioCtx) {
-      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    }
-    if (audioCtx.state === "suspended") {
-      audioCtx.resume();
-    }
-
-    isPlaying = !isPlaying;
-    const btn = document.getElementById("playMetroBtn");
-
     if (isPlaying) {
-      btn.innerText = "⏸ Stop";
-      btn.classList.add("playing");
-      currentBeatIndex = 0;
-      tickBeat();
-      startTimer();
+      pauseMetronome();
     } else {
-      btn.innerText = "▶ Start";
-      btn.classList.remove("playing");
-      clearInterval(timerId);
-      document.getElementById("beatPulse").classList.remove("active", "sam-pulse");
-      document.getElementById("beatCounterLabel").innerText = "Beat: —";
-      clearLiveBeatHighlights();
+      startMetronome();
     }
   }
 
