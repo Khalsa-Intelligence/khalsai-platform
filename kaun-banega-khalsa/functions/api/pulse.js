@@ -33,7 +33,7 @@ export async function onRequestPost(context) {
       const { results } = await env.PULSE_DB.prepare(
         `SELECT id, user_id, event_type, metadata
          FROM pulse_events
-         WHERE UPPER(REPLACE(event_code, '#', '')) = ?
+         WHERE TRIM(UPPER(REPLACE(COALESCE(event_code, ''), '#', ''))) = ?
            AND event_type IN ('quiz_answer', 'leaderboard_snapshot', 'leaderboard_reset')
          ORDER BY id ASC`
       )
@@ -72,17 +72,17 @@ export async function onRequestPost(context) {
         }
 
         if (r.event_type === 'leaderboard_snapshot') {
-          const user = String(meta.userName || r.user_id || '').trim();
-          const pts = Math.max(0, Number(meta.totalScore) || 0);
+          const user = String(meta.userName || meta.user || r.user_id || '').trim();
+          const pts = Math.max(0, Number(meta.totalScore ?? meta.score) || 0);
           if (user) {
             snapshotTotals.set(user, (snapshotTotals.get(user) || 0) + pts);
           }
           idsToDelete.push(rId);
         } else if (r.event_type === 'quiz_answer') {
-          const user = String(meta.userName || r.user_id || '').trim();
-          const quizId = String(meta.quizId ?? '').trim();
-          const pts = Math.max(0, Number(meta.pointsEarned) || 0);
-          if (user && quizId) {
+          const user = String(meta.userName || meta.user || r.user_id || '').trim();
+          const quizId = String(meta.quizId ?? meta.questionId ?? 'default').trim();
+          const pts = Math.max(0, Number(meta.pointsEarned ?? meta.points) || 0);
+          if (user) {
             const key = `${user}::${quizId}`;
             if (!awardedByUserQuiz.has(key)) {
               awardedByUserQuiz.set(key, pts);
@@ -103,7 +103,6 @@ export async function onRequestPost(context) {
 
       const batchStatements = [];
 
-      // 1. Insert 1 aggregated snapshot row per user FIRST
       for (const [user, totalScore] of finalTotals.entries()) {
         if (totalScore > 0) {
           batchStatements.push(
@@ -127,7 +126,6 @@ export async function onRequestPost(context) {
         }
       }
 
-      // 2. Delete superseded score rows & ephemeral noise ONLY (never quiz questions or Q&A)
       if (idsToDelete.length > 0) {
         const chunkSize = 80;
         for (let i = 0; i < idsToDelete.length; i += chunkSize) {
@@ -144,7 +142,7 @@ export async function onRequestPost(context) {
       batchStatements.push(
         env.PULSE_DB.prepare(
           `DELETE FROM pulse_events
-           WHERE UPPER(REPLACE(event_code, '#', '')) = ?
+           WHERE TRIM(UPPER(REPLACE(COALESCE(event_code, ''), '#', ''))) = ?
              AND event_type IN ('ping', 'reaction', 'quiz_release', 'quiz_clear', 'quiz_stop', 'spotlight_question')`
         ).bind(cleanEventCode)
       );
@@ -219,11 +217,12 @@ export async function onRequestGet(context) {
 
     if (seriesPrefix) {
       const cleanSeries = String(seriesPrefix).replace(/^#/, '').trim().toUpperCase();
-      query += ` AND UPPER(REPLACE(event_code, '#', '')) LIKE ? AND event_type IN ('quiz_answer', 'leaderboard_snapshot', 'leaderboard_reset')`;
+      query += ` AND TRIM(UPPER(REPLACE(COALESCE(event_code, ''), '#', ''))) LIKE ?
+                 AND event_type IN ('quiz_answer', 'leaderboard_snapshot', 'leaderboard_reset')`;
       params.push(`${cleanSeries}%`);
     } else if (eventCode) {
       const cleanCode = String(eventCode).replace(/^#/, '').trim().toUpperCase();
-      query += ` AND UPPER(REPLACE(event_code, '#', '')) = ?`;
+      query += ` AND TRIM(UPPER(REPLACE(COALESCE(event_code, ''), '#', ''))) = ?`;
       params.push(cleanCode);
     }
 
