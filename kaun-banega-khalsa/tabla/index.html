@@ -4,6 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <title>Khalsai - Tabla App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   :root {
     --primary: #1E3A8A;
@@ -12,13 +15,13 @@
     --gold-light: #FBBF24;
     --bg-main: #FAF8F5;
     --card-bg: #FFFFFF;
-    --text: #1F2937;
-    --muted: #6B7280;
-    --border: #D1D5DB;
+    --text: #18181B;
+    --muted: #52525B;
+    --border: #D4D4D8;
     --sam-bg: #FEE2E2;
     --tali-bg: #FEF3C7;
-    --khali-bg: #F3F4F6;
-    --table-head: #1F2937;
+    --khali-bg: #F4F4F5;
+    --table-head: #18181B;
     --badge-bg: #FEF3C7;
     --badge-text: #92400E;
     --success-bg: #ECFDF5;
@@ -28,19 +31,19 @@
 
   [data-theme="dark"] {
     --primary: #60A5FA;
-    --accent: #F87171;
+    --accent: #EF4444;
     --gold: #F59E0B;
     --gold-light: #FDE68A;
     --bg-main: #090D16;
     --card-bg: #0D121F;
-    --text: #F3F4F6;
-    --muted: #9CA3AF;
+    --text: #F4F4F5;
+    --muted: #A1A1AA;
     --border: #1F2937;
     --sam-bg: #450A0A;
     --tali-bg: #422006;
     --khali-bg: #111827;
     --table-head: #111827;
-    --badge-bg: rgba(245, 158, 11, 0.15);
+    --badge-bg: rgba(245, 158, 11, 0.16);
     --badge-text: #FBBF24;
     --success-bg: rgba(16, 185, 129, 0.14);
     --success-border: #059669;
@@ -55,16 +58,17 @@
   }
 
   body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 15px;
     background-color: var(--bg-main);
     color: var(--text);
     margin: 0;
     padding: 12px;
-    line-height: 1.5;
+    line-height: 1.55;
   }
 
   .workbook-container {
-    max-width: 980px;
+    max-width: 1000px;
     margin: 0 auto;
   }
 
@@ -74,19 +78,19 @@
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     background: var(--card-bg);
     border: 1px solid var(--border);
-    padding: 10px 16px;
-    border-radius: 12px;
-    margin-bottom: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    padding: 12px 18px;
+    border-radius: 14px;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
   }
 
   .brand-link {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
     text-decoration: none;
     color: var(--text);
   }
@@ -96,9 +100,9 @@
   }
 
   .brand-logo-box {
-    width: 34px;
-    height: 34px;
-    border-radius: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
     background: linear-gradient(135deg, #162038 0%, #0B1120 100%);
     border: 1px solid rgba(245, 158, 11, 0.45);
     display: flex;
@@ -109,17 +113,17 @@
   }
 
   .brand-title {
-    font-size: 11.5pt;
-    font-weight: 900;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    line-height: 1.1;
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
   }
 
   .brand-sub {
-    font-size: 7.5pt;
+    font-size: 0.8rem;
     color: var(--muted);
-    font-weight: 600;
+    font-weight: 500;
+    margin-top: 2px;
   }
 
   .xp-pill {
@@ -129,10 +133,11 @@
     background: var(--badge-bg);
     color: var(--badge-text);
     border: 1px solid rgba(245, 158, 11, 0.35);
-    padding: 5px 10px;
+    padding: 7px 12px;
     border-radius: 999px;
-    font-size: 8pt;
-    font-weight: 800;
+    font-size: 0.82rem;
+    font-weight: 700;
+    min-height: 36px;
   }
 
   .toolbar-actions {
@@ -146,12 +151,12 @@
     background-color: var(--card-bg);
     color: var(--text);
     border: 1px solid var(--border);
-    padding: 7px 11px;
-    font-size: 8pt;
-    font-weight: 700;
-    border-radius: 8px;
+    padding: 8px 13px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 9px;
     cursor: pointer;
-    min-height: 34px;
+    min-height: 38px;
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -162,14 +167,14 @@
     border-color: var(--gold);
   }
 
-  /* Interactive Metronome + Session Timer Strip */
+  /* Interactive Metronome + Focus Timer Strip */
   .metronome-card {
     background: var(--card-bg);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 14px;
     padding: 14px 18px;
     margin-bottom: 14px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -180,22 +185,22 @@
   .metronome-controls {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
     flex: 1;
-    min-width: 240px;
+    min-width: 250px;
   }
 
   .metro-btn {
     background-color: var(--accent);
     color: #FFFFFF;
     border: none;
-    padding: 10px 16px;
-    font-size: 8.5pt;
-    font-weight: 800;
-    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    border-radius: 10px;
     cursor: pointer;
-    min-height: 36px;
-    min-width: 86px;
+    min-height: 42px;
+    min-width: 94px;
   }
 
   .metro-btn.playing {
@@ -206,43 +211,46 @@
     display: flex;
     flex-direction: column;
     flex: 1;
-    gap: 4px;
+    gap: 6px;
   }
 
   .metro-slider-header {
     display: flex;
     justify-content: space-between;
-    font-size: 8pt;
-    font-weight: 700;
+    font-size: 0.88rem;
+    font-weight: 600;
   }
 
   .metro-slider {
     width: 100%;
     accent-color: var(--gold);
     cursor: pointer;
-    height: 6px;
+    height: 7px;
   }
 
   .metro-right {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
   }
 
   .beat-counter-badge {
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-    font-size: 8pt;
-    font-weight: 800;
-    padding: 5px 10px;
-    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 7px 12px;
+    border-radius: 9px;
     background: var(--khali-bg);
     border: 1px solid var(--border);
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
   }
 
   .beat-indicator {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     background-color: var(--border);
     border-radius: 50%;
   }
@@ -259,80 +267,98 @@
     transform: scale(1.2);
   }
 
-  /* Single-Taal App Switcher Bar */
+  /* Larger, Easier-to-Tap Taal Switcher */
   .app-switcher {
     background: var(--card-bg);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 10px;
+    border-radius: 14px;
+    padding: 12px;
     margin-bottom: 16px;
     display: flex;
-    gap: 6px;
-    overflow-x: auto;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    flex-wrap: wrap;
+    gap: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
   }
 
-  .app-switcher::-webkit-scrollbar {
-    display: none;
+  @media (max-width: 639px) {
+    .app-switcher {
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 10px;
+    }
+    .app-switcher::-webkit-scrollbar {
+      display: none;
+    }
   }
 
   .mode-btn, .taal-tab-btn {
     background: var(--khali-bg);
     color: var(--text);
     border: 1px solid var(--border);
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 8.5pt;
-    font-weight: 700;
+    padding: 10px 15px;
+    min-height: 44px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
     cursor: pointer;
     white-space: nowrap;
     flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mode-btn:hover, .taal-tab-btn:hover {
+    border-color: var(--gold);
   }
 
   .mode-btn.active, .taal-tab-btn.active {
     background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
     color: #090D16;
     border-color: #F59E0B;
-    font-weight: 900;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(217, 119, 6, 0.25);
   }
 
   /* Sheet Modules */
   .sheet-container {
     background: var(--card-bg);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 18px;
+    border-radius: 14px;
+    padding: 20px;
     margin-bottom: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
   }
 
   .header {
     background-color: var(--table-head);
     color: #FFFFFF;
-    padding: 14px 16px;
-    border-radius: 8px;
-    margin-bottom: 14px;
+    padding: 16px 18px;
+    border-radius: 10px;
+    margin-bottom: 16px;
     border-bottom: 4px solid var(--gold);
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
   }
 
   .header-title {
-    font-size: 14.5pt;
+    font-size: 1.45rem;
     font-weight: 800;
+    letter-spacing: -0.015em;
     color: var(--gold-light);
     margin: 0;
   }
 
   .header-subtitle {
-    font-size: 7.5pt;
+    font-size: 0.8rem;
     opacity: 0.85;
-    margin-top: 3px;
+    margin-top: 4px;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
-    letter-spacing: 0.8px;
   }
 
   /* Difficulty & Sub-Mode Pills */
@@ -341,30 +367,30 @@
     flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
+    gap: 12px;
     background: var(--khali-bg);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 12px;
-    margin-bottom: 14px;
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 16px;
   }
 
   .tier-pills {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 8px;
   }
 
   .tier-btn {
-    padding: 6px 11px;
-    border-radius: 7px;
+    padding: 8px 14px;
+    min-height: 40px;
+    border-radius: 9px;
     border: 1px solid var(--border);
     background: var(--card-bg);
     color: var(--text);
-    font-size: 7.8pt;
-    font-weight: 800;
+    font-size: 0.85rem;
+    font-weight: 700;
     cursor: pointer;
-    text-transform: uppercase;
   }
 
   .tier-btn.active {
@@ -374,12 +400,13 @@
   }
 
   .section-title {
-    font-size: 9pt;
-    font-weight: 800;
+    font-size: 0.95rem;
+    font-weight: 700;
     color: var(--text);
     border-left: 4px solid var(--gold);
-    padding-left: 8px;
-    margin: 18px 0 10px 0;
+    padding-left: 10px;
+    margin: 20px 0 12px 0;
+    letter-spacing: 0.02em;
     text-transform: uppercase;
     display: flex;
     flex-wrap: wrap;
@@ -389,11 +416,10 @@
   }
 
   .level-badge {
-    font-size: 7pt;
-    padding: 3px 8px;
+    font-size: 0.78rem;
+    padding: 4px 10px;
     border-radius: 999px;
-    font-weight: 800;
-    text-transform: uppercase;
+    font-weight: 700;
     background: var(--badge-bg);
     color: var(--badge-text);
     border: 1px solid rgba(245, 158, 11, 0.3);
@@ -402,32 +428,32 @@
   .info-box {
     background-color: var(--khali-bg);
     border-left: 4px solid var(--gold);
-    padding: 10px 12px;
-    border-radius: 0 8px 8px 0;
-    margin-bottom: 12px;
-    font-size: 8.5pt;
+    padding: 12px 14px;
+    border-radius: 0 10px 10px 0;
+    margin-bottom: 14px;
+    font-size: 0.92rem;
   }
 
   .variation-card {
     background: var(--khali-bg);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 12px;
-    margin-bottom: 14px;
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 16px;
   }
 
   .variation-top {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 8px;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
   }
 
   .variation-title {
-    font-size: 9pt;
-    font-weight: 800;
+    font-size: 1rem;
+    font-weight: 700;
     color: var(--text);
   }
 
@@ -435,29 +461,33 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 8px;
-    font-size: 7.5pt;
-    font-weight: 700;
+    gap: 10px;
+    font-size: 0.82rem;
+    font-weight: 500;
     color: var(--muted);
+    margin-top: 3px;
   }
 
   .ladder-row {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 8px;
+    gap: 8px;
+    margin-top: 10px;
     align-items: center;
   }
 
   .ladder-chip {
-    padding: 4px 8px;
-    border-radius: 6px;
+    padding: 6px 11px;
+    min-height: 36px;
+    border-radius: 8px;
     border: 1px solid var(--border);
     background: var(--card-bg);
     color: var(--text);
-    font-size: 7.2pt;
-    font-weight: 800;
+    font-size: 0.8rem;
+    font-weight: 600;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
   }
 
   .ladder-chip.cleared {
@@ -467,13 +497,14 @@
   }
 
   .master-check-btn {
-    padding: 5px 10px;
-    border-radius: 7px;
+    padding: 7px 12px;
+    min-height: 36px;
+    border-radius: 8px;
     border: 1px solid var(--border);
     background: var(--card-bg);
     color: var(--text);
-    font-size: 7.5pt;
-    font-weight: 800;
+    font-size: 0.82rem;
+    font-weight: 700;
     cursor: pointer;
   }
 
@@ -487,16 +518,16 @@
   .game-box {
     background: var(--khali-bg);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 14px;
+    border-radius: 12px;
+    padding: 16px;
     margin-top: 10px;
   }
 
   .game-options {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 8px;
-    margin-top: 10px;
+    gap: 10px;
+    margin-top: 12px;
   }
 
   @media (min-width: 600px) {
@@ -507,13 +538,14 @@
 
   .game-opt-btn {
     text-align: left;
-    padding: 10px 12px;
-    border-radius: 8px;
+    padding: 12px 14px;
+    min-height: 44px;
+    border-radius: 10px;
     border: 1px solid var(--border);
     background: var(--card-bg);
     color: var(--text);
-    font-size: 8.5pt;
-    font-weight: 700;
+    font-size: 0.9rem;
+    font-weight: 600;
     cursor: pointer;
   }
 
@@ -522,11 +554,11 @@
   }
 
   .game-feedback {
-    margin-top: 10px;
-    font-size: 8.5pt;
-    font-weight: 800;
-    padding: 8px 12px;
-    border-radius: 8px;
+    margin-top: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 10px 14px;
+    border-radius: 10px;
   }
 
   .game-feedback.ok {
@@ -545,7 +577,7 @@
   .grid-2 {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 10px;
+    gap: 12px;
     margin-top: 10px;
   }
 
@@ -558,48 +590,48 @@
   .card-item {
     background: var(--khali-bg);
     border: 1px solid var(--border);
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 8.5pt;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 0.9rem;
   }
 
   .card-title {
-    font-weight: 800;
+    font-weight: 700;
     color: var(--gold);
-    font-size: 9pt;
-    margin-bottom: 4px;
+    font-size: 0.98rem;
+    margin-bottom: 6px;
   }
 
   .bol-strip {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 8px;
+    gap: 8px;
+    margin-top: 10px;
   }
 
   .bol-chip {
     background: var(--card-bg);
     border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 4px 8px;
-    font-size: 8.5pt;
-    font-weight: 800;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 0.9rem;
+    font-weight: 700;
   }
 
   /* Resource Link List */
   .resource-list {
     margin: 8px 0 0 0;
-    padding-left: 16px;
-    font-size: 8.5pt;
+    padding-left: 18px;
+    font-size: 0.92rem;
   }
 
   .resource-list li {
-    margin-bottom: 4px;
+    margin-bottom: 6px;
   }
 
   .resource-list a {
     color: var(--primary);
-    font-weight: 700;
+    font-weight: 600;
     text-decoration: none;
   }
 
@@ -612,7 +644,7 @@
     width: 100%;
     overflow-x: auto;
     margin-bottom: 8px;
-    border-radius: 8px;
+    border-radius: 10px;
   }
 
   .taal-table {
@@ -625,9 +657,9 @@
 
   .taal-table th, .taal-table td {
     border: 1px solid var(--border);
-    padding: 8px 2px;
+    padding: 10px 4px;
     text-align: center;
-    font-size: 8.5pt;
+    font-size: 0.88rem;
     word-break: break-word;
     color: var(--text);
   }
@@ -635,8 +667,8 @@
   .taal-table th {
     background-color: var(--table-head);
     color: #FFFFFF;
-    font-weight: 800;
-    font-size: 7.5pt;
+    font-weight: 700;
+    font-size: 0.82rem;
   }
 
   .taal-table th.live-beat {
@@ -645,8 +677,13 @@
   }
 
   .taal-table tr.bol-row td {
-    font-size: 10pt;
-    font-weight: 800;
+    font-size: 1.05rem;
+    font-weight: 700;
+  }
+
+  .taal-table tr.struct-row td {
+    font-size: 0.82rem;
+    font-weight: 600;
   }
 
   .taal-table tr.bol-row td.live-beat {
@@ -656,7 +693,7 @@
 
   .sam-cell {
     background-color: var(--sam-bg) !important;
-    font-weight: 800;
+    font-weight: 700;
   }
 
   .tali-cell {
@@ -669,50 +706,58 @@
 
   .meta-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    margin-bottom: 12px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  @media (min-width: 600px) {
+    .meta-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
   }
 
   .meta-cell {
     background: var(--khali-bg);
     border: 1px solid var(--border);
-    padding: 8px 6px;
-    border-radius: 8px;
+    padding: 10px 8px;
+    border-radius: 10px;
     text-align: center;
   }
 
   .meta-label {
-    font-size: 6.5pt;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
     color: var(--muted);
-    font-weight: 800;
+    font-weight: 700;
   }
 
   .meta-value {
-    font-size: 9.5pt;
-    font-weight: 800;
+    font-size: 1rem;
+    font-weight: 700;
     color: var(--text);
+    margin-top: 2px;
   }
 
   /* Tracker Grid */
   .tracker-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
-    gap: 6px;
-    margin-top: 10px;
+    gap: 8px;
+    margin-top: 12px;
   }
 
   .tracker-box {
     background: var(--khali-bg);
     border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px 2px;
+    border-radius: 10px;
+    padding: 12px 4px;
     text-align: center;
-    font-size: 8pt;
-    font-weight: 800;
+    font-size: 0.88rem;
+    font-weight: 700;
     cursor: pointer;
-    min-height: 54px;
+    min-height: 60px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -738,9 +783,9 @@
     display: none !important;
   }
 
-  @media (min-width: 600px) {
-    body { padding: 18px; }
-    .sheet-container { padding: 22px; }
+  @media (min-width: 640px) {
+    body { padding: 20px; }
+    .sheet-container { padding: 24px; }
     .tracker-grid { grid-template-columns: repeat(10, 1fr); }
   }
 
@@ -768,7 +813,7 @@
   <header class="web-toolbar">
     <a href="https://khalsai.com/" class="brand-link" title="Back to Khalsai Home">
       <div class="brand-logo-box">
-        <svg width="22" height="22" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <defs>
             <linearGradient id="tablaKhalisGold" x1="10" y1="10" x2="54" y2="54" gradientUnits="userSpaceOnUse">
               <stop offset="0%" stop-color="#FDE68A"/>
@@ -1764,7 +1809,7 @@
                 <span>📚 ${item.source}</span>
               </div>
             </div>
-            <div style="display:flex; gap:6px; align-items:center;">
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
               <button class="action-chip-btn" onclick="setBPM(${item.targetBpm})">Set ${item.targetBpm} BPM</button>
               <button class="master-check-btn ${done ? "done" : ""}" onclick="toggleDrillMastered('${item.id}')">
                 ${done ? "✓ Mastered" : "Mark Mastered"}
@@ -1773,7 +1818,7 @@
           </div>
           ${renderVariationTable(item.bols, taal.divisions, !useSplitTables)}
           <div class="ladder-row">
-            <span style="font-size:7.5pt; font-weight:800; color:var(--muted);">Speed Ladder:</span>
+            <span style="font-size:0.82rem; font-weight:700; color:var(--muted);">Speed Ladder:</span>
             ${ladderHtml}
           </div>
         </div>
@@ -1853,7 +1898,7 @@
           <span class="level-badge">${alreadySolved ? "✓ Cleared (+20 XP)" : "+20 XP Challenge"}</span>
         </div>
         <div class="game-box">
-          <div style="font-weight:800; font-size:9pt;">${ch.prompt}</div>
+          <div style="font-weight:700; font-size:0.98rem;">${ch.prompt}</div>
           <div class="game-options">
             ${ch.options.map((opt, idx) => `
               <button class="game-opt-btn" onclick="answerChallenge('${taal.id}', ${idx})">${opt}</button>
