@@ -772,7 +772,7 @@
 
     function getAwardedMap(cleanCode) {
       try {
-        return JSON.parse(sessionStorage.getItem(`pulse_awarded_${cleanCode}`) || '{}');
+        return JSON.parse(localStorage.getItem(`pulse_awarded_${cleanCode}`) || '{}');
       } catch (e) {
         return {};
       }
@@ -780,8 +780,21 @@
 
     function saveAwardedMap(cleanCode, mapObj) {
       try {
-        sessionStorage.setItem(`pulse_awarded_${cleanCode}`, JSON.stringify(mapObj));
+        localStorage.setItem(`pulse_awarded_${cleanCode}`, JSON.stringify(mapObj));
       } catch (e) {}
+    }
+
+    function rebuildLeaderboardFromAwardedMap(cleanCode) {
+      const awardedMap = getAwardedMap(cleanCode);
+      const totals = {};
+      Object.entries(awardedMap).forEach(([compoundKey, pts]) => {
+        const sepIdx = compoundKey.indexOf('::');
+        if (sepIdx > 0) {
+          const user = compoundKey.slice(0, sepIdx);
+          totals[user] = (totals[user] || 0) + (Number(pts) || 0);
+        }
+      });
+      return totals;
     }
 
     function getQuestionKey(q, fallback = '') {
@@ -1185,14 +1198,14 @@
         state.lastLeaderboardResetAt = resetTime;
         state.userScores = {};
         state.scoredKeys.clear();
-        sessionStorage.removeItem(`pulse_awarded_${cleanKey}`);
+        localStorage.removeItem(`pulse_awarded_${cleanKey}`);
         const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
 
         if (isSeriesMode) {
           Object.keys(allLeaderboards).forEach(code => {
             if (getLectureSeries(code) === seriesName) {
               delete allLeaderboards[code];
-              sessionStorage.removeItem(`pulse_awarded_${code}`);
+              localStorage.removeItem(`pulse_awarded_${code}`);
             }
           });
           state.sessionLeaderboard = {};
@@ -1283,17 +1296,17 @@
       state.eventCode = clean;
       state.quizDeck = [];
       state.deckMap = new Map();
-      state.userScores = {};
       state.scoredKeys = new Set();
       state.countedAnswerUsers = new Set();
       state.lastPulseId = 0;
       
-      const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
-      state.sessionLeaderboard = allLeaderboards[clean] || {};
-      state.userScores = { ...state.sessionLeaderboard };
-
       const existingAwarded = getAwardedMap(clean);
       Object.keys(existingAwarded).forEach(k => state.scoredKeys.add(k));
+
+      const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
+      const rebuilt = rebuildLeaderboardFromAwardedMap(clean);
+      state.sessionLeaderboard = Object.keys(rebuilt).length > 0 ? rebuilt : (allLeaderboards[clean] || {});
+      state.userScores = { ...state.sessionLeaderboard };
 
       processedPulseIds.clear();
 
@@ -1452,6 +1465,7 @@
         let leaderboardChanged = false;
         let quizStateChanged = false;
         let questionsChanged = false;
+        const awardedMap = getAwardedMap(cleanCode);
 
         sortedPulses.forEach(p => {
           const pulseNumId = Number(p.id);
@@ -1511,14 +1525,11 @@
               const cleanUser = String(meta.userName).trim();
               const cleanQuizId = String(meta.quizId).trim();
               const awardKey = `${cleanUser}::${cleanQuizId}`;
-              const awardedMap = getAwardedMap(cleanCode);
               const points = Math.max(0, Number(meta.pointsEarned) || 0);
 
               if (cleanUser && cleanQuizId && !(awardKey in awardedMap)) {
                 awardedMap[awardKey] = points;
-                saveAwardedMap(cleanCode, awardedMap);
                 state.scoredKeys.add(awardKey);
-                state.userScores[cleanUser] = (state.userScores[cleanUser] || 0) + points;
                 leaderboardChanged = true;
               }
             }
@@ -1651,9 +1662,9 @@
             const resetTime = p.created_at ? new Date(p.created_at).getTime() : Date.now();
             if (resetTime >= state.lastLeaderboardResetAt) {
               state.lastLeaderboardResetAt = resetTime;
+              Object.keys(awardedMap).forEach(k => delete awardedMap[k]);
               state.userScores = {};
               state.scoredKeys.clear();
-              sessionStorage.removeItem(`pulse_awarded_${cleanCode}`);
               state.sessionLeaderboard = {};
               const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
               delete allLeaderboards[cleanCode];
@@ -1677,10 +1688,17 @@
           renderSideQuizBuilder();
         }
 
-        if (leaderboardChanged && Object.keys(state.userScores).length > 0) {
-          state.sessionLeaderboard = { ...state.userScores };
+        if (leaderboardChanged) {
+          saveAwardedMap(cleanCode, awardedMap);
+          const rebuiltScores = rebuildLeaderboardFromAwardedMap(cleanCode);
+          state.userScores = { ...rebuiltScores };
+          state.sessionLeaderboard = { ...rebuiltScores };
           const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
-          allLeaderboards[cleanCode] = state.sessionLeaderboard;
+          if (Object.keys(rebuiltScores).length > 0) {
+            allLeaderboards[cleanCode] = rebuiltScores;
+          } else {
+            delete allLeaderboards[cleanCode];
+          }
           localStorage.setItem('pulse_leaderboards', JSON.stringify(allLeaderboards));
         }
 
