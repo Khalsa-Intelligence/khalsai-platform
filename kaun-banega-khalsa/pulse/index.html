@@ -232,7 +232,7 @@
                 <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
                 <span class="js-auto-refresh-label">Auto Refresh: OFF</span>
               </button>
-              <button onclick="manualRefreshNow()" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 dark:bg-gray-950 hover:bg-slate-200 dark:hover:bg-gray-800 text-slate-700 dark:text-gray-200 border border-slate-200 dark:border-gray-800 transition flex items-center space-x-1" title="Refresh now">
+              <button onclick="manualRefreshNow()" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-100 dark:bg-gray-950 hover:bg-slate-200 dark:hover:bg-gray-800 text-slate-700 dark:text-gray-200 border border-slate-200 dark:border-gray-800 transition flex items-center space-x-1" title="Refresh full leaderboard now">
                 <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
                 <span>Refresh</span>
               </button>
@@ -307,7 +307,7 @@
                 <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
                 <span class="js-auto-refresh-label">Auto Refresh: OFF</span>
               </button>
-              <button onclick="manualRefreshNow()" class="px-2.5 py-1 bg-slate-100 dark:bg-gray-950 hover:bg-slate-200 dark:hover:bg-gray-800 text-slate-700 dark:text-gray-200 border border-slate-200 dark:border-gray-800 text-xs font-bold rounded-lg transition flex items-center space-x-1" title="Refresh now">
+              <button onclick="manualRefreshNow()" class="px-2.5 py-1 bg-slate-100 dark:bg-gray-950 hover:bg-slate-200 dark:hover:bg-gray-800 text-slate-700 dark:text-gray-200 border border-slate-200 dark:border-gray-800 text-xs font-bold rounded-lg transition flex items-center space-x-1" title="Refresh full leaderboard now">
                 <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
                 <span>Refresh</span>
               </button>
@@ -582,7 +582,7 @@
                 <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
                 <span class="js-auto-refresh-label">Auto Refresh: OFF</span>
               </button>
-              <button onclick="manualRefreshNow()" class="px-2.5 py-1 bg-slate-100 dark:bg-gray-950 hover:bg-slate-200 dark:hover:bg-gray-800 text-slate-700 dark:text-gray-200 border border-slate-200 dark:border-gray-800 text-xs font-bold rounded-lg transition flex items-center space-x-1" title="Refresh now">
+              <button onclick="manualRefreshNow()" class="px-2.5 py-1 bg-slate-100 dark:bg-gray-950 hover:bg-slate-200 dark:hover:bg-gray-800 text-slate-700 dark:text-gray-200 border border-slate-200 dark:border-gray-800 text-xs font-bold rounded-lg transition flex items-center space-x-1" title="Refresh full leaderboard now">
                 <i data-lucide="rotate-cw" class="w-3.5 h-3.5"></i>
                 <span>Refresh</span>
               </button>
@@ -775,6 +775,17 @@
       countedAnswerUsers: new Set()
     };
 
+    function isQuizRoundCurrentlyOpen(quizObj, startedAtMs, isStopped = false) {
+      if (!quizObj || isStopped) return false;
+      const limitSec = Number(quizObj.timeLimit);
+      if (!limitSec || limitSec <= 0 || !state.presenterTimerMode) {
+        return true;
+      }
+      const startMs = Number(startedAtMs) || 0;
+      if (!startMs) return false;
+      return (Date.now() - startMs) < (limitSec * 1000);
+    }
+
     function renderAutoRefreshUI() {
       const active = Boolean(state.autoRefreshEnabled);
       const labelText = active ? 'Auto Refresh: ON' : 'Auto Refresh: OFF';
@@ -802,11 +813,30 @@
       setAutoRefresh(!state.autoRefreshEnabled);
     }
 
+    function resetSessionScoreState() {
+      state.snapshotTotalsByUser.clear();
+      state.awardedByUserQuiz.clear();
+      state.lastPulseId = 0;
+      state.lastResetPulseId = 0;
+      processedPulseIds.clear();
+    }
+
+    function resetSeriesScoreState() {
+      state.seriesSnapshotTotalsByUser.clear();
+      state.seriesAwardedByUserQuiz.clear();
+      state.lastSeriesPulseId = 0;
+      state.lastSeriesResetPulseId = 0;
+      processedSeriesPulseIds.clear();
+    }
+
     async function manualRefreshNow() {
+      resetSessionScoreState();
       await fetchPulseDatabase();
       if (state.leaderboardMode === 'series') {
+        resetSeriesScoreState();
         await fetchSeriesLeaderboardFromD1();
       }
+      renderLeaderboard();
     }
 
     function parseMetadata(raw) {
@@ -1075,7 +1105,7 @@
         document.body.appendChild(tempInput);
         tempInput.select();
         document.execCommand("copy");
-        document.body.removeChild(tempInput);
+        tempInput.remove();
         alert(successMsg);
       });
     }
@@ -1103,7 +1133,7 @@
     function getEventLeaderboard() {
       const totals = {};
       for (const [user, pts] of state.snapshotTotalsByUser.entries()) {
-        totals[user] = (totals[user] || 0) + pts;
+        totals[user] = pts;
       }
       for (const [key, pts] of state.awardedByUserQuiz.entries()) {
         const sepIdx = key.indexOf('::');
@@ -1172,25 +1202,34 @@
         }
 
         if (p.event_type === 'leaderboard_snapshot' && meta) {
-          const user = String(meta.userName || meta.user || p.user_id || '').trim();
-          const pts = Math.max(0, Number(meta.totalScore ?? meta.score) || 0);
-          if (user && pCode) {
-            const snapKey = `${pCode}::${user}`;
-            state.seriesSnapshotTotalsByUser.set(snapKey, (state.seriesSnapshotTotalsByUser.get(snapKey) || 0) + pts);
-            changed = true;
+          if (pId > state.lastSeriesResetPulseId) {
+            const user = String(meta.userName || meta.user || p.session_id || '').trim();
+            const pts = Math.max(0, Number(meta.totalScore ?? meta.score) || 0);
+            if (user && pCode) {
+              const snapKey = `${pCode}::${user}`;
+              state.seriesSnapshotTotalsByUser.set(snapKey, pts);
+              for (const k of Array.from(state.seriesAwardedByUserQuiz.keys())) {
+                if (k.startsWith(`${pCode}::${user}::`)) {
+                  state.seriesAwardedByUserQuiz.delete(k);
+                }
+              }
+              changed = true;
+            }
           }
           continue;
         }
 
         if (p.event_type === 'quiz_answer' && meta) {
-          const user = String(meta.userName || meta.user || p.user_id || '').trim();
-          const quizId = String(meta.quizId ?? meta.questionId ?? 'default').trim();
-          const pts = Math.max(0, Number(meta.pointsEarned ?? meta.points) || 0);
-          if (user && pCode) {
-            const key = `${pCode}::${user}::${quizId}`;
-            if (!state.seriesAwardedByUserQuiz.has(key)) {
-              state.seriesAwardedByUserQuiz.set(key, pts);
-              changed = true;
+          if (pId > state.lastSeriesResetPulseId) {
+            const user = String(meta.userName || meta.user || p.session_id || '').trim();
+            const quizId = String(meta.quizId ?? meta.questionId ?? 'default').trim();
+            const pts = Math.max(0, Number(meta.pointsEarned ?? meta.points) || 0);
+            if (user && pCode) {
+              const key = `${pCode}::${user}::${quizId}`;
+              if (!state.seriesAwardedByUserQuiz.has(key)) {
+                state.seriesAwardedByUserQuiz.set(key, pts);
+                changed = true;
+              }
             }
           }
         }
@@ -1198,45 +1237,51 @@
       return changed;
     }
 
-async function fetchSeriesLeaderboardFromD1() {
-  const seriesName = getLectureSeries(state.eventCode);
-  if (!seriesName) return;
+    async function fetchSeriesLeaderboardFromD1() {
+      const seriesName = getLectureSeries(state.eventCode);
+      if (!seriesName) return;
 
-  try {
-    let keepFetching = true;
-    let changed = false;
+      try {
+        let keepFetching = true;
+        let changed = false;
 
-    while (keepFetching) {
-      const afterParam = state.lastSeriesPulseId > 0
-        ? `&afterId=${encodeURIComponent(state.lastSeriesPulseId)}`
-        : '';
-      const res = await fetch(
-        `/api/pulse?seriesPrefix=${encodeURIComponent(seriesName)}${afterParam}`
-      );
-      if (!res.ok) break;
+        while (keepFetching) {
+          const afterParam = state.lastSeriesPulseId > 0
+            ? `&afterId=${encodeURIComponent(state.lastSeriesPulseId)}`
+            : '';
+          const res = await fetch(
+            `/api/pulse?seriesPrefix=${encodeURIComponent(seriesName)}${afterParam}`
+          );
+          if (!res.ok) break;
 
-      const data = await res.json();
-      const pulses = Array.isArray(data?.recent_pulses) ? data.recent_pulses : [];
-      if (pulses.length === 0) break;
+          const data = await res.json();
+          const pulses = Array.isArray(data?.recent_pulses) ? data.recent_pulses : [];
+          if (pulses.length === 0) break;
 
-      if (ingestSeriesPulses(pulses)) changed = true;
-      keepFetching = Boolean(data?.has_more);
+          if (ingestSeriesPulses(pulses)) changed = true;
+          keepFetching = Boolean(data?.has_more);
+        }
+
+        if (changed && state.leaderboardMode === 'series') {
+          renderLeaderboard();
+        }
+      } catch (err) {
+        console.error('Failed to fetch series leaderboard:', err);
+      }
     }
-
-    if (changed && state.leaderboardMode === 'series') {
-      renderLeaderboard();
-    }
-  } catch (err) {
-    console.error('Failed to fetch series leaderboard:', err);
-  }
-}
 
     async function setLeaderboardMode(mode) {
       state.leaderboardMode = mode;
-      renderLeaderboard();
       if (mode === 'series') {
+        resetSeriesScoreState();
+        renderLeaderboard();
         await fetchSeriesLeaderboardFromD1();
+      } else {
+        resetSessionScoreState();
+        renderLeaderboard();
+        await fetchPulseDatabase();
       }
+      renderLeaderboard();
     }
 
     function getUserStreak(userName) {
@@ -1362,22 +1407,13 @@ async function fetchSeriesLeaderboardFromD1() {
           return;
         }
 
-        state.snapshotTotalsByUser.clear();
-        state.awardedByUserQuiz.clear();
-        state.lastPulseId = 0;
-        state.lastResetPulseId = 0;
-        processedPulseIds.clear();
+        resetSessionScoreState();
+        await fetchPulseDatabase();
 
         if (state.leaderboardMode === 'series') {
-          state.seriesSnapshotTotalsByUser.clear();
-          state.seriesAwardedByUserQuiz.clear();
-          state.lastSeriesPulseId = 0;
-          state.lastSeriesResetPulseId = 0;
-          processedSeriesPulseIds.clear();
+          resetSeriesScoreState();
+          await fetchSeriesLeaderboardFromD1();
         }
-
-        await fetchPulseDatabase();
-        if (state.leaderboardMode === 'series') await fetchSeriesLeaderboardFromD1();
         renderLeaderboard();
 
         alert(`Compaction complete! ${result.usersCompacted} user score(s) aggregated; ${result.rowsRemoved} incremental score row(s) cleaned up.`);
@@ -1474,6 +1510,8 @@ async function fetchSeriesLeaderboardFromD1() {
       state.activeQuizQuestion = null;
       state.activeQuizQuestionId = null;
       state.spotlightedItem = null;
+      state.autoRefreshEnabled = false;
+      renderAutoRefreshUI();
       processedPulseIds.clear();
 
       if (prevSeries !== nextSeries) {
@@ -1698,10 +1736,15 @@ async function fetchSeriesLeaderboardFromD1() {
 
             if (p.event_type === 'leaderboard_snapshot' && meta) {
               if (pulseNumId > state.lastResetPulseId) {
-                const cleanUser = String(meta.userName || meta.user || p.user_id || '').trim();
+                const cleanUser = String(meta.userName || meta.user || p.session_id || '').trim();
                 const pts = Math.max(0, Number(meta.totalScore ?? meta.score) || 0);
                 if (cleanUser) {
-                  state.snapshotTotalsByUser.set(cleanUser, (state.snapshotTotalsByUser.get(cleanUser) || 0) + pts);
+                  state.snapshotTotalsByUser.set(cleanUser, pts);
+                  for (const k of Array.from(state.awardedByUserQuiz.keys())) {
+                    if (k.startsWith(`${cleanUser}::`)) {
+                      state.awardedByUserQuiz.delete(k);
+                    }
+                  }
                   leaderboardChanged = true;
                 }
               }
@@ -1709,7 +1752,7 @@ async function fetchSeriesLeaderboardFromD1() {
 
             if (p.event_type === 'quiz_answer' && meta) {
               if (pulseNumId > state.lastResetPulseId) {
-                const cleanUser = String(meta.userName || meta.user || p.user_id || '').trim();
+                const cleanUser = String(meta.userName || meta.user || p.session_id || '').trim();
                 const cleanQuizId = String(meta.quizId ?? meta.questionId ?? 'default').trim();
                 const points = Math.max(0, Number(meta.pointsEarned ?? meta.points) || 0);
 
@@ -1772,14 +1815,15 @@ async function fetchSeriesLeaderboardFromD1() {
                   state.activeQuizTimer = null;
                 }
                 autoRefreshTriggeredOff = true;
+                autoRefreshTriggeredOn = false;
                 quizStateChanged = true;
               }
             }
 
             if (p.event_type === 'quiz_release' && meta && meta.quiz) {
               const q = meta.quiz;
-              const startedAt = meta.startedAt || Date.now();
-              if (startedAt <= state.lastQuizClearedAt) return;
+              const startedAt = Number(meta.startedAt) || (p.created_at ? new Date(p.created_at).getTime() : 0);
+              if (startedAt && startedAt <= state.lastQuizClearedAt) return;
 
               if (state.activeQuizQuestionId !== q.id || !state.activeQuizQuestion) {
                 state.activeQuizQuestion = q;
@@ -1790,8 +1834,11 @@ async function fetchSeriesLeaderboardFromD1() {
                 state.totalResponses = 0;
                 state.countedAnswerUsers.clear();
                 state.spotlightedItem = { type: 'quiz', data: q };
-                startQuizTimer(q.id, q.timeLimit !== undefined ? Number(q.timeLimit) : 30, startedAt);
-                autoRefreshTriggeredOn = true;
+                startQuizTimer(q.id, q.timeLimit !== undefined ? Number(q.timeLimit) : 30, startedAt || Date.now());
+                if (!state.sideQuizActive && isQuizRoundCurrentlyOpen(q, startedAt, Boolean(q.stoppedAt))) {
+                  autoRefreshTriggeredOn = true;
+                  autoRefreshTriggeredOff = false;
+                }
                 quizStateChanged = true;
               }
             }
@@ -1804,6 +1851,8 @@ async function fetchSeriesLeaderboardFromD1() {
                   clearInterval(state.activeQuizTimer);
                   state.activeQuizTimer = null;
                 }
+                autoRefreshTriggeredOff = true;
+                autoRefreshTriggeredOn = false;
                 quizStateChanged = true;
               }
             }
@@ -2285,7 +2334,7 @@ async function fetchSeriesLeaderboardFromD1() {
     }
 
     function startSideQuizByCode(code) {
-      setAutoRefresh(true);
+      setAutoRefresh(false);
       setEventCode(code);
       switchAudienceTab('quiz');
     }
@@ -2557,6 +2606,7 @@ async function fetchSeriesLeaderboardFromD1() {
 
     async function manualStopQuiz() {
       state.quizTimeRemaining = 0;
+      state.autoRefreshEnabled = false;
       if (state.activeQuizTimer) {
         clearInterval(state.activeQuizTimer);
         state.activeQuizTimer = null;
@@ -3119,7 +3169,7 @@ async function fetchSeriesLeaderboardFromD1() {
         document.body.appendChild(tempInput);
         tempInput.select();
         document.execCommand("copy");
-        document.body.removeChild(tempInput);
+        tempInput.remove();
         alert(`Event code ${state.eventCode} copied to clipboard!`);
       });
     }
