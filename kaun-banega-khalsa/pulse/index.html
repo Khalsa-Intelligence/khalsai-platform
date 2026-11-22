@@ -292,12 +292,15 @@
         </div>
 
         <div id="presenterLeaderboardCard" class="bg-white dark:bg-[#0D121F] border border-slate-200 dark:border-gray-800 rounded-2xl p-5 space-y-4 shadow-sm">
-          <div class="flex items-center justify-between border-b border-slate-200 dark:border-gray-800 pb-3">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 dark:border-gray-800 pb-3">
             <div class="flex items-center space-x-2">
               <i data-lucide="trophy" class="w-5 h-5 text-amber-500"></i>
               <h3 class="text-lg font-bold text-slate-900 dark:text-white">Live Leaderboard</h3>
             </div>
-            <button onclick="resetCurrentEventLeaderboard()" class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-bold rounded-lg transition">Reset Scores</button>
+            <div class="flex items-center space-x-2">
+              <button onclick="compactCurrentSessionDatabase()" class="px-2.5 py-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30 text-xs font-bold rounded-lg transition" title="Aggregate incremental score rows into 1 record per user and clean ephemeral noise">Compact Scores</button>
+              <button onclick="resetCurrentEventLeaderboard()" class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-bold rounded-lg transition">Reset Scores</button>
+            </div>
           </div>
           <div id="leaderboardList" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
         </div>
@@ -315,7 +318,8 @@
                   <h3 class="text-base font-bold text-slate-900 dark:text-white">Pre-Loaded Session Deck (<span class="font-mono text-amber-600 dark:text-amber-400 event-code-display"></span>)</h3>
                   <p class="text-[11px] text-slate-500 dark:text-gray-400">Questions scoped specifically to this active session.</p>
                 </div>
-                <div class="flex items-center space-x-1.5">
+                <div class="flex flex-wrap items-center gap-1.5">
+                  <button onclick="resyncSessionDeckToD1()" class="text-xs bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 px-2.5 py-1 rounded-lg border border-emerald-500/30 font-bold" title="Re-save all session questions to D1">Re-sync to D1</button>
                   <button onclick="copySessionDeckJson()" class="text-xs bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 text-slate-700 dark:text-gray-300 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-gray-700 font-bold">Copy Session JSON</button>
                   <button onclick="exportSessionDeckJson()" class="text-xs bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 px-2.5 py-1 rounded-lg border border-amber-500/30 font-bold">Export Session JSON</button>
                   <button onclick="resetQuizDeck()" class="text-xs bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 text-slate-700 dark:text-gray-300 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-gray-700 font-bold">Clear Deck</button>
@@ -560,10 +564,16 @@
               <i data-lucide="trophy" class="w-5 h-5 text-amber-500"></i>
               <span>Session Leaderboard Management</span>
             </h2>
-            <button onclick="resetCurrentEventLeaderboard()" class="self-end sm:self-auto px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-bold rounded-lg flex items-center gap-1 transition shrink-0">
-              <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
-              <span>Clear Leaderboard</span>
-            </button>
+            <div class="flex items-center gap-2 self-end sm:self-auto">
+              <button onclick="compactCurrentSessionDatabase()" class="px-2.5 py-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30 text-xs font-bold rounded-lg flex items-center gap-1 transition shrink-0" title="Aggregate incremental scores into 1 row per user and prune ephemeral noise">
+                <i data-lucide="archive" class="w-3 h-3"></i>
+                <span>Compact Scores</span>
+              </button>
+              <button onclick="resetCurrentEventLeaderboard()" class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-bold rounded-lg flex items-center gap-1 transition shrink-0">
+                <i data-lucide="rotate-ccw" class="w-3 h-3"></i>
+                <span>Reset Scores Only</span>
+              </button>
+            </div>
           </div>
           <div id="presenterDedicatedLeaderboardList" class="grid grid-cols-1 md:grid-cols-2 gap-3"></div>
         </div>
@@ -726,8 +736,10 @@
       spotlightedItem: null,
       confettiFired: false,
       leaderboardMode: 'session',
-      awardedByUserQuiz: new Map(),       // "user::quizId" -> points (for active session)
-      seriesAwardedByUserQuiz: new Map(), // "eventCode::user::quizId" -> points (for series global)
+      snapshotTotalsByUser: new Map(),       // user -> compacted score for active session
+      awardedByUserQuiz: new Map(),          // "user::quizId" -> incremental score for active session
+      seriesSnapshotTotalsByUser: new Map(), // "eventCode::user" -> compacted score for series
+      seriesAwardedByUserQuiz: new Map(),    // "eventCode::user::quizId" -> incremental score for series
       sideQuizActive: false,
       sideQuizQuestions: [],
       sideQuizIndex: 0,
@@ -791,6 +803,19 @@
       try {
         localStorage.setItem(`pulse_course_bank_${seriesName}`, JSON.stringify(state.courseBank));
       } catch (e) {}
+    }
+
+    async function resyncSessionDeckToD1() {
+      const cleanCode = state.eventCode.replace(/^#/, '').trim().toUpperCase();
+      const items = Array.from(state.deckMap.values());
+      if (items.length === 0) {
+        alert("No questions in the current session deck to sync.");
+        return;
+      }
+      for (const q of items) {
+        await sendPulse('quiz_save', { quiz: q, addToCourseBank: true });
+      }
+      alert(`Re-synced ${items.length} question(s) for ${cleanCode} to D1.`);
     }
 
     function addBankQuestionToSession(questionKey) {
@@ -1021,6 +1046,9 @@
 
     function getEventLeaderboard() {
       const totals = {};
+      for (const [user, pts] of state.snapshotTotalsByUser.entries()) {
+        totals[user] = (totals[user] || 0) + pts;
+      }
       for (const [key, pts] of state.awardedByUserQuiz.entries()) {
         const sepIdx = key.indexOf('::');
         if (sepIdx > 0) {
@@ -1035,6 +1063,13 @@
 
     function getSeriesLeaderboard() {
       const totals = {};
+      for (const [key, pts] of state.seriesSnapshotTotalsByUser.entries()) {
+        const sepIdx = key.indexOf('::');
+        if (sepIdx > 0) {
+          const user = key.slice(sepIdx + 2);
+          totals[user] = (totals[user] || 0) + pts;
+        }
+      }
       for (const [key, pts] of state.seriesAwardedByUserQuiz.entries()) {
         const firstSep = key.indexOf('::');
         const secondSep = key.indexOf('::', firstSep + 2);
@@ -1052,52 +1087,73 @@
       const seriesName = getLectureSeries(state.eventCode);
       if (!seriesName) return;
       try {
-        const afterParam = state.lastSeriesPulseId > 0 ? `&afterId=${encodeURIComponent(state.lastSeriesPulseId)}` : '';
-        const res = await fetch(`/api/pulse?seriesPrefix=${encodeURIComponent(seriesName)}${afterParam}`);
-        if (!res.ok) return;
-        const data = await res.json();
-        const pulses = Array.isArray(data?.recent_pulses) ? data.recent_pulses : [];
-        if (pulses.length === 0) return;
-
-        pulses.sort((a, b) => Number(a.id) - Number(b.id));
+        let keepFetching = true;
         let changed = false;
 
-        for (const p of pulses) {
-          const pId = Number(p.id) || 0;
-          if (pId > state.lastSeriesPulseId) state.lastSeriesPulseId = pId;
-          if (processedSeriesPulseIds.has(pId)) continue;
-          processedSeriesPulseIds.add(pId);
+        while (keepFetching) {
+          const afterParam = state.lastSeriesPulseId > 0 ? `&afterId=${encodeURIComponent(state.lastSeriesPulseId)}` : '';
+          const res = await fetch(`/api/pulse?seriesPrefix=${encodeURIComponent(seriesName)}${afterParam}`);
+          if (!res.ok) break;
+          const data = await res.json();
+          const pulses = Array.isArray(data?.recent_pulses) ? data.recent_pulses : [];
+          if (pulses.length === 0) break;
 
-          const meta = parseMetadata(p.metadata);
-          const pCode = String(p.event_code || '').replace(/^#/, '').trim().toUpperCase();
+          pulses.sort((a, b) => Number(a.id) - Number(b.id));
 
-          if (p.event_type === 'leaderboard_reset') {
-            if (pId > state.lastSeriesResetPulseId) {
-              state.lastSeriesResetPulseId = pId;
-              if (meta && meta.scope === 'series') {
-                state.seriesAwardedByUserQuiz.clear();
-              } else {
-                for (const k of Array.from(state.seriesAwardedByUserQuiz.keys())) {
-                  if (k.startsWith(`${pCode}::`)) state.seriesAwardedByUserQuiz.delete(k);
+          for (const p of pulses) {
+            const pId = Number(p.id) || 0;
+            if (pId > state.lastSeriesPulseId) state.lastSeriesPulseId = pId;
+            if (processedSeriesPulseIds.has(pId)) continue;
+            processedSeriesPulseIds.add(pId);
+
+            const meta = parseMetadata(p.metadata);
+            const pCode = String(p.event_code || '').replace(/^#/, '').trim().toUpperCase();
+
+            if (p.event_type === 'leaderboard_reset') {
+              if (pId > state.lastSeriesResetPulseId) {
+                state.lastSeriesResetPulseId = pId;
+                if (meta && meta.scope === 'series') {
+                  state.seriesSnapshotTotalsByUser.clear();
+                  state.seriesAwardedByUserQuiz.clear();
+                } else {
+                  for (const k of Array.from(state.seriesSnapshotTotalsByUser.keys())) {
+                    if (k.startsWith(`${pCode}::`)) state.seriesSnapshotTotalsByUser.delete(k);
+                  }
+                  for (const k of Array.from(state.seriesAwardedByUserQuiz.keys())) {
+                    if (k.startsWith(`${pCode}::`)) state.seriesAwardedByUserQuiz.delete(k);
+                  }
                 }
-              }
-              changed = true;
-            }
-            continue;
-          }
-
-          if (p.event_type === 'quiz_answer' && meta) {
-            const user = String(meta.userName || p.user_id || '').trim();
-            const quizId = String(meta.quizId ?? '').trim();
-            const pts = Math.max(0, Number(meta.pointsEarned) || 0);
-            if (user && quizId && pCode) {
-              const key = `${pCode}::${user}::${quizId}`;
-              if (!state.seriesAwardedByUserQuiz.has(key)) {
-                state.seriesAwardedByUserQuiz.set(key, pts);
                 changed = true;
               }
+              continue;
+            }
+
+            if (p.event_type === 'leaderboard_snapshot' && meta) {
+              const user = String(meta.userName || p.user_id || '').trim();
+              const pts = Math.max(0, Number(meta.totalScore) || 0);
+              if (user && pCode) {
+                const snapKey = `${pCode}::${user}`;
+                state.seriesSnapshotTotalsByUser.set(snapKey, (state.seriesSnapshotTotalsByUser.get(snapKey) || 0) + pts);
+                changed = true;
+              }
+              continue;
+            }
+
+            if (p.event_type === 'quiz_answer' && meta) {
+              const user = String(meta.userName || p.user_id || '').trim();
+              const quizId = String(meta.quizId ?? '').trim();
+              const pts = Math.max(0, Number(meta.pointsEarned) || 0);
+              if (user && quizId && pCode) {
+                const key = `${pCode}::${user}::${quizId}`;
+                if (!state.seriesAwardedByUserQuiz.has(key)) {
+                  state.seriesAwardedByUserQuiz.set(key, pts);
+                  changed = true;
+                }
+              }
             }
           }
+
+          keepFetching = Boolean(data?.has_more);
         }
 
         if (changed && state.leaderboardMode === 'series') {
@@ -1181,14 +1237,19 @@
       const seriesName = getLectureSeries(cleanKey);
 
       const confirmMsg = isSeriesMode
-        ? `Are you sure you want to wipe ALL points across the entire lecture series "${seriesName}"?`
-        : `Are you sure you want to reset the leaderboard for session "${cleanKey}"?`;
+        ? `Reset ALL leaderboard scores across series "${seriesName}"? (Quiz questions and Q&A will NOT be affected.)`
+        : `Reset leaderboard scores for session "${cleanKey}"? (Quiz questions and Q&A will NOT be affected.)`;
 
       if (confirm(confirmMsg)) {
+        state.snapshotTotalsByUser.clear();
         state.awardedByUserQuiz.clear();
         if (isSeriesMode) {
+          state.seriesSnapshotTotalsByUser.clear();
           state.seriesAwardedByUserQuiz.clear();
         } else {
+          for (const k of Array.from(state.seriesSnapshotTotalsByUser.keys())) {
+            if (k.startsWith(`${cleanKey}::`)) state.seriesSnapshotTotalsByUser.delete(k);
+          }
           for (const k of Array.from(state.seriesAwardedByUserQuiz.keys())) {
             if (k.startsWith(`${cleanKey}::`)) state.seriesAwardedByUserQuiz.delete(k);
           }
@@ -1200,6 +1261,60 @@
           series: seriesName,
           resetAt: Date.now()
         });
+      }
+    }
+
+    async function compactCurrentSessionDatabase() {
+      const cleanCode = (state.eventCode || '').replace(/^#/, '').trim().toUpperCase();
+      if (!cleanCode) return;
+
+      const ok = confirm(
+        `Compact D1 records for session "${cleanCode}"?\n\n` +
+        `• Aggregates each user's score into 1 snapshot row first\n` +
+        `• Removes superseded incremental score rows & ephemeral noise (pings, reactions, release toggles)\n` +
+        `• Preserves ALL quiz questions and Q&A items`
+      );
+      if (!ok) return;
+
+      try {
+        const res = await fetch('/api/pulse', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sessionId,
+            eventType: 'compact_session',
+            eventCode: cleanCode,
+            metadata: { requestedAt: Date.now() }
+          })
+        });
+        const result = await res.json();
+        if (!res.ok || !result.success) {
+          alert(`Compaction failed: ${result.error || 'Unknown error'}`);
+          return;
+        }
+
+        // Reload clean compacted state from D1
+        state.snapshotTotalsByUser.clear();
+        state.awardedByUserQuiz.clear();
+        state.lastPulseId = 0;
+        state.lastResetPulseId = 0;
+        processedPulseIds.clear();
+
+        if (state.leaderboardMode === 'series') {
+          state.seriesSnapshotTotalsByUser.clear();
+          state.seriesAwardedByUserQuiz.clear();
+          state.lastSeriesPulseId = 0;
+          state.lastSeriesResetPulseId = 0;
+          processedSeriesPulseIds.clear();
+        }
+
+        await fetchPulseDatabase();
+        if (state.leaderboardMode === 'series') await fetchSeriesLeaderboardFromD1();
+        renderLeaderboard();
+
+        alert(`Compaction complete! ${result.usersCompacted} user score(s) aggregated; ${result.rowsRemoved} incremental score row(s) cleaned up.`);
+      } catch (err) {
+        alert(`Compaction error: ${err.message}`);
       }
     }
 
@@ -1282,6 +1397,7 @@
       state.questions = [];
       state.quizDeck = [];
       state.deckMap = new Map();
+      state.snapshotTotalsByUser = new Map();
       state.awardedByUserQuiz = new Map();
       state.countedAnswerUsers = new Set();
       state.lastPulseId = 0;
@@ -1292,6 +1408,7 @@
       processedPulseIds.clear();
 
       if (prevSeries !== nextSeries) {
+        state.seriesSnapshotTotalsByUser = new Map();
         state.seriesAwardedByUserQuiz = new Map();
         state.lastSeriesPulseId = 0;
         state.lastSeriesResetPulseId = 0;
@@ -1436,213 +1553,230 @@
         const cleanCode = (state.eventCode || '').replace(/^#/, '').trim().toUpperCase();
         if (!cleanCode) return;
 
-        const afterParam = state.lastPulseId > 0 ? `&afterId=${encodeURIComponent(state.lastPulseId)}` : '';
-        const res = await fetch(`/api/pulse?eventCode=${encodeURIComponent(cleanCode)}${afterParam}`);
-        if (!res.ok) return;
-        const data = await res.json();
-
-        const pulses = Array.isArray(data?.recent_pulses) ? data.recent_pulses : [];
-        if (pulses.length === 0) return;
-
-        const sortedPulses = [...pulses].sort((a, b) => Number(a.id) - Number(b.id));
-        const activeQId = state.activeQuizQuestion ? String(state.activeQuizQuestion.id || state.activeQuizQuestion.title) : null;
-
+        let keepFetching = true;
         let deckChanged = false;
         let bankChanged = false;
         let leaderboardChanged = false;
         let quizStateChanged = false;
         let questionsChanged = false;
 
-        sortedPulses.forEach(p => {
-          const pulseNumId = Number(p.id) || 0;
-          if (pulseNumId > state.lastPulseId) {
-            state.lastPulseId = pulseNumId;
-          }
+        while (keepFetching) {
+          const afterParam = state.lastPulseId > 0 ? `&afterId=${encodeURIComponent(state.lastPulseId)}` : '';
+          const res = await fetch(`/api/pulse?eventCode=${encodeURIComponent(cleanCode)}${afterParam}`);
+          if (!res.ok) break;
+          const data = await res.json();
 
-          if (processedPulseIds.has(pulseNumId)) return;
-          processedPulseIds.add(pulseNumId);
+          const pulses = Array.isArray(data?.recent_pulses) ? data.recent_pulses : [];
+          if (pulses.length === 0) break;
 
-          const meta = parseMetadata(p.metadata);
+          const sortedPulses = [...pulses].sort((a, b) => Number(a.id) - Number(b.id));
+          const activeQId = state.activeQuizQuestion ? String(state.activeQuizQuestion.id || state.activeQuizQuestion.title) : null;
 
-          if (p.event_type === 'question' && meta) {
-            const qId = meta.id || pulseNumId;
-            if (!state.questions.some(existing => String(existing.id) === String(qId))) {
-              state.questions.unshift({
-                id: qId,
-                author: meta.author || p.session_id || 'Anonymous Participant',
-                text: meta.text || '',
-                upvotes: Number(meta.upvotes) || 1,
-                voted: false,
-                timestamp: meta.timestamp || '',
-                answered: Boolean(meta.answered),
-                eventCode: cleanCode
-              });
-              questionsChanged = true;
+          sortedPulses.forEach(p => {
+            const pulseNumId = Number(p.id) || 0;
+            if (pulseNumId > state.lastPulseId) {
+              state.lastPulseId = pulseNumId;
             }
-          }
 
-          if (p.event_type === 'upvote' && meta && meta.questionId !== undefined) {
-            const targetQ = state.questions.find(item => String(item.id) === String(meta.questionId));
-            if (targetQ && typeof meta.newVotes === 'number') {
-              targetQ.upvotes = meta.newVotes;
-              questionsChanged = true;
+            if (processedPulseIds.has(pulseNumId)) return;
+            processedPulseIds.add(pulseNumId);
+
+            const meta = parseMetadata(p.metadata);
+
+            if (p.event_type === 'question' && meta) {
+              const qId = meta.id || pulseNumId;
+              if (!state.questions.some(existing => String(existing.id) === String(qId))) {
+                state.questions.unshift({
+                  id: qId,
+                  author: meta.author || p.session_id || 'Anonymous Participant',
+                  text: meta.text || '',
+                  upvotes: Number(meta.upvotes) || 1,
+                  voted: false,
+                  timestamp: meta.timestamp || '',
+                  answered: Boolean(meta.answered),
+                  eventCode: cleanCode
+                });
+                questionsChanged = true;
+              }
             }
-          }
 
-          if (p.event_type === 'question_update' && meta && meta.id !== undefined) {
-            const targetQ = state.questions.find(item => String(item.id) === String(meta.id));
-            if (targetQ) {
-              targetQ.answered = Boolean(meta.answered);
-              questionsChanged = true;
+            if (p.event_type === 'upvote' && meta && meta.questionId !== undefined) {
+              const targetQ = state.questions.find(item => String(item.id) === String(meta.questionId));
+              if (targetQ && typeof meta.newVotes === 'number') {
+                targetQ.upvotes = meta.newVotes;
+                questionsChanged = true;
+              }
             }
-          }
 
-          if (p.event_type === 'leaderboard_reset') {
-            if (pulseNumId > state.lastResetPulseId) {
-              state.lastResetPulseId = pulseNumId;
-              state.awardedByUserQuiz.clear();
-              leaderboardChanged = true;
+            if (p.event_type === 'question_update' && meta && meta.id !== undefined) {
+              const targetQ = state.questions.find(item => String(item.id) === String(meta.id));
+              if (targetQ) {
+                targetQ.answered = Boolean(meta.answered);
+                questionsChanged = true;
+              }
             }
-          }
 
-          if (p.event_type === 'quiz_answer' && meta) {
-            if (pulseNumId > state.lastResetPulseId) {
-              const cleanUser = String(meta.userName || p.user_id || '').trim();
-              const cleanQuizId = String(meta.quizId ?? '').trim();
-              const points = Math.max(0, Number(meta.pointsEarned) || 0);
+            if (p.event_type === 'leaderboard_reset') {
+              if (pulseNumId > state.lastResetPulseId) {
+                state.lastResetPulseId = pulseNumId;
+                state.snapshotTotalsByUser.clear();
+                state.awardedByUserQuiz.clear();
+                leaderboardChanged = true;
+              }
+            }
 
-              if (cleanUser && cleanQuizId) {
-                const awardKey = `${cleanUser}::${cleanQuizId}`;
-                if (!state.awardedByUserQuiz.has(awardKey)) {
-                  state.awardedByUserQuiz.set(awardKey, points);
+            if (p.event_type === 'leaderboard_snapshot' && meta) {
+              if (pulseNumId > state.lastResetPulseId) {
+                const cleanUser = String(meta.userName || p.user_id || '').trim();
+                const pts = Math.max(0, Number(meta.totalScore) || 0);
+                if (cleanUser) {
+                  state.snapshotTotalsByUser.set(cleanUser, (state.snapshotTotalsByUser.get(cleanUser) || 0) + pts);
                   leaderboardChanged = true;
                 }
               }
             }
 
-            if (activeQId && String(meta.quizId) === activeQId) {
-              const userKey = meta.userName || p.session_id || `pulse_${pulseNumId}`;
-              if (!state.countedAnswerUsers.has(userKey)) {
-                state.countedAnswerUsers.add(userKey);
-                const optIdx = Number(meta.selectedIndex);
-                if (!Number.isNaN(optIdx) && optIdx >= 0 && optIdx < 4) {
-                  state.responseCounts[optIdx] = (state.responseCounts[optIdx] || 0) + 1;
-                  state.totalResponses = (state.totalResponses || 0) + 1;
-                  quizStateChanged = true;
+            if (p.event_type === 'quiz_answer' && meta) {
+              if (pulseNumId > state.lastResetPulseId) {
+                const cleanUser = String(meta.userName || p.user_id || '').trim();
+                const cleanQuizId = String(meta.quizId ?? '').trim();
+                const points = Math.max(0, Number(meta.pointsEarned) || 0);
+
+                if (cleanUser && cleanQuizId) {
+                  const awardKey = `${cleanUser}::${cleanQuizId}`;
+                  if (!state.awardedByUserQuiz.has(awardKey)) {
+                    state.awardedByUserQuiz.set(awardKey, points);
+                    leaderboardChanged = true;
+                  }
+                }
+              }
+
+              if (activeQId && String(meta.quizId) === activeQId) {
+                const userKey = meta.userName || p.session_id || `pulse_${pulseNumId}`;
+                if (!state.countedAnswerUsers.has(userKey)) {
+                  state.countedAnswerUsers.add(userKey);
+                  const optIdx = Number(meta.selectedIndex);
+                  if (!Number.isNaN(optIdx) && optIdx >= 0 && optIdx < 4) {
+                    state.responseCounts[optIdx] = (state.responseCounts[optIdx] || 0) + 1;
+                    state.totalResponses = (state.totalResponses || 0) + 1;
+                    quizStateChanged = true;
+                  }
                 }
               }
             }
-          }
 
-          if (p.event_type === 'reaction') {
-            if (state.view === 'presenter' && state.presenterSubTab === 'spotlight' && meta && meta.emoji) {
-              const spotCard = document.getElementById('spotlightContent');
-              if (spotCard) {
-                const rEl = document.createElement('div');
-                rEl.textContent = meta.emoji;
-                rEl.className = "absolute bottom-4 right-6 text-4xl animate-bounce z-50 pointer-events-none transition-all duration-1000";
-                spotCard.appendChild(rEl);
-                setTimeout(() => {
-                  rEl.style.transform = `translate(${(Math.random() - 0.5) * 200}px, -220px) scale(1.8)`;
-                  rEl.style.opacity = '0';
-                }, 50);
-                setTimeout(() => rEl.remove(), 1000);
+            if (p.event_type === 'reaction') {
+              if (state.view === 'presenter' && state.presenterSubTab === 'spotlight' && meta && meta.emoji) {
+                const spotCard = document.getElementById('spotlightContent');
+                if (spotCard) {
+                  const rEl = document.createElement('div');
+                  rEl.textContent = meta.emoji;
+                  rEl.className = "absolute bottom-4 right-6 text-4xl animate-bounce z-50 pointer-events-none transition-all duration-1000";
+                  spotCard.appendChild(rEl);
+                  setTimeout(() => {
+                    rEl.style.transform = `translate(${(Math.random() - 0.5) * 200}px, -220px) scale(1.8)`;
+                    rEl.style.opacity = '0';
+                  }, 50);
+                  setTimeout(() => rEl.remove(), 1000);
+                }
               }
             }
-          }
 
-          if (p.event_type === 'quiz_clear') {
-            const clearedAt = (meta && meta.clearedAt) ? Number(meta.clearedAt) : (p.created_at ? new Date(p.created_at).getTime() : Date.now());
-            if (clearedAt > state.lastQuizClearedAt) state.lastQuizClearedAt = clearedAt;
+            if (p.event_type === 'quiz_clear') {
+              const clearedAt = (meta && meta.clearedAt) ? Number(meta.clearedAt) : (p.created_at ? new Date(p.created_at).getTime() : Date.now());
+              if (clearedAt > state.lastQuizClearedAt) state.lastQuizClearedAt = clearedAt;
 
-            if (!state.activeQuizQuestionStartedAt || clearedAt >= state.activeQuizQuestionStartedAt) {
-              state.activeQuizQuestion = null;
-              state.activeQuizQuestionId = null;
-              state.activeQuizQuestionStartedAt = null;
-              state.spotlightedItem = null;
-              state.hasSubmittedAnswer = false;
-              state.userSelectedOption = null;
-              state.responseCounts = [0, 0, 0, 0];
-              state.totalResponses = 0;
-              state.countedAnswerUsers.clear();
-              if (state.activeQuizTimer) {
-                clearInterval(state.activeQuizTimer);
-                state.activeQuizTimer = null;
+              if (!state.activeQuizQuestionStartedAt || clearedAt >= state.activeQuizQuestionStartedAt) {
+                state.activeQuizQuestion = null;
+                state.activeQuizQuestionId = null;
+                state.activeQuizQuestionStartedAt = null;
+                state.spotlightedItem = null;
+                state.hasSubmittedAnswer = false;
+                state.userSelectedOption = null;
+                state.responseCounts = [0, 0, 0, 0];
+                state.totalResponses = 0;
+                state.countedAnswerUsers.clear();
+                if (state.activeQuizTimer) {
+                  clearInterval(state.activeQuizTimer);
+                  state.activeQuizTimer = null;
+                }
+                quizStateChanged = true;
               }
-              quizStateChanged = true;
             }
-          }
 
-          if (p.event_type === 'quiz_release' && meta && meta.quiz) {
-            const q = meta.quiz;
-            const startedAt = meta.startedAt || Date.now();
-            if (startedAt <= state.lastQuizClearedAt) return;
+            if (p.event_type === 'quiz_release' && meta && meta.quiz) {
+              const q = meta.quiz;
+              const startedAt = meta.startedAt || Date.now();
+              if (startedAt <= state.lastQuizClearedAt) return;
 
-            if (state.activeQuizQuestionId !== q.id || !state.activeQuizQuestion) {
-              state.activeQuizQuestion = q;
-              state.activeQuizQuestionId = q.id;
-              state.hasSubmittedAnswer = false;
-              state.userSelectedOption = null;
-              state.responseCounts = [0, 0, 0, 0];
-              state.totalResponses = 0;
-              state.countedAnswerUsers.clear();
-              state.spotlightedItem = { type: 'quiz', data: q };
-              startQuizTimer(q.id, q.timeLimit !== undefined ? Number(q.timeLimit) : 30, startedAt);
-              quizStateChanged = true;
-            }
-          }
-
-          if (p.event_type === 'quiz_stop' && meta) {
-            if (state.activeQuizQuestion) {
-              state.quizTimeRemaining = 0;
-              state.activeQuizQuestion.stoppedAt = meta.stoppedAt || Date.now();
-              if (state.activeQuizTimer) {
-                clearInterval(state.activeQuizTimer);
-                state.activeQuizTimer = null;
+              if (state.activeQuizQuestionId !== q.id || !state.activeQuizQuestion) {
+                state.activeQuizQuestion = q;
+                state.activeQuizQuestionId = q.id;
+                state.hasSubmittedAnswer = false;
+                state.userSelectedOption = null;
+                state.responseCounts = [0, 0, 0, 0];
+                state.totalResponses = 0;
+                state.countedAnswerUsers.clear();
+                state.spotlightedItem = { type: 'quiz', data: q };
+                startQuizTimer(q.id, q.timeLimit !== undefined ? Number(q.timeLimit) : 30, startedAt);
+                quizStateChanged = true;
               }
-              quizStateChanged = true;
             }
-          }
 
-          if (p.event_type === 'side_quiz_save' && meta && meta.code) {
-            const series = getLectureSeries(state.eventCode);
-            loadSideQuizCatalog();
-            state.sideQuizCatalog[meta.code] = meta;
-            try { localStorage.setItem(`pulse_side_catalog_${series}`, JSON.stringify(state.sideQuizCatalog)); } catch (e) {}
-          }
-
-          if (p.event_type === 'quiz_save' && meta) {
-            const rawSaved = meta.quiz || meta;
-            if (rawSaved && (rawSaved.id || rawSaved.title || rawSaved.question)) {
-              const norm = normalizeQuestionItem(rawSaved, cleanCode);
-              const key = getQuestionKey(norm);
-              state.deckMap.set(key, norm);
-              if (meta.addToCourseBank !== false) {
-                state.courseBankMap.set(key, {
-                  ...(state.courseBankMap.get(key) || {}),
-                  ...norm,
-                  sourceSession: (state.courseBankMap.get(key)?.sourceSession) || cleanCode
-                });
-                bankChanged = true;
+            if (p.event_type === 'quiz_stop' && meta) {
+              if (state.activeQuizQuestion) {
+                state.quizTimeRemaining = 0;
+                state.activeQuizQuestion.stoppedAt = meta.stoppedAt || Date.now();
+                if (state.activeQuizTimer) {
+                  clearInterval(state.activeQuizTimer);
+                  state.activeQuizTimer = null;
+                }
+                quizStateChanged = true;
               }
+            }
+
+            if (p.event_type === 'side_quiz_save' && meta && meta.code) {
+              const series = getLectureSeries(state.eventCode);
+              loadSideQuizCatalog();
+              state.sideQuizCatalog[meta.code] = meta;
+              try { localStorage.setItem(`pulse_side_catalog_${series}`, JSON.stringify(state.sideQuizCatalog)); } catch (e) {}
+            }
+
+            if (p.event_type === 'quiz_save' && meta) {
+              const rawSaved = meta.quiz || meta;
+              if (rawSaved && (rawSaved.id || rawSaved.title || rawSaved.question)) {
+                const norm = normalizeQuestionItem(rawSaved, cleanCode);
+                const key = getQuestionKey(norm);
+                state.deckMap.set(key, norm);
+                if (meta.addToCourseBank !== false) {
+                  state.courseBankMap.set(key, {
+                    ...(state.courseBankMap.get(key) || {}),
+                    ...norm,
+                    sourceSession: (state.courseBankMap.get(key)?.sourceSession) || cleanCode
+                  });
+                  bankChanged = true;
+                }
+                deckChanged = true;
+              }
+            }
+
+            if (p.event_type === 'quiz_delete' && meta) {
+              const key = String(meta.id || meta.title || '').trim();
+              if (key && state.deckMap.delete(key)) deckChanged = true;
+            }
+
+            if (p.event_type === 'quiz_reorder' && meta && Array.isArray(meta.deck)) {
+              state.deckMap.clear();
+              meta.deck.forEach((item, idx) => {
+                const norm = normalizeQuestionItem(item, cleanCode, `${cleanCode}_q_${idx}`);
+                state.deckMap.set(getQuestionKey(norm), norm);
+              });
               deckChanged = true;
             }
-          }
+          });
 
-          if (p.event_type === 'quiz_delete' && meta) {
-            const key = String(meta.id || meta.title || '').trim();
-            if (key && state.deckMap.delete(key)) deckChanged = true;
-          }
-
-          if (p.event_type === 'quiz_reorder' && meta && Array.isArray(meta.deck)) {
-            state.deckMap.clear();
-            meta.deck.forEach((item, idx) => {
-              const norm = normalizeQuestionItem(item, cleanCode, `${cleanCode}_q_${idx}`);
-              state.deckMap.set(getQuestionKey(norm), norm);
-            });
-            deckChanged = true;
-          }
-        });
+          keepFetching = Boolean(data?.has_more);
+        }
 
         if (deckChanged) {
           persistSessionDeck(cleanCode);
