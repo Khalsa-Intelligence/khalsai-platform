@@ -99,71 +99,19 @@ class Default(WorkerEntrypoint):
                     )
 
         # -------------------------------------------------------------
-        # 1. LANDING PAGE WITH QR CODE: GET /
+        # 1. KBK GAME ROUTE: GET /kbk (and /kbk/)
         # -------------------------------------------------------------
-        if method == "GET" and path == "/":
-            html = """<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kaun Banega Khalsa v2 Host</title>
-    <style>
-        body { font-family: sans-serif; background: #0d1117; color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
-        .card { background: #161b22; padding: 2rem; border-radius: 12px; text-align: center; border: 1px solid #30363d; width: 90%; max-width: 400px; }
-        .qr-container { background: #ffffff; padding: 12px; border-radius: 8px; display: inline-block; margin: 1rem 0; }
-        .qr-container img { display: block; width: 180px; height: 180px; }
-        .btn-group { display: flex; gap: 10px; justify-content: center; margin-top: 1rem; }
-        .btn { display: inline-block; padding: 10px 20px; color: #fff; background: #238636; text-decoration: none; border-radius: 6px; font-weight: bold; }
-        .btn-blue { background: #1f6feb; }
-    </style>
-</head>
-<body>
-<div class="card">
-    <h2>Kaun Banega Khalsa</h2>
-    <p>A Khalsa Intelligence Initiative</p>
-    
-    <!-- Visible Group Display Banner -->
-    <div id="groupBanner" style="display: none; margin: 10px 0 15px 0; background: #21262d; border: 1px solid #30363d; padding: 8px; border-radius: 6px; font-size: 0.95rem;">
-        Cohort Group: <span id="groupNameDisplay" style="color: #f2cc60; font-weight: bold;"></span>
-    </div>
-    
-    <div class="qr-container">
-        <img id="qrImg" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://khalsai.com/game" alt="Scan to Play">
-    </div>
-    
-    <div class="btn-group">
-        <a id="playBtn" href="/game" class="btn">Play Game</a>
-        <a id="boardBtn" href="/leaderboard" class="btn btn-blue">Leaderboard</a>
-    </div>
-</div>
-
-<script>
-    const params = new URLSearchParams(window.location.search);
-    const group = params.get('group') || params.get('Group'); 
-    
-    if (group && group.trim() !== '' && group.toUpperCase() !== 'GLOBAL') {
-        const cleanGroup = group.toUpperCase();
-        document.getElementById('playBtn').href = `/game?group=${encodeURIComponent(cleanGroup)}`;
-        document.getElementById('boardBtn').href = `/leaderboard?group=${encodeURIComponent(cleanGroup)}`;
-        document.getElementById('qrImg').src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=https://khalsai.com/game?group=${encodeURIComponent(cleanGroup)}`;
-        document.getElementById('groupNameDisplay').textContent = cleanGroup;
-        document.getElementById('groupBanner').style.display = 'block';
-    }
-</script>
-</body>
-</html>"""
-            return Response(html, headers={"Content-Type": "text/html; charset=utf-8"})
-
-        # -------------------------------------------------------------
-        # 2. GAME ROUTE: GET /game
-        # -------------------------------------------------------------
-        if method == "GET" and path == "/game":
-            url = parsed_url._replace(path="/index.html").geturl()
+        if method == "GET" and path in ("/kbk", "/kbk/"):
+            url = parsed_url._replace(path="/kbk/index.html").geturl()
             return await env.ASSETS.fetch(url)
 
+        # Legacy /game redirect to /kbk (preserving query parameters)
+        if method == "GET" and path == "/game":
+            target = "/kbk" + (f"?{parsed_url.query}" if parsed_url.query else "")
+            return Response("", status=302, headers={"Location": target})
+
         # -------------------------------------------------------------
-        # 3. SUBMIT SANGAAT FEEDBACK: POST /api/feedback
+        # 2. SUBMIT SANGAAT FEEDBACK: POST /api/feedback
         # -------------------------------------------------------------
         if method == "POST" and (path == "/api/feedback" or path.endswith("/api/feedback")):
             try:
@@ -191,7 +139,7 @@ class Default(WorkerEntrypoint):
                 return Response(json.dumps({"success": False, "error": str(e)}), status=500, headers={"Content-Type": "application/json"})
 
         # -------------------------------------------------------------
-        # 4. ADMIN VIEW FEEDBACK: POST /api/admin-feedback
+        # 3. ADMIN VIEW FEEDBACK: POST /api/admin-feedback
         # -------------------------------------------------------------
         if method == "POST" and (path == "/api/admin-feedback" or path.endswith("/api/admin-feedback")):
             try:
@@ -215,7 +163,7 @@ class Default(WorkerEntrypoint):
                 return Response(json.dumps({"success": False, "error": str(e)}), status=500, headers={"Content-Type": "application/json"})
 
         # -------------------------------------------------------------
-        # 5. ADMIN DELETE FEEDBACK: POST /api/delete-feedback
+        # 4. ADMIN DELETE FEEDBACK: POST /api/delete-feedback
         # -------------------------------------------------------------
         if method == "POST" and (path == "/api/delete-feedback" or path.endswith("/api/delete-feedback")):
             try:
@@ -241,7 +189,7 @@ class Default(WorkerEntrypoint):
                 return Response(json.dumps({"success": False, "error": str(e)}), status=500, headers={"Content-Type": "application/json"})
 
         # -------------------------------------------------------------
-        # 6. PUBLIC TESTIMONIALS ENDPOINT: GET /api/testimonials
+        # 5. PUBLIC TESTIMONIALS ENDPOINT: GET /api/testimonials
         # -------------------------------------------------------------
         if method == "GET" and (path == "/api/testimonials" or path.endswith("/api/testimonials")):
             try:
@@ -267,13 +215,13 @@ class Default(WorkerEntrypoint):
                 return Response(json.dumps({"success": False, "error": str(e)}), status=500, headers={"Content-Type": "application/json"})
 
         # -------------------------------------------------------------
-        # 7. SUBMIT SCORE: POST /api/submit_score
+        # 6. SUBMIT SCORE: POST /api/submit_score
         # -------------------------------------------------------------
         if method == "POST" and path == "/api/submit_score":
             try:
                 body_text = await request.text()
                 data = json.loads(body_text) if body_text else {}
-                
+
                 name = data.get("name")
                 if not name:
                     return Response(json.dumps({"status": "error", "message": "Invalid data"}), status=400, headers={"Content-Type": "application/json"})
@@ -292,7 +240,7 @@ class Default(WorkerEntrypoint):
                 return Response(json.dumps({"status": "error", "message": str(e)}), status=500, headers={"Content-Type": "application/json"})
 
         # -------------------------------------------------------------
-        # 8. DELETE SCORE: POST /api/delete_score
+        # 7. DELETE SCORE: POST /api/delete_score
         # -------------------------------------------------------------
         if method == "POST" and path == "/api/delete_score":
             try:
@@ -311,7 +259,7 @@ class Default(WorkerEntrypoint):
                 return Response(json.dumps({"status": "error", "message": str(e)}), status=500, headers={"Content-Type": "application/json"})
 
         # -------------------------------------------------------------
-        # 9. RESET LEADERBOARD: POST /api/reset_leaderboard
+        # 8. RESET LEADERBOARD: POST /api/reset_leaderboard
         # -------------------------------------------------------------
         if method == "POST" and path == "/api/reset_leaderboard":
             try:
@@ -329,7 +277,7 @@ class Default(WorkerEntrypoint):
                 return Response(json.dumps({"status": "error", "message": str(e)}), status=500, headers={"Content-Type": "application/json"})
 
         # -------------------------------------------------------------
-        # 10. DISPLAY LEADERBOARD: GET /leaderboard
+        # 9. DISPLAY LEADERBOARD: GET /leaderboard
         # -------------------------------------------------------------
         if method == "GET" and path == "/leaderboard":
             try:
@@ -351,7 +299,7 @@ class Default(WorkerEntrypoint):
                 dropdown_options = ""
                 is_global_selected = 'selected' if requested_group == "GLOBAL" else ''
                 dropdown_options += f'<option value="GLOBAL" {is_global_selected}>Global (All Scores)</option>'
-                
+
                 for g in existing_groups:
                     if g and g.upper() != "GLOBAL":
                         is_selected = 'selected' if requested_group == g.upper() else ''
@@ -409,7 +357,7 @@ class Default(WorkerEntrypoint):
             __DROPDOWN_OPTIONS__
         </select>
     </div>
-    
+
     <div class="actions-bar">
         <button class="reset-btn" onclick="resetLeaderboard()">Reset All Scores</button>
     </div>
@@ -429,16 +377,16 @@ class Default(WorkerEntrypoint):
             __ROWS_HTML__
         </tbody>
     </table>
-    
+
     <div class="nav-links">
-        <a id="playAgainBtn" href="/game" class="back-btn">&larr; Play Again</a>
+        <a id="playAgainBtn" href="/kbk" class="back-btn">&larr; Play Again</a>
     </div>
-    
+
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const group = urlParams.get('group');
         if (group && group !== 'GLOBAL') {
-            document.getElementById('playAgainBtn').href = `/game?group=${encodeURIComponent(group)}`;
+            document.getElementById('playAgainBtn').href = `/kbk?group=${encodeURIComponent(group)}`;
         }
     </script>
 
@@ -485,7 +433,7 @@ class Default(WorkerEntrypoint):
     </script>
 </body>
 </html>"""
-                
+
                 html = html_template.replace("__DROPDOWN_OPTIONS__", dropdown_options).replace("__ROWS_HTML__", rows_html)
 
                 return Response(html, headers={"Content-Type": "text/html; charset=utf-8"})
