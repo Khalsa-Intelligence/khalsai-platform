@@ -3,6 +3,13 @@ from urllib.parse import urlparse, parse_qs
 import json
 import time
 
+
+def _normalize_code(raw_val):
+    if not raw_val:
+        return ""
+    return str(raw_val).lstrip("#").strip().upper()
+
+
 class Default(WorkerEntrypoint):
     async def fetch(self, request):
         url_str = request.url
@@ -24,20 +31,21 @@ class Default(WorkerEntrypoint):
                     headers={"Content-Type": "application/json"}
                 )
 
-            # GET: Fetch recent events & pre-loaded quiz deck for a given eventCode
+            # GET: Fetch recent events by eventCode or seriesPrefix
             if method == "GET":
                 try:
                     event_code_list = query_params.get("eventCode") or query_params.get("event_code")
-                    if not event_code_list or not event_code_list[0].strip():
+                    series_prefix_list = query_params.get("seriesPrefix") or query_params.get("series_prefix")
+
+                    raw_event_code = _normalize_code(event_code_list[0]) if event_code_list and event_code_list[0].strip() else ""
+                    raw_series_prefix = _normalize_code(series_prefix_list[0]) if series_prefix_list and series_prefix_list[0].strip() else ""
+
+                    if not raw_event_code and not raw_series_prefix:
                         return Response(
-                            json.dumps({"success": False, "error": "eventCode parameter is required"}),
+                            json.dumps({"success": False, "error": "eventCode or seriesPrefix parameter is required"}),
                             status=400,
                             headers={"Content-Type": "application/json"}
                         )
-
-                    event_code = event_code_list[0].strip().upper()
-                    if not event_code.startswith("#"):
-                        event_code = "#" + event_code
 
                     after_id_raw = (
                         query_params.get("afterId")
@@ -45,34 +53,51 @@ class Default(WorkerEntrypoint):
                         or query_params.get("sinceId")
                     )
 
-                    after_id = None
+                    after_id = 0
                     if after_id_raw and after_id_raw[0].strip().isdigit():
                         after_id = int(after_id_raw[0].strip())
 
-                    if after_id is not None and after_id > 0:
-                        stmt = db.prepare(
-                            "SELECT id, session_id, event_code, event_type, metadata, created_at "
-                            "FROM pulse_events "
-                            "WHERE event_code = ? AND id > ? "
-                            "ORDER BY id ASC"
-                        )
-                        res = await stmt.bind(event_code, after_id).all()
-                    else:
-                        stmt = db.prepare(
-                            "SELECT id, session_id, event_code, event_type, metadata, created_at "
-                            "FROM pulse_events "
-                            "WHERE event_code = ? "
-                            "ORDER BY id ASC"
-                        )
-                        res = await stmt.bind(event_code).all()
+                    page_limit = 1000
+                    where_clauses = []
+                    params = []
 
+                    if raw_series_prefix:
+                        where_clauses.append(
+                            "TRIM(UPPER(REPLACE(COALESCE(event_code, ''), '#', ''))) LIKE ?"
+                        )
+                        params.append(f"{raw_series_prefix}%")
+                        where_clauses.append(
+                            "event_type IN ('quiz_answer', 'leaderboard_snapshot', 'leaderboard_reset')"
+                        )
+                    else:
+                        where_clauses.append(
+                            "TRIM(UPPER(REPLACE(COALESCE(event_code, ''), '#', ''))) = ?"
+                        )
+                        params.append(raw_event_code)
+
+                    if after_id > 0:
+                        where_clauses.append("id > ?")
+                        params.append(after_id)
+
+                    sql = (
+                        "SELECT id, session_id, user_id, event_code, event_type, metadata, created_at "
+                        "FROM pulse_events "
+                        f"WHERE {' AND '.join(where_clauses)} "
+                        f"ORDER BY id ASC LIMIT {page_limit}"
+                    )
+
+                    res = await db.prepare(sql).bind(*params).all()
                     rows = res.results.to_py() if hasattr(res.results, "to_py") else list(res.results)
 
                     return Response(
-                        json.dumps({"success": True, "recent_pulses": rows}),
+                        json.dumps({
+                            "success": True,
+                            "recent_pulses": rows,
+                            "has_more": len(rows) == page_limit,
+                        }),
                         headers={
                             "Content-Type": "application/json",
-                            "Cache-Control": "private, max-age=1"
+                            "Cache-Control": "no-store",
                         }
                     )
                 except Exception as e:
@@ -88,26 +113,27 @@ class Default(WorkerEntrypoint):
                     body_text = await request.text()
                     data = json.loads(body_text) if body_text else {}
 
-                    session_id = data.get("sessionId") or data.get("session_id", "anon")
-                    event_code = data.get("eventCode") or data.get("event_code")
+                    session_id = data.get("sessionId") or data.get("session_id") or "anon"
+                    user_id = data.get("userId") or data.get("user_id")
+                    event_code_raw = data.get("eventCode") or data.get("event_code")
                     event_type = data.get("eventType") or data.get("event_type")
                     metadata = data.get("metadata", {})
 
-                    if not event_code or not event_type:
+                    if not event_code_raw or not event_type:
                         return Response(
                             json.dumps({"success": False, "error": "eventCode and eventType are required"}),
                             status=400,
                             headers={"Content-Type": "application/json"}
                         )
 
-                    event_code = str(event_code).strip().upper()
-                    if not event_code.startswith("#"):
-                        event_code = "#" + event_code
-
+                    clean_code = _normalize_code(event_code_raw)
                     metadata_str = json.dumps(metadata) if isinstance(metadata, (dict, list)) else str(metadata)
 
-                    query = "INSERT INTO pulse_events (session_id, event_code, event_type, metadata) VALUES (?, ?, ?, ?)"
-                    await db.prepare(query).bind(session_id, event_code, event_type, metadata_str).run()
+                    query = (
+                        "INSERT INTO pulse_events (session_id, user_id, event_code, event_type, metadata) "
+                        "VALUES (?, ?, ?, ?, ?)"
+                    )
+                    await db.prepare(query).bind(session_id, user_id, clean_code, event_type, metadata_str).run()
 
                     return Response(
                         json.dumps({"success": True}),
@@ -439,7 +465,7 @@ class Default(WorkerEntrypoint):
 
             fetch('/api/reset_leaderboard', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': "application/json" },
                 body: JSON.stringify({ password: password })
             })
             .then(res => res.json())
