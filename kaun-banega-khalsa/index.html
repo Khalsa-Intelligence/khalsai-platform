@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Khalsai — Khalsa Intelligence</title>
+  <meta name="description" content="Khalsa Intelligence — Purely smart, seriously fun learning tools: Kaun Banega Khalsa, Khalsai Pulse, Tabla, and more." />
+
+  <!-- Instant Theme Hydration (Prevents Flash of Unstyled Content) -->
+  <script>
+    (function () {
+      try {
+        const storedTheme = localStorage.getItem('khalsai-theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (storedTheme === 'dark' || (!storedTheme && prefersDark)) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      } catch (e) {
+        document.documentElement.setAttribute('data-theme', 'light');
+      }
+    })();
+  </script>
+
+  <style>
+    /* ==========================================================================
+       DESIGN TOKENS & THEME VARIABLES
+       ========================================================================== */
+    :root {
+      /* Light Mode Palette */
+      --bg-page: #F8FAFC;
+      --bg-surface: #FFFFFF;
+      --bg-card: #FFFFFF;
+      --bg-card-hover: #FFFDF8;
+      --bg-pill: #F1F5F9;
+      --text-primary: #0F172A;
+      --text-secondary: #475569;
+      --text-muted: #64748B;
+      --border-subtle: #E2E8F0;
+      --border-focus: #D97706;
+      
+      /* Vibrant Playful Accents */
+      --gold-primary: #D97706;
+      --gold-light: #F59E0B;
+      --gold-tint: rgba(217, 119, 6, 0.12);
+      --emerald-accent: #059669;
+      --emerald-tint: rgba(5, 150, 105, 0.12);
+      --violet-accent: #7C3AED;
+      --violet-tint: rgba(124, 58, 237, 0.12);
+      --cyan-accent: #0284C7;
+      --cyan-tint: rgba(2, 132, 199, 0.12);
+      --rose-accent: #E11D48;
+      --rose-tint: rgba(225, 29, 72, 0.10);
+
+      /* Elevation & Spring Motion */
+      --shadow-sm: 0 2px 6px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.03);
+      --shadow-md: 0 14px 32px -6px rgba(15, 23, 42, 0.09), 0 4px 12px -4px rgba(15, 23, 42, 0.04);
+      --shadow-emblem: 0 14px 30px -6px rgba(217, 119, 6, 0.28);
+      --radius-xl: 26px;
+      --radius-lg: 18px;
+      --radius-md: 14px;
+      --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+      --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    [data-theme="dark"] {
+      /* Dark Mode Palette (Deep Slate-Navy & Warm Gold Glow) */
+      --bg-page: #080D1A;
+      --bg-surface: #0F172A;
+      --bg-card: #141E33;
+      --bg-card-hover: #192640;
+      --bg-pill: #1E293B;
+      --text-primary: #F8FAFC;
+      --text-secondary: #94A3B8;
+      --text-muted: #64748B;
+      --border-subtle: #1E293B;
+      --border-focus: #F59E0B;
+
+      /* Vibrant Accents Adjusted for Dark Contrast */
+      --gold-primary: #F59E0B;
+      --gold-light: #FBBF24;
+      --gold-tint: rgba(245, 158, 11, 0.15);
+      --emerald-accent: #34D399;
+      --emerald-tint: rgba(52, 211, 153, 0.15);
+      --violet-accent: #A78BFA;
+      --violet-tint: rgba(167, 139, 250, 0.15);
+      --cyan-accent: #38BDF8;
+      --cyan-tint: rgba(56, 189, 248, 0.15);
+      --rose-accent: #FB7185;
+      --rose-tint: rgba(251, 113, 133, 0.14);
+
+      --shadow-sm: 0 4px 14px -2px rgba(0, 0, 0, 0.38);
+      --shadow-md: 0 16px 36px -6px rgba(0, 0, 0, 0.6);
+      --shadow-emblem: 0 16px 36px -6px rgba(245, 158, 11, 0.28);
+    }
+
+    /* ==========================================================================
+       RESET & BASE TYPOGRAPHY
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-primary);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      transition: background-color 0.25s ease, color 0.25s ease;
+      overflow-x: hidden;
+    }
+
+    /* Ambient Warm Glow Background */
+    .bg-glow {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(circle at 18% 12%, rgba(245, 158, 11, 0.08), transparent 42%),
+        radial-gradient(circle at 85% 85%, rgba(124, 58, 237, 0.07), transparent 45%);
+    }
+
+    [data-theme="dark"] .bg-glow {
+      background:
+        radial-gradient(circle at 18% 12%, rgba(245, 158, 11, 0.12), transparent 44%),
+        radial-gradient(circle at 85% 85%, rgba(56, 189, 248, 0.09), transparent 46%);
+    }
+
+    /* ==========================================================================
+       APP SHELL LAYOUT
+       ========================================================================== */
+    .app-viewport {
+      position: relative;
+      z-index: 1;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 500px;
+      min-height: 100dvh;
+      background-color: var(--bg-surface);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 22px 20px 26px;
+      position: relative;
+      transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    @media (min-width: 560px) {
+      .app-viewport {
+        padding: 28px 16px;
+      }
+      .app-container {
+        min-height: auto;
+        border-radius: 32px;
+        border: 1px solid var(--border-subtle);
+        box-shadow: var(--shadow-md);
+        padding: 30px 30px 32px;
+      }
+    }
+
+    /* ==========================================================================
+       HEADER & PILL THEME TOGGLE
+       ========================================================================== */
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .brand-lockup {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+
+    @keyframes floatPrism {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-2px) rotate(1.5deg); }
+    }
+
+    .emblem-squircle {
+      width: 54px;
+      height: 54px;
+      border-radius: 17px;
+      background: linear-gradient(145deg, #162038 0%, #0B1120 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-emblem);
+      border: 1.5px solid rgba(245, 158, 11, 0.42);
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+      animation: floatPrism 4.5s ease-in-out infinite;
+      transition: transform 0.3s var(--ease-bounce);
+    }
+
+    .emblem-squircle::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 25% 20%, rgba(251, 191, 36, 0.28), transparent 68%);
+      pointer-events: none;
+    }
+
+    .brand-lockup:hover .emblem-squircle {
+      animation: none;
+      transform: scale(1.08) rotate(-3deg);
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app-title {
+      font-size: 1.62rem;
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      color: var(--text-primary);
+      line-height: 1.08;
+    }
+
+    .app-micro-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+      color: var(--gold-primary);
+      margin-top: 3px;
+    }
+
+    /* Pill-shaped Light/Dark Toggle */
+    .theme-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 13px;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      background-color: var(--bg-card);
+      color: var(--text-primary);
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.2s var(--ease-bounce), background-color 0.2s ease, border-color 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .theme-toggle:hover {
+      background-color: var(--bg-card-hover);
+      border-color: rgba(245, 158, 11, 0.45);
+      transform: translateY(-1px);
+    }
+
+    .theme-toggle:active {
+      transform: scale(0.94);
+    }
+
+    .theme-toggle:focus-visible {
+      outline: 2px solid var(--border-focus);
+      outline-offset: 2px;
+    }
+
+    .theme-dark-only { display: none; }
+    .theme-light-only { display: inline-flex; align-items: center; gap: 6px; }
+    [data-theme="dark"] .theme-dark-only { display: inline-flex; align-items: center; gap: 6px; color: var(--gold-light); }
+    [data-theme="dark"] .theme-light-only { display: none; }
+
+    /* ==========================================================================
+       PLAYFUL HERO BANNER
+       ========================================================================== */
+    .intro-banner {
+      margin-bottom: 18px;
+      padding: 13px 16px;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, var(--gold-tint) 0%, var(--violet-tint) 100%);
+      border: 1px solid rgba(245, 158, 11, 0.24);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .intro-text {
+      font-size: 0.87rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .intro-text strong {
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+
+    @keyframes pulseBeacon {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.45); opacity: 0.55; }
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.69rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--emerald-accent);
+      background-color: var(--bg-surface);
+      padding: 4px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(5, 150, 105, 0.22);
+      flex-shrink: 0;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: var(--emerald-accent);
+      animation: pulseBeacon 2.2s ease-in-out infinite;
+    }
+
+    /* ==========================================================================
+       APP LAUNCHER TILES GRID
+       ========================================================================== */
+    .launcher-list {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      width: 100%;
+    }
+
+    .launcher-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      padding: 14px 15px;
+      border-radius: var(--radius-lg);
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-sm);
+      text-decoration: none;
+      color: inherit;
+      text-align: left;
+      cursor: pointer;
+      position: relative;
+      transition:
+        transform 0.26s var(--ease-bounce),
+        box-shadow 0.22s var(--ease-spring),
+        background-color 0.2s ease,
+        border-color 0.2s ease;
+    }
+
+    .launcher-card:hover {
+      background-color: var(--bg-card-hover);
+      transform: translateY(-2px) scale(1.01);
+      box-shadow: var(--shadow-md);
+      border-color: rgba(245, 158, 11, 0.48);
+    }
+
+    .launcher-card:active {
+      transform: scale(0.975);
+    }
+
+    .launcher-card:focus-visible {
+      outline: 2px solid var(--border-focus);
+      outline-offset: 2px;
+    }
+
+    .tile-icon {
+      flex-shrink: 0;
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.28s var(--ease-bounce);
+    }
+
+    .launcher-card:hover .tile-icon {
+      transform: scale(1.09) rotate(-4deg);
+    }
+
+    .tile-icon--gold {
+      background-color: var(--gold-tint);
+      color: var(--gold-primary);
+    }
+
+    .tile-icon--emerald {
+      background-color: var(--emerald-tint);
+      color: var(--emerald-accent);
+    }
+
+    .tile-icon--violet {
+      background-color: var(--violet-tint);
+      color: var(--violet-accent);
+    }
+
+    .tile-icon--cyan {
+      background-color: var(--cyan-tint);
+      color: var(--cyan-accent);
+    }
+
+    .tile-icon--rose {
+      background-color: var(--rose-tint);
+      color: var(--rose-accent);
+    }
+
+    .tile-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .tile-header {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-bottom: 2px;
+    }
+
+    .tile-title {
+      font-size: 1rem;
+      font-weight: 750;
+      color: var(--text-primary);
+      letter-spacing: -0.015em;
+    }
+
+    .tile-badge {
+      font-size: 0.62rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 2px 7px;
+      border-radius: 6px;
+    }
+
+    .tile-badge--gold {
+      background-color: var(--gold-tint);
+      color: var(--gold-primary);
+    }
+
+    .tile-badge--emerald {
+      background-color: var(--emerald-tint);
+      color: var(--emerald-accent);
+    }
+
+    .tile-badge--violet {
+      background-color: var(--violet-tint);
+      color: var(--violet-accent);
+    }
+
+    .tile-badge--cyan {
+      background-color: var(--cyan-tint);
+      color: var(--cyan-accent);
+    }
+
+    .tile-badge--rose {
+      background-color: var(--rose-tint);
+      color: var(--rose-accent);
+    }
+
+    .tile-desc {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.38;
+    }
+
+    .tile-chevron {
+      flex-shrink: 0;
+      color: var(--text-muted);
+      transition: transform 0.24s var(--ease-bounce), color 0.2s ease;
+    }
+
+    .launcher-card:hover .tile-chevron {
+      transform: translateX(4px);
+      color: var(--gold-primary);
+    }
+
+    /* ==========================================================================
+       FOOTER
+       ========================================================================== */
+    .app-footer {
+      margin-top: 22px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-subtle);
+      text-align: center;
+      font-size: 0.77rem;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .app-footer strong {
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    /* ==========================================================================
+       ABOUT MODAL / BOTTOM SHEET DRAWER
+       ========================================================================== */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background-color: rgba(8, 13, 26, 0.74);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 50;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.26s ease, visibility 0.26s ease;
+    }
+
+    @media (min-width: 560px) {
+      .modal-backdrop {
+        align-items: center;
+        padding: 20px;
+      }
+    }
+
+    .modal-backdrop.is-open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal-sheet {
+      width: 100%;
+      max-width: 520px;
+      max-height: 88dvh;
+      background-color: var(--bg-surface);
+      border-top-left-radius: 26px;
+      border-top-right-radius: 26px;
+      border: 1px solid var(--border-subtle);
+      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+      transform: translateY(100%);
+      transition: transform 0.34s var(--ease-spring);
+      overflow: hidden;
+    }
+
+    @media (min-width: 560px) {
+      .modal-sheet {
+        border-radius: 26px;
+        box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+        transform: translateY(18px) scale(0.97);
+      }
+    }
+
+    .modal-backdrop.is-open .modal-sheet {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-drag-handle {
+      width: 40px;
+      height: 4px;
+      border-radius: 999px;
+      background-color: var(--border-subtle);
+      margin: 12px auto 4px;
+      flex-shrink: 0;
+    }
+
+    @media (min-width: 560px) {
+      .modal-drag-handle {
+        display: none;
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 22px;
+      border-bottom: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+    }
+
+    .modal-header-title {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .modal-header-title span:first-child {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+    }
+
+    .modal-header-title span:last-child {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gold-primary);
+    }
+
+    .modal-close-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 13px;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+      background-color: var(--bg-card);
+      color: var(--text-primary);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.2s ease, transform 0.15s ease;
+    }
+
+    .modal-close-btn:hover {
+      background-color: var(--bg-card-hover);
+    }
+
+    .modal-close-btn:active {
+      transform: scale(0.95);
+    }
+
+    .modal-body {
+      padding: 20px 22px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .about-block {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+    }
+
+    .about-block-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 9px;
+    }
+
+    .about-block-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background-color: var(--gold-tint);
+      color: var(--gold-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .about-block h3 {
+      font-size: 0.98rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .about-block p {
+      font-size: 0.89rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .about-block p + p {
+      margin-top: 9px;
+    }
+
+    .about-block strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .modal-footer {
+      padding: 14px 22px 22px;
+      border-top: 1px solid var(--border-subtle);
+      flex-shrink: 0;
+    }
+
+    .primary-action-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 14px;
+      border: none;
+      background: linear-gradient(135deg, #D97706 0%, #F59E0B 100%);
+      color: #0B1120;
+      font-size: 0.94rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 6px 18px rgba(245, 158, 11, 0.25);
+      transition: transform 0.2s var(--ease-bounce), opacity 0.2s ease;
+    }
+
+    .primary-action-btn:hover {
+      opacity: 0.96;
+      transform: translateY(-1px);
+    }
+
+    .primary-action-btn:active {
+      transform: scale(0.98);
+    }
+
+    /* ==========================================================================
+       ENTRANCE STAGGER ANIMATIONS
+       ========================================================================== */
+    @keyframes fadeSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-in {
+      animation: fadeSlideUp 0.44s var(--ease-spring) backwards;
+    }
+    .delay-1 { animation-delay: 0.04s; }
+    .delay-2 { animation-delay: 0.08s; }
+    .delay-3 { animation-delay: 0.12s; }
+    .delay-4 { animation-delay: 0.16s; }
+    .delay-5 { animation-delay: 0.20s; }
+    .delay-6 { animation-delay: 0.24s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .animate-in, .emblem-squircle, .status-dot {
+        animation: none;
+      }
+      .launcher-card, .modal-sheet, .modal-backdrop {
+        transition: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-glow" aria-hidden="true"></div>
+
+  <div class="app-viewport">
+    <main class="app-container" id="mainApp">
+      <div>
+        <!-- Brand Header with Original Geometric Prism 'K' Emblem & Pill Theme Toggle -->
+        <header class="app-header animate-in">
+          <div class="brand-lockup">
+            <div class="emblem-squircle" aria-hidden="true">
+              <!-- Original Geometric Prism / Neural 'K' Monogram (Strictly Non-Khanda) -->
+              <svg width="36" height="36" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="khalisGold" x1="10" y1="10" x2="54" y2="54" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#FDE68A"/>
+                    <stop offset="48%" stop-color="#F59E0B"/>
+                    <stop offset="100%" stop-color="#D97706"/>
+                  </linearGradient>
+                  <linearGradient id="khalisGlass" x1="16" y1="12" x2="48" y2="52" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.30"/>
+                    <stop offset="100%" stop-color="#38BDF8" stop-opacity="0.14"/>
+                  </linearGradient>
+                </defs>
+                <!-- Outer Hexagonal Crystalline Frame -->
+                <polygon
+                  points="32,6 54,19 54,45 32,58 10,45 10,19"
+                  fill="url(#khalisGlass)"
+                  stroke="url(#khalisGold)"
+                  stroke-width="2.5"
+                  stroke-linejoin="round"
+                />
+                <!-- Vertical Pillar of the 'K' -->
+                <path
+                  d="M22 18V46"
+                  stroke="url(#khalisGold)"
+                  stroke-width="4.2"
+                  stroke-linecap="round"
+                />
+                <!-- Upper & Lower Refractive 'K' Arms -->
+                <path
+                  d="M42 18L26.5 32L42 46"
+                  stroke="url(#khalisGold)"
+                  stroke-width="4.2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <!-- Pure Intelligence Prism Core Node -->
+                <polygon
+                  points="44,27 49,32 44,37 39,32"
+                  fill="#FDE68A"
+                />
+              </svg>
+            </div>
+
+            <div class="brand-text">
+              <h1 class="app-title">Khalsai</h1>
+              <span class="app-micro-label">Khalsa Intelligence</span>
+            </div>
+          </div>
+
+          <!-- Pill-Shaped Light/Dark Theme Toggle -->
+          <button
+            type="button"
+            class="theme-toggle"
+            id="themeToggle"
+            aria-label="Toggle color theme"
+            title="Switch Light / Dark Mode"
+          >
+            <span class="theme-dark-only">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="12" r="4"></circle>
+                <path d="M12 2v2"></path>
+                <path d="M12 20v2"></path>
+                <path d="m4.93 4.93 1.41 1.41"></path>
+                <path d="m17.66 17.66 1.41 1.41"></path>
+                <path d="M2 12h2"></path>
+                <path d="M20 12h2"></path>
+                <path d="m6.34 17.66-1.41 1.41"></path>
+                <path d="m19.07 4.93-1.41 1.41"></path>
+              </svg>
+              <span>Light</span>
+            </span>
+
+            <span class="theme-light-only">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+              </svg>
+              <span>Dark</span>
+            </span>
+          </button>
+        </header>
+
+        <!-- Sub-header Playful Banner -->
+        <div class="intro-banner animate-in delay-1">
+          <p class="intro-text"><strong>Purely smart</strong>, seriously fun learning.</p>
+          <span class="status-pill">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span>Let's Play</span>
+          </span>
+        </div>
+
+        <!-- App Launcher Navigation Grid -->
+        <nav class="launcher-list" aria-label="Khalsa Intelligence Apps">
+
+          <!-- 1. Kaun Banega Khalsa (/kbk) -->
+          <a href="/kbk" data-app-route="kbk" class="launcher-card animate-in delay-2">
+            <div class="tile-icon tile-icon--gold" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path>
+                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path>
+                <path d="M4 22h16"></path>
+                <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path>
+                <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path>
+                <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"></path>
+              </svg>
+            </div>
+            <div class="tile-content">
+              <div class="tile-header">
+                <span class="tile-title">Kaun Banega Khalsa</span>
+                <span class="tile-badge tile-badge--gold">HOT SEAT</span>
+              </div>
+              <p class="tile-desc">Climb the 15-question ladder and claim the top spot!</p>
+            </div>
+            <svg class="tile-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m9 18 6-6-6-6"></path>
+            </svg>
+          </a>
+
+          <!-- 2. Khalsai Pulse (/pulse) -->
+          <a href="/pulse" data-app-route="pulse" class="launcher-card animate-in delay-3">
+            <div class="tile-icon tile-icon--emerald" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"></path>
+              </svg>
+            </div>
+            <div class="tile-content">
+              <div class="tile-header">
+                <span class="tile-title">Khalsai Pulse</span>
+                <span class="tile-badge tile-badge--emerald">LIVE ARENA</span>
+              </div>
+              <p class="tile-desc">Jump into live room quizzes, instant polls &amp; fast-finger battles.</p>
+            </div>
+            <svg class="tile-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m9 18 6-6-6-6"></path>
+            </svg>
+          </a>
+
+          <!-- 3. Tabla Studio (/tabla) -->
+          <a href="/tabla" data-app-route="tabla" class="launcher-card animate-in delay-4">
+            <div class="tile-icon tile-icon--violet" aria-hidden="true">
+              <!-- Rhythmic Tabla Pair & Beat Wave Icon -->
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                <ellipse cx="8" cy="8" rx="4.5" ry="2.5"></ellipse>
+                <path d="M3.5 8v5.5c0 2 2 3.5 4.5 3.5s4.5-1.5 4.5-3.5V8"></path>
+                <ellipse cx="17" cy="10" rx="3.5" ry="2"></ellipse>
+                <path d="M13.5 10v5c0 1.6 1.6 3 3.5 3s3.5-1.4 3.5-3v-5"></path>
+              </svg>
+            </div>
+            <div class="tile-content">
+              <div class="tile-header">
+                <span class="tile-title">Tabla Lab</span>
+                <span class="tile-badge tile-badge--violet">RHYTHM &amp; TAAL</span>
+              </div>
+              <p class="tile-desc">Master bols, groove with live taals, and practice on beat.</p>
+            </div>
+            <svg class="tile-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m9 18 6-6-6-6"></path>
+            </svg>
+          </a>
+
+          <!-- 4. Feedback Form (/why-guru-feedback) -->
+          <a href="/why-guru-feedback" data-app-route="feedback" class="launcher-card animate-in delay-5">
+            <div class="tile-icon tile-icon--cyan" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                <path d="M8 10h8"></path>
+                <path d="M8 14h5"></path>
+              </svg>
+            </div>
+            <div class="tile-content">
+              <div class="tile-header">
+                <span class="tile-title">Share Feedback</span>
+                <span class="tile-badge tile-badge--cyan">YOUR VOICE</span>
+              </div>
+              <p class="tile-desc">Tell us what sparked your curiosity or pitch your next big idea!</p>
+            </div>
+            <svg class="tile-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m9 18 6-6-6-6"></path>
+            </svg>
+          </a>
+
+          <!-- 5. About Khalsai (Opens Instant Slide-Up Drawer) -->
+          <button
+            type="button"
+            class="launcher-card animate-in delay-6"
+            id="openAboutBtn"
+            aria-haspopup="dialog"
+            aria-controls="aboutModal"
+          >
+            <div class="tile-icon tile-icon--rose" aria-hidden="true">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 19 9 12 22 5 9 12 2"></polygon>
+                <line x1="5" y1="9" x2="19" y2="9"></line>
+              </svg>
+            </div>
+            <div class="tile-content">
+              <div class="tile-header">
+                <span class="tile-title">About Khalsai</span>
+                <span class="tile-badge tile-badge--rose">OUR STORY</span>
+              </div>
+              <p class="tile-desc">Why we build joyful, curious, and accessible learning spaces.</p>
+            </div>
+            <svg class="tile-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="m9 18 6-6-6-6"></path>
+            </svg>
+          </button>
+
+        </nav>
+      </div>
+
+      <!-- Minimal Footer -->
+      <footer class="app-footer animate-in delay-6">
+        <span><strong>khalsai.com</strong></span>
+        <span>Play &bull; Discover &bull; Grow</span>
+      </footer>
+    </main>
+  </div>
+
+  <!-- ========================================================================
+       ABOUT VIEW MODAL / SLIDE-UP BOTTOM SHEET
+       ======================================================================== -->
+  <div
+    class="modal-backdrop"
+    id="aboutModal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="aboutModalTitle"
+    aria-hidden="true"
+  >
+    <div class="modal-sheet" id="aboutSheet">
+      <div class="modal-drag-handle" aria-hidden="true"></div>
+
+      <div class="modal-header">
+        <div class="modal-header-title" id="aboutModalTitle">
+          <span>About Khalsai</span>
+          <span>Khalsa Intelligence</span>
+        </div>
+        <button type="button" class="modal-close-btn" id="closeAboutBtn" aria-label="Close About dialog">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 6 6 18"></path>
+            <path d="m6 6 12 12"></path>
+          </svg>
+          <span>Close</span>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Section 1: The Name -->
+        <section class="about-block">
+          <div class="about-block-header">
+            <div class="about-block-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 19 9 12 22 5 9 12 2"></polygon>
+                <line x1="5" y1="9" x2="19" y2="9"></line>
+              </svg>
+            </div>
+            <h3>The Name: Khalsai (Khalsa Intelligence)</h3>
+          </div>
+          <p>
+            <strong>Khalsai</strong> is a playful twist on <em>Artificial Intelligence</em> and the root word <strong>Khalis</strong>—meaning pure, unadulterated, and authentic.
+          </p>
+          <p>
+            Instead of algorithms built to hook your attention and waste time, Khalsa Intelligence is all about sparking genuine curiosity through smart, joyful digital experiences.
+          </p>
+        </section>
+
+        <!-- Section 2: The Initiative -->
+        <section class="about-block">
+          <div class="about-block-header">
+            <div class="about-block-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                <path d="M2 17l10 5 10-5"></path>
+                <path d="M2 12l10 5 10-5"></path>
+              </svg>
+            </div>
+            <h3>The Initiative</h3>
+          </div>
+          <p>
+            We create free, instant-loading interactive games, rhythm tools, and live session experiences for students, families, and community gatherings.
+          </p>
+          <p>
+            From the high-energy hot seat of <strong>Kaun Banega Khalsa</strong> and live room battles in <strong>Khalsai Pulse</strong> to hands-on rhythm practice in <strong>Tabla Lab</strong>, everything runs right in your browser with zero friction.
+          </p>
+        </section>
+
+        <!-- Section 3: Our Motivation -->
+        <section class="about-block">
+          <div class="about-block-header">
+            <div class="about-block-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="m16 10-4 4-4-4"></path>
+              </svg>
+            </div>
+            <h3>Our Motivation</h3>
+          </div>
+          <p>
+            People learn best when they are laughing, competing, playing a beat, and actively participating together.
+          </p>
+          <p>
+            Khalsai exists to turn everyday phones and laptops into shared playgrounds for heritage, music, and discovery—ready in seconds wherever people gather.
+          </p>
+        </section>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="primary-action-btn" id="doneAboutBtn">
+          <span>Back to Launcher</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* ======================================================================
+         1. THEME MANAGEMENT (Persists in localStorage & syncs with OS)
+         ====================================================================== */
+      const themeToggleBtn = document.getElementById('themeToggle');
+      const rootEl = document.documentElement;
+
+      function setTheme(theme) {
+        rootEl.setAttribute('data-theme', theme);
+        try {
+          localStorage.setItem('khalsai-theme', theme);
+        } catch (err) {
+          // Ignore storage errors in restricted browsing contexts
+        }
+      }
+
+      if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', function () {
+          const current = rootEl.getAttribute('data-theme');
+          const next = current === 'dark' ? 'light' : 'dark';
+          setTheme(next);
+        });
+      }
+
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function (e) {
+        try {
+          if (!localStorage.getItem('khalsai-theme')) {
+            rootEl.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+          }
+        } catch (err) {
+          rootEl.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+        }
+      });
+
+      /* ======================================================================
+         2. ABOUT MODAL / DRAWER INTERACTION & ACCESSIBILITY
+         ====================================================================== */
+      const openAboutBtn = document.getElementById('openAboutBtn');
+      const closeAboutBtn = document.getElementById('closeAboutBtn');
+      const doneAboutBtn = document.getElementById('doneAboutBtn');
+      const aboutModal = document.getElementById('aboutModal');
+      let lastFocusedElement = null;
+
+      function openModal() {
+        if (!aboutModal) return;
+        lastFocusedElement = document.activeElement;
+        aboutModal.classList.add('is-open');
+        aboutModal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+
+        if (closeAboutBtn) {
+          setTimeout(() => closeAboutBtn.focus(), 50);
+        }
+      }
+
+      function closeModal() {
+        if (!aboutModal) return;
+        aboutModal.classList.remove('is-open');
+        aboutModal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+
+        if (lastFocusedElement && typeof lastFocusedElement.focus === 'function') {
+          lastFocusedElement.focus();
+        }
+      }
+
+      if (openAboutBtn) openAboutBtn.addEventListener('click', openModal);
+      if (closeAboutBtn) closeAboutBtn.addEventListener('click', closeModal);
+      if (doneAboutBtn) doneAboutBtn.addEventListener('click', closeModal);
+
+      if (aboutModal) {
+        aboutModal.addEventListener('click', function (event) {
+          if (event.target === aboutModal) {
+            closeModal();
+          }
+        });
+      }
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && aboutModal && aboutModal.classList.contains('is-open')) {
+          closeModal();
+        }
+      });
+    })();
+  </script>
+</body>
+</html>
