@@ -19,6 +19,41 @@ export async function onRequestPost(context) {
     const userAgent = request.headers.get('user-agent') || 'unknown';
     const cleanEventCode = eventCode ? String(eventCode).replace(/^#/, '').trim().toUpperCase() : null;
 
+    if (eventType === 'questions_clear') {
+      if (!cleanEventCode) {
+        return new Response(JSON.stringify({ error: 'eventCode is required to clear questions' }), {
+          status: 400,
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+          },
+        });
+      }
+
+      const delResult = await env.PULSE_DB.prepare(
+        `DELETE FROM pulse_events
+         WHERE TRIM(UPPER(REPLACE(COALESCE(event_code, ''), '#', ''))) = ?
+           AND event_type IN ('question', 'upvote', 'question_update', 'spotlight_question')`
+      )
+        .bind(cleanEventCode)
+        .run();
+
+      return new Response(
+        JSON.stringify({
+          success: true,
+          message: 'Questions cleared for session',
+          rowsRemoved: delResult?.meta?.changes ?? 0,
+        }),
+        {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+          },
+        }
+      );
+    }
+
     if (eventType === 'compact_session') {
       if (!cleanEventCode) {
         return new Response(JSON.stringify({ error: 'eventCode is required for compaction' }), {
