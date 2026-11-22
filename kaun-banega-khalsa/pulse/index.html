@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Khalsai Pulse - Interactive Quiz & Q&A Platform</title>
-  
+
   <!-- Tailwind CSS, Lucide Icons & QR Code Generator -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  
+
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -37,7 +37,7 @@
     body { font-family: 'Plus Jakarta Sans', sans-serif; transition: background-color 0.3s, color 0.3s; }
     .gold-gradient-bg { background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%); }
     #qrcode canvas, #qrcode img { margin: 0 auto; border-radius: 8px; padding: 4px; background: white; }
-    
+
     ::-webkit-scrollbar { width: 5px; height: 5px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: rgba(156, 163, 175, 0.2); border-radius: 10px; }
@@ -78,7 +78,7 @@
   <!-- Unified Top Navigation Header -->
   <header class="sticky top-0 z-40 border-b border-slate-200 dark:border-gray-800/80 bg-white/95 dark:bg-[#0D121F]/95 backdrop-blur-md px-3 sm:px-6 py-2.5 transition-all space-y-2">
     <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
-      
+
       <!-- Brand & Title -->
       <div class="flex items-center space-x-2 min-w-0 shrink">
         <div class="w-8 h-8 rounded-xl gold-gradient-bg flex items-center justify-center text-slate-950 shadow-md shadow-amber-500/20 font-black text-sm shrink-0">
@@ -120,13 +120,13 @@
 
     </div>
 
-    <!-- Secondary Header Bar for Audience Code & Fixed Feedback Layout -->
+    <!-- Secondary Header Bar for Audience Code & Feedback -->
     <div id="headerCodeContainer" class="max-w-7xl mx-auto flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 bg-slate-100 dark:bg-gray-900/80 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-gray-800">
       <div class="flex items-center space-x-2 shrink-0">
         <i data-lucide="radio" class="w-4 h-4 text-amber-500 animate-pulse"></i>
         <span class="text-xs font-extrabold uppercase tracking-wider text-slate-700 dark:text-gray-300">Session</span>
       </div>
-      
+
       <div class="flex items-center space-x-2 flex-wrap sm:flex-nowrap justify-end w-full sm:w-auto">
         <input type="text" id="headerAudienceCodeInput" value="" class="bg-white dark:bg-gray-950 px-2.5 py-1 rounded-lg border border-slate-300 dark:border-gray-700 font-mono font-bold text-amber-600 dark:text-amber-400 text-xs focus:outline-none focus:border-amber-500 w-28 sm:w-36 uppercase text-center">
         <button onclick="changeAudienceEventCode()" class="bg-amber-500 text-slate-950 font-extrabold text-xs px-3 py-1 rounded-lg hover:brightness-110 transition shadow">
@@ -135,7 +135,6 @@
         <button onclick="copyEventCode()" class="text-slate-500 dark:text-gray-400 hover:text-amber-500 transition p-1" title="Copy Session Link">
           <i data-lucide="copy" class="w-4 h-4"></i>
         </button>
-        <!-- Feedback Link Button -->
         <a href="https://khalsai.com/why-guru-feedback/" target="_blank" class="flex items-center space-x-1 text-xs font-bold bg-slate-200 dark:bg-gray-800 text-slate-700 dark:text-gray-300 px-3 py-1 rounded-lg hover:bg-amber-500 hover:text-slate-950 transition shrink-0">
           <i data-lucide="message-square-plus" class="w-3.5 h-3.5"></i>
           <span>Feedback</span>
@@ -146,10 +145,10 @@
 
   <!-- Main View Container -->
   <main class="flex-1 max-w-7xl w-full mx-auto p-3 sm:p-6 flex flex-col pb-24 sm:pb-12">
-    
+
     <!-- AUDIENCE VIEW CONTAINER -->
     <div id="audienceView" class="flex-1 flex flex-col space-y-4 sm:space-y-6">
-      
+
       <div class="flex items-center justify-between bg-white dark:bg-gray-900/90 border border-slate-200 dark:border-gray-800 p-2.5 sm:p-3 rounded-2xl shadow-sm">
         <div class="flex items-center space-x-1.5 text-xs bg-slate-100 dark:bg-gray-950 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-gray-800 text-amber-700 dark:text-amber-400 font-bold">
           <i data-lucide="user" class="w-3.5 h-3.5"></i>
@@ -175,7 +174,7 @@
           </h2>
           <div class="space-y-3">
             <textarea id="questionInput" rows="3" placeholder="Type your question here..." class="w-full bg-slate-50 dark:bg-gray-950 border border-slate-200 dark:border-gray-800 rounded-xl p-3.5 text-sm text-slate-900 dark:text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 transition resize-none font-medium"></textarea>
-            
+
             <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
               <div class="flex items-center space-x-2">
                 <input type="text" id="userNameInput" placeholder="Your name (optional)" class="bg-slate-50 dark:bg-gray-950 border border-slate-200 dark:border-gray-800 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-amber-500 font-medium flex-1 sm:w-48">
@@ -243,7 +242,7 @@
 
     <!-- PRESENTER VIEW CONTAINER -->
     <div id="presenterView" class="hidden flex-1 flex-col space-y-5">
-      
+
       <!-- SUB-TAB 1: SPOTLIGHT & QR CODE -->
       <div id="presenterSpotlightPane" class="space-y-5">
         <div class="bg-white dark:bg-[#0D121F] border border-slate-200 dark:border-gray-800 rounded-2xl p-5 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
@@ -267,7 +266,6 @@
               <span>Projector Screen Focus</span>
             </div>
 
-            <!-- Page-Level Timer Toggle -->
             <div class="flex items-center space-x-2 bg-slate-100 dark:bg-gray-950 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-gray-800">
               <span class="text-[11px] font-extrabold text-slate-600 dark:text-gray-300">Release Timer Mode:</span>
               <button id="pageTimerToggleBtn" onclick="togglePresenterTimerMode()" class="px-2.5 py-1 rounded-lg text-xs font-bold transition flex items-center space-x-1 bg-amber-500 text-slate-950 shadow">
@@ -308,10 +306,9 @@
       <!-- SUB-TAB 2: QUIZ BUILDER -->
       <div id="presenterManagerPane" class="hidden space-y-6">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          
+
           <!-- Right Column: Session Pre-Loaded Deck + Course Question Bank -->
           <div class="lg:col-span-7 lg:order-2 space-y-6">
-            <!-- Session Pre-Loaded Deck -->
             <div class="space-y-3">
               <div class="flex flex-wrap items-center justify-between gap-2">
                 <div>
@@ -335,7 +332,7 @@
                     <i data-lucide="book-open" class="w-4 h-4 text-amber-500"></i>
                     <span>Course Question Bank (<span id="courseBankSeriesLabel" class="font-mono text-amber-600 dark:text-amber-400"></span>)</span>
                   </h3>
-                  <p class="text-[11px] text-slate-500 dark:text-gray-400">All questions across this course series &amp; static JSON bank. Add any question into the active session deck.</p>
+                  <p class="text-[11px] text-slate-500 dark:text-gray-400">All questions across this course series &amp; static JSON bank.</p>
                 </div>
                 <div class="flex items-center space-x-1.5">
                   <button onclick="copyCourseBankJson()" class="text-xs bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 text-slate-700 dark:text-gray-300 px-2.5 py-1 rounded-lg border border-slate-200 dark:border-gray-700 font-bold">Copy Bank JSON</button>
@@ -371,7 +368,7 @@
 
               <div class="space-y-2">
                 <label class="block text-xs font-bold text-slate-700 dark:text-gray-300">Options &amp; Correct Selection</label>
-                
+
                 <div class="flex items-center space-x-2 bg-[#E21B3C]/10 p-1.5 rounded-lg border border-[#E21B3C]/20">
                   <input type="radio" name="correctOption" value="0" checked class="w-4 h-4 accent-[#E21B3C]">
                   <span class="text-red-500 font-bold text-xs">▲</span>
@@ -507,23 +504,9 @@
                   <button onclick="toggleBulkJsonHelp()" class="text-[11px] text-amber-500 underline font-bold hover:text-amber-400">Format Guide</button>
                 </div>
 
-                <!-- Format Guide Instructions Box -->
                 <div id="bulkJsonHelpBox" class="hidden bg-slate-900 text-slate-200 p-3 rounded-xl font-mono text-[10px] space-y-1 overflow-x-auto border border-amber-500/30">
                   <p class="text-amber-400 font-bold">// Paste conforming to this JSON format:</p>
-                  <p>{</p>
-                  <p>&nbsp;&nbsp;"code": "TWGCQUIZ2",</p>
-                  <p>&nbsp;&nbsp;"title": "Quiz Title Here",</p>
-                  <p>&nbsp;&nbsp;"questions": [</p>
-                  <p>&nbsp;&nbsp;&nbsp;&nbsp;{</p>
-                  <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"title": "Question text?",</p>
-                  <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"options": ["Option A", "Option B", "Option C", "Option D"],</p>
-                  <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"correct": 0,</p>
-                  <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"timeLimit": 30,</p>
-                  <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"points": 100,</p>
-                  <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"imageUrl": "https://... (optional)"</p>
-                  <p>&nbsp;&nbsp;&nbsp;&nbsp;}</p>
-                  <p>&nbsp;&nbsp;]</p>
-                  <p>}</p>
+                  <p>{ "code": "TWGCQUIZ2", "title": "Quiz Title Here", "questions": [ { "title": "Question text?", "options": ["Option A", "Option B", "Option C", "Option D"], "correct": 0, "timeLimit": 30, "points": 100 } ] }</p>
                 </div>
 
                 <textarea id="bulkJsonInput" rows="4" placeholder='Paste complete JSON side quiz payload here...' class="w-full bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-xl p-3 text-xs text-slate-900 dark:text-white font-mono focus:outline-none focus:border-amber-500 resize-none"></textarea>
@@ -637,22 +620,13 @@
   <script>
     function initTheme() {
       const savedTheme = localStorage.getItem('pulse_theme') || 'dark';
-      if (savedTheme === 'light') {
-        document.documentElement.classList.remove('dark');
-      } else {
-        document.documentElement.classList.add('dark');
-      }
+      document.documentElement.classList.toggle('dark', savedTheme !== 'light');
     }
 
     function toggleTheme() {
       const isDark = document.documentElement.classList.contains('dark');
-      if (isDark) {
-        document.documentElement.classList.remove('dark');
-        localStorage.setItem('pulse_theme', 'light');
-      } else {
-        document.documentElement.classList.add('dark');
-        localStorage.setItem('pulse_theme', 'dark');
-      }
+      document.documentElement.classList.toggle('dark', !isDark);
+      localStorage.setItem('pulse_theme', isDark ? 'light' : 'dark');
       if (window.lucide) lucide.createIcons();
     }
 
@@ -665,13 +639,10 @@
       const iconOn = document.getElementById('iconAudioOn');
       const iconOff = document.getElementById('iconAudioOff');
       if (!iconOn || !iconOff) return;
-      if (isAudioMuted) {
-        iconOn.classList.add('hidden'); iconOn.classList.remove('block');
-        iconOff.classList.remove('hidden'); iconOff.classList.add('block');
-      } else {
-        iconOff.classList.add('hidden'); iconOff.classList.remove('block');
-        iconOn.classList.remove('hidden'); iconOn.classList.add('block');
-      }
+      iconOn.classList.toggle('hidden', isAudioMuted);
+      iconOn.classList.toggle('block', !isAudioMuted);
+      iconOff.classList.toggle('hidden', !isAudioMuted);
+      iconOff.classList.toggle('block', isAudioMuted);
     }
 
     function toggleAudioMute() {
@@ -683,7 +654,7 @@
 
     function playSound(type) {
       if (isAudioMuted || !audioCtx) return;
-      if (audioCtx.state === 'suspended') { audioCtx.resume(); }
+      if (audioCtx.state === 'suspended') audioCtx.resume();
 
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
@@ -710,25 +681,24 @@
       }
     }
 
-    const DEFAULT_EVENT_CODE = "TWGCSESSION4";
+    const DEFAULT_EVENT_CODE = "TWGCSESSION5";
     const PRESENTER_PASSCODE = "6789";
-    
+
     let isPresenterAuthenticated = sessionStorage.getItem('pulse_presenter_auth') === 'true';
     let sessionId = sessionStorage.getItem('pulse_session_id');
     if (!sessionId) {
       sessionId = 'sess_' + Math.random().toString(36).substring(2, 11);
       sessionStorage.setItem('pulse_session_id', sessionId);
     }
-    
+
     const urlParams = new URLSearchParams(window.location.search);
     const rawCodeParam = urlParams.get('code') || urlParams.get('eventCode') || '';
     const initialCodeParam = rawCodeParam ? rawCodeParam.replace(/^#/, '').trim().toUpperCase() : '';
-
     const persistedView = sessionStorage.getItem('pulse_current_view') || 'audience';
-    
+
     const processedPulseIds = new Set();
+    const processedSeriesPulseIds = new Set();
     const loadedStaticBanks = new Set();
-    let audienceLeaderboardTimeout = null;
 
     let state = {
       eventCode: initialCodeParam || DEFAULT_EVENT_CODE,
@@ -744,7 +714,8 @@
       activeQuizQuestionId: null,
       activeQuizQuestionStartedAt: null,
       lastQuizClearedAt: 0,
-      lastLeaderboardResetAt: 0,
+      lastResetPulseId: 0,
+      lastSeriesResetPulseId: 0,
       activeQuizTimer: null,
       quizTimeRemaining: 0,
       quizElapsedTime: 0,
@@ -755,7 +726,8 @@
       spotlightedItem: null,
       confettiFired: false,
       leaderboardMode: 'session',
-      sessionLeaderboard: {},
+      awardedByUserQuiz: new Map(),       // "user::quizId" -> points (for active session)
+      seriesAwardedByUserQuiz: new Map(), // "eventCode::user::quizId" -> points (for series global)
       sideQuizActive: false,
       sideQuizQuestions: [],
       sideQuizIndex: 0,
@@ -763,38 +735,22 @@
       sideQuizCompleted: false,
       sideQuizCatalog: {},
       lastPulseId: 0,
+      lastSeriesPulseId: 0,
       deckMap: new Map(),
       courseBankMap: new Map(),
-      userScores: {},
-      scoredKeys: new Set(),
       countedAnswerUsers: new Set()
     };
 
-    function getAwardedMap(cleanCode) {
+    function parseMetadata(raw) {
+      let meta = raw;
       try {
-        return JSON.parse(localStorage.getItem(`pulse_awarded_${cleanCode}`) || '{}');
-      } catch (e) {
-        return {};
-      }
-    }
-
-    function saveAwardedMap(cleanCode, mapObj) {
-      try {
-        localStorage.setItem(`pulse_awarded_${cleanCode}`, JSON.stringify(mapObj));
-      } catch (e) {}
-    }
-
-    function rebuildLeaderboardFromAwardedMap(cleanCode) {
-      const awardedMap = getAwardedMap(cleanCode);
-      const totals = {};
-      Object.entries(awardedMap).forEach(([compoundKey, pts]) => {
-        const sepIdx = compoundKey.indexOf('::');
-        if (sepIdx > 0) {
-          const user = compoundKey.slice(0, sepIdx);
-          totals[user] = (totals[user] || 0) + (Number(pts) || 0);
+        while (typeof meta === 'string') {
+          meta = JSON.parse(meta.replace(/[\u2026]/g, '...'));
         }
-      });
-      return totals;
+      } catch (e) {
+        return null;
+      }
+      return meta;
     }
 
     function getQuestionKey(q, fallback = '') {
@@ -846,9 +802,7 @@
       persistSessionDeck(cleanCode);
       renderQuizDeck();
       renderCourseBank();
-      if (state.presenterSubTab === 'sidebuilder') {
-        renderSideQuizBuilder();
-      }
+      if (state.presenterSubTab === 'sidebuilder') renderSideQuizBuilder();
       sendPulse('quiz_save', { quiz: sessionItem });
     }
 
@@ -894,6 +848,8 @@
       const clean = eventCode.replace(/^#/, '').toUpperCase();
       const sessionIdx = clean.indexOf('SESSION');
       if (sessionIdx > 0) return clean.substring(0, sessionIdx);
+      const quizIdx = clean.indexOf('QUIZ');
+      if (quizIdx > 0) return clean.substring(0, quizIdx);
       const match = clean.match(/^([A-Z]+)/);
       return match ? match[1] : clean;
     }
@@ -926,9 +882,7 @@
                 deck.forEach((item, idx) => {
                   const norm = normalizeQuestionItem(item, codePart, `${codePart}_q_${idx}`);
                   const qKey = getQuestionKey(norm);
-                  if (!state.courseBankMap.has(qKey)) {
-                    state.courseBankMap.set(qKey, norm);
-                  }
+                  if (!state.courseBankMap.has(qKey)) state.courseBankMap.set(qKey, norm);
                 });
               }
             } catch (e) {}
@@ -945,9 +899,7 @@
 
       state.courseBankMap.forEach((q, k) => combined.set(k, q));
       state.deckMap.forEach((q, k) => {
-        if (!combined.has(k)) {
-          combined.set(k, { ...q, sourceSession: q.sourceSession || state.eventCode });
-        }
+        if (!combined.has(k)) combined.set(k, { ...q, sourceSession: q.sourceSession || state.eventCode });
       });
 
       for (let i = 0; i < localStorage.length; i++) {
@@ -961,9 +913,7 @@
                 deck.forEach((item, idx) => {
                   const norm = normalizeQuestionItem(item, codePart, `${codePart}_q_${idx}`);
                   const qKey = getQuestionKey(norm);
-                  if (!combined.has(qKey)) {
-                    combined.set(qKey, norm);
-                  }
+                  if (!combined.has(qKey)) combined.set(qKey, norm);
                 });
               }
             } catch (e) {}
@@ -996,20 +946,13 @@
           mergedBank.set(getQuestionKey(norm), norm);
         });
 
-        state.courseBankMap.forEach((q, k) => {
-          mergedBank.set(k, q);
-        });
-
+        state.courseBankMap.forEach((q, k) => mergedBank.set(k, q));
         state.courseBankMap = mergedBank;
         persistCourseBank(seriesName);
 
         renderCourseBank();
-        if (state.presenterSubTab === 'sidebuilder') {
-          renderSideQuizBuilder();
-        }
-      } catch (err) {
-        // Silent fallback when no static JSON bank exists for a series
-      }
+        if (state.presenterSubTab === 'sidebuilder') renderSideQuizBuilder();
+      } catch (err) {}
     }
 
     function buildSessionJsonPayload() {
@@ -1019,12 +962,7 @@
         ? state.quizDeck
         : Array.from(state.deckMap.values());
 
-      return {
-        scope: 'session',
-        series,
-        eventCode: cleanCode,
-        questions
-      };
+      return { scope: 'session', series, eventCode: cleanCode, questions };
     }
 
     function buildCourseBankJsonPayload() {
@@ -1032,11 +970,7 @@
       const series = getLectureSeries(cleanCode) || cleanCode;
       const questions = getAllSeriesQuestions();
 
-      return {
-        scope: 'course',
-        series,
-        questions
-      };
+      return { scope: 'course', series, questions };
     }
 
     function downloadJsonFile(payload, filename) {
@@ -1067,8 +1001,7 @@
 
     function exportSessionDeckJson() {
       const payload = buildSessionJsonPayload();
-      const slug = (payload.eventCode || 'session').toLowerCase();
-      downloadJsonFile(payload, `${slug}.json`);
+      downloadJsonFile(payload, `${(payload.eventCode || 'session').toLowerCase()}.json`);
     }
 
     function copySessionDeckJson() {
@@ -1078,8 +1011,7 @@
 
     function exportCourseBankJson() {
       const payload = buildCourseBankJsonPayload();
-      const slug = (payload.series || 'course').toLowerCase();
-      downloadJsonFile(payload, `${slug}.json`);
+      downloadJsonFile(payload, `${(payload.series || 'course').toLowerCase()}.json`);
     }
 
     function copyCourseBankJson() {
@@ -1087,30 +1019,99 @@
       copyTextToClipboard(JSON.stringify(payload, null, 2), `Course Bank JSON (${payload.series}) copied to clipboard!`);
     }
 
-    function getSeriesLeaderboard() {
-      const seriesName = getLectureSeries(state.eventCode);
-      if (!seriesName) return getEventLeaderboard();
-
-      const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
-      const aggregated = {};
-
-      Object.keys(allLeaderboards).forEach(code => {
-        if (getLectureSeries(code) === seriesName) {
-          const sessionData = allLeaderboards[code] || {};
-          Object.keys(sessionData).forEach(name => {
-            aggregated[name] = (aggregated[name] || 0) + sessionData[name];
-          });
+    function getEventLeaderboard() {
+      const totals = {};
+      for (const [key, pts] of state.awardedByUserQuiz.entries()) {
+        const sepIdx = key.indexOf('::');
+        if (sepIdx > 0) {
+          const user = key.slice(0, sepIdx);
+          totals[user] = (totals[user] || 0) + pts;
         }
-      });
-
-      return Object.keys(aggregated)
-        .map(name => ({ name, score: aggregated[name] }))
+      }
+      return Object.entries(totals)
+        .map(([name, score]) => ({ name, score }))
         .sort((a, b) => b.score - a.score);
     }
 
-    function setLeaderboardMode(mode) {
+    function getSeriesLeaderboard() {
+      const totals = {};
+      for (const [key, pts] of state.seriesAwardedByUserQuiz.entries()) {
+        const firstSep = key.indexOf('::');
+        const secondSep = key.indexOf('::', firstSep + 2);
+        if (firstSep > 0 && secondSep > firstSep) {
+          const user = key.slice(firstSep + 2, secondSep);
+          totals[user] = (totals[user] || 0) + pts;
+        }
+      }
+      return Object.entries(totals)
+        .map(([name, score]) => ({ name, score }))
+        .sort((a, b) => b.score - a.score);
+    }
+
+    async function fetchSeriesLeaderboardFromD1() {
+      const seriesName = getLectureSeries(state.eventCode);
+      if (!seriesName) return;
+      try {
+        const afterParam = state.lastSeriesPulseId > 0 ? `&afterId=${encodeURIComponent(state.lastSeriesPulseId)}` : '';
+        const res = await fetch(`/api/pulse?seriesPrefix=${encodeURIComponent(seriesName)}${afterParam}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const pulses = Array.isArray(data?.recent_pulses) ? data.recent_pulses : [];
+        if (pulses.length === 0) return;
+
+        pulses.sort((a, b) => Number(a.id) - Number(b.id));
+        let changed = false;
+
+        for (const p of pulses) {
+          const pId = Number(p.id) || 0;
+          if (pId > state.lastSeriesPulseId) state.lastSeriesPulseId = pId;
+          if (processedSeriesPulseIds.has(pId)) continue;
+          processedSeriesPulseIds.add(pId);
+
+          const meta = parseMetadata(p.metadata);
+          const pCode = String(p.event_code || '').replace(/^#/, '').trim().toUpperCase();
+
+          if (p.event_type === 'leaderboard_reset') {
+            if (pId > state.lastSeriesResetPulseId) {
+              state.lastSeriesResetPulseId = pId;
+              if (meta && meta.scope === 'series') {
+                state.seriesAwardedByUserQuiz.clear();
+              } else {
+                for (const k of Array.from(state.seriesAwardedByUserQuiz.keys())) {
+                  if (k.startsWith(`${pCode}::`)) state.seriesAwardedByUserQuiz.delete(k);
+                }
+              }
+              changed = true;
+            }
+            continue;
+          }
+
+          if (p.event_type === 'quiz_answer' && meta) {
+            const user = String(meta.userName || p.user_id || '').trim();
+            const quizId = String(meta.quizId ?? '').trim();
+            const pts = Math.max(0, Number(meta.pointsEarned) || 0);
+            if (user && quizId && pCode) {
+              const key = `${pCode}::${user}::${quizId}`;
+              if (!state.seriesAwardedByUserQuiz.has(key)) {
+                state.seriesAwardedByUserQuiz.set(key, pts);
+                changed = true;
+              }
+            }
+          }
+        }
+
+        if (changed && state.leaderboardMode === 'series') {
+          renderLeaderboard();
+        }
+      } catch (e) {}
+    }
+
+    async function setLeaderboardMode(mode) {
       state.leaderboardMode = mode;
       renderLeaderboard();
+      if (mode === 'series') {
+        await fetchSeriesLeaderboardFromD1();
+      }
     }
 
     function getUserStreak(userName) {
@@ -1122,10 +1123,9 @@
     function updateUserStreak(userName, isCorrect) {
       if (!userName) return;
       const streaks = JSON.parse(localStorage.getItem('pulse_user_streaks') || '{}');
-      if (isCorrect) streaks[userName] = (streaks[userName] || 0) + 1;
-      else streaks[userName] = 0;
+      streaks[userName] = isCorrect ? (streaks[userName] || 0) + 1 : 0;
       localStorage.setItem('pulse_user_streaks', JSON.stringify(streaks));
-      
+
       const badge = document.getElementById('playerStreakBadge');
       if (badge && userName === state.userName) {
         const currentStreak = streaks[userName];
@@ -1149,7 +1149,7 @@
         state.userName = name.trim();
         localStorage.setItem('pulse_participant_name', state.userName);
       }
-    
+
       const userNameInput = document.getElementById('userNameInput');
       if (userNameInput && !userNameInput.value) userNameInput.value = state.userName;
 
@@ -1174,53 +1174,35 @@
       }
     }
 
-    function getEventLeaderboard() {
-      const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
-      const cleanKey = (state.eventCode || '').replace(/^#/, '').trim().toUpperCase();
-      const sessionData = allLeaderboards[cleanKey] || state.sessionLeaderboard || {};
-      return Object.keys(sessionData)
-        .map(name => ({ name, score: sessionData[name] }))
-        .sort((a, b) => b.score - a.score);
-    }
-
     async function resetCurrentEventLeaderboard() {
       if (!state.eventCode) return;
       const isSeriesMode = state.leaderboardMode === 'series';
       const cleanKey = (state.eventCode || '').replace(/^#/, '').trim().toUpperCase();
       const seriesName = getLectureSeries(cleanKey);
 
-      const confirmMsg = isSeriesMode 
+      const confirmMsg = isSeriesMode
         ? `Are you sure you want to wipe ALL points across the entire lecture series "${seriesName}"?`
         : `Are you sure you want to reset the leaderboard for session "${cleanKey}"?`;
 
       if (confirm(confirmMsg)) {
-        const resetTime = Date.now();
-        state.lastLeaderboardResetAt = resetTime;
-        state.userScores = {};
-        state.scoredKeys.clear();
-        localStorage.removeItem(`pulse_awarded_${cleanKey}`);
-        const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
-
+        state.awardedByUserQuiz.clear();
         if (isSeriesMode) {
-          Object.keys(allLeaderboards).forEach(code => {
-            if (getLectureSeries(code) === seriesName) {
-              delete allLeaderboards[code];
-              localStorage.removeItem(`pulse_awarded_${code}`);
-            }
-          });
-          state.sessionLeaderboard = {};
+          state.seriesAwardedByUserQuiz.clear();
         } else {
-          delete allLeaderboards[cleanKey];
-          state.sessionLeaderboard = {};
+          for (const k of Array.from(state.seriesAwardedByUserQuiz.keys())) {
+            if (k.startsWith(`${cleanKey}::`)) state.seriesAwardedByUserQuiz.delete(k);
+          }
         }
-
-        localStorage.setItem('pulse_leaderboards', JSON.stringify(allLeaderboards));
         renderLeaderboard();
-        await sendPulse('leaderboard_reset', { eventCode: isSeriesMode ? seriesName : cleanKey, resetAt: resetTime });
+        await sendPulse('leaderboard_reset', {
+          eventCode: cleanKey,
+          scope: isSeriesMode ? 'series' : 'session',
+          series: seriesName,
+          resetAt: Date.now()
+        });
       }
     }
-    
-    let qrCodeInstance = null;
+
     function renderQRCode() {
       const qrContainer = document.getElementById('qrcode');
       if (!qrContainer) return;
@@ -1229,10 +1211,10 @@
       const joinUrl = `${window.location.origin}${window.location.pathname}?code=${encodeURIComponent(cleanCode)}`;
 
       try {
-        qrCodeInstance = new QRCode(qrContainer, {
+        new QRCode(qrContainer, {
           text: joinUrl, width: 100, height: 100, colorDark: "#0B0F17", colorLight: "#FFFFFF", correctLevel: QRCode.CorrectLevel.H
         });
-      } catch (e) { console.error("QR Code error:", e); }
+      } catch (e) {}
     }
 
     function initSideQuizMode(cleanCode) {
@@ -1264,7 +1246,7 @@
       state.activeQuizQuestion = q;
       state.activeQuizQuestionId = qId;
       state.quizTimeRemaining = 0;
-      
+
       if (state.sideQuizAnswers[qId] !== undefined) {
         state.hasSubmittedAnswer = true;
         state.userSelectedOption = state.sideQuizAnswers[qId];
@@ -1293,22 +1275,28 @@
     function setEventCode(newCode) {
       if (!newCode) return;
       const clean = newCode.replace(/^#/, '').trim().toUpperCase();
+      const prevSeries = getLectureSeries(state.eventCode);
+      const nextSeries = getLectureSeries(clean);
+
       state.eventCode = clean;
+      state.questions = [];
       state.quizDeck = [];
       state.deckMap = new Map();
-      state.scoredKeys = new Set();
+      state.awardedByUserQuiz = new Map();
       state.countedAnswerUsers = new Set();
       state.lastPulseId = 0;
-      
-      const existingAwarded = getAwardedMap(clean);
-      Object.keys(existingAwarded).forEach(k => state.scoredKeys.add(k));
-
-      const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
-      const rebuilt = rebuildLeaderboardFromAwardedMap(clean);
-      state.sessionLeaderboard = Object.keys(rebuilt).length > 0 ? rebuilt : (allLeaderboards[clean] || {});
-      state.userScores = { ...state.sessionLeaderboard };
-
+      state.lastResetPulseId = 0;
+      state.activeQuizQuestion = null;
+      state.activeQuizQuestionId = null;
+      state.spotlightedItem = null;
       processedPulseIds.clear();
+
+      if (prevSeries !== nextSeries) {
+        state.seriesAwardedByUserQuiz = new Map();
+        state.lastSeriesPulseId = 0;
+        state.lastSeriesResetPulseId = 0;
+        processedSeriesPulseIds.clear();
+      }
 
       try {
         const cachedDeck = JSON.parse(localStorage.getItem(`pulse_deck_${clean}`) || '[]');
@@ -1326,19 +1314,18 @@
           const newUrl = `${window.location.pathname}?code=${encodeURIComponent(clean)}`;
           window.history.replaceState({ path: newUrl }, '', newUrl);
         }
-      } catch(e) {}
+      } catch (e) {}
 
-      document.querySelectorAll('.event-code-display').forEach(el => el.textContent = clean);
+      document.querySelectorAll('.event-code-display').forEach(el => (el.textContent = clean));
       const audCodeDisp = document.getElementById('audienceLeaderboardCode');
       if (audCodeDisp) audCodeDisp.textContent = clean;
       const input = document.getElementById('headerAudienceCodeInput');
       if (input) input.value = clean;
 
-      const seriesName = getLectureSeries(clean);
       const seriesLabel = document.getElementById('courseBankSeriesLabel');
-      if (seriesLabel) seriesLabel.textContent = seriesName || clean;
+      if (seriesLabel) seriesLabel.textContent = nextSeries || clean;
 
-      loadCourseBankFromStorageAndCache(seriesName);
+      loadCourseBankFromStorageAndCache(nextSeries);
 
       if (isSideQuizCode(clean)) {
         initSideQuizMode(clean);
@@ -1346,9 +1333,9 @@
         state.sideQuizActive = false;
       }
 
-      if (seriesName && !loadedStaticBanks.has(seriesName)) {
-        loadedStaticBanks.add(seriesName);
-        loadStaticQuestionBankForSeries(seriesName);
+      if (nextSeries && !loadedStaticBanks.has(nextSeries)) {
+        loadedStaticBanks.add(nextSeries);
+        loadStaticQuestionBankForSeries(nextSeries);
       }
 
       renderQRCode();
@@ -1356,6 +1343,9 @@
       renderCourseBank();
       renderLeaderboard();
       fetchPulseDatabase();
+      if (state.leaderboardMode === 'series') {
+        fetchSeriesLeaderboardFromD1();
+      }
     }
 
     function changeAudienceEventCode() {
@@ -1368,10 +1358,6 @@
         clearInterval(state.activeQuizTimer);
         state.activeQuizTimer = null;
       }
-      if (audienceLeaderboardTimeout) {
-        clearTimeout(audienceLeaderboardTimeout);
-        audienceLeaderboardTimeout = null;
-      }
 
       state.activeQuizQuestionId = questionId;
       state.activeQuizQuestionStartedAt = startedAtMs;
@@ -1381,15 +1367,10 @@
         state.quizElapsedTime = elapsedSeconds;
 
         if (durationSeconds <= 0) {
-          if (state.activeQuizQuestion && state.activeQuizQuestion.stoppedAt) {
-            state.quizTimeRemaining = 0;
-          } else {
-            state.quizTimeRemaining = 999999;
-          }
+          state.quizTimeRemaining = (state.activeQuizQuestion && state.activeQuizQuestion.stoppedAt) ? 0 : 999999;
         } else {
           state.quizTimeRemaining = Math.max(0, durationSeconds - elapsedSeconds);
           if (state.quizTimeRemaining <= 10 && state.quizTimeRemaining > 0) playSound('tick');
-
           if (state.quizTimeRemaining <= 0) {
             clearInterval(state.activeQuizTimer);
             state.activeQuizTimer = null;
@@ -1408,16 +1389,22 @@
       setInterval(() => {
         if (!document.hidden) {
           fetchPulseDatabase();
+          if (state.leaderboardMode === 'series') {
+            fetchSeriesLeaderboardFromD1();
+          }
         }
-      }, 4000);
+      }, 5000);
 
       document.addEventListener('visibilitychange', () => {
         if (!document.hidden) {
           fetchPulseDatabase();
+          if (state.leaderboardMode === 'series') {
+            fetchSeriesLeaderboardFromD1();
+          }
         }
       });
     }
-    
+
     async function sendPulse(eventType, metadata = {}, userId = null) {
       try {
         const cleanCode = state.eventCode.replace(/^#/, '').trim().toUpperCase();
@@ -1432,7 +1419,7 @@
     async function sendReaction(emoji) {
       checkParticipantName();
       await sendPulse('reaction', { emoji }, state.userName);
-      
+
       const floatEl = document.createElement('div');
       floatEl.textContent = emoji;
       floatEl.className = "fixed bottom-20 left-1/2 -translate-x-1/2 text-3xl animate-bounce z-50 pointer-events-none transition-all duration-1000";
@@ -1465,27 +1452,20 @@
         let leaderboardChanged = false;
         let quizStateChanged = false;
         let questionsChanged = false;
-        const awardedMap = getAwardedMap(cleanCode);
 
         sortedPulses.forEach(p => {
-          const pulseNumId = Number(p.id);
-          if (!Number.isNaN(pulseNumId) && pulseNumId > state.lastPulseId) {
+          const pulseNumId = Number(p.id) || 0;
+          if (pulseNumId > state.lastPulseId) {
             state.lastPulseId = pulseNumId;
           }
 
-          if (processedPulseIds.has(p.id)) return;
-          processedPulseIds.add(p.id);
+          if (processedPulseIds.has(pulseNumId)) return;
+          processedPulseIds.add(pulseNumId);
 
-          let meta = p.metadata;
-          try {
-            while (typeof meta === 'string') {
-              meta = meta.replace(/[\u2026]/g, '...');
-              meta = JSON.parse(meta);
-            }
-          } catch (e) {}
+          const meta = parseMetadata(p.metadata);
 
           if (p.event_type === 'question' && meta) {
-            const qId = meta.id || p.id;
+            const qId = meta.id || pulseNumId;
             if (!state.questions.some(existing => String(existing.id) === String(qId))) {
               state.questions.unshift({
                 id: qId,
@@ -1517,25 +1497,31 @@
             }
           }
 
-          if (p.event_type === 'quiz_answer' && meta) {
-            const pulseTime = p.created_at ? new Date(p.created_at).getTime() : Date.now();
-            const isAfterReset = !state.lastLeaderboardResetAt || pulseTime >= state.lastLeaderboardResetAt;
+          if (p.event_type === 'leaderboard_reset') {
+            if (pulseNumId > state.lastResetPulseId) {
+              state.lastResetPulseId = pulseNumId;
+              state.awardedByUserQuiz.clear();
+              leaderboardChanged = true;
+            }
+          }
 
-            if (isAfterReset && meta.userName && meta.quizId !== undefined && meta.quizId !== null && meta.pointsEarned !== undefined) {
-              const cleanUser = String(meta.userName).trim();
-              const cleanQuizId = String(meta.quizId).trim();
-              const awardKey = `${cleanUser}::${cleanQuizId}`;
+          if (p.event_type === 'quiz_answer' && meta) {
+            if (pulseNumId > state.lastResetPulseId) {
+              const cleanUser = String(meta.userName || p.user_id || '').trim();
+              const cleanQuizId = String(meta.quizId ?? '').trim();
               const points = Math.max(0, Number(meta.pointsEarned) || 0);
 
-              if (cleanUser && cleanQuizId && !(awardKey in awardedMap)) {
-                awardedMap[awardKey] = points;
-                state.scoredKeys.add(awardKey);
-                leaderboardChanged = true;
+              if (cleanUser && cleanQuizId) {
+                const awardKey = `${cleanUser}::${cleanQuizId}`;
+                if (!state.awardedByUserQuiz.has(awardKey)) {
+                  state.awardedByUserQuiz.set(awardKey, points);
+                  leaderboardChanged = true;
+                }
               }
             }
 
             if (activeQId && String(meta.quizId) === activeQId) {
-              const userKey = meta.userName || p.session_id || `pulse_${p.id}`;
+              const userKey = meta.userName || p.session_id || `pulse_${pulseNumId}`;
               if (!state.countedAnswerUsers.has(userKey)) {
                 state.countedAnswerUsers.add(userKey);
                 const optIdx = Number(meta.selectedIndex);
@@ -1567,9 +1553,8 @@
 
           if (p.event_type === 'quiz_clear') {
             const clearedAt = (meta && meta.clearedAt) ? Number(meta.clearedAt) : (p.created_at ? new Date(p.created_at).getTime() : Date.now());
-            if (clearedAt > state.lastQuizClearedAt) {
-              state.lastQuizClearedAt = clearedAt;
-            }
+            if (clearedAt > state.lastQuizClearedAt) state.lastQuizClearedAt = clearedAt;
+
             if (!state.activeQuizQuestionStartedAt || clearedAt >= state.activeQuizQuestionStartedAt) {
               state.activeQuizQuestion = null;
               state.activeQuizQuestionId = null;
@@ -1596,6 +1581,8 @@
             if (state.activeQuizQuestionId !== q.id || !state.activeQuizQuestion) {
               state.activeQuizQuestion = q;
               state.activeQuizQuestionId = q.id;
+              state.hasSubmittedAnswer = false;
+              state.userSelectedOption = null;
               state.responseCounts = [0, 0, 0, 0];
               state.totalResponses = 0;
               state.countedAnswerUsers.clear();
@@ -1644,9 +1631,7 @@
 
           if (p.event_type === 'quiz_delete' && meta) {
             const key = String(meta.id || meta.title || '').trim();
-            if (key && state.deckMap.delete(key)) {
-              deckChanged = true;
-            }
+            if (key && state.deckMap.delete(key)) deckChanged = true;
           }
 
           if (p.event_type === 'quiz_reorder' && meta && Array.isArray(meta.deck)) {
@@ -1657,51 +1642,19 @@
             });
             deckChanged = true;
           }
-
-          if (p.event_type === 'leaderboard_reset') {
-            const resetTime = p.created_at ? new Date(p.created_at).getTime() : Date.now();
-            if (resetTime >= state.lastLeaderboardResetAt) {
-              state.lastLeaderboardResetAt = resetTime;
-              Object.keys(awardedMap).forEach(k => delete awardedMap[k]);
-              state.userScores = {};
-              state.scoredKeys.clear();
-              state.sessionLeaderboard = {};
-              const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
-              delete allLeaderboards[cleanCode];
-              localStorage.setItem('pulse_leaderboards', JSON.stringify(allLeaderboards));
-              leaderboardChanged = true;
-            }
-          }
         });
 
         if (deckChanged) {
           persistSessionDeck(cleanCode);
           renderQuizDeck();
         }
-
         if (bankChanged) {
           persistCourseBank(getLectureSeries(cleanCode));
           renderCourseBank();
         }
-
         if ((deckChanged || bankChanged) && state.presenterSubTab === 'sidebuilder') {
           renderSideQuizBuilder();
         }
-
-        if (leaderboardChanged) {
-          saveAwardedMap(cleanCode, awardedMap);
-          const rebuiltScores = rebuildLeaderboardFromAwardedMap(cleanCode);
-          state.userScores = { ...rebuiltScores };
-          state.sessionLeaderboard = { ...rebuiltScores };
-          const allLeaderboards = JSON.parse(localStorage.getItem('pulse_leaderboards') || '{}');
-          if (Object.keys(rebuiltScores).length > 0) {
-            allLeaderboards[cleanCode] = rebuiltScores;
-          } else {
-            delete allLeaderboards[cleanCode];
-          }
-          localStorage.setItem('pulse_leaderboards', JSON.stringify(allLeaderboards));
-        }
-
         if (questionsChanged) renderQuestions();
         if (quizStateChanged) {
           renderAudienceQuizPane();
@@ -1783,7 +1736,7 @@
       const series = getLectureSeries(state.eventCode);
       try {
         state.sideQuizCatalog = JSON.parse(localStorage.getItem(`pulse_side_catalog_${series}`) || '{}');
-      } catch(e) { state.sideQuizCatalog = {}; }
+      } catch (e) { state.sideQuizCatalog = {}; }
     }
 
     let sideQuizBuilderQuestions = [];
@@ -1804,7 +1757,7 @@
           const title = q.title || q.question || 'Untitled Question';
           const sessionTag = q.sourceSession ? q.sourceSession.replace('TWGC', '') : 'COURSE';
           const isChecked = sideQuizBuilderQuestions.some(item => String(item.id || item.title || item.question) === String(qId));
-          
+
           return `
             <label class="q-select-card flex items-start space-x-3.5 text-slate-800 dark:text-gray-200 cursor-pointer bg-slate-50 dark:bg-gray-900/60 p-4 rounded-xl border border-slate-200 dark:border-gray-800/85 hover:border-amber-500/40 transition shadow-sm">
               <input type="checkbox" value="${qId}" ${isChecked ? 'checked' : ''} onchange="handleSideQuizCheckboxChange(this, ${JSON.stringify(q).replace(/"/g, '&quot;')})" class="global-q-checkbox mt-1 accent-amber-500 shrink-0 w-5 h-5 rounded">
@@ -1915,7 +1868,7 @@
       if (editingCode && editingCode !== codeInput) delete state.sideQuizCatalog[editingCode];
 
       state.sideQuizCatalog[codeInput] = { code: codeInput, title: titleInput || `Side Quiz ${codeInput}`, questions: sideQuizBuilderQuestions };
-      try { localStorage.setItem(`pulse_side_catalog_${series}`, JSON.stringify(state.sideQuizCatalog)); } catch(e) {}
+      try { localStorage.setItem(`pulse_side_catalog_${series}`, JSON.stringify(state.sideQuizCatalog)); } catch (e) {}
 
       cancelEditSideQuiz();
       renderSideQuizBuilder();
@@ -1924,8 +1877,7 @@
     }
 
     function toggleBulkGlobalHelp() {
-      const box = document.getElementById('bulkGlobalHelpBox');
-      if (box) box.classList.toggle('hidden');
+      document.getElementById('bulkGlobalHelpBox')?.classList.toggle('hidden');
     }
 
     async function importBulkGlobalDeck() {
@@ -1984,9 +1936,7 @@
 
         renderQuizDeck();
         renderCourseBank();
-        if (state.presenterSubTab === 'sidebuilder') {
-          renderSideQuizBuilder();
-        }
+        if (state.presenterSubTab === 'sidebuilder') renderSideQuizBuilder();
 
         document.getElementById('bulkGlobalJsonInput').value = "";
         const targetLabel = effectiveMode === 'course'
@@ -1999,8 +1949,7 @@
     }
 
     function toggleBulkJsonHelp() {
-      const box = document.getElementById('bulkJsonHelpBox');
-      if (box) box.classList.toggle('hidden');
+      document.getElementById('bulkJsonHelpBox')?.classList.toggle('hidden');
     }
 
     async function importBulkSideQuiz() {
@@ -2018,20 +1967,13 @@
         const questions = parsed.questions;
 
         const series = getLectureSeries(state.eventCode);
-        state.sideQuizCatalog[codeInput] = {
-          code: codeInput,
-          title: titleInput,
-          questions: questions
-        };
-
-        try {
-          localStorage.setItem(`pulse_side_catalog_${series}`, JSON.stringify(state.sideQuizCatalog));
-        } catch(e) {}
+        state.sideQuizCatalog[codeInput] = { code: codeInput, title: titleInput, questions };
+        try { localStorage.setItem(`pulse_side_catalog_${series}`, JSON.stringify(state.sideQuizCatalog)); } catch (e) {}
 
         document.getElementById('bulkJsonInput').value = "";
         renderSideQuizBuilder();
         await sendPulse('side_quiz_save', state.sideQuizCatalog[codeInput]);
-        alert(`Side Quiz ${codeInput} successfully imported and published via bulk injection!`);
+        alert(`Side Quiz ${codeInput} successfully imported and published!`);
       } catch (err) {
         alert("Bulk Import Error: " + err.message);
       }
@@ -2073,7 +2015,7 @@
       if (confirm(`Delete side quiz ${code}?`)) {
         const series = getLectureSeries(state.eventCode);
         delete state.sideQuizCatalog[code];
-        try { localStorage.setItem(`pulse_side_catalog_${series}`, JSON.stringify(state.sideQuizCatalog)); } catch(e) {}
+        try { localStorage.setItem(`pulse_side_catalog_${series}`, JSON.stringify(state.sideQuizCatalog)); } catch (e) {}
         renderSideQuizBuilder();
       }
     }
@@ -2133,21 +2075,16 @@
     function switchAudienceTab(tab) {
       if (tab === 'quiz' || tab === 'leaderboard' || tab === 'sidequizzes') checkParticipantName();
       state.audienceTab = tab;
-      
+
       const mobileQA = document.getElementById('mobileNavQA');
       const mobileQuiz = document.getElementById('mobileNavQuiz');
       const mobileSide = document.getElementById('mobileNavSideQuizzes');
       const mobileLdr = document.getElementById('mobileNavLeaderboard');
 
-      const qaPane = document.getElementById('audienceQAPane');
-      const quizPane = document.getElementById('audienceQuizPane');
-      const sidePane = document.getElementById('audienceSideQuizzesPane');
-      const ldrPane = document.getElementById('audienceLeaderboardPane');
-
-      qaPane.classList.toggle('hidden', tab !== 'qa');
-      quizPane.classList.toggle('hidden', tab !== 'quiz');
-      if (sidePane) sidePane.classList.toggle('hidden', tab !== 'sidequizzes');
-      ldrPane.classList.toggle('hidden', tab !== 'leaderboard');
+      document.getElementById('audienceQAPane').classList.toggle('hidden', tab !== 'qa');
+      document.getElementById('audienceQuizPane').classList.toggle('hidden', tab !== 'quiz');
+      document.getElementById('audienceSideQuizzesPane')?.classList.toggle('hidden', tab !== 'sidequizzes');
+      document.getElementById('audienceLeaderboardPane').classList.toggle('hidden', tab !== 'leaderboard');
 
       const activeClass = "flex flex-col items-center space-y-1 text-amber-600 dark:text-amber-400 font-bold text-[10px]";
       const inactiveClass = "flex flex-col items-center space-y-1 text-slate-500 dark:text-gray-400 font-bold text-[10px]";
@@ -2158,7 +2095,10 @@
       if (mobileLdr) mobileLdr.className = tab === 'leaderboard' ? activeClass : inactiveClass;
 
       if (tab === 'sidequizzes') renderAudienceSideQuizzesPane();
-      if (tab === 'leaderboard') renderLeaderboard();
+      if (tab === 'leaderboard') {
+        renderLeaderboard();
+        if (state.leaderboardMode === 'series') fetchSeriesLeaderboardFromD1();
+      }
       lucide.createIcons();
     }
 
@@ -2175,8 +2115,7 @@
 
       document.getElementById('presenterSpotlightPane').classList.toggle('hidden', subTab !== 'spotlight');
       document.getElementById('presenterManagerPane').classList.toggle('hidden', subTab !== 'manager');
-      const sidePane = document.getElementById('presenterSideBuilderPane');
-      if (sidePane) sidePane.classList.toggle('hidden', subTab !== 'sidebuilder');
+      document.getElementById('presenterSideBuilderPane')?.classList.toggle('hidden', subTab !== 'sidebuilder');
       document.getElementById('presenterQuestionsPane').classList.toggle('hidden', subTab !== 'questions');
       document.getElementById('presenterLeaderboardPane').classList.toggle('hidden', subTab !== 'leaderboard');
 
@@ -2199,7 +2138,7 @@
 
       const cleanCode = state.eventCode.replace(/^#/, '').trim().toUpperCase();
       const newQ = {
-        id: Date.now(), author: author, text: text, upvotes: 1, voted: true,
+        id: Date.now(), author, text, upvotes: 1, voted: true,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         answered: false, eventCode: cleanCode
       };
@@ -2207,7 +2146,6 @@
       state.questions.unshift(newQ);
       qInput.value = "";
       renderQuestions();
-
       await sendPulse('question', newQ, author);
     }
 
@@ -2303,7 +2241,6 @@
 
       renderQuizDeck();
       renderCourseBank();
-
       cancelEditQuizQuestion();
       await sendPulse('quiz_save', { quiz: quizItem, addToCourseBank: alsoAddToCourse });
     }
@@ -2361,7 +2298,7 @@
       renderCourseBank();
       await sendPulse('quiz_delete', { id: quizId });
     }
-    
+
     function resetQuizDeck() {
       if (confirm("Are you sure you want to clear this session's quiz deck?")) {
         const idsToDelete = state.quizDeck.map(q => q.id).filter(Boolean);
@@ -2384,6 +2321,8 @@
       const startedAt = Date.now();
       state.activeQuizQuestion = releasedQuiz;
       state.activeQuizQuestionId = releasedQuiz.id;
+      state.hasSubmittedAnswer = false;
+      state.userSelectedOption = null;
       state.responseCounts = [0, 0, 0, 0];
       state.totalResponses = 0;
       state.countedAnswerUsers.clear();
@@ -2393,7 +2332,7 @@
       startQuizTimer(releasedQuiz.id, effectiveTimeLimit, startedAt);
       switchPresenterSubTab('spotlight');
       renderAll();
-      await sendPulse('quiz_release', { quiz: releasedQuiz, startedAt: startedAt });
+      await sendPulse('quiz_release', { quiz: releasedQuiz, startedAt });
     }
 
     async function manualStopQuiz() {
@@ -2407,7 +2346,7 @@
       renderAll();
 
       if (state.activeQuizQuestionId) {
-        await sendPulse('quiz_stop', { quizId: state.activeQuizQuestionId, stoppedAt: stoppedAt });
+        await sendPulse('quiz_stop', { quizId: state.activeQuizQuestionId, stoppedAt });
       }
     }
 
@@ -2424,14 +2363,10 @@
       state.responseCounts = [0, 0, 0, 0];
       state.totalResponses = 0;
       state.countedAnswerUsers.clear();
-      
+
       if (state.activeQuizTimer) {
         clearInterval(state.activeQuizTimer);
         state.activeQuizTimer = null;
-      }
-      if (audienceLeaderboardTimeout) {
-        clearTimeout(audienceLeaderboardTimeout);
-        audienceLeaderboardTimeout = null;
       }
 
       renderAll();
@@ -2443,62 +2378,51 @@
       checkParticipantName();
 
       const questionId = state.activeQuizQuestion.id || state.activeQuizQuestion.title;
-      const answeredMap = JSON.parse(localStorage.getItem('pulse_answered_quizzes') || '{}');
+      const userAwardKey = `${state.userName}::${questionId}`;
 
-      if (state.hasSubmittedAnswer || answeredMap[questionId]) {
+      if (state.hasSubmittedAnswer || state.awardedByUserQuiz.has(userAwardKey)) {
         alert("You have already submitted an answer for this question.");
         return;
       }
 
       state.hasSubmittedAnswer = true;
       state.userSelectedOption = selectedIndex;
-      answeredMap[questionId] = selectedIndex;
-      localStorage.setItem('pulse_answered_quizzes', JSON.stringify(answeredMap));
 
       const isCorrect = selectedIndex === state.activeQuizQuestion.correct;
       updateUserStreak(state.userName, isCorrect);
       if (isCorrect) playSound('success');
 
-      if (typeof selectedIndex === 'number' && selectedIndex >= 0 && selectedIndex < 4) {
-        state.responseCounts[selectedIndex]++;
-        state.totalResponses++;
-      }
-
       let pointsEarned = 0;
       if (isCorrect) {
-        const maxPoints = (state.activeQuizQuestion && state.activeQuizQuestion.points !== undefined) 
-          ? Number(state.activeQuizQuestion.points) 
+        const maxPoints = (state.activeQuizQuestion && state.activeQuizQuestion.points !== undefined)
+          ? Number(state.activeQuizQuestion.points)
           : 100;
         const totalTime = Number(state.activeQuizQuestion.timeLimit) || 0;
-        
+
         let speedRatio = 1.0;
         if (totalTime > 0 && state.presenterTimerMode) {
           const timeRemaining = Math.max(0, totalTime - state.quizElapsedTime);
           speedRatio = timeRemaining / totalTime;
         }
-        
+
         pointsEarned = Math.round(maxPoints * (0.5 + (0.5 * speedRatio)));
+      }
+
+      if (state.sideQuizActive) {
+        state.sideQuizAnswers[questionId] = selectedIndex;
       }
 
       renderAudienceQuizPane();
       renderSpotlight();
-
-      if (state.sideQuizActive) {
-        state.sideQuizAnswers[questionId] = selectedIndex;
-        await sendPulse('quiz_answer', { quizId: questionId, selectedIndex, isCorrect, userName: state.userName, pointsEarned });
-      } else {
-        await sendPulse('quiz_answer', { quizId: questionId, selectedIndex, isCorrect, userName: state.userName, pointsEarned });
-      }
+      await sendPulse('quiz_answer', { quizId: questionId, selectedIndex, isCorrect, userName: state.userName, pointsEarned });
+      await fetchPulseDatabase();
     }
 
     async function summarizeOrEnhanceQuestion() {
       const qInput = document.getElementById('questionInput');
       const text = qInput.value.trim();
       if (!text) return;
-      qInput.placeholder = "Enhancing...";
-      try {
-        qInput.value = text.charAt(0).toUpperCase() + text.slice(1) + (text.endsWith('?') ? '' : '?');
-      } catch (err) { console.error("AI enhancement error:", err); }
+      qInput.value = text.charAt(0).toUpperCase() + text.slice(1) + (text.endsWith('?') ? '' : '?');
     }
 
     function renderAll() {
@@ -2564,49 +2488,47 @@
     }
 
     function renderQuizDeck() {
-      try {
-        const container = document.getElementById('quizDeckList');
-        if (!container) return;
-    
-        if (!state.quizDeck || state.quizDeck.length === 0) {
-          container.innerHTML = `<div class="text-center py-6 text-slate-500 dark:text-gray-500 text-xs bg-white dark:bg-gray-900/60 rounded-xl border border-slate-200 dark:border-gray-800">No questions added to this session's deck yet. Create one or add from the Course Bank below.</div>`;
-          return;
-        }
-    
-        container.innerHTML = state.quizDeck.map((rawItem, index) => {
-          const q = (rawItem && rawItem.quiz) ? rawItem.quiz : (rawItem || {});
-          const title = q.title || q.question || 'Untitled Question';
-          const points = q.points !== undefined ? q.points : 100;
-          const timerVal = q.timeLimit !== undefined ? Number(q.timeLimit) : 30;
-          const timerStr = timerVal === 0 ? 'Unlimited' : `${timerVal}s`;
-          const qId = q.id || `q_${index}`;
-    
-          return `
-            <div class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-xl p-3.5 flex items-center justify-between mb-2 shadow-sm hover:border-amber-500/40 transition">
-              <div class="flex items-center space-x-3 pr-2">
-                <div class="flex flex-col space-y-0.5">
-                  <button onclick="moveQuizQuestion(${index}, -1)" ${index === 0 ? 'disabled' : ''} class="text-slate-400 hover:text-amber-500 disabled:opacity-20 p-0.5"><i data-lucide="chevron-up" class="w-3.5 h-3.5"></i></button>
-                  <button onclick="moveQuizQuestion(${index}, 1)" ${index === state.quizDeck.length - 1 ? 'disabled' : ''} class="text-slate-400 hover:text-amber-500 disabled:opacity-20 p-0.5"><i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></button>
-                </div>
-                <div class="space-y-1">
-                  <div class="flex items-center space-x-2">
-                    <span class="bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded border border-amber-500/20">Q${index + 1}</span>
-                    <span class="text-slate-400 text-[10px] font-medium">${timerStr} • ${points} pts</span>
-                    ${q.imageUrl ? '<span class="bg-blue-500/10 text-blue-500 text-[10px] font-bold px-1.5 py-0.5 rounded">🖼️ Image</span>' : ''}
-                  </div>
-                  <h4 class="text-xs font-bold text-slate-900 dark:text-white leading-tight">${title}</h4>
-                </div>
+      const container = document.getElementById('quizDeckList');
+      if (!container) return;
+
+      if (!state.quizDeck || state.quizDeck.length === 0) {
+        container.innerHTML = `<div class="text-center py-6 text-slate-500 dark:text-gray-500 text-xs bg-white dark:bg-gray-900/60 rounded-xl border border-slate-200 dark:border-gray-800">No questions added to this session's deck yet. Create one or add from the Course Bank below.</div>`;
+        return;
+      }
+
+      container.innerHTML = state.quizDeck.map((rawItem, index) => {
+        const q = (rawItem && rawItem.quiz) ? rawItem.quiz : (rawItem || {});
+        const title = q.title || q.question || 'Untitled Question';
+        const points = q.points !== undefined ? q.points : 100;
+        const timerVal = q.timeLimit !== undefined ? Number(q.timeLimit) : 30;
+        const timerStr = timerVal === 0 ? 'Unlimited' : `${timerVal}s`;
+        const qId = q.id || `q_${index}`;
+
+        return `
+          <div class="bg-white dark:bg-gray-900 border border-slate-200 dark:border-gray-800 rounded-xl p-3.5 flex items-center justify-between mb-2 shadow-sm hover:border-amber-500/40 transition">
+            <div class="flex items-center space-x-3 pr-2">
+              <div class="flex flex-col space-y-0.5">
+                <button onclick="moveQuizQuestion(${index}, -1)" ${index === 0 ? 'disabled' : ''} class="text-slate-400 hover:text-amber-500 disabled:opacity-20 p-0.5"><i data-lucide="chevron-up" class="w-3.5 h-3.5"></i></button>
+                <button onclick="moveQuizQuestion(${index}, 1)" ${index === state.quizDeck.length - 1 ? 'disabled' : ''} class="text-slate-400 hover:text-amber-500 disabled:opacity-20 p-0.5"><i data-lucide="chevron-down" class="w-3.5 h-3.5"></i></button>
               </div>
-              <div class="flex items-center space-x-1.5 shrink-0">
-                <button onclick="editQuizQuestion('${qId}')" class="bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 text-slate-700 dark:text-gray-300 font-bold text-xs px-2.5 py-1 rounded-lg transition">Edit</button>
-                <button onclick="releaseQuizQuestion('${qId}')" class="bg-amber-500 text-slate-950 font-bold text-xs px-3 py-1 rounded-lg transition shadow">Release</button>
-                <button onclick="deleteQuizQuestion('${qId}')" class="text-slate-400 hover:text-red-500 p-1 transition"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+              <div class="space-y-1">
+                <div class="flex items-center space-x-2">
+                  <span class="bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded border border-amber-500/20">Q${index + 1}</span>
+                  <span class="text-slate-400 text-[10px] font-medium">${timerStr} • ${points} pts</span>
+                  ${q.imageUrl ? '<span class="bg-blue-500/10 text-blue-500 text-[10px] font-bold px-1.5 py-0.5 rounded">🖼️ Image</span>' : ''}
+                </div>
+                <h4 class="text-xs font-bold text-slate-900 dark:text-white leading-tight">${title}</h4>
               </div>
             </div>
-          `;
-        }).join('');
-        lucide.createIcons();
-      } catch (err) { console.error('Error inside renderQuizDeck:', err); }
+            <div class="flex items-center space-x-1.5 shrink-0">
+              <button onclick="editQuizQuestion('${qId}')" class="bg-slate-100 dark:bg-gray-800 hover:bg-slate-200 text-slate-700 dark:text-gray-300 font-bold text-xs px-2.5 py-1 rounded-lg transition">Edit</button>
+              <button onclick="releaseQuizQuestion('${qId}')" class="bg-amber-500 text-slate-950 font-bold text-xs px-3 py-1 rounded-lg transition shadow">Release</button>
+              <button onclick="deleteQuizQuestion('${qId}')" class="text-slate-400 hover:text-red-500 p-1 transition"><i data-lucide="trash-2" class="w-3.5 h-3.5"></i></button>
+            </div>
+          </div>
+        `;
+      }).join('');
+      lucide.createIcons();
     }
 
     function renderCourseBank() {
@@ -2660,7 +2582,7 @@
       renderQuizDeck();
       await sendPulse('quiz_reorder', { deck: state.quizDeck });
     }
-    
+
     function renderAudienceQuizPane() {
       const container = document.getElementById('audienceQuizContainer');
       if (!container) return;
@@ -2703,8 +2625,8 @@
       }
 
       const isUnlimited = (Number(activeQ.timeLimit) === 0 || !state.presenterTimerMode) && !state.sideQuizActive;
-      const showAnswerAndVotes = state.sideQuizActive 
-        ? state.hasSubmittedAnswer 
+      const showAnswerAndVotes = state.sideQuizActive
+        ? state.hasSubmittedAnswer
         : (isUnlimited ? (activeQ.stoppedAt || (state.quizTimeRemaining === 0 && state.activeQuizTimer === null)) : (state.quizTimeRemaining <= 0));
 
       if (showAnswerAndVotes && state.userSelectedOption !== null && state.userSelectedOption === activeQ.correct && !state.confettiFired) {
@@ -2767,7 +2689,7 @@
               const count = state.responseCounts[idx] || 0;
               const pct = state.totalResponses > 0 ? Math.round((count / state.totalResponses) * 100) : 0;
               const style = kahootStyles[idx % 4];
-              
+
               let btnStyle = `${style.class} shadow-md`;
               if (showAnswerAndVotes) {
                 if (isCorrect) {
@@ -2887,7 +2809,7 @@
                 const count = state.responseCounts[idx] || 0;
                 const pct = state.totalResponses > 0 ? Math.round((count / state.totalResponses) * 100) : 0;
                 const style = kahootStyles[idx % 4];
-                
+
                 let cardStyle = style.class;
                 if (showAnswer) {
                   if (isCorrect) {
