@@ -8,32 +8,33 @@ export async function onRequestPost(context) {
     if (!sessionId) {
       return new Response(JSON.stringify({ error: 'sessionId is required' }), {
         status: 400,
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'Access-Control-Allow-Origin': '*',
+        },
       });
     }
 
     const ipAddress = request.headers.get('cf-connecting-ip') || 'unknown';
     const userAgent = request.headers.get('user-agent') || 'unknown';
+    const cleanEventCode = eventCode ? String(eventCode).replace(/^#/, '').trim().toUpperCase() : null;
 
-    // Normalize event code (strip leading # and convert to uppercase)
-    const cleanEventCode = eventCode ? eventCode.replace(/^#/, '').trim().toUpperCase() : null;
-
-    const statement = env.PULSE_DB.prepare(
+    await env.PULSE_DB.prepare(
       `INSERT INTO pulse_events (session_id, user_id, event_type, event_code, metadata, ip_address, user_agent)
        VALUES (?, ?, ?, ?, ?, ?, ?)`
-    );
+    )
+      .bind(
+        sessionId,
+        userId || null,
+        eventType,
+        cleanEventCode,
+        JSON.stringify(metadata),
+        ipAddress,
+        userAgent
+      )
+      .run();
 
-    await statement.bind(
-      sessionId,
-      userId || null,
-      eventType,
-      cleanEventCode,
-      JSON.stringify(metadata),
-      ipAddress,
-      userAgent
-    ).run();
-
-    return new Response(JSON.stringify({ success: true, message: 'Pulse recorded' }), {
+    return new Response(JSON.stringify({ success: true }), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
@@ -43,7 +44,10 @@ export async function onRequestPost(context) {
   } catch (err) {
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      },
     });
   }
 }
@@ -52,32 +56,33 @@ export async function onRequestGet(context) {
   const { request, env } = context;
   const url = new URL(request.url);
   const eventCode = url.searchParams.get('eventCode');
+  const afterIdRaw = url.searchParams.get('afterId');
+  const afterId = afterIdRaw !== null ? Number(afterIdRaw) : 0;
 
   try {
-    let query = `SELECT id, session_id, user_id, event_type, event_code, metadata, created_at 
-                 FROM pulse_events`;
-    let params = [];
+    let query = `SELECT id, session_id, user_id, event_type, event_code, metadata, created_at
+                 FROM pulse_events WHERE 1=1`;
+    const params = [];
 
     if (eventCode) {
-      const cleanCode = eventCode.replace(/^#/, '').trim().toUpperCase();
-      // Match both 'TWGCSESSION2' and '#TWGCSESSION2' in D1
-      query += ` WHERE UPPER(REPLACE(event_code, '#', '')) = ?`;
+      const cleanCode = String(eventCode).replace(/^#/, '').trim().toUpperCase();
+      query += ` AND UPPER(REPLACE(event_code, '#', '')) = ?`;
       params.push(cleanCode);
     }
 
-    // Always sort chronologically without any row count restriction
-    query += ` ORDER BY id ASC`;
+    if (!Number.isNaN(afterId) && afterId > 0) {
+      query += ` AND id > ?`;
+      params.push(afterId);
+    }
+
+    query += ` ORDER BY id ASC LIMIT 250`;
 
     const { results } = await env.PULSE_DB.prepare(query).bind(...params).all();
-
-    const countResult = await env.PULSE_DB.prepare(
-      `SELECT COUNT(*) as total FROM pulse_events`
-    ).first();
+    const rows = results || [];
 
     return new Response(
       JSON.stringify({
-        total_pulses: countResult ? countResult.total : 0,
-        recent_pulses: results || [],
+        recent_pulses: rows,
       }),
       {
         status: 200,
@@ -90,7 +95,10 @@ export async function onRequestGet(context) {
   } catch (err) {
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      },
     });
   }
 }
