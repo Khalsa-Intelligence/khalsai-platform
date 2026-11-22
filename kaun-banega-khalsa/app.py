@@ -400,22 +400,41 @@ class Default(WorkerEntrypoint):
                 body_text = await request.text()
                 data = json.loads(body_text) if body_text else {}
 
-                name = data.get("name")
+                name = (data.get("name") or "").strip()
                 if not name:
-                    return Response(json.dumps({"status": "error", "message": "Invalid data"}), status=400, headers={"Content-Type": "application/json"})
+                    return Response(
+                        json.dumps({"status": "error", "message": "Name is required"}),
+                        status=400,
+                        headers={"Content-Type": "application/json"}
+                    )
+
+                db = getattr(env, "DB", None)
+                if not db:
+                    return Response(
+                        json.dumps({"status": "error", "message": "Database binding DB missing"}),
+                        status=500,
+                        headers={"Content-Type": "application/json"}
+                    )
 
                 record_id = data.get("id") or int(time.time() * 1000)
                 age = data.get("age")
                 level = data.get("level", 1)
                 score = data.get("score", 0)
-                group_code = (data.get("group_code") or "GLOBAL").strip().upper()
+                group_code = (data.get("group_code") or "GLOBAL").strip().upper() or "GLOBAL"
 
                 query = "INSERT INTO leaderboard (id, name, age, level, score, group_code) VALUES (?, ?, ?, ?, ?, ?)"
-                await env.DB.prepare(query).bind(record_id, name, age, level, score, group_code).run()
+                await db.prepare(query).bind(record_id, name, age, level, score, group_code).run()
 
-                return Response(json.dumps({"status": "success", "message": "Score saved to D1 Database!"}), headers={"Content-Type": "application/json"})
+                return Response(
+                    json.dumps({"status": "success", "message": "Score saved to D1 Database!"}),
+                    headers={"Content-Type": "application/json"}
+                )
             except Exception as e:
-                return Response(json.dumps({"status": "error", "message": str(e)}), status=500, headers={"Content-Type": "application/json"})
+                return Response(
+                    json.dumps({"status": "error", "message": str(e)}),
+                    status=500,
+                    headers={"Content-Type": "application/json"}
+                )
 
         # -------------------------------------------------------------
         # 7. DELETE SCORE: POST /api/delete_score
@@ -426,15 +445,41 @@ class Default(WorkerEntrypoint):
                 data = json.loads(body_text) if body_text else {}
 
                 if data.get("password") != "6789":
-                    return Response(json.dumps({"status": "error", "message": "Incorrect password."}), status=403, headers={"Content-Type": "application/json"})
+                    return Response(
+                        json.dumps({"status": "error", "message": "Incorrect password."}),
+                        status=403,
+                        headers={"Content-Type": "application/json"}
+                    )
 
                 target_id = data.get("id")
-                query = "DELETE FROM leaderboard WHERE id = ?"
-                await env.DB.prepare(query).bind(target_id).run()
+                if target_id is None or str(target_id).strip() == "":
+                    return Response(
+                        json.dumps({"status": "error", "message": "Missing record ID."}),
+                        status=400,
+                        headers={"Content-Type": "application/json"}
+                    )
 
-                return Response(json.dumps({"status": "success", "message": "Entry deleted successfully."}), headers={"Content-Type": "application/json"})
+                db = getattr(env, "DB", None)
+                if not db:
+                    return Response(
+                        json.dumps({"status": "error", "message": "Database binding DB missing"}),
+                        status=500,
+                        headers={"Content-Type": "application/json"}
+                    )
+
+                query = "DELETE FROM leaderboard WHERE id = ?"
+                await db.prepare(query).bind(target_id).run()
+
+                return Response(
+                    json.dumps({"status": "success", "message": "Entry deleted successfully."}),
+                    headers={"Content-Type": "application/json"}
+                )
             except Exception as e:
-                return Response(json.dumps({"status": "error", "message": str(e)}), status=500, headers={"Content-Type": "application/json"})
+                return Response(
+                    json.dumps({"status": "error", "message": str(e)}),
+                    status=500,
+                    headers={"Content-Type": "application/json"}
+                )
 
         # -------------------------------------------------------------
         # 8. RESET LEADERBOARD: POST /api/reset_leaderboard
@@ -445,50 +490,79 @@ class Default(WorkerEntrypoint):
                 data = json.loads(body_text) if body_text else {}
 
                 if data.get("password") != "6789":
-                    return Response(json.dumps({"status": "error", "message": "Incorrect password."}), status=403, headers={"Content-Type": "application/json"})
+                    return Response(
+                        json.dumps({"status": "error", "message": "Incorrect password."}),
+                        status=403,
+                        headers={"Content-Type": "application/json"}
+                    )
+
+                db = getattr(env, "DB", None)
+                if not db:
+                    return Response(
+                        json.dumps({"status": "error", "message": "Database binding DB missing"}),
+                        status=500,
+                        headers={"Content-Type": "application/json"}
+                    )
 
                 query = "DELETE FROM leaderboard"
-                await env.DB.prepare(query).run()
+                await db.prepare(query).run()
 
-                return Response(json.dumps({"status": "success", "message": "Leaderboard reset successfully."}), headers={"Content-Type": "application/json"})
+                return Response(
+                    json.dumps({"status": "success", "message": "Leaderboard reset successfully."}),
+                    headers={"Content-Type": "application/json"}
+                )
             except Exception as e:
-                return Response(json.dumps({"status": "error", "message": str(e)}), status=500, headers={"Content-Type": "application/json"})
+                return Response(
+                    json.dumps({"status": "error", "message": str(e)}),
+                    status=500,
+                    headers={"Content-Type": "application/json"}
+                )
 
         # -------------------------------------------------------------
         # 9. DISPLAY LEADERBOARD: GET /leaderboard
         # -------------------------------------------------------------
         if method == "GET" and path == "/leaderboard":
             try:
-                requested_group = query_params.get('group', ['GLOBAL'])[0].strip().upper()
+                db = getattr(env, "DB", None)
+                if not db:
+                    return Response("Database binding DB missing", status=500)
+
+                requested_group = (query_params.get('group', ['GLOBAL'])[0] or 'GLOBAL').strip().upper()
 
                 if requested_group != "GLOBAL":
-                    stmt = env.DB.prepare("SELECT * FROM leaderboard WHERE UPPER(group_code) = ? ORDER BY level DESC, score DESC")
+                    stmt = db.prepare(
+                        "SELECT * FROM leaderboard WHERE TRIM(UPPER(COALESCE(group_code, 'GLOBAL'))) = ? "
+                        "ORDER BY level DESC, score DESC"
+                    )
                     res = await stmt.bind(requested_group).all()
                 else:
-                    stmt = env.DB.prepare("SELECT * FROM leaderboard ORDER BY level DESC, score DESC")
+                    stmt = db.prepare("SELECT * FROM leaderboard ORDER BY level DESC, score DESC")
                     res = await stmt.all()
 
-                scores = res.results.to_py()
+                raw_scores = res.results.to_py() if hasattr(res.results, "to_py") else list(res.results or [])
+                scores = raw_scores or []
 
-                group_stmt = env.DB.prepare("SELECT DISTINCT group_code FROM leaderboard")
+                group_stmt = db.prepare("SELECT DISTINCT TRIM(UPPER(COALESCE(group_code, 'GLOBAL'))) AS group_code FROM leaderboard")
                 group_res = await group_stmt.all()
-                existing_groups = [g.get('group_code') for g in group_res.results.to_py() if g.get('group_code')]
+                raw_groups = group_res.results.to_py() if hasattr(group_res.results, "to_py") else list(group_res.results or [])
+                existing_groups = [g.get('group_code') for g in (raw_groups or []) if g.get('group_code')]
 
                 dropdown_options = ""
                 is_global_selected = 'selected' if requested_group == "GLOBAL" else ''
                 dropdown_options += f'<option value="GLOBAL" {is_global_selected}>Global (All Scores)</option>'
 
                 for g in existing_groups:
-                    if g and g.upper() != "GLOBAL":
-                        is_selected = 'selected' if requested_group == g.upper() else ''
-                        dropdown_options += f'<option value="{g}" {is_selected}>{g}</option>'
+                    g_clean = str(g).strip().upper()
+                    if g_clean and g_clean != "GLOBAL":
+                        is_selected = 'selected' if requested_group == g_clean else ''
+                        dropdown_options += f'<option value="{g_clean}" {is_selected}>{g_clean}</option>'
 
                 rows_html = ""
                 for rank, entry in enumerate(scores, 1):
                     name = entry.get('name') or 'Anonymous'
                     age = entry.get('age') if entry.get('age') is not None else '-'
                     level = entry.get('level', 1)
-                    grp = entry.get('group_code') or 'GLOBAL'
+                    grp = (entry.get('group_code') or 'GLOBAL').strip().upper()
                     record_id = entry.get('id', '')
                     rows_html += f"""
                         <tr>
@@ -497,7 +571,7 @@ class Default(WorkerEntrypoint):
                             <td>{age}</td>
                             <td>Level {level}</td>
                             <td><span class="group-tag">{grp}</span></td>
-                            <td><button class="delete-btn" onclick="deleteEntry('{record_id}', '{name}')">Delete</button></td>
+                            <td><button class="delete-btn" onclick="deleteEntry({json.dumps(str(record_id))}, {json.dumps(str(name))})">Delete</button></td>
                         </tr>
                     """
 
@@ -506,6 +580,7 @@ class Default(WorkerEntrypoint):
 <head>
     <meta charset="UTF-8">
     <title>Ranked Leaderboard</title>
+    <link rel="icon" href="/favicon.ico" sizes="any">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body { font-family: sans-serif; background: #0d1117; color: #fff; padding: 2rem; max-width: 700px; margin: 0 auto; }
@@ -531,7 +606,7 @@ class Default(WorkerEntrypoint):
 
     <div class="filter-bar">
         <label for="groupSelect"><strong>Filter Group:</strong></label>
-        <select id="groupSelect" onchange="window.location.href='/leaderboard?group=' + this.value">
+        <select id="groupSelect" onchange="window.location.href='/leaderboard?group=' + encodeURIComponent(this.value)">
             __DROPDOWN_OPTIONS__
         </select>
     </div>
@@ -563,12 +638,10 @@ class Default(WorkerEntrypoint):
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const group = urlParams.get('group');
-        if (group && group !== 'GLOBAL') {
+        if (group && group.toUpperCase() !== 'GLOBAL') {
             document.getElementById('playAgainBtn').href = `/kbk?group=${encodeURIComponent(group)}`;
         }
-    </script>
 
-    <script>
         function deleteEntry(recordId, playerName) {
             const password = prompt("Enter admin password to delete score for " + playerName + ":");
             if (password === null) return;
@@ -576,7 +649,7 @@ class Default(WorkerEntrypoint):
             fetch('/api/delete_score', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ id: Number(recordId), password: password })
+                body: JSON.stringify({ id: recordId, password: password })
             })
             .then(res => res.json())
             .then(data => {
@@ -586,7 +659,7 @@ class Default(WorkerEntrypoint):
                     alert(data.message || "Incorrect password or error deleting entry.");
                 }
             })
-            .catch(err => alert("Error communicating with server"));
+            .catch(() => alert("Error communicating with server"));
         }
 
         function resetLeaderboard() {
@@ -595,7 +668,7 @@ class Default(WorkerEntrypoint):
 
             fetch('/api/reset_leaderboard', {
                 method: 'POST',
-                headers: { 'Content-Type': "application/json" },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ password: password })
             })
             .then(res => res.json())
@@ -606,16 +679,15 @@ class Default(WorkerEntrypoint):
                     alert(data.message || "Incorrect password or error resetting leaderboard.");
                 }
             })
-            .catch(err => alert("Error communicating with server"));
+            .catch(() => alert("Error communicating with server"));
         }
     </script>
 </body>
 </html>"""
 
                 html = html_template.replace("__DROPDOWN_OPTIONS__", dropdown_options).replace("__ROWS_HTML__", rows_html)
-
                 return Response(html, headers={"Content-Type": "text/html; charset=utf-8"})
             except Exception as e:
                 return Response(f"Error loading leaderboard: {str(e)}", status=500)
-
+                
         return await env.ASSETS.fetch(request)
