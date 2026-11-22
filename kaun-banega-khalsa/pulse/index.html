@@ -80,18 +80,54 @@
   <header class="sticky top-0 z-40 border-b border-slate-200 dark:border-gray-800/80 bg-white/95 dark:bg-[#0D121F]/95 backdrop-blur-md px-3 sm:px-6 py-2.5 transition-all space-y-2">
     <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
 
-      <!-- Brand & Title -->
-      <div class="flex items-center space-x-2 min-w-0 shrink">
-        <div class="w-8 h-8 rounded-xl gold-gradient-bg flex items-center justify-center text-slate-950 shadow-md shadow-amber-500/20 font-black text-sm shrink-0">
-          <i data-lucide="zap" class="w-4 h-4 stroke-[2.5]"></i>
+      <!-- Brand & Title (Links back to khalsai.com main index) -->
+      <a href="https://khalsai.com/" class="flex items-center space-x-2 min-w-0 shrink group focus:outline-none" title="Back to Khalsai Home">
+        <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-[#162038] to-[#0B1120] flex items-center justify-center shadow-md shadow-amber-500/20 border border-amber-500/40 shrink-0 group-hover:scale-105 transition">
+          <svg width="22" height="22" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <defs>
+              <linearGradient id="pulseKhalisGold" x1="10" y1="10" x2="54" y2="54" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#FDE68A"/>
+                <stop offset="48%" stop-color="#F59E0B"/>
+                <stop offset="100%" stop-color="#D97706"/>
+              </linearGradient>
+              <linearGradient id="pulseKhalisGlass" x1="16" y1="12" x2="48" y2="52" gradientUnits="userSpaceOnUse">
+                <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.30"/>
+                <stop offset="100%" stop-color="#38BDF8" stop-opacity="0.14"/>
+              </linearGradient>
+            </defs>
+            <polygon
+              points="32,6 54,19 54,45 32,58 10,45 10,19"
+              fill="url(#pulseKhalisGlass)"
+              stroke="url(#pulseKhalisGold)"
+              stroke-width="2.5"
+              stroke-linejoin="round"
+            />
+            <path
+              d="M22 18V46"
+              stroke="url(#pulseKhalisGold)"
+              stroke-width="4.2"
+              stroke-linecap="round"
+            />
+            <path
+              d="M42 18L26.5 32L42 46"
+              stroke="url(#pulseKhalisGold)"
+              stroke-width="4.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <polygon
+              points="44,27 49,32 44,37 39,32"
+              fill="#FDE68A"
+            />
+          </svg>
         </div>
         <div class="min-w-0">
           <div class="flex items-center space-x-1.5">
-            <span class="text-sm sm:text-base font-black tracking-tight text-slate-900 dark:text-white uppercase truncate">Khalsai Pulse</span>
+            <span class="text-sm sm:text-base font-black tracking-tight text-slate-900 dark:text-white group-hover:text-amber-500 transition uppercase truncate">Khalsai Pulse</span>
             <span class="bg-amber-100 text-amber-800 dark:bg-amber-500/20 dark:text-amber-400 text-[9px] px-1.5 py-0.5 rounded-full font-bold border border-amber-300 dark:border-amber-500/30 shrink-0">KI</span>
           </div>
         </div>
-      </div>
+      </a>
 
       <!-- Right Controls -->
       <div class="flex items-center space-x-2 shrink-0">
@@ -136,7 +172,7 @@
         <button onclick="copyEventCode()" class="text-slate-500 dark:text-gray-400 hover:text-amber-500 transition p-1" title="Copy Session Link">
           <i data-lucide="copy" class="w-4 h-4"></i>
         </button>
-        <a href="https://khalsai.com/why-guru-feedback/" target="_blank" class="flex items-center space-x-1 text-xs font-bold bg-slate-200 dark:bg-gray-800 text-slate-700 dark:text-gray-300 px-3 py-1 rounded-lg hover:bg-amber-500 hover:text-slate-950 transition shrink-0">
+        <a href="https://khalsai.com/why-guru-feedback/" target="_blank" rel="noopener noreferrer" class="flex items-center space-x-1 text-xs font-bold bg-slate-200 dark:bg-gray-800 text-slate-700 dark:text-gray-300 px-3 py-1 rounded-lg hover:bg-amber-500 hover:text-slate-950 transition shrink-0">
           <i data-lucide="message-square-plus" class="w-3.5 h-3.5"></i>
           <span>Feedback</span>
         </a>
