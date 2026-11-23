@@ -29,9 +29,9 @@
     --rare-bg: #EEF2FF;
     --rare-border: #818CF8;
     --rare-text: #3730A3;
-    --nanaksar-bg: #FFFBEB;
-    --nanaksar-border: #F59E0B;
-    --nanaksar-text: #92400E;
+    --khulle-bg: #FFFBEB;
+    --khulle-border: #F59E0B;
+    --khulle-text: #92400E;
     --success-bg: #ECFDF5;
     --success-border: #10B981;
     --success-text: #065F46;
@@ -56,9 +56,9 @@
     --rare-bg: rgba(99, 102, 241, 0.16);
     --rare-border: #6366F1;
     --rare-text: #A5B4FC;
-    --nanaksar-bg: rgba(245, 158, 11, 0.12);
-    --nanaksar-border: #D97706;
-    --nanaksar-text: #FDE68A;
+    --khulle-bg: rgba(245, 158, 11, 0.12);
+    --khulle-border: #D97706;
+    --khulle-text: #FDE68A;
     --success-bg: rgba(16, 185, 129, 0.14);
     --success-border: #059669;
     --success-text: #34D399;
@@ -88,7 +88,7 @@
     min-width: 0;
   }
 
-  #activeStage, #nanaksarView {
+  #activeStage, #khulleView {
     scroll-margin-top: 12px;
   }
 
@@ -355,8 +355,8 @@
     color: var(--rare-text);
   }
 
-  .switcher-label.nanaksar {
-    color: var(--nanaksar-text);
+  .switcher-label.khulle {
+    color: var(--khulle-text);
   }
 
   .taal-grid {
@@ -416,10 +416,10 @@
     color: var(--rare-text);
   }
 
-  .mode-btn.nanaksar-btn {
-    background: var(--nanaksar-bg);
-    border-color: var(--nanaksar-border);
-    color: var(--nanaksar-text);
+  .mode-btn.khulle-btn {
+    background: var(--khulle-bg);
+    border-color: var(--khulle-border);
+    color: var(--khulle-text);
     font-weight: 700;
   }
 
@@ -1034,7 +1034,7 @@
 
   <!-- Tradition Scope Note -->
   <div class="tradition-banner">
-    <strong>Sikh Kirtan Focus:</strong> The taals, bols, and variations in this app focus on <strong>Sikh Kirtan</strong> and Gurmat/Jori traditions (including Nanaksar <em>taarna</em> and <em>aarti</em> styles). Many other taals exist outside this tradition across wider Indian classical and world percussion repertoires.
+    <strong>Sikh Kirtan Focus:</strong> The taals, bols, and variations in this app focus on <strong>Sikh Kirtan</strong> and Gurmat/Jori traditions (including <em>khulle bohl</em>, <em>taarna</em>, and <em>aarti</em> styles). Many other taals exist outside this tradition across wider Indian classical and world percussion repertoires.
   </div>
 
   <!-- Interactive Metronome + 5-Minute Focus Timer -->
@@ -1062,8 +1062,8 @@
   <!-- Active Single-Taal / Module Stage -->
   <main id="activeStage"></main>
 
-  <!-- Dedicated Nanaksar / Khulle Bol / Taarna & Aarti Lab -->
-  <section id="nanaksarView" class="sheet-container hidden"></section>
+  <!-- Dedicated Khulle Bohl / Taarna & Aarti Lab -->
+  <section id="khulleView" class="sheet-container hidden"></section>
 
   <!-- Drums, Jori & Audio Reference View -->
   <section id="drumsView" class="sheet-container hidden">
@@ -1096,9 +1096,9 @@
         </div>
       </div>
       <div class="card-item full-span">
-        <div class="card-title">Jori, Khulle Bol &amp; Nanaksar Kirtan</div>
+        <div class="card-title">Jori &amp; Khulle Bohl in Kirtan</div>
         <div>
-          In Sikh percussion and Gurmat Sangeet, <strong>Jori</strong> (the twin-drum pair of <em>Dhamma</em> and <em>Poorra</em>, closely related to the pakhawaj tradition) is a percussion tradition rather than a single taal by itself. Fast Nanaksar kirtan passages—especially during <em>taarna</em> refrains and <em>aarti</em>—draw heavily on open, ringing strokes (<em>khulle bol</em>) and strong bass-and-kinar drive. This app focuses on Sikh Kirtan cycles; many other taals exist outside this tradition.
+          In Sikh percussion and Gurmat Sangeet, <strong>Jori</strong> (the twin-drum pair of <em>Dhamma</em> and <em>Poorra</em>, closely related to the pakhawaj tradition) is a percussion tradition rather than a single taal by itself. Fast <em>khulle bohl</em> passages—common in <em>taarna</em> refrains and <em>aarti</em>—draw on open, ringing resonance and strong bass-and-kinar drive. This app focuses on Sikh Kirtan cycles; many other taals exist outside this tradition.
         </div>
       </div>
     </div>
@@ -1937,10 +1937,10 @@
     }
   };
 
-  const NANAKSAR_DRILLS = [
+  const KHULLE_BOHL_DRILLS = [
     {
-      id: "nanaksar_taarna_1",
-      title: "Taarna Drive — Open Khulle Bol Keherwa (8)",
+      id: "khulle_taarna_1",
+      title: "Taarna Drive — Open Khulle Bohl Keherwa (8)",
       context: "Taarna / Refrain Build",
       targetBpm: 110,
       xp: 45,
@@ -1952,7 +1952,7 @@
       tip: "Keep the Bayan open and resonant on Ge/Dha while letting the Dayan ring cleanly on the rim—never stiffen the wrist as speed climbs."
     },
     {
-      id: "nanaksar_taarna_2",
+      id: "khulle_taarna_2",
       title: "Fast Taarna Roll — Jori-Style Double Pulse (8)",
       context: "Taarna / High-Energy Chorus",
       targetBpm: 125,
@@ -1965,7 +1965,7 @@
       tip: "Practice at 80–90 BPM first so every stroke stays distinct, then step up cleanly toward 120+ BPM without losing the Sam."
     },
     {
-      id: "nanaksar_aarti_1",
+      id: "khulle_aarti_1",
       title: "Aarti Momentum — 6-Beat Flowing Drive (6)",
       context: "Aarti / Devotional Ascent",
       targetBpm: 115,
@@ -1978,8 +1978,8 @@
       tip: "Feel the forward surge across 1-2-3 | 4-5-6 so the rhythm lifts the singing naturally during Aarti."
     },
     {
-      id: "nanaksar_aarti_2",
-      title: "Aarti Cadence — Open Bol Tihai/Turnaround (8)",
+      id: "khulle_aarti_2",
+      title: "Aarti Cadence — Open Bohl Turnaround (8)",
       context: "Aarti / Verse-to-Chorus Link",
       targetBpm: 120,
       xp: 60,
@@ -2029,8 +2029,8 @@
           if (found) xp += (found.xp || 30);
         }
       }
-      const nanaksarItem = NANAKSAR_DRILLS.find(item => item.id === key);
-      if (nanaksarItem) xp += (nanaksarItem.xp || 45);
+      const khulleItem = KHULLE_BOHL_DRILLS.find(item => item.id === key);
+      if (khulleItem) xp += (khulleItem.xp || 45);
     });
     Object.entries(clearedQuests).forEach(([, done]) => {
       if (done) xp += 15;
@@ -2063,8 +2063,8 @@
     completedDrills[drillId] = !completedDrills[drillId];
     localStorage.setItem("khalsai-completed-drills", JSON.stringify(completedDrills));
     updateXPBadge();
-    if (currentMode === "nanaksar") {
-      renderNanaksarLab();
+    if (currentMode === "khulle") {
+      renderKhulleLab();
     } else {
       renderActiveStage();
     }
@@ -2081,8 +2081,8 @@
     clearedQuests[questKey] = !clearedQuests[questKey];
     localStorage.setItem("khalsai-cleared-quests", JSON.stringify(clearedQuests));
     updateXPBadge();
-    if (currentMode === "nanaksar") {
-      renderNanaksarLab();
+    if (currentMode === "khulle") {
+      renderKhulleLab();
     } else {
       renderActiveStage();
     }
@@ -2162,9 +2162,9 @@
         ${rareButtons}
       </div>
       <div class="switcher-group special-lab-row">
-        <div class="switcher-label nanaksar">Personal Focus Lab</div>
-        <button type="button" class="mode-btn nanaksar-btn ${currentMode === "nanaksar" ? "active" : ""}" onclick="selectMode('nanaksar', true)">
-          ⚡ Nanaksar Khulle Bol • Taarna &amp; Aarti Lab
+        <div class="switcher-label khulle">Open Bols &amp; Jori Phrasing</div>
+        <button type="button" class="mode-btn khulle-btn ${currentMode === "khulle" ? "active" : ""}" onclick="selectMode('khulle', true)">
+          ⚡ Khulle Bohl Lab • Taarna &amp; Aarti
         </button>
       </div>
       <div class="utility-grid">
@@ -2204,15 +2204,15 @@
     if (mode === "taal") {
       renderActiveStage();
       if (shouldScroll) scrollToElement("activeStage");
-    } else if (mode === "nanaksar") {
-      renderNanaksarLab();
-      if (shouldScroll) scrollToElement("nanaksarView");
+    } else if (mode === "khulle") {
+      renderKhulleLab();
+      if (shouldScroll) scrollToElement("khulleView");
     }
   }
 
   function updateViewVisibility() {
     document.getElementById("activeStage").classList.toggle("hidden", currentMode !== "taal");
-    document.getElementById("nanaksarView").classList.toggle("hidden", currentMode !== "nanaksar");
+    document.getElementById("khulleView").classList.toggle("hidden", currentMode !== "khulle");
     document.getElementById("drumsView").classList.toggle("hidden", currentMode !== "drums");
     document.getElementById("trackerView").classList.toggle("hidden", currentMode !== "tracker");
   }
@@ -2317,9 +2317,9 @@
     return `<button type="button" class="${pauseClass}" onclick="pauseMetronome()">⏸ Pause</button>`;
   }
 
-  function renderNanaksarLab() {
-    const view = document.getElementById("nanaksarView");
-    const drillsHtml = NANAKSAR_DRILLS.map(item => {
+  function renderKhulleLab() {
+    const view = document.getElementById("khulleView");
+    const drillsHtml = KHULLE_BOHL_DRILLS.map(item => {
       const done = Boolean(completedDrills[item.id]);
       const ladderBpms = [85, 110, 130];
       const ladderHtml = ladderBpms.map(stepBpm => {
@@ -2367,19 +2367,19 @@
     view.innerHTML = `
       <div class="header">
         <div>
-          <h1 class="header-title">Nanaksar Khulle Bol • Taarna &amp; Aarti Lab</h1>
-          <div class="header-subtitle">Khalsai - Tabla App • Personal Speed &amp; Jori-Feel Practice</div>
+          <h1 class="header-title">Khulle Bohl Lab • Taarna &amp; Aarti</h1>
+          <div class="header-subtitle">Khalsai - Tabla App • Open Bols &amp; Jori-Style Drive</div>
         </div>
-        <span class="level-badge">PERSONAL FOCUS</span>
+        <span class="level-badge">KHULLE BOHL</span>
       </div>
 
       <div class="info-box">
-        <strong>Why Khulle Bol &amp; Jori Feel Matter Here:</strong> Fast Nanaksar kirtan during <em>taarna</em> and <em>aarti</em> relies on open, ringing resonance (<em>khulle bol</em>) and steady forward momentum rather than heavy, tense finger-clamping. Build speed in clean increments using the 85 → 110 → 130 BPM ladder.
+        <strong>Open Bols, Taarna &amp; Aarti:</strong> Faster kirtan passages during <em>taarna</em> and <em>aarti</em> rely on open, ringing resonance (<em>khulle bohl</em>) and steady forward momentum rather than tense finger-clamping. Build speed in clean increments using the 85 → 110 → 130 BPM ladder.
       </div>
 
       <div class="section-title">
-        <span>Taarna &amp; Aarti Practice Drills (${NANAKSAR_DRILLS.length})</span>
-        <span class="level-badge">Khulle Bol / Jori Drive</span>
+        <span>Taarna &amp; Aarti Practice Drills (${KHULLE_BOHL_DRILLS.length})</span>
+        <span class="level-badge">Open Bol / Jori Drive</span>
       </div>
       ${drillsHtml}
     `;
@@ -2699,7 +2699,7 @@
   renderSwitcher();
   updateViewVisibility();
   renderActiveStage();
-  renderNanaksarLab();
+  renderKhulleLab();
   updateTrackerBadge();
   updateXPBadge();
 </script>
