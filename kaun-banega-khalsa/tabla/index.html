@@ -26,6 +26,12 @@
     --table-head: #18181B;
     --badge-bg: #FEF3C7;
     --badge-text: #92400E;
+    --rare-bg: #EEF2FF;
+    --rare-border: #818CF8;
+    --rare-text: #3730A3;
+    --nanaksar-bg: #FFFBEB;
+    --nanaksar-border: #F59E0B;
+    --nanaksar-text: #92400E;
     --success-bg: #ECFDF5;
     --success-border: #10B981;
     --success-text: #065F46;
@@ -47,6 +53,12 @@
     --table-head: #111827;
     --badge-bg: rgba(245, 158, 11, 0.16);
     --badge-text: #FBBF24;
+    --rare-bg: rgba(99, 102, 241, 0.16);
+    --rare-border: #6366F1;
+    --rare-text: #A5B4FC;
+    --nanaksar-bg: rgba(245, 158, 11, 0.12);
+    --nanaksar-border: #D97706;
+    --nanaksar-text: #FDE68A;
     --success-bg: rgba(16, 185, 129, 0.14);
     --success-border: #059669;
     --success-text: #34D399;
@@ -76,7 +88,7 @@
     min-width: 0;
   }
 
-  #activeStage {
+  #activeStage, #nanaksarView {
     scroll-margin-top: 12px;
   }
 
@@ -91,8 +103,23 @@
     border: 1px solid var(--border);
     padding: 12px 16px;
     border-radius: 14px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+
+  .tradition-banner {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--gold);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 12px;
+    font-size: 0.84rem;
+    color: var(--muted);
+  }
+
+  .tradition-banner strong {
+    color: var(--text);
   }
 
   .brand-link {
@@ -307,7 +334,13 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 12px;
+  }
+
+  .switcher-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
   }
 
   .switcher-label {
@@ -316,7 +349,14 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--muted);
-    margin-bottom: 6px;
+  }
+
+  .switcher-label.rare {
+    color: var(--rare-text);
+  }
+
+  .switcher-label.nanaksar {
+    color: var(--nanaksar-text);
   }
 
   .taal-grid {
@@ -329,6 +369,19 @@
     .taal-grid {
       grid-template-columns: repeat(4, 1fr);
     }
+  }
+
+  .rare-taal-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding-top: 8px;
+    border-top: 1px dashed var(--border);
+  }
+
+  .special-lab-row {
+    padding-top: 8px;
+    border-top: 1px dashed var(--border);
   }
 
   .utility-grid {
@@ -357,8 +410,21 @@
     line-height: 1.25;
   }
 
+  .taal-tab-btn.rare-btn {
+    background: var(--rare-bg);
+    border-color: var(--rare-border);
+    color: var(--rare-text);
+  }
+
+  .mode-btn.nanaksar-btn {
+    background: var(--nanaksar-bg);
+    border-color: var(--nanaksar-border);
+    color: var(--nanaksar-text);
+    font-weight: 700;
+  }
+
   .taal-beat-tag {
-    opacity: 0.72;
+    opacity: 0.75;
     font-size: 0.78rem;
     margin-left: 3px;
   }
@@ -482,6 +548,12 @@
     background: var(--badge-bg);
     color: var(--badge-text);
     border: 1px solid rgba(245, 158, 11, 0.3);
+  }
+
+  .level-badge.rare-badge {
+    background: var(--rare-bg);
+    color: var(--rare-text);
+    border-color: var(--rare-border);
   }
 
   .info-box {
@@ -662,6 +734,10 @@
     padding: 14px;
     border-radius: 10px;
     font-size: 0.9rem;
+  }
+
+  .card-item.full-span {
+    grid-column: 1 / -1;
   }
 
   .card-title {
@@ -896,7 +972,7 @@
   @media print {
     :root { --bg-main: #FFF; --card-bg: #FFF; --text: #000; --border: #999; }
     body { background-color: #FFFFFF; padding: 0; color: #000; }
-    .web-toolbar, .metronome-card, .app-switcher, .tier-bar, .inline-pause-btn { display: none; }
+    .web-toolbar, .tradition-banner, .metronome-card, .app-switcher, .tier-bar, .inline-pause-btn { display: none; }
     .hidden { display: block !important; }
     .desktop-only-table { display: block !important; }
     .mobile-chunked-tables { display: none !important; }
@@ -956,6 +1032,11 @@
     </div>
   </header>
 
+  <!-- Tradition Scope Note -->
+  <div class="tradition-banner">
+    <strong>Sikh Kirtan Focus:</strong> The taals, bols, and variations in this app focus on <strong>Sikh Kirtan</strong> and Gurmat/Jori traditions (including Nanaksar <em>taarna</em> and <em>aarti</em> styles). Many other taals exist outside this tradition across wider Indian classical and world percussion repertoires.
+  </div>
+
   <!-- Interactive Metronome + 5-Minute Focus Timer -->
   <div class="metronome-card">
     <div class="metronome-controls">
@@ -981,12 +1062,15 @@
   <!-- Active Single-Taal / Module Stage -->
   <main id="activeStage"></main>
 
-  <!-- Drums & Audio Reference View -->
+  <!-- Dedicated Nanaksar / Khulle Bol / Taarna & Aarti Lab -->
+  <section id="nanaksarView" class="sheet-container hidden"></section>
+
+  <!-- Drums, Jori & Audio Reference View -->
   <section id="drumsView" class="sheet-container hidden">
     <div class="header">
       <div>
-        <div class="header-title">Tabla Master Reference &amp; Audio Guides</div>
-        <div class="header-subtitle">Khalsai - Tabla App • Dayan &amp; Bayan Bols</div>
+        <div class="header-title">Tabla, Jori &amp; Audio Reference</div>
+        <div class="header-subtitle">Khalsai - Tabla App • Dayan, Bayan &amp; Gurmat Percussion</div>
       </div>
       <span class="level-badge">Punjabi Bol Guide</span>
     </div>
@@ -1009,6 +1093,12 @@
           • <strong>Ge:</strong> Open resonant bass stroke with wrist slide.<br>
           • <strong>Ke:</strong> Crisp damped/muted bass stroke.<br>
           • <strong>Dha / Dhin:</strong> Combined strokes (Na + Ge / Tin + Ge).
+        </div>
+      </div>
+      <div class="card-item full-span">
+        <div class="card-title">Jori, Khulle Bol &amp; Nanaksar Kirtan</div>
+        <div>
+          In Sikh percussion and Gurmat Sangeet, <strong>Jori</strong> (the twin-drum pair of <em>Dhamma</em> and <em>Poorra</em>, closely related to the pakhawaj tradition) is a percussion tradition rather than a single taal by itself. Fast Nanaksar kirtan passages—especially during <em>taarna</em> refrains and <em>aarti</em>—draw heavily on open, ringing strokes (<em>khulle bol</em>) and strong bass-and-kinar drive. This app focuses on Sikh Kirtan cycles; many other taals exist outside this tradition.
         </div>
       </div>
     </div>
@@ -1051,7 +1141,7 @@
       vibhag: "2 (4+4)",
       tali: "1 (X)",
       khali: "5 (0)",
-      tempo: "70–110 BPM",
+      tempo: "70–115 BPM",
       kirtanNote: "Widely used in Shabads, Simran, and lively Punjabi/Gurmat compositions.",
       divisions: [
         { label: "Vibhag 1 (Tali X)", span: 4, cls: "sam-cell" },
@@ -1069,6 +1159,14 @@
           },
           {
             id: "keherwa_b2",
+            title: "Punjabi Keherwa (Dhumali Feel)",
+            targetBpm: 85,
+            xp: 35,
+            source: "Punjabi / Kirtan Variation",
+            bols: ["Dha", "Ge", "Tin", "Na", "Ta", "Ge", "Dhin", "Na"]
+          },
+          {
+            id: "keherwa_b3",
             title: "Simple Dha Ge Variation",
             targetBpm: 80,
             xp: 35,
@@ -1079,18 +1177,18 @@
         intermediate: [
           {
             id: "keherwa_i1",
-            title: "Dhumali-Style Groove",
-            targetBpm: 95,
+            title: "Upbeat Punjabi / Dhumali Groove",
+            targetBpm: 100,
             xp: 45,
             source: "Punjabi / Dhumali Style",
-            bols: ["Dha", "Ge", "Tin", "Na", "Ta", "Ge", "Dhin", "Na"]
+            bols: ["Dha", "Ge", "Dhin", "Na", "Ta", "Ge", "Dhin", "Na"]
           },
           {
             id: "keherwa_i2",
-            title: "Bhajani / Light Fill Variation",
-            targetBpm: 100,
+            title: "Bhajani / Light Kirtan Fill",
+            targetBpm: 105,
             xp: 50,
-            source: "Theka Variant Archive",
+            source: "Kirtan Variant Archive",
             bols: ["Dhin", "Dhin", "Na", "Ke", "Tin", "Tin", "Dha", "Dhin"]
           }
         ],
@@ -1151,6 +1249,14 @@
           },
           {
             id: "dadra_b2",
+            title: "Khemta / 6-Beat Kirtan Groove",
+            targetBpm: 105,
+            xp: 35,
+            source: "Kirtan & Folk 6-Beat Variant",
+            bols: ["Dhin", "Dhin", "Na", "Dha", "Tin", "Na"]
+          },
+          {
+            id: "dadra_b3",
             title: "Standard Classical Dadra",
             targetBpm: 95,
             xp: 35,
@@ -1169,11 +1275,11 @@
           },
           {
             id: "dadra_i2",
-            title: "Khemta / Upbeat 6-Beat Pulse",
+            title: "Lively Kirtan 6-Beat Pulse",
             targetBpm: 120,
             xp: 50,
-            source: "SearchGurbani / Classical Notes",
-            bols: ["Dhin", "Dhin", "Na", "Dha", "Tin", "Na"]
+            source: "SearchGurbani / Kirtan Notes",
+            bols: ["Dhin", "Ge", "Na", "Dha", "Ge", "Na"]
           }
         ],
         advanced: [
@@ -1231,6 +1337,14 @@
             xp: 35,
             source: "Hindustani Classical Standard",
             bols: ["Tin", "Tin", "Na", "Dhin", "Na", "Dhin", "Na"]
+          },
+          {
+            id: "roopak_b2",
+            title: "Kirtan 7-Beat Dhin Variation",
+            targetBpm: 85,
+            xp: 35,
+            source: "Kirtan & Classical Variant",
+            bols: ["Tin", "Na", "Dhin", "Dhin", "Na", "Dhin", "Na"]
           }
         ],
         intermediate: [
@@ -1614,6 +1728,14 @@
             xp: 45,
             source: "Gurmat / Dhrupad Tradition",
             bols: ["Dha", "Dha", "Dhin", "Ta", "Ke", "Ta", "Dha", "Tin", "Tit", "Ge"]
+          },
+          {
+            id: "sulfaag_b2",
+            title: "Gurmat / Kirtan Sulfaag Bols",
+            targetBpm: 72,
+            xp: 50,
+            source: "Gurmat Sangeet Variation",
+            bols: ["Dha", "Ge", "Dhin", "Ta", "Ke", "Ta", "Dha", "Ge", "Tin", "Na"]
           }
         ],
         intermediate: [
@@ -1657,10 +1779,221 @@
         answerIndex: 0,
         explanation: "Sulfaag divides 10 matras into five pairs (2+2+2+2+2) with Khalis on beats 5 and 9."
       }
+    },
+    chautaal: {
+      id: "chautaal",
+      name: "Chautaal",
+      isRare: true,
+      beats: 12,
+      vibhag: "6 (2+2+2+2+2+2)",
+      tali: "1, 5, 9, 11",
+      khali: "3, 7 (0)",
+      tempo: "60–105 BPM",
+      kirtanNote: "Bonus Rare Taal: 12-beat Dhrupad & Gurmat cycle traditionally associated with open/pakhawaj-style bols.",
+      divisions: [
+        { label: "1 (X)", span: 2, cls: "sam-cell" },
+        { label: "3 (0)", span: 2, cls: "khali-cell" },
+        { label: "5 (2)", span: 2, cls: "tali-cell" },
+        { label: "7 (0)", span: 2, cls: "khali-cell" },
+        { label: "9 (3)", span: 2, cls: "tali-cell" },
+        { label: "11 (4)", span: 2, cls: "tali-cell" }
+      ],
+      tiers: {
+        basic: [
+          {
+            id: "chautaal_b1",
+            title: "Chautaal Theka (12 Matras)",
+            targetBpm: 65,
+            xp: 50,
+            source: "Bonus Rare • Gurmat & Dhrupad",
+            bols: ["Dha", "Dha", "Din", "Ta", "Kit", "Dha", "Din", "Ta", "Tit", "Kat", "Gadi", "Gan"]
+          }
+        ],
+        intermediate: [
+          {
+            id: "chautaal_i1",
+            title: "Tabla-Adapted Chautaal Groove",
+            targetBpm: 85,
+            xp: 65,
+            source: "Bonus Rare • Adapted Variation",
+            bols: ["Dha", "Ge", "Dhin", "Na", "Tit", "Dha", "Dhin", "Na", "Tit", "Ke", "Dha", "Ge"]
+          }
+        ],
+        advanced: [
+          {
+            id: "chautaal_a1",
+            title: "Fast 12-Beat Chautaal Cycle",
+            targetBpm: 105,
+            xp: 80,
+            source: "Bonus Rare • Fast Extension",
+            bols: ["Dha", "Dha", "Dhin", "Ta", "Kit", "Dha", "Dhin", "Ta", "Tit", "Kit", "Dha", "Ge"]
+          }
+        ]
+      },
+      kaidaRela: [
+        {
+          type: "Kaida",
+          title: "Dha Ge Tit Kit — Chautaal Drill",
+          bols: ["Dha Ge", "Dhin Na", "Tit Kit", "Dha Ge", "Dhin Na", "Tit Kit"],
+          tip: "Keep each pair of beats balanced across all six divisions."
+        },
+        {
+          type: "Rela",
+          title: "Tit Kit Dha Ge — 12-Beat Rela",
+          bols: ["Tit Kit", "Dha Ge", "Tit Kit", "Ta Ke", "Tit Kit", "Dha Ge"],
+          tip: "Maintain even spacing on beats 3 and 7 (Khali)."
+        }
+      ],
+      challenge: {
+        prompt: "Where does Chautaal fit in this app?",
+        options: ["As a Bonus Rare Taal (12 beats)", "As an 8-beat Keherwa variation", "As a 6-beat Dadra variation", "As a 30-day tracker"],
+        answerIndex: 0,
+        explanation: "Chautaal is a 12-beat Dhrupad/Gurmat cycle presented here as a Bonus Rare Taal."
+      }
+    },
+    dhamar: {
+      id: "dhamar",
+      name: "Dhamar",
+      isRare: true,
+      beats: 14,
+      vibhag: "4 (5+2+3+4)",
+      tali: "1, 6, 11",
+      khali: "8 (0)",
+      tempo: "60–95 BPM",
+      kirtanNote: "Bonus Rare Taal: 14-beat cycle grouped 5+2+3+4, known in classical and Gurmat Sangeet study.",
+      divisions: [
+        { label: "1 (X - 5)", span: 5, cls: "sam-cell" },
+        { label: "6 (2 - 2)", span: 2, cls: "tali-cell" },
+        { label: "8 (0 - 3)", span: 3, cls: "khali-cell" },
+        { label: "11 (3 - 4)", span: 4, cls: "tali-cell" }
+      ],
+      tiers: {
+        basic: [
+          {
+            id: "dhamar_b1",
+            title: "Dhamar Theka (14 Matras, 5+2+3+4)",
+            targetBpm: 65,
+            xp: 55,
+            source: "Bonus Rare • Classical & Gurmat",
+            bols: [
+              "Ka", "Dhi", "Ta", "Dhi", "Ta",
+              "Dha", "—",
+              "Ga", "Ti", "Na",
+              "Ti", "Ta", "Ta", "—"
+            ]
+          }
+        ],
+        intermediate: [
+          {
+            id: "dhamar_i1",
+            title: "Tabla-Voiced Dhamar Variation",
+            targetBpm: 80,
+            xp: 70,
+            source: "Bonus Rare • Adapted Variation",
+            bols: [
+              "Dha", "Dhin", "Ta", "Dhin", "Na",
+              "Dha", "Ge",
+              "Dha", "Tit", "Na",
+              "Tit", "Ta", "Dhin", "Na"
+            ]
+          }
+        ],
+        advanced: [
+          {
+            id: "dhamar_a1",
+            title: "Ornamented 14-Beat Dhamar",
+            targetBpm: 95,
+            xp: 85,
+            source: "Bonus Rare • Advanced Study",
+            bols: [
+              "Dha", "Ge", "Tit", "Dhin", "Na",
+              "Dha", "Ge",
+              "Ta", "Ke", "Na",
+              "Tit", "Kit", "Dha", "Dhin"
+            ]
+          }
+        ]
+      },
+      kaidaRela: [
+        {
+          type: "Kaida",
+          title: "Dha Ge Tin Na — Dhamar Phrasing",
+          bols: ["Dha Ge Tit Dhin Na", "Dha Ge", "Ta Ke Na", "Dha Ge Dhin Na"],
+          tip: "Count the opening 5-beat group (1-2-3-4-5) cleanly before beat 6."
+        },
+        {
+          type: "Rela",
+          title: "Tit Kit Dha Ge — 14-Beat Rela",
+          bols: ["Tit Kit Dha Ge", "Dha Ge Tit Kit", "Tit Kit Ta Ke", "Dha Ge Dhin Na"],
+          tip: "Keep the 5+2+3+4 divisions steady without losing track of beat 8 (Khali)."
+        }
+      ],
+      challenge: {
+        prompt: "What is Dhamar Taal's vibhag grouping across its 14 beats?",
+        options: ["5 + 2 + 3 + 4", "4 + 4 + 4 + 4", "3 + 3 + 3 + 3", "2 + 2 + 2 + 2 + 2"],
+        answerIndex: 0,
+        explanation: "Dhamar is a 14-beat cycle grouped into 5 + 2 + 3 + 4 matras."
+      }
     }
   };
 
-  const TAAL_ORDER = ["keherwa", "dadra", "roopak", "teental", "deepchandi", "japtaal", "ektaal", "sulfaag"];
+  const NANAKSAR_DRILLS = [
+    {
+      id: "nanaksar_taarna_1",
+      title: "Taarna Drive — Open Khulle Bol Keherwa (8)",
+      context: "Taarna / Refrain Build",
+      targetBpm: 110,
+      xp: 45,
+      divisions: [
+        { label: "Vibhag 1 (Open Ge/Dha)", span: 4, cls: "sam-cell" },
+        { label: "Vibhag 2 (Forward Push)", span: 4, cls: "tali-cell" }
+      ],
+      bols: ["Dha", "Ge", "Dhin", "Ge", "Dha", "Ge", "Ta", "Ge"],
+      tip: "Keep the Bayan open and resonant on Ge/Dha while letting the Dayan ring cleanly on the rim—never stiffen the wrist as speed climbs."
+    },
+    {
+      id: "nanaksar_taarna_2",
+      title: "Fast Taarna Roll — Jori-Style Double Pulse (8)",
+      context: "Taarna / High-Energy Chorus",
+      targetBpm: 125,
+      xp: 55,
+      divisions: [
+        { label: "Vibhag 1 (1–4)", span: 4, cls: "sam-cell" },
+        { label: "Vibhag 2 (5–8)", span: 4, cls: "khali-cell" }
+      ],
+      bols: ["Dha", "Ge", "Tit", "Dha", "Ge", "Dhin", "Ta", "Ge"],
+      tip: "Practice at 80–90 BPM first so every stroke stays distinct, then step up cleanly toward 120+ BPM without losing the Sam."
+    },
+    {
+      id: "nanaksar_aarti_1",
+      title: "Aarti Momentum — 6-Beat Flowing Drive (6)",
+      context: "Aarti / Devotional Ascent",
+      targetBpm: 115,
+      xp: 50,
+      divisions: [
+        { label: "Group 1 (1–3)", span: 3, cls: "sam-cell" },
+        { label: "Group 2 (4–6)", span: 3, cls: "tali-cell" }
+      ],
+      bols: ["Dha", "Ge", "Dhin", "Dha", "Ge", "Na"],
+      tip: "Feel the forward surge across 1-2-3 | 4-5-6 so the rhythm lifts the singing naturally during Aarti."
+    },
+    {
+      id: "nanaksar_aarti_2",
+      title: "Aarti Cadence — Open Bol Tihai/Turnaround (8)",
+      context: "Aarti / Verse-to-Chorus Link",
+      targetBpm: 120,
+      xp: 60,
+      divisions: [
+        { label: "First Half (1–4)", span: 4, cls: "sam-cell" },
+        { label: "Second Half (5–8)", span: 4, cls: "tali-cell" }
+      ],
+      bols: ["Dha", "Ge", "Dhin", "Na", "Dha", "Ge", "Dha", "Ge"],
+      tip: "Use a clear, grounded Dha on beat 1 to anchor transitions back into the main refrain."
+    }
+  ];
+
+  const CORE_TAAL_ORDER = ["keherwa", "dadra", "roopak", "teental", "deepchandi", "japtaal", "ektaal", "sulfaag"];
+  const RARE_TAAL_ORDER = ["chautaal", "dhamar"];
 
   let currentMode = "taal";
   let currentTaalId = localStorage.getItem("khalsai-active-taal") || "keherwa";
@@ -1696,6 +2029,8 @@
           if (found) xp += (found.xp || 30);
         }
       }
+      const nanaksarItem = NANAKSAR_DRILLS.find(item => item.id === key);
+      if (nanaksarItem) xp += (nanaksarItem.xp || 45);
     });
     Object.entries(clearedQuests).forEach(([, done]) => {
       if (done) xp += 15;
@@ -1728,7 +2063,11 @@
     completedDrills[drillId] = !completedDrills[drillId];
     localStorage.setItem("khalsai-completed-drills", JSON.stringify(completedDrills));
     updateXPBadge();
-    renderActiveStage();
+    if (currentMode === "nanaksar") {
+      renderNanaksarLab();
+    } else {
+      renderActiveStage();
+    }
   }
 
   function selectBpmAndPlay(bpmValue) {
@@ -1742,7 +2081,11 @@
     clearedQuests[questKey] = !clearedQuests[questKey];
     localStorage.setItem("khalsai-cleared-quests", JSON.stringify(clearedQuests));
     updateXPBadge();
-    renderActiveStage();
+    if (currentMode === "nanaksar") {
+      renderNanaksarLab();
+    } else {
+      renderActiveStage();
+    }
   }
 
   function answerChallenge(taalId, chosenIdx) {
@@ -1792,36 +2135,50 @@
   }
 
   // --- Switcher & Single-Taal Rendering ---
+  function buildTaalButton(id, isRare = false) {
+    const t = TAAL_DATA[id];
+    const active = currentMode === "taal" && currentTaalId === id ? "active" : "";
+    const rareClass = isRare ? "rare-btn" : "";
+    return `
+      <button type="button" class="taal-tab-btn ${rareClass} ${active}" onclick="selectTaal('${id}', true)">
+        <span>${t.name}</span>
+        <span class="taal-beat-tag">(${t.beats})</span>
+      </button>
+    `;
+  }
+
   function renderSwitcher() {
     const nav = document.getElementById("appSwitcher");
-    const taalButtons = TAAL_ORDER.map(id => {
-      const t = TAAL_DATA[id];
-      const active = currentMode === "taal" && currentTaalId === id ? "active" : "";
-      return `
-        <button type="button" class="taal-tab-btn ${active}" onclick="selectTaal('${id}', true)">
-          <span>${t.name}</span>
-          <span class="taal-beat-tag">(${t.beats})</span>
-        </button>
-      `;
-    }).join("");
+    const coreButtons = CORE_TAAL_ORDER.map(id => buildTaalButton(id, false)).join("");
+    const rareButtons = RARE_TAAL_ORDER.map(id => buildTaalButton(id, true)).join("");
 
     nav.innerHTML = `
-      <div>
-        <div class="switcher-label">Select Taal</div>
-        <div class="taal-grid">${taalButtons}</div>
+      <div class="switcher-group">
+        <div class="switcher-label">Core Sikh Kirtan Taals</div>
+        <div class="taal-grid">${coreButtons}</div>
+      </div>
+      <div class="switcher-group rare-taal-grid">
+        <div class="switcher-label rare" style="grid-column: 1 / -1;">Bonus Rare Taals (Gurmat &amp; Classical)</div>
+        ${rareButtons}
+      </div>
+      <div class="switcher-group special-lab-row">
+        <div class="switcher-label nanaksar">Personal Focus Lab</div>
+        <button type="button" class="mode-btn nanaksar-btn ${currentMode === "nanaksar" ? "active" : ""}" onclick="selectMode('nanaksar', true)">
+          ⚡ Nanaksar Khulle Bol • Taarna &amp; Aarti Lab
+        </button>
       </div>
       <div class="utility-grid">
-        <button type="button" class="mode-btn ${currentMode === "drums" ? "active" : ""}" onclick="selectMode('drums')">🥁 Bols &amp; Drums</button>
+        <button type="button" class="mode-btn ${currentMode === "drums" ? "active" : ""}" onclick="selectMode('drums')">🥁 Bols, Jori &amp; Drums</button>
         <button type="button" class="mode-btn ${currentMode === "tracker" ? "active" : ""}" onclick="selectMode('tracker')">📅 30-Day Tracker</button>
       </div>
     `;
   }
 
-  function scrollToTaalStage() {
-    const stage = document.getElementById("activeStage");
-    if (!stage) return;
+  function scrollToElement(elId) {
+    const el = document.getElementById(elId);
+    if (!el) return;
     requestAnimationFrame(() => {
-      stage.scrollIntoView({ behavior: "smooth", block: "start" });
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   }
 
@@ -1835,21 +2192,27 @@
     renderSwitcher();
     renderActiveStage();
     if (shouldScroll) {
-      scrollToTaalStage();
+      scrollToElement("activeStage");
     }
   }
 
-  function selectMode(mode) {
+  function selectMode(mode, shouldScroll = false) {
     currentMode = mode;
+    currentBeatIndex = 0;
     updateViewVisibility();
     renderSwitcher();
     if (mode === "taal") {
       renderActiveStage();
+      if (shouldScroll) scrollToElement("activeStage");
+    } else if (mode === "nanaksar") {
+      renderNanaksarLab();
+      if (shouldScroll) scrollToElement("nanaksarView");
     }
   }
 
   function updateViewVisibility() {
     document.getElementById("activeStage").classList.toggle("hidden", currentMode !== "taal");
+    document.getElementById("nanaksarView").classList.toggle("hidden", currentMode !== "nanaksar");
     document.getElementById("drumsView").classList.toggle("hidden", currentMode !== "drums");
     document.getElementById("trackerView").classList.toggle("hidden", currentMode !== "tracker");
   }
@@ -1954,6 +2317,76 @@
     return `<button type="button" class="${pauseClass}" onclick="pauseMetronome()">⏸ Pause</button>`;
   }
 
+  function renderNanaksarLab() {
+    const view = document.getElementById("nanaksarView");
+    const drillsHtml = NANAKSAR_DRILLS.map(item => {
+      const done = Boolean(completedDrills[item.id]);
+      const ladderBpms = [85, 110, 130];
+      const ladderHtml = ladderBpms.map(stepBpm => {
+        const qKey = `${item.id}_${stepBpm}`;
+        const cleared = Boolean(clearedQuests[qKey]);
+        return `
+          <button type="button" class="ladder-chip ${cleared ? "cleared" : ""}" onclick="toggleTempoQuest('${qKey}', ${stepBpm})">
+            ${cleared ? "✓" : "▶"} ${stepBpm} BPM ${cleared ? "" : "(+15 XP)"}
+          </button>
+        `;
+      }).join("");
+
+      return `
+        <div class="variation-card">
+          <div class="variation-top">
+            <div>
+              <div class="variation-title">${item.title}</div>
+              <div class="variation-meta">
+                <span>🎯 Target: ${item.targetBpm} BPM</span>
+                <span>🎵 ${item.context}</span>
+                <span>⭐ +${item.xp} XP</span>
+              </div>
+            </div>
+            <div class="variation-actions">
+              <button type="button" class="action-chip-btn" onclick="selectBpmAndPlay(${item.targetBpm})">▶ ${item.targetBpm} BPM</button>
+              ${renderInlinePauseButton()}
+              <button type="button" class="master-check-btn ${done ? "done" : ""}" onclick="toggleDrillMastered('${item.id}')">
+                ${done ? "✓ Mastered" : "Mark Mastered"}
+              </button>
+            </div>
+          </div>
+          ${renderVariationTable(item.bols, item.divisions, true)}
+          <div class="info-box" style="margin-top:8px; margin-bottom:6px;">
+            <strong>Playing Tip:</strong> ${item.tip}
+          </div>
+          <div class="ladder-row">
+            <span style="font-size:0.8rem; font-weight:700; color:var(--muted);">Speed Ladder:</span>
+            ${ladderHtml}
+            ${renderInlinePauseButton()}
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    view.innerHTML = `
+      <div class="header">
+        <div>
+          <h1 class="header-title">Nanaksar Khulle Bol • Taarna &amp; Aarti Lab</h1>
+          <div class="header-subtitle">Khalsai - Tabla App • Personal Speed &amp; Jori-Feel Practice</div>
+        </div>
+        <span class="level-badge">PERSONAL FOCUS</span>
+      </div>
+
+      <div class="info-box">
+        <strong>Why Khulle Bol &amp; Jori Feel Matter Here:</strong> Fast Nanaksar kirtan during <em>taarna</em> and <em>aarti</em> relies on open, ringing resonance (<em>khulle bol</em>) and steady forward momentum rather than heavy, tense finger-clamping. Build speed in clean increments using the 85 → 110 → 130 BPM ladder.
+      </div>
+
+      <div class="section-title">
+        <span>Taarna &amp; Aarti Practice Drills (${NANAKSAR_DRILLS.length})</span>
+        <span class="level-badge">Khulle Bol / Jori Drive</span>
+      </div>
+      ${drillsHtml}
+    `;
+
+    highlightLiveBeat(currentBeatIndex);
+  }
+
   function renderActiveStage() {
     const stage = document.getElementById("activeStage");
     const taal = TAAL_DATA[currentTaalId] || TAAL_DATA.keherwa;
@@ -2021,14 +2454,19 @@
         </div>`
       : "";
 
+    const rareBadgeHtml = taal.isRare ? `<span class="level-badge rare-badge">BONUS RARE TAAL</span>` : "";
+
     stage.innerHTML = `
       <section class="sheet-container">
         <div class="header">
           <div>
             <h1 class="header-title">${taal.name} Taal (${taal.beats} Matras)</h1>
-            <div class="header-subtitle">Khalsai - Tabla App • Single-Taal Focus Mode</div>
+            <div class="header-subtitle">Khalsai - Tabla App • Sikh Kirtan Focus</div>
           </div>
-          <span class="level-badge">${currentTier.toUpperCase()} TIER</span>
+          <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+            ${rareBadgeHtml}
+            <span class="level-badge">${currentTier.toUpperCase()} TIER</span>
+          </div>
         </div>
 
         <div class="meta-grid">
@@ -2261,6 +2699,7 @@
   renderSwitcher();
   updateViewVisibility();
   renderActiveStage();
+  renderNanaksarLab();
   updateTrackerBadge();
   updateXPBadge();
 </script>
