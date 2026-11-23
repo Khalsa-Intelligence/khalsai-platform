@@ -76,6 +76,10 @@
     min-width: 0;
   }
 
+  #activeStage {
+    scroll-margin-top: 12px;
+  }
+
   /* Unified Top Header with Clickable Khalsai Logo */
   .web-toolbar {
     display: flex;
@@ -1794,7 +1798,7 @@
       const t = TAAL_DATA[id];
       const active = currentMode === "taal" && currentTaalId === id ? "active" : "";
       return `
-        <button type="button" class="taal-tab-btn ${active}" onclick="selectTaal('${id}')">
+        <button type="button" class="taal-tab-btn ${active}" onclick="selectTaal('${id}', true)">
           <span>${t.name}</span>
           <span class="taal-beat-tag">(${t.beats})</span>
         </button>
@@ -1813,7 +1817,15 @@
     `;
   }
 
-  function selectTaal(id) {
+  function scrollToTaalStage() {
+    const stage = document.getElementById("activeStage");
+    if (!stage) return;
+    requestAnimationFrame(() => {
+      stage.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+
+  function selectTaal(id, shouldScroll = false) {
     currentMode = "taal";
     currentTaalId = id;
     currentBeatIndex = 0;
@@ -1822,6 +1834,9 @@
     updateViewVisibility();
     renderSwitcher();
     renderActiveStage();
+    if (shouldScroll) {
+      scrollToTaalStage();
+    }
   }
 
   function selectMode(mode) {
